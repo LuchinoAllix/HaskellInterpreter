@@ -75,3 +75,19 @@ class Program {
     }
 }
 
+
+
+
+
+function main(){
+    const input1 = "?";
+    const program1 = new Program(input1);
+    try {
+        program1.tokenize();
+    } catch (error) {
+        console.log("Unsuccessful tokenization :( ");
+        console.error(error);
+    }
+    console.log("Successful tokenization :) ");
+    console.log(program1.tokens);
+}
