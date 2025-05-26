@@ -78,6 +78,7 @@ class Program {
 
     isSpecial(){
         if (HS_special.includes(this.input[this.index])){
+            // TODO : make tokens
             this.tokens.push(this.input[this.index]);
             this.index++;
             return true;
