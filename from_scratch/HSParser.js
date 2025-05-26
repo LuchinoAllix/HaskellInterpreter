@@ -31,7 +31,7 @@ class Program {
      * @returns True if Success
      */
     tokenize(){
-        isProgram();
+        this.isProgram();
         this.isLexed = true;
         return true;
     }
@@ -48,74 +48,115 @@ class Program {
         return true;
     }
 
-    static isProgram(){
-        while(isLexeme() || isWhitespace()){} 
-        if (this.index > this.input.length){
-            return false;
+    isProgram(){
+        while(this.isLexeme() || this.isWhitespace()){} 
+        if (this.index == this.input.length){
+            return true;
+        } else if (this.index < this.input.length){
+            throw Error("Not all input was parsed");
         }
-        return true;
+        throw Error("Index > input.length");
     }
 
-    static isLexeme(){
-        return isQvarid() 
-            || isQconid() 
-            || isQvarsym() 
-            || isQconsym() 
-            || isLiteral() 
-            || isSpecial() 
-            || isReservedop() 
-            || isReservedid();
+    isLexeme(){
+        return this.isQvarid()
+            || this.isQconid()
+            || this.isQvarsym()
+            || this.isQconsym()
+            || this.isLiteral()
+            || this.isSpecial()
+            || this.isReservedop()
+            || this.isReservedid();
     }
 
-    static isLiteral(){
-        return isInteger()
-            || isFloat()
-            || isChar()
-            || isString();
+    isLiteral(){
+        return this.isInteger()
+            || this.isFloat()
+            || this.isChar()
+            || this.isString();
     }
 
-    static isSpecial(){
+    isSpecial(){
         if (HS_special.includes(this.input[this.index])){
+            this.tokens.push(this.input[this.index]);
             this.index++;
             return true;
         }
         return false;
     }
 
-    static isQconid(){
+    isQvarid(){
         // #TODO
+        return false;
     }
 
-    static isQvarsym(){
+    isQconid(){
         // #TODO
+        return false;
     }
 
-    static isQconsym(){
+    isQvarsym(){
         // #TODO
+        return false;
     }
 
-    static isReservedop(){
+    isQconsym(){
         // #TODO
+        return false;
     }
 
-    static isReservedid(){
+    isReservedop(){
         // #TODO
+        return false;
+    }
+
+    isReservedid(){
+        // #TODO
+        return false;
+    }
+
+    isInteger(){
+        // #TODO
+        return false;
+    }
+
+    isFloat(){
+        // #TODO
+        return false;
+    }
+
+    isChar(){
+        // #TODO
+        return false;
+    }
+
+    isString(){
+        // #TODO
+        return false;
+    }
+
+    isWhitespace(){
+        // #TODO
+        return false;
     }
 }
-
-
-
-
 
 function main(){
-    const input1 = "?";
+    const input1 = "]]]]";
     const program1 = new Program(input1);
     try {
-        program1.tokenize();
+        if(program1.tokenize()){
+            console.log("Successful tokenization :) ");
+            console.log("Tokens : " + program1.tokens);
+        } else {
+            throw Error("tokenize() returned false");
+        }
     } catch (error) {
         console.log("Unsuccessful tokenization :( ");
+        console.log("Input : " + input1);
+        console.log("Tokens : " + program1.tokens);
         console.error(error);
     }
-    console.log("Successful tokenization :) ");
-    console.log(program1.tokens);
 }
+
+main()
