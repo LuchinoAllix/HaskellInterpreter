@@ -8,7 +8,9 @@ const HS_vertab = "\v";
 const HS_formfeed = "\f";
 const HS_space = " ";
 const HS_tab = "\t";
-const HS_uniWhite = ["\u0085","\u00A0","\u1680","\u180E","\u2000-","\u200A","\u2028","\u2029","\u202F","\u205F","\u3000"] // TODO: Vérifier
+const HS_uniWhite = ["\u0085","\u00A0","\u1680","\u180E",
+                     "\u2000-","\u200A","\u2028","\u2029",
+                     "\u202F","\u205F","\u3000"] // TODO: Vérifier
 
 var input = ""
 var index = 0
@@ -260,6 +262,32 @@ function getClosecom(){
 function getNcomment(){
     // #TODO
     return false
+}
+
+function getAnySeq(){
+    // #TODO
+    return false
+}
+
+function getANY(){
+    return getGraphic()
+        || getWhitechar();
+}
+
+function getAny(){
+    return getGraphic()
+        || getSpace()
+        || getTab();
+}
+
+function getGraphic(){
+    return getSmall()
+        || getLarge()
+        || getSymbol()
+        || getDigit()
+        || getSpecial()
+        || input[index] === "\""
+        || input[index] === "\'" ;
 }
 
 function main(){
