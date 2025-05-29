@@ -68,26 +68,100 @@ function getLiteral(){
         || getString();
 }
 
-    isLiteral(){
-        return this.isInteger()
-            || this.isFloat()
-            || this.isChar()
-            || this.isString();
+function getSpecial(){
+    if (HS_special.includes(input[index])){
+        // TODO : make tokens
+        tokens.push(input[index]);
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isSpecial(){
-        if (HS_special.includes(this.input[this.index])){
-            // TODO : make tokens
-            this.tokens.push(this.input[this.index]);
-            this.index++;
-            return true;
-        }
-        return false;
+function getQvarid(){
+    // #TODO
+    return false;
+}
+
+function getQconid(){
+    // #TODO
+    return false;
+}
+
+function getQvarsym(){
+    // #TODO
+    return false;
+}
+
+function getQconsym(){
+    // #TODO
+    return false;
+}
+
+function getReservedop(){
+    // #TODO
+    return false;
+}
+
+function getReservedid(){
+    // #TODO
+    return false;
+}
+
+function getInteger(){
+    // #TODO
+    return false;
+}
+
+function getFloat(){
+    // #TODO
+    return false;
+}
+
+function getChar(){
+    // #TODO
+    return false;
+}
+
+function getString(){
+    // #TODO
+    return false;
+}
+
+function getWhitespace(){
+    if(getWhitestuff()){
+        while(getWhitestuff()){}
+        return true;
     }
+    return false;
+}
 
-    isQvarid(){
-        // #TODO
-        return false;
+function getWhitestuff(){
+    return getWhitechar()
+        || getComment()
+        || getNcomment();
+}
+
+function getWhitechar(){
+    return getNewline()
+        || getVertab()
+        || getSpace()
+        || getTab()
+        || getUniWhite();
+}
+
+function getNewline(){
+    // on passe par des variables temporaires car la règle est :
+    // newline = return linefeed / return / linefeed / formfeed
+    let r = getReturn();
+    let l = getLinefeed();
+    return r || l || getFormfeed();
+}
+
+function getReturn(){
+    if(input[index]===HS_return){
+        index ++;
+        return true;
     }
 
     isQconid(){
