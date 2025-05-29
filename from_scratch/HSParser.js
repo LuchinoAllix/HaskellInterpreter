@@ -347,13 +347,149 @@ function getAny(){
 }
 
 function getGraphic(){
+    if (input[index] === "\"" || input[index] === "\'"){
+        index ++ ;
+        return true ;
+    }
     return getSmall()
         || getLarge()
         || getSymbol()
         || getDigit()
-        || getSpecial()
-        || input[index] === "\""
-        || input[index] === "\'" ;
+        || getSpecial();
+}
+
+function getSmall(){
+    if (input[index] === "_"){
+        index ++ ;
+        return true ;
+    }
+    return getAscSmall()
+        || getUniSmall();
+}
+
+function getLarge(){
+    return getAscLarge() || getUniLarge() ;
+}
+
+function getAscLarge(){
+    if (/^[A-Z]$/.test(input[index])){
+        index++;
+        // make token
+        return true;
+    }
+    return false;
+}
+
+function getUniLarge(){
+    if(HS_uniLarge.includes(input[index])){
+        index ++;
+        return true;
+    }
+    return false;
+}
+
+function getSymbol(){
+    // #TODO
+    return false;
+}
+
+function getDigit(){
+    return getAscDigit() || getUniDigit();
+}
+
+function getAscSmall(){
+    if (/^[a-z]$/.test(input[index])){
+        index++;
+        // make token
+        return true;
+    }
+    return false;
+}
+
+function getAscDigit(){
+    if (/^[0-9]$/.test(input[index])){
+        index++;
+        // make token
+        return true;
+    }
+    return false;
+}
+
+function getOctit(){
+    if (/^[0-7]$/.test(input[index])){
+        index++;
+        // make token
+        return true;
+    }
+    return false;
+}
+
+function getHexit(){
+    if (getDigit()){return true;}
+    if (/^[A-F]$/.test(input[index]) || /^[a-f]$/.test(input[index])){
+        index++;
+        // make token
+        return true;
+    }
+    return false;
+}
+
+
+function getUniSmall(){
+    if(HS_uniSmall.includes(input[index])){
+        index ++;
+        return true;
+    }
+    return false;
+}
+
+function getUniSymbol(){
+    if(HS_uniSymbol.includes(input[index])){
+        index ++;
+        return true;
+    }
+    return false;
+}
+
+function getAscSymbol(){
+    if(HS_ascSymbol.includes(input[index])){
+        index ++;
+        return true;
+    }
+    return false;
+}
+
+function getUniDigit(){
+    if(HS_uniDigit.includes(input[index])){
+        index ++;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Rule : varid → (small {small | large | digit | ' })⟨reservedid⟩
+ * @returns true if sucess
+ */
+function getVarid(){
+    // # TODO
+    return false;
+}
+
+/**
+ * Rule : conid → large {small | large | digit | ' }
+ * @returns true if sucess
+ */
+function getConid(){
+    if (getLarge()){
+        while(true){
+            if (getSmall() || getLarge() || getDigit()){} 
+            else if (index <= input.length && input[index] === "\'"){index ++;}
+            else {break;}
+        }
+        return true
+    }
+    return false
 }
 
 function main(){
