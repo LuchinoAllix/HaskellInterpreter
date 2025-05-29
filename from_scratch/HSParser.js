@@ -163,55 +163,97 @@ function getReturn(){
         index ++;
         return true;
     }
+    return false;
+}
 
-    isQconid(){
-        // #TODO
-        return false;
+function getLinefeed(){
+    if(input[index]===HS_linefeed){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isQvarsym(){
-        // #TODO
-        return false;
+function getFormfeed(){
+    if(input[index]===HS_formfeed){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isQconsym(){
-        // #TODO
-        return false;
+function getVertab(){
+    if(input[index]===HS_vertab){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isReservedop(){
-        // #TODO
-        return false;
+function getSpace(){
+    if(input[index]===HS_space){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isReservedid(){
-        // #TODO
-        return false;
+function getTab(){
+   if(input[index]===HS_tab){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isInteger(){
-        // #TODO
-        return false;
+function getUniWhite(){
+    if(HS_uniWhite.includes(input[index])){
+        index ++;
+        return true;
     }
+    return false;
+}
 
-    isFloat(){
-        // #TODO
-        return false;
+function getComment(){
+    if(getDashes()){
+        while(!getNewline()){
+            // règle : comment = dashes (any !symbol any*)? newline
+            // #TODO ce n'est pas ce qui est implémenté ici
+            index ++;
+        }
+        return true;
     }
+    return false
+}
 
-    isChar(){
-        // #TODO
-        return false;
+function getDashes(){
+    if(index + 1 < input.length){
+        if(input[index]==="-" && input[index+1]==="-"){
+            index += 2;
+            while(index<input.length && input[index]==="-"){
+                index ++;
+            }
+            return true;
+        }
     }
+    return false;
+}
 
-    isString(){
-        // #TODO
-        return false;
+function getOpencom(){
+    if(index + 1 < input.length){
+        if(input[index]==="{" && input[index+1]==="-"){
+            index += 2;
+            return true;
+        }
     }
+}
 
-    isWhitespace(){
-        // #TODO
-        return false;
+function getClosecom(){
+    if(index + 1 < input.length){
+        if(input[index]==="-" && input[index+1]==="}"){
+            index += 2;
+            return true;
+        }
     }
 }
 
