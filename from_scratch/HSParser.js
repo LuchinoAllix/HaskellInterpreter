@@ -257,20 +257,24 @@ function getClosecom(){
     }
 }
 
+function getNcomment(){
+    // #TODO
+    return false
+}
+
 function main(){
-    const input1 = "]]]]";
-    const program1 = new Program(input1);
+    input = "]]]]";
     try {
-        if(program1.tokenize()){
+        if(tokenize()){
             console.log("Successful tokenization :) ");
-            console.log("Tokens : " + program1.tokens);
+            console.log("Tokens : " + tokens);
         } else {
             throw Error("tokenize() returned false");
         }
     } catch (error) {
         console.log("Unsuccessful tokenization :( ");
-        console.log("Input : " + input1);
-        console.log("Tokens : " + program1.tokens);
+        console.log("Input : " + input);
+        console.log("Tokens : " + tokens);
         console.error(error);
     }
 }
