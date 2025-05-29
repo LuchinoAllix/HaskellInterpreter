@@ -327,12 +327,12 @@ function getClosecom(){
 
 function getNcomment(){
     // #TODO
-    return false
+    return false ;
 }
 
 function getAnySeq(){
     // #TODO
-    return false
+    return false ;
 }
 
 function getANY(){
