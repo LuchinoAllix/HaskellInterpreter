@@ -8,66 +8,65 @@ const HS_vertab = "\v";
 const HS_formfeed = "\f";
 const HS_space = " ";
 const HS_tab = "\t";
+const HS_uniWhite = ["\u0085","\u00A0","\u1680","\u180E","\u2000-","\u200A","\u2028","\u2029","\u202F","\u205F","\u3000"] // TODO: Vérifier
+
+var input = ""
+var index = 0
+var tokens = []
+var AST = []
 
 /**
- * Représente un programme Haskell.
- * Ce programme est construit grâce à un input.
- * Il peut être transformé en tokens grâce à tokenize()
- * Il peut être transformé en AST avec parse()
+ * Permet de transformer l'input en liste de tokens
+ * @returns True if Success
  */
-class Program {
-    
-    constructor(input){
-        this.input = input; // Chaîne de caractère donnée en entrée
-        this.index = 0; // Position du curseur sur l'input
-        this.tokens = []; // Chaîne de tokens correspondant à l'input
-        this.AST = []; // AST correspondant à l'input
-        this.isLexed = false; // indique si l'input a déjà été tokenisé ou non
-        this.isParsed = false; // indique si l'input a déjà été parse ou non
-    }
+function tokenize(){
+    getProgram();
+    return true;
+}
 
-    /**
-     * Permet de transformer l'input en liste de tokens
-     * @returns True if Success
-     */
-    tokenize(){
-        this.isProgram();
-        this.isLexed = true;
+/**
+ * Permet de transformer la liste de tokens en AST
+ * @returns True if Success
+ */
+function parse(){
+    if(!this.isLexed){
+        this.tokenize();
+    }
+    // #TODO
+    return true;
+}
+
+/**
+ * Fait un programme basé sur l'input
+ * @returns true s'il a réussi à faire un programme basé sur l'input
+ */
+function getProgram(){
+    while(getLexeme() || getWhitespace()){} 
+    if (index == input.length){
         return true;
+    } else if (index < input.length){
+        throw Error("Not all input was parsed");
     }
+    throw Error("Index > input.length");
+}
 
-    /**
-     * Permet de transformer la liste de tokens en AST
-     * @returns True if Success
-     */
-    parse(){
-        if(!this.isLexed){
-            this.tokenize();
-        }
-        // #TODO
-        return true;
-    }
+function getLexeme(){
+    return getQvarid()
+        || getQconid()
+        || getQvarsym()
+        || getQconsym()
+        || getLiteral()
+        || getSpecial()
+        || getReservedop()
+        || getReservedid();
+}
 
-    isProgram(){
-        while(this.isLexeme() || this.isWhitespace()){} 
-        if (this.index == this.input.length){
-            return true;
-        } else if (this.index < this.input.length){
-            throw Error("Not all input was parsed");
-        }
-        throw Error("Index > input.length");
-    }
-
-    isLexeme(){
-        return this.isQvarid()
-            || this.isQconid()
-            || this.isQvarsym()
-            || this.isQconsym()
-            || this.isLiteral()
-            || this.isSpecial()
-            || this.isReservedop()
-            || this.isReservedid();
-    }
+function getLiteral(){
+    return getInteger()
+        || getFloat()
+        || getChar()
+        || getString();
+}
 
     isLiteral(){
         return this.isInteger()
