@@ -42,43 +42,43 @@ ncomment = opencom ANY_seq (ncomment ANY_seq)* closecom
 
 ANY_seq = ANY* !(ANY* (opencom / closecom) ANY*)
 
-ANY = graphic / whitechar
+// ANY = graphic / whitechar
 
-any = graphic / space / tab
+// any = graphic / space / tab
 
-graphic = small / large / symbol / digit / special / "\"" / "\'"
+// graphic = small / large / symbol / digit / special / "\"" / "\'"
 
-small = ascSmall / uniSmall / "_"
+// small = ascSmall / uniSmall / "_"
 
-ascSmall = [a-z]
+// ascSmall = [a-z]
 
-uniSmall = [\u00E0-\u00F6\u00F8-\u00FF]
+// uniSmall = [\u00E0-\u00F6\u00F8-\u00FF]
 
-large = ascLarge / uniLarge
+// large = ascLarge / uniLarge
 
-ascLarge = [A-Z]
+// ascLarge = [A-Z]
 
-uniLarge = [\u00C0-\u00D6\u00D8-\u00DE]
+// uniLarge = [\u00C0-\u00D6\u00D8-\u00DE]
 
 symbol = ascSymbol / uniSymbol !(special / "_" / "\"" / "\'")
 
-ascSymbol = "!" / "#" / "$" / "%" / "&" / "⋆" / "+" / "." / "/" / "<" / "=" / ">" / "?" / "@" / "\\" / "\^" / "|" / "~" / "-" / ":"
+//ascSymbol = "!" / "#" / "$" / "%" / "&" / "⋆" / "+" / "." / "/" / "<" / "=" / ">" / "?" / "@" / "\\" / "\^" / "|" / "~" / "-" / ":"
 
-uniSymbol = [\u00A1-\u00A7\u00A9-\u00AB\u00AC\u00AE\u00AF\u00B0-\u00B1\u00B4\u00B6-\u00B8\u00BB\u00BF\u00D7\u00F7\u2010-\u2027\u2030-\u203E\u2041-\u2053\u2055-\u205E\u2190-\u23FF\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F\u3001-\u3003]
+//uniSymbol = [\u00A1-\u00A7\u00A9-\u00AB\u00AC\u00AE\u00AF\u00B0-\u00B1\u00B4\u00B6-\u00B8\u00BB\u00BF\u00D7\u00F7\u2010-\u2027\u2030-\u203E\u2041-\u2053\u2055-\u205E\u2190-\u23FF\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F\u3001-\u3003]
 
-digit = ascDigit / uniDigit
+//digit = ascDigit / uniDigit
 
-ascDigit = [0-9]
+//ascDigit = [0-9]
 
-uniDigit = [\u0660-\u0669\u06F0-\u06F9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE7-\u0BEF\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F\u0E50-\u0E59\u0ED0-\u0ED9\u0F20-\u0F29]
+//uniDigit = [\u0660-\u0669\u06F0-\u06F9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE7-\u0BEF\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F\u0E50-\u0E59\u0ED0-\u0ED9\u0F20-\u0F29]
 
-octit = [0-7]
+//octit = [0-7]
 
-hexit = digit / [A-Fa-f]
+//hexit = digit / [A-Fa-f]
 
 varid = (small (small / large / digit / "\'" )* ) !(reservedid)
 
-conid = large (small / large / digit / "\'" )*
+// conid = large (small / large / digit / "\'" )*
 
 reservedid = "case" / "class" / "data" / "default" / "deriving" / "do" / "else" / "foreign" / "if" / "import" / "in" / "infix" / "infixl" / "infixr" / "instance" / "let" / "module" / "newtype" / "of" / "then" / "type" / "where" / "_"
 
