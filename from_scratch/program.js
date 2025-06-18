@@ -1,3 +1,5 @@
+//--  File containing Program object used for lexing and parsing  --//
+
 export class Program {
   constructor(input){
     this.input = input;
