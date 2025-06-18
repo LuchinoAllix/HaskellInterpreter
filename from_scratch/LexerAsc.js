@@ -1,3 +1,6 @@
+import { Program } from "./program";
+
+//--  File containing lexer functions for symbols related rules   --//
 
 const HS_uniSmall = [ // TODO : Vérifier
   '\u00E0', '\u00E1', '\u00E2', '\u00E3', '\u00E4', '\u00E5', '\u00E6', 
@@ -66,143 +69,322 @@ const HS_uniDigit = [ // TODO : Vérifier
  * @param {Program} program 
  * @returns {Boolean}
  */
-export function getLiteral(program){
+function getLiteral(program){
   return getInteger(program)
     || getFloat(program)
     || getChar(program)
     || getString(program);
 }
 
-export function getSmall(program){
-  if (program.getChar(program) === "_"){
-    index ++ ;
+/**
+ * Rule : small → ascSmall | uniSmall | _
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getSmall(program){
+  if (program.getChar() === "_"){
+    program.incIndex();
     return true ;
   }
   return getAscSmall(program)
     || getUniSmall(program);
 }
 
-export function getLarge(program){
-  return getAscLarge(program) || getUniLarge(program) ;
+/**
+ * Rule : ascSmall → a | b | … | z
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getAscSmall(program){
+  if (/^[a-z]$/.test(program.getChar())){
+    program.incIndex();
+    // TODO make token
+    return true;
+  }
+  return false;
 }
 
-export function getAscLarge(program){
+/**
+ * Rule : uniSmall → any Unicode lowercase letter 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getUniSmall(program){
+  if(HS_uniSmall.includes(program.getChar())){
+    program.incIndex();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Rule : large → ascLarge | uniLarge 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getLarge(program){
+  return getAscLarge(program) || getUniLarge(program);
+}
+
+/**
+ * Rule : ascLarge → A | B | … | Z
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getAscLarge(program){
   if (/^[A-Z]$/.test(program.getChar())){
-    index++;
+    program.incIndex();
     // make token
     return true;
   }
   return false;
 }
 
-export function getUniLarge(program){
+/**
+ * Rule : uniLarge → any uppercase or titlecase Unicode letter 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getUniLarge(program){
   if(HS_uniLarge.includes(program.getChar())){
-    index ++;
+    program.incIndex();
     return true;
   }
   return false;
 }
 
-export function getSymbol(program){
+/**
+ * Rule : symbol → ascSymbol | uniSymbol⟨special | _ | " | '⟩
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getSymbol(program){
   // TODO
   return false;
 }
 
-export function getDigit(program){
+/**
+ * Rule : ascSymbol → ! | # | $ | % | & | ⋆ | + | . | / | < | = | > | ? | @ | 	
+ *                    \ | ^ | | | - | ~ | :
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getAscSymbol(program){
+  if(HS_ascSymbol.includes(program.getChar())){
+    program.incIndex();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Rule : uniSymbol → any Unicode symbol or punctuation 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getUniSymbol(program){
+  if(HS_uniSymbol.includes(program.getChar())){
+    program.incIndex();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Rule : digit → ascDigit | uniDigit 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getDigit(program){
   return getAscDigit(program) || getUniDigit(program);
 }
 
-export function getAscSmall(program){
-  if (/^[a-z]$/.test(program.getChar())){
-    index++;
-    // TODO make token
-    return true;
-  }
-  return false;
-}
-
-export function getAscDigit(program){
+/**
+ * Rule : ascDigit → 0 | 1 | … | 9
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getAscDigit(program){
   if (/^[0-9]$/.test(program.getChar())){
-    index++;
+    program.incIndex();
     // TODO make token
     return true;
   }
   return false;
 }
 
-export function getOctit(program){
+/**
+ * Rule : uniDigit → any Unicode decimal digit 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getUniDigit(program){
+  if(HS_uniDigit.includes(program.getChar())){
+    program.incIndex();
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Rule : octit → 0 | 1 | … | 7
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getOctit(program){
   if (/^[0-7]$/.test(program.getChar())){
-    index++;
+    program.incIndex();
     // TODO make token
     return true;
   }
   return false;
 }
 
-export function getHexit(program){
+/**
+ * Rule : hexit → digit | A | … | F | a | … | f
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getHexit(program){
   if (getDigit(program)){return true;}
   if (/^[A-F]$/.test(program.getChar()) || /^[a-f]$/.test(program.getChar())){
-    index++;
+    program.incIndex();
     // TODO make token
     return true;
   }
   return false;
 }
 
-
-export function getUniSmall(program){
-  if(HS_uniSmall.includes(program.getChar())){
-    index ++;
-    return true;
-  }
-  return false;
-}
-
-export function getUniSymbol(program){
-  if(HS_uniSymbol.includes(program.getChar())){
-    index ++;
-    return true;
-  }
-  return false;
-}
-
-export function getAscSymbol(program){
-  if(HS_ascSymbol.includes(program.getChar())){
-    index ++;
-    return true;
-  }
-  return false;
-}
-
-export function getUniDigit(program){
-  if(HS_uniDigit.includes(program.getChar())){
-    index ++;
-    return true;
-  }
-  return false;
-}
-
-export function getChar(program){
+/**
+ * Rule : decimal → digit{digit} 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getDecimal(program){
   // TODO
   return false;
 }
 
-export function getString(program){
+/**
+ * Rule : octal → octit{octit} 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getFloat(program){
   // TODO
   return false;
 }
 
-export function getInteger(program){
+/**
+ * Rule : hexadecimal → hexit{hexit} 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getHexadecimal(program){
   // TODO
   return false;
 }
 
-export function getExponent(program){
+/**
+ * Rule : integer → decimal | 0o octal | 0O octal | 
+ *                  0x hexadecimal | 0X hexadecimal 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getInteger(program){
   // TODO
   return false;
 }
 
-export function getFloat(program){
+/**
+ * Rule : float → decimal . decimal [exponent] | decimal exponent 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getFloat(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : exponent → (e | E) [+ | -] decimal 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getExponent(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : char → ' (graphic⟨' | \⟩ | space | escape⟨\&⟩) '
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getChar(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : string → " {graphic⟨" | \⟩ | space | escape | gap} "
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getString(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : escape → \ ( charesc | ascii | decimal | o octal | x hexadecimal ) 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getEscape(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : charesc → a | b | f | n | r | t | v | \ | " | ' | &
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getCharsec(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : string ascii → ^cntrl | NUL | SOH | STX | ETX | EOT | ENQ | ACK | 
+ *                       BEL | BS | HT | LF | VT | FF | CR | SO | SI | DLE | 
+ *                       DC1 | DC2 | DC3 | DC4 | NAK | SYN | ETB | CAN | EM | 
+ *                       SUB | ESC | FS | GS | RS | US | SP | DEL
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getAscii(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : cntrl → ascLarge | @ | [ | \ | ] | ^ | _
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getCntrl(program){
+  // TODO
+  return false;
+}
+
+/**
+ * Rule : gap → \ whitechar {whitechar} \
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getGap(program){
   // TODO
   return false;
 }
