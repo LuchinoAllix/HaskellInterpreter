@@ -1,3 +1,4 @@
+import { Program } from "./program";
 //--  File containing lexer functions for withespace related chars --//
 
 
@@ -20,7 +21,7 @@ const HS_uniWhite = [ // TODO : Verify
 
 /**
  * Rule : whitespace → whitestuff {whitestuff} 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 export function getWhitespace(program){
@@ -33,7 +34,7 @@ export function getWhitespace(program){
 
 /**
  * Rule : whitestuff → whitechar | comment | ncomment
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getWhitestuff(program){
@@ -44,7 +45,7 @@ function getWhitestuff(program){
 
 /**
  * Rule : whitechar → newline | vertab | space | tab | uniWhite 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean}  
  */
 function getWhitechar(program){
@@ -57,7 +58,7 @@ function getWhitechar(program){
 
 /**
  * Rule : newline → return linefeed | return | linefeed | formfeed 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getNewline(program){
@@ -69,7 +70,7 @@ function getNewline(program){
 
 /**
  * Rule : return → a carriage return 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getReturn(program){
@@ -82,7 +83,7 @@ function getReturn(program){
 
 /**
  * Rule : linefeed → a line feed 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getLinefeed(program){
@@ -95,7 +96,7 @@ function getLinefeed(program){
 
 /**
  * Rule : formfeed → a form feed
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getFormfeed(program){
@@ -108,7 +109,7 @@ function getFormfeed(program){
 
 /**
  * Rule : vertab → a vertical tab 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getVertab(program){
@@ -121,7 +122,7 @@ function getVertab(program){
 
 /**
  * Rule : space → a space 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getSpace(program){
@@ -134,7 +135,7 @@ function getSpace(program){
 
 /**
  * Rule : tab → a horizontal tab 
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getTab(program){
@@ -147,7 +148,7 @@ function getTab(program){
 
 /**
  * Rule : uniWhite → any Unicode character defined as whitespace
- * @param {Object} program
+ * @param {Program} program
  * @returns {Boolean} 
  */
 function getUniWhite(program){
