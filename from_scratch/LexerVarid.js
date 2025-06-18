@@ -1,10 +1,14 @@
+import { Program } from "./program";
+
+//--  File containing lexer functions for varid -> qconsym related rules  --//
+
 /**
  * Rule lexeme → qvarid | qconid | qvarsym | qconsym | literal | special | 
  *                reservedop | reservedid 
  * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @returns {Boolean} 
  */
-function getLexeme(program){
+export function getLexeme(program){
   return getQvarid(program)
     || getQconid(program)
     || getQvarsym(program)
@@ -15,54 +19,26 @@ function getLexeme(program){
     || getReservedid(program);
 }
 
-function getQvarid(){
-    // #TODO
-    return false;
-}
-
-function getQconid(){
-    // #TODO
-    return false;
-}
-
-function getQvarsym(){
-    // #TODO
-    return false;
-}
-
-function getQconsym(){
-    // #TODO
-    return false;
-}
-
-function getReservedop(){
-    // #TODO
-    return false;
-}
-
-function getReservedid(){
-    // #TODO
-    return false;
-}
-
-
 /**
  * Rule : varid → (small {small | large | digit | ' })⟨reservedid⟩
- * @returns true if sucess
+ * @param {Program} program 
+ * @returns {Boolean}
  */
-function getVarid(){
+function getVarid(program){
     // # TODO
     return false;
 }
 
+
 /**
  * Rule : conid → large {small | large | digit | ' }
- * @returns true if sucess
+ * @param {Program} program 
+ * @returns {Boolean}
  */
-function getConid(){
-    if (getLarge()){
+function getConid(program){
+    if (getLarge(program)){
         while(true){
-            if (getSmall() || getLarge() || getDigit()){} 
+            if (getSmall(program) || getLarge(program) || getDigit(program)){} 
             else if (index <= input.length && input[index] === "\'"){index ++;}
             else {break;}
         }
@@ -70,3 +46,147 @@ function getConid(){
     }
     return false
 }
+
+/**
+ * Rule : reservedid → case | class | data | default | deriving | do | else | 
+ *                     foreign | if | import | in | infix | infixl | 
+ *                     infixr | instance | let | module | newtype | of | then | 
+ *                     type | where | _
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getReservedid(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : varsym → ( symbol⟨:⟩ {symbol} )⟨reservedop | dashes⟩
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getVarsym(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : consym → ( : {symbol})⟨reservedop⟩
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getConsym(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : reservedop → .. | : | :: | = | \ | | | <- | -> |  @ | ~ | =>
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getReservedop(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : tyvar → varid (type variables) 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getTyvar(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : tycon → conid (type constructors) 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getTycon(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : tycls → conid (type classes) 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getTycls(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : modid → {conid .} conid (modules) 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getModid(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qvarid → [ modid . ] varid 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQvarid(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qconid → [ modid . ] conid 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQconid(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qtycon → [ modid . ] tycon 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQtycon(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qtycls → [ modid . ] tycls 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQtycls(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qvarsym → [ modid . ] varsym 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQvarsym(program){
+    // #TODO
+    return false;
+}
+
+/**
+ * Rule : qconsym → [ modid . ] consym 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function getQconsym(program){
+    // #TODO
+    return false;
+}
+
