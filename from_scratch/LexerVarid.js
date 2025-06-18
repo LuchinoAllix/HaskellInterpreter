@@ -2,9 +2,17 @@ import { Program } from "./program";
 
 //--  File containing lexer functions for varid -> qconsym related rules  --//
 
+// won't the ':' always shadow the '::' ??? (same for '=' and '=>')
+// perhaps change the order to make sure it doesn't happen ?
+const HS_reservdop = ["..",":","::","=","\\","|","<-","->","@","~","=>"];
+const HS_reservdid = 
+["case",,"class ","data","default","deriving","do","else","foreign","if",
+ "import","in","infix","infixl","infixr","instance","let","module","newtype",
+ "of","then","type","where "];
+
 /**
  * Rule lexeme → qvarid | qconid | qvarsym | qconsym | literal | special | 
- *                reservedop | reservedid 
+ *               reservedop | reservedid 
  * @param {Program} program 
  * @returns {Boolean} 
  */
@@ -28,7 +36,6 @@ function getVarid(program){
     // # TODO
     return false;
 }
-
 
 /**
  * Rule : conid → large {small | large | digit | ' }
@@ -56,7 +63,9 @@ function getConid(program){
  * @returns {Boolean}
  */
 function getReservedid(program){
-    // #TODO
+    if (program.isNextInList(HS_reservdid)){
+        // TODO make token
+    }
     return false;
 }
 
@@ -86,7 +95,9 @@ function getConsym(program){
  * @returns {Boolean}
  */
 function getReservedop(program){
-    // #TODO
+    if (program.isNextInList(HS_reservdop)){
+        // TODO make token
+    }
     return false;
 }
 
@@ -96,8 +107,7 @@ function getReservedop(program){
  * @returns {Boolean}
  */
 function getTyvar(program){
-    // #TODO
-    return false;
+    return getVarid(program);
 }
 
 /**
@@ -106,8 +116,7 @@ function getTyvar(program){
  * @returns {Boolean}
  */
 function getTycon(program){
-    // #TODO
-    return false;
+    return getConid(program);
 }
 
 /**
@@ -116,8 +125,7 @@ function getTycon(program){
  * @returns {Boolean}
  */
 function getTycls(program){
-    // #TODO
-    return false;
+    return getConid(program);
 }
 
 /**
