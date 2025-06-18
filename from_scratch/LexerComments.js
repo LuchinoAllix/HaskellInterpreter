@@ -1,5 +1,7 @@
 import { Program } from "./program";
 
+//--  File containing lexer functions for comments related rules  --//
+
 /**
  * Rule : comment → dashes [ any⟨symbol⟩ {any} ] newline 
  * @param {Program} program
