@@ -1,8 +1,7 @@
 import { Program } from "./program";
-//--  File containing lexer functions for withespace related chars --//
 
+//--  File containing lexer functions for withespace related rules  --//
 
-// -- Global variables -- //
 const HS_return = "\r";
 const HS_linefeed = "\n";
 const HS_vertab = "\v";
@@ -15,9 +14,6 @@ const HS_uniWhite = [ // TODO : Verify
   '\u2003', '\u2004', '\u2005', '\u2006', '\u2007', '\u2008', '\u2009', 
   '\u200A', '\u2028', '\u2029', '\u202F', '\u205F', '\u3000'
 ];
-
-
-// --  Functions -- //
 
 /**
  * Rule : whitespace → whitestuff {whitestuff} 
