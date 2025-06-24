@@ -82,4 +82,12 @@ export class Program {
     return true;
   }
 
+  overwriteTypeLastToken(type){
+    if (this.tokens.length > 0){
+      this.tokens[this.tokens.length - 1].type = type;
+      return true;
+    }
+    return false;
+  }
+
 }
