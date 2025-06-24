@@ -97,9 +97,7 @@ function getSmall(program){
  */
 function getAscSmall(program){
   if (/^[a-z]$/.test(program.getChar())){
-    program.incIndex();
-    // TODO make token
-    return true;
+    return program.addToken("ascSmall");
   }
   return false;
 }
@@ -111,8 +109,7 @@ function getAscSmall(program){
  */
 function getUniSmall(program){
   if(HS_uniSmall.includes(program.getChar())){
-    program.incIndex();
-    return true;
+    return program.addToken("uniSmall");
   }
   return false;
 }
@@ -133,9 +130,7 @@ function getLarge(program){
  */
 function getAscLarge(program){
   if (/^[A-Z]$/.test(program.getChar())){
-    program.incIndex();
-    // make token
-    return true;
+    return program.addToken("ascLarge");
   }
   return false;
 }
@@ -147,8 +142,7 @@ function getAscLarge(program){
  */
 function getUniLarge(program){
   if(HS_uniLarge.includes(program.getChar())){
-    program.incIndex();
-    return true;
+    return program.addToken("unilarge");
   }
   return false;
 }
@@ -171,8 +165,7 @@ function getSymbol(program){
  */
 function getAscSymbol(program){
   if(HS_ascSymbol.includes(program.getChar())){
-    program.incIndex();
-    return true;
+    return program.addToken("ascSymbol");
   }
   return false;
 }
@@ -184,8 +177,7 @@ function getAscSymbol(program){
  */
 function getUniSymbol(program){
   if(HS_uniSymbol.includes(program.getChar())){
-    program.incIndex();
-    return true;
+    return program.addToken("uniSymbol");
   }
   return false;
 }
@@ -206,9 +198,7 @@ function getDigit(program){
  */
 function getAscDigit(program){
   if (/^[0-9]$/.test(program.getChar())){
-    program.incIndex();
-    // TODO make token
-    return true;
+    return program.addToken("ascDigit");
   }
   return false;
 }
@@ -220,8 +210,7 @@ function getAscDigit(program){
  */
 function getUniDigit(program){
   if(HS_uniDigit.includes(program.getChar())){
-    program.incIndex();
-    return true;
+        return program.addToken("uniDigit");
   }
   return false;
 }
@@ -233,9 +222,7 @@ function getUniDigit(program){
  */
 function getOctit(program){
   if (/^[0-7]$/.test(program.getChar())){
-    program.incIndex();
-    // TODO make token
-    return true;
+    return program.addToken("octit");
   }
   return false;
 }
@@ -248,9 +235,7 @@ function getOctit(program){
 function getHexit(program){
   if (getDigit(program)){return true;}
   if (/^[A-F]$/.test(program.getChar()) || /^[a-f]$/.test(program.getChar())){
-    program.incIndex();
-    // TODO make token
-    return true;
+    return program.addToken("hexit");
   }
   return false;
 }
@@ -261,7 +246,10 @@ function getHexit(program){
  * @returns {Boolean}
  */
 function getDecimal(program){
-  // TODO
+  if(getDigit(program)){
+    while(getDigit(program)){}
+    return true;
+  }
   return false;
 }
 
@@ -271,7 +259,10 @@ function getDecimal(program){
  * @returns {Boolean}
  */
 function getOctal(program){
-  // TODO
+  if(getOctit(program)){
+    while(getOctit(program)){}
+    return true;
+  }
   return false;
 }
 
@@ -281,7 +272,10 @@ function getOctal(program){
  * @returns {Boolean}
  */
 function getHexadecimal(program){
-  // TODO
+  if(getHexit(program)){
+    while(getHexit(program)){}
+    return true;
+  }
   return false;
 }
 
@@ -292,7 +286,17 @@ function getHexadecimal(program){
  * @returns {Boolean}
  */
 function getInteger(program){
-  // TODO
+  if (getDecimal(program)){return true;}
+  if (program.getChar() === '0'){
+    program.incIndex();
+    if (program.getChar() === 'o' || program.getChar() === '0'){
+      program.incIndex();
+      return getOctal(program);
+    } else if (program.getChar() === 'x' || program.getChar() === 'X'){
+      program.incIndex();
+      return getHexadecimal(program);
+    }
+  }
   return false;
 }
 
