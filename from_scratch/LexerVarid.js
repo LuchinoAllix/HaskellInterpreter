@@ -1,4 +1,5 @@
 import { Program } from "./Program.js";
+import { getLiteral } from "./LexerAsc.js"
 
 //--  File containing lexer functions for varid -> qconsym related rules  --//
 
