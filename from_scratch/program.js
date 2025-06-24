@@ -82,9 +82,24 @@ export class Program {
     return true;
   }
 
+  /**
+   * Overwrites the type of the last token, if the token before that is of the
+   * same type, merges the two tokens
+   * @param {String} type 
+   * @returns {Boolean}
+   */
   overwriteTypeLastToken(type){
+    // Could use some refactoring
     if (this.tokens.length > 0){
       this.tokens[this.tokens.length - 1].type = type;
+      if (this.tokens.length > 1){
+        if (this.tokens[this.tokens.length - 1].type == 
+            this.tokens[this.tokens.length - 2].type){
+          this.tokens[this.tokens.length - 2].value += 
+          this.tokens[this.tokens.length - 1].value;
+          this.tokens.pop();
+        }
+      }
       return true;
     }
     return false;
