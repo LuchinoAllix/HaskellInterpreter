@@ -71,7 +71,7 @@ function getClosecom(program){
  * @param {Program} program
  * @returns {Boolean} 
  */
-function getNcomment(program){
+export function getNcomment(program){
   // TODO
   return false ;
 }
