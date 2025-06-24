@@ -72,7 +72,8 @@ export class Program {
    * @returns {Boolean}
    */
   addToken(type){
-    if (this.tokens[this.tokens.length - 1].type === type){
+    if (this.tokens.length > 0 && 
+        this.tokens[this.tokens.length - 1].type === type){
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
       this.tokens.push({type:type,value:this.getChar()});
