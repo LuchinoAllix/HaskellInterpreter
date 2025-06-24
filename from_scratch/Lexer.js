@@ -37,10 +37,7 @@ function getProgram(program){
  */
 export function getSpecial(program){
   if (HS_special.includes(program.getChar())){
-    // TODO : make tokens
-    tokens.push(program.getChar());
-    program.incIndex();
-    return true;
+    return program.addToken("Special");
   }
   return false;
 }
