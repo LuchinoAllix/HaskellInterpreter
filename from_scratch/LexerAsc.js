@@ -69,7 +69,7 @@ const HS_uniDigit = [ // TODO : Vérifier
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getLiteral(program){
+export function getLiteral(program){
   return getInteger(program)
     || getFloat(program)
     || getChar(program)
