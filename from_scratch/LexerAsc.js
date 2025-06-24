@@ -270,7 +270,7 @@ function getDecimal(program){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getFloat(program){
+function getOctal(program){
   // TODO
   return false;
 }
