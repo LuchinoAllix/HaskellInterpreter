@@ -8,8 +8,8 @@ function main(){
         if(tokenize(program)){
             console.log("Successful tokenization :) ");
             console.log("Tokens : " );
-            for (let token in program.tokens){
-                console.log("\t" + JSON.stringify(token));
+            for (let token of program.tokens){
+                console.log("\t" + token);
             }
         } else {
             throw Error("tokenize() returned false");
@@ -18,8 +18,8 @@ function main(){
         console.log("Unsuccessful tokenization :( ");
         console.log("Input : " + program.input);
         console.log("Tokens : " );
-        for (let token in program.tokens){
-            console.log("\t" + JSON.stringify(token));
+        for (let token of program.tokens){
+            console.log("\t" + token);
         }
         console.error(error);
     }
