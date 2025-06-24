@@ -1,4 +1,5 @@
 import { Program } from "./Program.js";
+import { getComment, getNcomment } from "./LexerComments.js";
 
 //--  File containing lexer functions for withespace related rules  --//
 
