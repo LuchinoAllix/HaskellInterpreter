@@ -7,14 +7,20 @@ function main(){
     try {
         if(tokenize(program)){
             console.log("Successful tokenization :) ");
-            console.log("Tokens : " + program.tokens);
+            console.log("Tokens : " );
+            for (let token in program.tokens){
+                console.log("\t" + JSON.stringify(token));
+            }
         } else {
             throw Error("tokenize() returned false");
         }
     } catch (error) {
         console.log("Unsuccessful tokenization :( ");
         console.log("Input : " + program.input);
-        console.log("Tokens : " + program.tokens);
+        console.log("Tokens : " );
+        for (let token in program.tokens){
+            console.log("\t" + JSON.stringify(token));
+        }
         console.error(error);
     }
 }
