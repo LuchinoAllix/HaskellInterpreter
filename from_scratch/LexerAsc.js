@@ -299,17 +299,26 @@ function getHexadecimal(program){
  * @returns {Boolean}
  */
 function getInteger(program){
-  if (getDecimal(program)){return true;}
-  if (program.getChar() === '0'){
-    program.incIndex();
-    if (program.getChar() === 'o' || program.getChar() === '0'){
-      program.incIndex();
-      getOctal(program);
-    } else if (program.getChar() === 'x' || program.getChar() === 'X'){
-      program.incIndex();
-      getHexadecimal(program);
-    } else { return false ; }
+  if (getDecimal(program)){
     program.overwriteTypeLastToken('integer');
+    return true;}
+  if (program.getChar() === '0'){
+    program.addToken('integer');
+    if (program.getChar() === 'o' || program.getChar() === '0'){
+      program.addToken('integer');
+      if (getOctal(program)){
+        return program.overwriteTypeLastToken('integer');
+      }
+    } else if (program.getChar() === 'x' || program.getChar() === 'X'){
+      program.addToken('integer');
+      if (getHexadecimal(program)){
+        return program.overwriteTypeLastToken('integer');
+      }
+    } else { 
+      program.removeLastTokensLastValue();
+      return false ;
+    }
+    program.removeLastTokensLastValue();
     return true;
   }
   return false;
@@ -321,7 +330,21 @@ function getInteger(program){
  * @returns {Boolean}
  */
 function getFloat(program){
-  // TODO
+  if (getDecimal(program)){
+    if (program.getChar() === "."){
+      program.overwriteTypeLastToken("float");
+      program.addToken('float');
+      if (getDecimal(program)){
+        getExponent(program);
+        return program.overwriteTypeLastToken("float");
+      } else {
+        program.removeLastTokensLastValue();
+      }
+    } else if (getExponent(program)){
+      return program.overwriteTypeLastToken("float")
+    }
+    program.removeLastToken();
+  }
   return false;
 }
 
@@ -331,7 +354,16 @@ function getFloat(program){
  * @returns {Boolean}
  */
 function getExponent(program){
-  // TODO
+  if (program.getChar() === "e" || program.getChar() === "E"){
+    program.addToken("exponent");
+    if (program.getChar() === "+" || program.getChar() === "-"){
+      program.addToken("exponent");
+    }
+    if (getDecimal(program)){
+      return program.overwriteTypeLastToken("exponent");
+    }
+    program.removeLastToken();
+  }
   return false;
 }
 
@@ -362,19 +394,27 @@ function getString(program){
  */
 function getEscape(program){
   if (program.getChar() === "\\"){
-    program.incIndex();
-    if (getCharsec(program) 
+    program.addToken("escape");
+    if (getCharsec(program)
         || getAscii(program)
         || getDecimal(program)){
-      return true;
-    }
-    else if (program.getChar() === "o"){
-      program.incIndex();
-      return getOctal(program);
+      return program.overwriteTypeLastToken("escape");
+    } else if (program.getChar() === "o"){
+      program.addToken("escape");
+      if (getOctal(program)){
+        return program.overwriteTypeLastToken("escape");
+      } else {
+        program.removeLastToken();
+      }
     } else if (program.getChar() === "x"){
-      program.incIndex();
-      return getHexadecimal(program);
+      program.addToken("escape");
+      if (getHexadecimal(program)){
+        return program.overwriteTypeLastToken("escape");
+      } else {
+        program.removeLastToken();
+      };
     }
+    program.removeLastToken();
   }
   return false;
 }
