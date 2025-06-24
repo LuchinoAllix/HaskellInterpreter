@@ -77,7 +77,7 @@ export class Program {
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
       this.tokens.push({type:type,value:this.getChar()});
-    } 
+    }
     this.incIndex();
     return true;
   }
