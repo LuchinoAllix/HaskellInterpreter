@@ -1,3 +1,4 @@
+import { getWhitespace } from "./LexerWhite.js";
 import { Program } from "./Program.js";
 
 //--  File containing lexer functions for symbols related rules   --//
@@ -63,6 +64,15 @@ const HS_uniDigit = [ // TODO : Vérifier
   ...'\u0ED0\u0ED1\u0ED2\u0ED3\u0ED4\u0ED5\u0ED6\u0ED7\u0ED8\u0ED9',
   ...'\u0F20\u0F21\u0F22\u0F23\u0F24\u0F25\u0F26\u0F27\u0F28\u0F29'
 ];
+
+const HS_charesc = ["a","b","f","n","r","t","v","\\","'","&"]
+
+const HS_ascii = ["NUL","SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL","BS ", 
+                  "HT ", "LF ", "VT", "FF ", " CR", "SO", "SI", "DLE", "DC1",
+                  "DC2", "DC3", "DC4", "NAK", "SYN", "ETB","CAN","EM", "SUB",
+                  "ESC", "FS", "GS", "RS", "US", "SP","DEL"]
+
+const HS_ascLarge = ["@", "[", "\\", "]", "^", "_"]
 
 /**
  * Rule : literal → integer | float | char | string 
@@ -210,7 +220,7 @@ function getAscDigit(program){
  */
 function getUniDigit(program){
   if(HS_uniDigit.includes(program.getChar())){
-        return program.addToken("uniDigit");
+    return program.addToken("uniDigit");
   }
   return false;
 }
@@ -248,6 +258,7 @@ function getHexit(program){
 function getDecimal(program){
   if(getDigit(program)){
     while(getDigit(program)){}
+    program.overwriteTypeLastToken('decimal');
     return true;
   }
   return false;
@@ -261,6 +272,7 @@ function getDecimal(program){
 function getOctal(program){
   if(getOctit(program)){
     while(getOctit(program)){}
+    program.overwriteTypeLastToken('octal');
     return true;
   }
   return false;
@@ -274,6 +286,7 @@ function getOctal(program){
 function getHexadecimal(program){
   if(getHexit(program)){
     while(getHexit(program)){}
+    program.overwriteTypeLastToken('hexadecimal');
     return true;
   }
   return false;
@@ -291,11 +304,13 @@ function getInteger(program){
     program.incIndex();
     if (program.getChar() === 'o' || program.getChar() === '0'){
       program.incIndex();
-      return getOctal(program);
+      getOctal(program);
     } else if (program.getChar() === 'x' || program.getChar() === 'X'){
       program.incIndex();
-      return getHexadecimal(program);
-    }
+      getHexadecimal(program);
+    } else { return false ; }
+    program.overwriteTypeLastToken('integer');
+    return true;
   }
   return false;
 }
@@ -346,7 +361,21 @@ function getString(program){
  * @returns {Boolean}
  */
 function getEscape(program){
-  // TODO
+  if (program.getChar() === "\\"){
+    program.incIndex();
+    if (getCharsec(program) 
+        || getAscii(program)
+        || getDecimal(program)){
+      return true;
+    }
+    else if (program.getChar() === "o"){
+      program.incIndex();
+      return getOctal(program);
+    } else if (program.getChar() === "x"){
+      program.incIndex();
+      return getHexadecimal(program);
+    }
+  }
   return false;
 }
 
@@ -356,7 +385,9 @@ function getEscape(program){
  * @returns {Boolean}
  */
 function getCharsec(program){
-  // TODO
+  if (HS_charesc.includes(program.getChar())){
+    program.addToken("charesc");
+  }
   return false;
 }
 
@@ -369,7 +400,9 @@ function getCharsec(program){
  * @returns {Boolean}
  */
 function getAscii(program){
-  // TODO
+  if (HS_ascii.includes(program.getChar())){
+    program.addToken("ascii");
+  }
   return false;
 }
 
@@ -379,7 +412,10 @@ function getAscii(program){
  * @returns {Boolean}
  */
 function getCntrl(program){
-  // TODO
+  if (getAscLarge(program)){return true;} // overwrite token type ?
+  if (HS_ascLarge.includes(program.getChar())){
+    program.addToken("cntrl");
+  }
   return false;
 }
 
@@ -389,6 +425,14 @@ function getCntrl(program){
  * @returns {Boolean}
  */
 function getGap(program){
-  // TODO
+  if(program.getChar() === "\\"){
+    program.incIndex();
+    if (getWhitespace(program)){
+      while(getWhitespace(program)){}
+      if (program.getChar() === "\\"){
+        return program.addToken("gap");
+      }
+    }
+  }
   return false;
 }
