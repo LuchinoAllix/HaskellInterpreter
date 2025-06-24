@@ -1,5 +1,5 @@
-import { Program } from "./Program";
-import { tokenize } from "./Lexer";
+import { Program } from "./Program.js";
+import { tokenize } from "./Lexer.js";
 
 /**
  * Allows to transform a list of tokens to an AST

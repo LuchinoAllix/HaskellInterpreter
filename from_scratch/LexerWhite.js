@@ -1,4 +1,4 @@
-import { Program } from "./Program";
+import { Program } from "./Program.js";
 
 //--  File containing lexer functions for withespace related rules  --//
 

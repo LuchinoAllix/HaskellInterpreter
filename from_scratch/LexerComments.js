@@ -1,4 +1,4 @@
-import { Program } from "./program";
+import { Program } from "./Program.js";
 
 //--  File containing lexer functions for comments related rules  --//
 

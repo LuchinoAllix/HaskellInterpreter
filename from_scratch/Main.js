@@ -1,6 +1,6 @@
-import Program from './Program.js'
-import tokenize from './Lexer.js'
-import parse from './Parser.js'
+import { Program } from './Program.js'
+import { tokenize }from './Lexer.js'
+import { parse } from './Parser.js'
 
 function main(){
     const program = new Program("]]]]");

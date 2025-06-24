@@ -1,6 +1,6 @@
-import { Program } from "./Program";
-import { getLexeme} from "./LexerVarid";
-import { getWhitespace } from "./LexerWhite";
+import { Program } from "./Program.js";
+import { getLexeme} from "./LexerVarid.js";
+import { getWhitespace } from "./LexerWhite.js";
 
 const HS_special = ["(",")",",",";","[","]","`","{","}"];
 
