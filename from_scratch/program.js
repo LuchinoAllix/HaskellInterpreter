@@ -48,7 +48,7 @@ export class Program {
   }
 
   /**
-   * verify if the next chars in input is part of a given list 
+   * Verifies if the next chars in input is part of a given list 
    * @param {Array} list 
    * @returns {Boolean}
    */
