@@ -10,8 +10,7 @@ const HS_special = ["(",")",",",";","[","]","`","{","}"];
  * @returns true if success, false otherwise 
  */
 export function tokenize(program){
-  getProgram(program);
-  return true;
+  return getProgram(program);
 }
 
 /**
