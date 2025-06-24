@@ -1,5 +1,7 @@
 import { Program } from "./Program.js";
 import { getLiteral } from "./LexerAsc.js"
+import { getSpecial } from "./Lexer.js";
+
 
 //--  File containing lexer functions for varid -> qconsym related rules  --//
 
@@ -7,7 +9,7 @@ import { getLiteral } from "./LexerAsc.js"
 // perhaps change the order to make sure it doesn't happen ?
 const HS_reservdop = ["..",":","::","=","\\","|","<-","->","@","~","=>"];
 const HS_reservdid = 
-["case",,"class ","data","default","deriving","do","else","foreign","if",
+["case","class ","data","default","deriving","do","else","foreign","if",
  "import","in","infix","infixl","infixr","instance","let","module","newtype",
  "of","then","type","where "];
 
