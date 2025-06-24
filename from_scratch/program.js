@@ -64,4 +64,21 @@ export class Program {
     }
     return false;
   }
+
+  /**
+   * Adds the current char to list of tokens as type provided
+   * Verifies if the last token is of the same type, if so, merges the tokens
+   * @param {String} type 
+   * @returns {Boolean}
+   */
+  addToken(type){
+    if (this.tokens[this.tokens.length].type === type){
+      this.tokens[this.tokens.length].value += this.getChar();
+    } else {
+      this.tokens.push({type:type,value:this.getChar()});
+    } 
+    this.incIndex();
+    return true;
+  }
+
 }
