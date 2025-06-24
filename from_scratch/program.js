@@ -93,7 +93,7 @@ export class Program {
     if (this.tokens.length > 0){
       this.tokens[this.tokens.length - 1].type = type;
       if (this.tokens.length > 1){
-        if (this.tokens[this.tokens.length - 1].type == 
+        if (this.tokens[this.tokens.length - 1].type === 
             this.tokens[this.tokens.length - 2].type){
           this.tokens[this.tokens.length - 2].value += 
           this.tokens[this.tokens.length - 1].value;
@@ -101,6 +101,35 @@ export class Program {
         }
       }
       return true;
+    }
+    return false;
+  }
+
+  /**
+   * 
+   */
+  removeLastToken(){
+    if (this.tokens.length > 0){
+      var len = this.tokens.pop().value.length;
+      this.index -= len;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 
+   */
+  removeLastTokensLastValue(){
+    if (this.tokens.length > 0){
+      if (this.tokens[this.tokens.length - 1].value.length > 0){
+        this.tokens[this.tokens.length - 1].value.pop();
+        this.index --;
+        if (this.tokens[this.tokens.length - 1].value.length === 0){
+          this.tokens[this.tokens.length - 1].pop();
+        }
+        return true;
+      }
     }
     return false;
   }
