@@ -1,4 +1,4 @@
-import { Program } from "./program";
+import { Program } from "./Program";
 import { getLexeme} from "./LexerVarid";
 import { getWhitespace } from "./LexerWhite";
 

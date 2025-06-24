@@ -1,4 +1,4 @@
-import Program from './program.js'
+import Program from './Program.js'
 import tokenize from './Lexer.js'
 import parse from './Parser.js'
 
