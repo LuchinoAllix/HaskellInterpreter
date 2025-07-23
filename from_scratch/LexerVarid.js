@@ -1,5 +1,5 @@
 import { Program } from "./Program.js";
-import { getLiteral } from "./LexerAsc.js"
+import { getLiteral, getLarge, getDigit, getSmall } from "./LexerAsc.js"
 import { getSpecial } from "./Lexer.js";
 
 
@@ -36,8 +36,29 @@ export function getLexeme(program){
  * @returns {Boolean}
  */
 function getVarid(program){
-    // # TODO
-    return false;
+  program.startMerge();
+  if (getSmall(program)){
+    while(true){
+      if (getSmall(program) || getLarge(program) || getDigit(program)){} 
+      else if (program.index <= program.input.length && 
+               program.input[index] === "\'"){
+        program.addWordToken("\'","\'");
+        program.index ++; 
+      }
+      else {break;}
+    }
+    var startIndex = program.endMerge("Varid");
+
+    // Pour vérifier que le var id n'est pas un reserved id 
+    if (HS_reservdid.includes(program.tokens[program.tokens.length-1].value)){
+        program.tokens.pop();
+        program.setIndex(startIndex);
+        return false;
+    }
+    return true;
+  }
+  program.endMerge("NULL");
+  return false;
 }
 
 /**
@@ -46,15 +67,22 @@ function getVarid(program){
  * @returns {Boolean}
  */
 function getConid(program){
-    if (getLarge(program)){
-        while(true){
-            if (getSmall(program) || getLarge(program) || getDigit(program)){} 
-            else if (index <= input.length && input[index] === "\'"){index ++;}
-            else {break;}
-        }
-        return true
+  program.startMerge();
+  if (getLarge(program)){
+    while(true){
+      if (getSmall(program) || getLarge(program) || getDigit(program)){} 
+      else if (program.index <= program.input.length && 
+               program.input[index] === "\'"){
+        program.addWordToken("\'","\'");
+        program.index ++;
+      }
+      else {break;}
     }
-    return false
+    program.endMerge("Conid");
+    return true;
+  }
+  program.endMerge("NULL");
+  return false;
 }
 
 /**
@@ -131,10 +159,10 @@ function getTycls(program){
  * @returns {Boolean}
  */
 function getModid(program){
-  if (!program.getConid()){ return false;}
+  if (!getConid(program)){ return false;}
   while (program.getChar() === '.'){
     program.incIndex();
-    if (!program.getConid()){
+    if (!getConid(program)){
       program.decIndex();
       return true;
     }
@@ -148,9 +176,9 @@ function getModid(program){
  * @returns {Boolean}
  */
 function getQvarid(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getVarid();
+    return getVarid(program);
   }
   return false;
 }
@@ -161,9 +189,9 @@ function getQvarid(program){
  * @returns {Boolean}
  */
 function getQconid(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getConid();
+    return getConid(program);
   }
   return false;
 }
@@ -174,9 +202,9 @@ function getQconid(program){
  * @returns {Boolean}
  */
 function getQtycon(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getTycon();
+    return getTycon(program);
   }
   return false;
 }
@@ -187,9 +215,9 @@ function getQtycon(program){
  * @returns {Boolean}
  */
 function getQtycls(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getTycls();
+    return getTycls(program);
   }
   return false;
 }
@@ -200,9 +228,9 @@ function getQtycls(program){
  * @returns {Boolean}
  */
 function getQvarsym(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getVarsym();
+    return getVarsym(program);
   }
   return false;
 }
@@ -213,9 +241,9 @@ function getQvarsym(program){
  * @returns {Boolean}
  */
 function getQconsym(program){
-  if (program.getModid() && program.getChar() === '.'){
+  if (getModid(program) && program.getChar() === '.'){
     program.incIndex();
-    return program.getConsym();
+    return getConsym(program);
   }
   return false;
 }
