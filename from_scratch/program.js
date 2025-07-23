@@ -18,16 +18,18 @@ export class Program {
         throw Error("Index went too far over input :(");
     }
     this.index ++;
+    return true;
   }
 
   /**
-   * Increments the index if it does not surpasses the input length
+   * Decrements the index if it does not go below 0
    */
   decIndex(){
     if(this.index === 0){
         throw Error("Index went too far backwards :(");
     }
     this.index --;
+    return true;
   }
 
   /**
@@ -38,6 +40,26 @@ export class Program {
         throw Error("Index went too far over input :(");
     }
     this.index += i;
+    return true;
+  }
+
+  /**
+   * Decrements the index if it does not go below 0
+   */
+  decIndexN(i){
+    if (this.index - i < 0){
+        throw Error("Index went too far backwards:(");
+    }
+    this.index -= i;
+    return true;
+  }
+
+  setIndex(i){
+    if (i <0){
+      throw Error("Set index gor negative value");
+    }
+    this.index = i;
+    return true;
   }
 
   /**
@@ -107,19 +129,17 @@ export class Program {
 
   /**
    * Overwrites the type of the last token, if the token before that is of the
-   * same type, merges the two tokens
+   * same new type, merges the two tokens
    * @param {String} type 
    * @returns {Boolean}
    */
   overwriteTypeLastToken(type){
-    // Could use some refactoring
-    if (this.tokens.length > 0){
-      this.tokens[this.tokens.length - 1].type = type;
-      if (this.tokens.length > 1){
-        if (this.tokens[this.tokens.length - 1].type === 
-            this.tokens[this.tokens.length - 2].type){
-          this.tokens[this.tokens.length - 2].value += 
-          this.tokens[this.tokens.length - 1].value;
+    var len = this.tokens.length
+    if (len > 0){
+      this.tokens[len - 1].type = type;
+      if (len > 1){
+        if (this.tokens[len - 1].type === this.tokens[len - 2].type){
+          this.tokens[len - 2].value += this.tokens[len - 1].value;
           this.tokens.pop();
         }
       }
@@ -155,6 +175,42 @@ export class Program {
       }
     }
     return false;
+  }
+
+  /**
+   * Adds a mark in the tokens list that all following token must be merged as
+   * one. The merging will be done by calling endMerge.
+   * @returns 
+   */
+  startMerge(){
+    this.tokens.push({type:"MERGE-START",value:this.index});
+    return true;
+  }
+
+  /**
+   * Merges all the tokens util the "MERGE-START" as one of the specified type 
+   * @param {String} type 
+   * @returns 
+   */
+  endMerge(type){
+    var accumulator; 
+    var last = this.tokens.length-1
+    if (last <= 0){
+      throw Error("End Merge was called on token list of size :" + last + 1);
+    }
+    while (this.tokens[last].type !== "MERGE-START"){
+      accumulator = this.tokens[last].value + accumulator;
+      this.tokens.pop();
+      last --;
+      if (last <= 0){
+        throw Error("End Merge did not find MERGE-START");
+      }
+    }
+    startIndex = this.tokens.pop().value;
+    if (type !== "NULL"){
+      this.addWordToken(type,accumulator);
+    }
+    return startIndex;
   }
 
 }
