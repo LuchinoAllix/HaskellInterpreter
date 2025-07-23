@@ -161,8 +161,11 @@ function getQvarid(program){
  * @returns {Boolean}
  */
 function getQconid(program){
-    // #TODO
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getVarid();
+  }
+  return false;
 }
 
 /**
