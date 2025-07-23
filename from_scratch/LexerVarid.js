@@ -133,8 +133,10 @@ function getTycls(program){
 function getModid(program){
     if (!program.getConid()){ return false;}
     while (program.getChar() === '.'){
+        program.incIndex();
         if (!program.getConid()){
-            return true ;
+            program.decIndex();
+            return true;
         }
     }
     return true;
