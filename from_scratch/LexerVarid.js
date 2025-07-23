@@ -5,9 +5,9 @@ import { getSpecial } from "./Lexer.js";
 
 //--  File containing lexer functions for varid -> qconsym related rules  --//
 
-// won't the ':' always shadow the '::' ??? (same for '=' and '=>')
-// perhaps change the order to make sure it doesn't happen ?
-const HS_reservdop = ["..",":","::","=","\\","|","<-","->","@","~","=>"];
+// Original order changed so that ':' won't shadow the '::' 
+// (same for '=' and '=>')
+const HS_reservdop = ["..","::",":","=>","\\","|","<-","->","@","~","="];
 const HS_reservdid = 
 ["case","class ","data","default","deriving","do","else","foreign","if",
  "import","in","infix","infixl","infixr","instance","let","module","newtype",
