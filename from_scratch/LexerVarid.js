@@ -163,7 +163,7 @@ function getQvarid(program){
 function getQconid(program){
   if (program.getModid() && program.getChar() === '.'){
     program.incIndex();
-    return program.getVarid();
+    return program.getConid();
   }
   return false;
 }
