@@ -148,7 +148,10 @@ function getModid(program){
  * @returns {Boolean}
  */
 function getQvarid(program){
-    // #TODO
+    if (program.getModid() && program.getChar() === '.'){
+        program.incIndex();
+        return program.getVarid();
+    }
     return false;
 }
 
