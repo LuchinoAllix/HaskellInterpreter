@@ -23,6 +23,16 @@ export class Program {
   /**
    * Increments the index if it does not surpasses the input length
    */
+  decIndex(){
+    if(this.index === 0){
+        throw Error("Index went too far backwards :(");
+    }
+    this.index --;
+  }
+
+  /**
+   * Increments the index if it does not surpasses the input length
+   */
   incIndexN(i){
     if(this.index + i > this.input.length){
         throw Error("Index went too far over input :(");
