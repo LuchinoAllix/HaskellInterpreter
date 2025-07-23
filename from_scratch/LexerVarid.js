@@ -174,8 +174,11 @@ function getQconid(program){
  * @returns {Boolean}
  */
 function getQtycon(program){
-    // #TODO
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getTycon();
+  }
+  return false;
 }
 
 /**
@@ -184,8 +187,11 @@ function getQtycon(program){
  * @returns {Boolean}
  */
 function getQtycls(program){
-    // #TODO
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getTycls();
+  }
+  return false;
 }
 
 /**
@@ -194,8 +200,11 @@ function getQtycls(program){
  * @returns {Boolean}
  */
 function getQvarsym(program){
-    // #TODO
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getVarsym();
+  }
+  return false;
 }
 
 /**
@@ -204,7 +213,10 @@ function getQvarsym(program){
  * @returns {Boolean}
  */
 function getQconsym(program){
-    // #TODO
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getConsym();
+  }
+  return false;
 }
 
