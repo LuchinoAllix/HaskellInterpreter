@@ -131,8 +131,13 @@ function getTycls(program){
  * @returns {Boolean}
  */
 function getModid(program){
-    // #TODO
-    return false;
+    if (!program.getConid()){ return false;}
+    while (program.getChar() === '.'){
+        if (!program.getConid()){
+            return true ;
+        }
+    }
+    return true;
 }
 
 /**
