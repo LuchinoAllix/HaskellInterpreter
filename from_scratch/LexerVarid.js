@@ -99,7 +99,7 @@ function getReservedop(program){
 }
 
 /**
- * Rule : tyvar → varid (type variables) 
+ * Rule : tyvar → varid 
  * @param {Program} program 
  * @returns {Boolean}
  */
@@ -108,7 +108,7 @@ function getTyvar(program){
 }
 
 /**
- * Rule : tycon → conid (type constructors) 
+ * Rule : tycon → conid
  * @param {Program} program 
  * @returns {Boolean}
  */
@@ -117,7 +117,7 @@ function getTycon(program){
 }
 
 /**
- * Rule : tycls → conid (type classes) 
+ * Rule : tycls → conid
  * @param {Program} program 
  * @returns {Boolean}
  */
@@ -126,7 +126,7 @@ function getTycls(program){
 }
 
 /**
- * Rule : modid → {conid .} conid (modules) 
+ * Rule : modid → {conid .} conid
  * @param {Program} program 
  * @returns {Boolean}
  */
