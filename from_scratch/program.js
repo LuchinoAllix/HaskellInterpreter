@@ -49,6 +49,7 @@ export class Program {
 
   /**
    * Verifies if the next chars in input is part of a given list 
+   * if so add's it to the token list and increments the index accordingly
    * @param {Array} list 
    * @returns {Boolean}
    */
@@ -57,7 +58,7 @@ export class Program {
       var len = word.length;
       if (len + this.index <= this.input.length){
         if (this.input.substring(this.index,this.index + len) === word){
-          this.incIndexN(len);
+          this.addWordToken(type,word);
           return true;
         }
       }
@@ -79,6 +80,18 @@ export class Program {
       this.tokens.push({type:type,value:this.getChar()});
     }
     this.incIndex();
+    return true;
+  }
+
+  /**
+   * Adds a whole word as a token and increments the index accordingly
+   * @param {String} type 
+   * @param {String} word 
+   * @returns 
+   */
+  addWordToken(type, word){
+    this.tokens.push({type:type,value:word});
+    this.incIndexN(word.length);
     return true;
   }
 
