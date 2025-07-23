@@ -104,7 +104,7 @@ function getReservedop(program){
  * @returns {Boolean}
  */
 function getTyvar(program){
-    return getVarid(program);
+  return getVarid(program);
 }
 
 /**
@@ -113,7 +113,7 @@ function getTyvar(program){
  * @returns {Boolean}
  */
 function getTycon(program){
-    return getConid(program);
+  return getConid(program);
 }
 
 /**
@@ -122,7 +122,7 @@ function getTycon(program){
  * @returns {Boolean}
  */
 function getTycls(program){
-    return getConid(program);
+  return getConid(program);
 }
 
 /**
@@ -131,15 +131,15 @@ function getTycls(program){
  * @returns {Boolean}
  */
 function getModid(program){
-    if (!program.getConid()){ return false;}
-    while (program.getChar() === '.'){
-        program.incIndex();
-        if (!program.getConid()){
-            program.decIndex();
-            return true;
-        }
+  if (!program.getConid()){ return false;}
+  while (program.getChar() === '.'){
+    program.incIndex();
+    if (!program.getConid()){
+      program.decIndex();
+      return true;
     }
-    return true;
+  }
+  return true;
 }
 
 /**
@@ -148,11 +148,11 @@ function getModid(program){
  * @returns {Boolean}
  */
 function getQvarid(program){
-    if (program.getModid() && program.getChar() === '.'){
-        program.incIndex();
-        return program.getVarid();
-    }
-    return false;
+  if (program.getModid() && program.getChar() === '.'){
+    program.incIndex();
+    return program.getVarid();
+  }
+  return false;
 }
 
 /**
