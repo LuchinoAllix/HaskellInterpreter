@@ -11,7 +11,7 @@ const HS_reservdop = ["..","::",":","=>","\\","|","<-","->","@","~","="];
 const HS_reservdid = 
 ["case","class ","data","default","deriving","do","else","foreign","if",
  "import","in","infix","infixl","infixr","instance","let","module","newtype",
- "of","then","type","where "];
+ "of","then","type","where","_"];
 
 /**
  * Rule lexeme → qvarid | qconid | qvarsym | qconsym | literal | special | 
@@ -66,10 +66,7 @@ function getConid(program){
  * @returns {Boolean}
  */
 function getReservedid(program){
-    if (program.isNextInList(HS_reservdid)){
-        // TODO make token
-    }
-    return false;
+    return program.isNextInList(HS_reservdid,"reservdid");
 }
 
 /**
@@ -98,10 +95,7 @@ function getConsym(program){
  * @returns {Boolean}
  */
 function getReservedop(program){
-    if (program.isNextInList(HS_reservdop)){
-        // TODO make token
-    }
-    return false;
+    return program.isNextInList(HS_reservdop,"reservdop");
 }
 
 /**
