@@ -497,8 +497,19 @@ function getCharsec(program){
  * @returns {Boolean}
  */
 function getAscii(program){
+  if (program.getChar() === "^"){
+    program.incIndex();
+    if (getCntrl(program)){
+      value = program.getLastToken().value;
+      value = "^" + value;
+      program.removeLastToken();
+      program.decIndex(); // because we inc index with "^"
+      program.addWordToken("ascii",value);
+    }
+  }
   if (HS_ascii.includes(program.getChar())){
     program.addToken("ascii");
+    return true;
   }
   return false;
 }
