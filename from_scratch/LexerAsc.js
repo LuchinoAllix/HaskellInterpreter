@@ -1,5 +1,7 @@
 import { getWhitespace } from "./LexerWhite.js";
 import { Program } from "./Program.js";
+import { getGraphic } from "./LexerComments.js";
+import { getSpace } from "./LexerWhite.js"
 
 //--  File containing lexer functions for symbols related rules   --//
 
@@ -91,7 +93,7 @@ export function getLiteral(program){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getSmall(program){
+export function getSmall(program){
   if (program.getChar() === "_"){
     program.incIndex();
     return true ;
@@ -129,7 +131,7 @@ function getUniSmall(program){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getLarge(program){
+export function getLarge(program){
   return getAscLarge(program) || getUniLarge(program);
 }
 
@@ -162,7 +164,7 @@ function getUniLarge(program){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getSymbol(program){
+export function getSymbol(program){
   // TODO
   return false;
 }
@@ -197,7 +199,7 @@ function getUniSymbol(program){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function getDigit(program){
+export function getDigit(program){
   return getAscDigit(program) || getUniDigit(program);
 }
 

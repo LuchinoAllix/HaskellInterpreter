@@ -112,7 +112,7 @@ function getAny(program){
  * @param {Program} program
  * @returns {Boolean} 
  */
-function getGraphic(program){
+export function getGraphic(program){
   if (program.getChar() === "\"" || program.getChar() === "\'"){
     program.incIndex() ;
     return true ;

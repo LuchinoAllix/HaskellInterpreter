@@ -122,7 +122,7 @@ function getVertab(program){
  * @param {Program} program
  * @returns {Boolean} 
  */
-function getSpace(program){
+export function getSpace(program){
   if(program.getChar() === HS_space){
     program.incIndex();
     return true;
