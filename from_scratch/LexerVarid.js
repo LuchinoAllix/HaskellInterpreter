@@ -105,7 +105,7 @@ function getReservedid(program){
 function getVarsym(program){
   program.startMerge();
   if (program.getChar() !== ":" && getSymbol(program)){
-    while (getSymbol(program)){}
+    while (getSymbol(program)){} 
     // We suppose getSymbol adds the symbol to the token list
     startIndex = program.endMerge("Varsym"); 
 
@@ -129,9 +129,27 @@ function getVarsym(program){
  * @returns {Boolean}
  */
 function getConsym(program){
-    // #TODO
-    return false;
+  program.startMerge();
+  if (program.getChar() === ":" ){
+    program.addWordToken('any', ':');
+    program.incIndex();
+    while (getSymbol(program)){}
+    // We suppose getSymbol adds the symbol to the token list
+
+    startIndex = program.endMerge("Consym");
+
+    // To verify that the var sym is not a reserved op 
+    if (HS_reservdop.includes(program.getLastToken().value)){
+      program.tokens.pop();
+      program.setIndex(startIndex);
+      return false;
+    }
+    return true;
+  }
+  program.endMerge("NULL");
+  return false;
 }
+
 
 /**
  * Rule : reservedop → .. | : | :: | = | \ | | | <- | -> |  @ | ~ | =>
