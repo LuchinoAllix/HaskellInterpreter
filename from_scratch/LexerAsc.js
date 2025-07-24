@@ -165,7 +165,16 @@ function getUniLarge(program){
  * @returns {Boolean}
  */
 export function getSymbol(program){
-  // TODO
+  if (getAscSymbol(program)){
+    program.overwriteTypeLastToken("Symbol");
+    return true;
+  } else if (getUniSymbol(program)){
+    if (!HS_special.includes(program.getLastToken().value) 
+        && !["_","\"","\'"].includes(program.getLastToken())){
+      return true;
+    }
+    program.removeLastToken();
+  }
   return false;
 }
 
