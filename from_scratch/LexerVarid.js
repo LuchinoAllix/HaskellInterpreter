@@ -49,7 +49,7 @@ function getVarid(program){
     }
     var startIndex = program.endMerge("Varid");
 
-    // Pour vérifier que le var id n'est pas un reserved id 
+    // to verify that the var id is not a reserved id 
     if (HS_reservdid.includes(program.tokens[program.tokens.length-1].value)){
         program.tokens.pop();
         program.setIndex(startIndex);
