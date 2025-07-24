@@ -375,7 +375,33 @@ function getExponent(program){
  * @returns {Boolean}
  */
 function getChar(program){
-  // TODO
+    program.startMerge();
+  if (program.getChar() !== "\'"){
+    program.endMerge("NULL");
+    return false;
+  }
+  program.addWordToken("start char","\'");
+  program.incIndex();
+  while (true){
+    if (getGraphic(program)){
+      var lastToken = program.getLastToken().value; 
+      if (lastToken.includes("\'") || lastToken.includes("\\")){
+        if (getSpace(program) || 
+            (getEscape(program) 
+             && ! program.getLastToken().value.includes("\\&"))){}
+      }
+    } else if (getSpace(program)){
+    } else if (getEscape(program) 
+               && ! program.getLastToken().value.includes("\\&")){
+    } else {break;}
+  }
+  // FIXME : verify that the rule is correctly implemented (escape⟨\&⟩)
+  if (program.getChar() === "\'"){
+    program.addWordToken("end char","\'");
+    program.endMerge("Char");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
