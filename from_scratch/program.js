@@ -213,4 +213,11 @@ export class Program {
     return startIndex;
   }
 
+  getLastToken(){
+    if (this.tokens.length < 0){
+      throw Error("Tried to get last token out of empty token list");
+    }
+    return this.tokens[this.tokens.length-1];
+  }
+
 }
