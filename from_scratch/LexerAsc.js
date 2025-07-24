@@ -380,8 +380,7 @@ function getChar(program){
     program.endMerge("NULL");
     return false;
   }
-  program.addWordToken("start char","\'");
-  program.incIndex();
+  program.addToken("start char");
   while (true){
     if (getGraphic(program)){
       var lastToken = program.getLastToken().value; 
@@ -397,7 +396,7 @@ function getChar(program){
   }
   // FIXME : verify that the rule is correctly implemented (escape⟨\&⟩)
   if (program.getChar() === "\'"){
-    program.addWordToken("end char","\'");
+    program.addToken("end char");
     program.endMerge("Char");
     return true;
   }
@@ -416,8 +415,7 @@ function getString(program){
     program.endMerge("NULL");
     return false;
   }
-  program.addWordToken("start string","\"");
-  program.incIndex();
+  program.addToken("start string");
   while (true){
     if (getGraphic(program)){
       var lastToken = program.getLastToken().value; 
@@ -428,7 +426,7 @@ function getString(program){
     } else {break;}
   }
   if (program.getChar() === "\""){
-    program.addWordToken("end string","\"");
+    program.addToken("end string");
     program.endMerge("String");
     return true;
   }

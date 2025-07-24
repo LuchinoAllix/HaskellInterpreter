@@ -42,8 +42,7 @@ function getVarid(program){
       if (getSmall(program) || getLarge(program) || getDigit(program)){} 
       else if (program.index <= program.input.length && 
                program.input[index] === "\'"){
-        program.addWordToken("\'","\'");
-        program.index ++; 
+        program.addToken("\'");
       }
       else {break;}
     }
@@ -73,8 +72,7 @@ function getConid(program){
       if (getSmall(program) || getLarge(program) || getDigit(program)){} 
       else if (program.index <= program.input.length && 
                program.input[index] === "\'"){
-        program.addWordToken("\'","\'");
-        program.index ++;
+        program.addToken("\'");
       }
       else {break;}
     }
@@ -131,8 +129,7 @@ function getVarsym(program){
 function getConsym(program){
   program.startMerge();
   if (program.getChar() === ":" ){
-    program.addWordToken('any', ':');
-    program.incIndex();
+    program.addToken('any');
     while (getSymbol(program)){}
     // We suppose getSymbol adds the symbol to the token list
 
