@@ -103,7 +103,24 @@ function getReservedid(program){
  * @returns {Boolean}
  */
 function getVarsym(program){
-    // #TODO
+  program.startMerge();
+  if (program.getChar() === ":"){
+ 
+  } else if (getSymbol(program)){
+    while (getSymbol(program)){}
+    startIndex = program.endMerge("Varsym"); 
+
+    // To verify that the var sym is not a reserved op or starts with '--'
+    // FIXME : Does the rule imply that there cannot be any '--' anywhere ? 
+    if (HS_reservdop.includes(program.getLastToken().value)
+       || program.getLastToken().value.substring(0,2) === "--"){
+      program.tokens.pop();
+      program.setIndex(startIndex);
+      return false;
+    }
+    return true;
+  }
+  program.endMerge("NULL");
     return false;
 }
 
