@@ -106,6 +106,7 @@ function getVarsym(program){
   program.startMerge();
   if (program.getChar() !== ":" && getSymbol(program)){
     while (getSymbol(program)){}
+    // We suppose getSymbol adds the symbol to the token list
     startIndex = program.endMerge("Varsym"); 
 
     // To verify that the var sym is not a reserved op or starts with '--'
