@@ -2,7 +2,7 @@ import { Program } from "./Program.js";
 import { getLexeme} from "./LexerVarid.js";
 import { getWhitespace } from "./LexerWhite.js";
 
-const HS_special = ["(",")",",",";","[","]","`","{","}"];
+export const HS_special = ["(",")",",",";","[","]","`","{","}"];
 
 /**
  * Allows to transform the input to a list of tokens  
