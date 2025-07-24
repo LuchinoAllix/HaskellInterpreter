@@ -104,9 +104,7 @@ function getReservedid(program){
  */
 function getVarsym(program){
   program.startMerge();
-  if (program.getChar() === ":"){
- 
-  } else if (getSymbol(program)){
+  if (program.getChar() !== ":" && getSymbol(program)){
     while (getSymbol(program)){}
     startIndex = program.endMerge("Varsym"); 
 
@@ -121,7 +119,7 @@ function getVarsym(program){
     return true;
   }
   program.endMerge("NULL");
-    return false;
+  return false;
 }
 
 /**
