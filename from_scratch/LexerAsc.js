@@ -383,7 +383,28 @@ function getChar(program){
  * @returns {Boolean}
  */
 function getString(program){
-  // TODO
+  program.startMerge();
+  if (program.getChar() !== "\""){
+    program.endMerge("NULL");
+    return false;
+  }
+  program.addWordToken("start string","\"");
+  program.incIndex();
+  while (true){
+    if (getGraphic(program)){
+      var lastToken = program.getLastToken().value; 
+      if (lastToken.includes("\"") || lastToken.includes("\\")){
+        if (getSpace(program) || getEscape(program) || getGap(program)){}
+      }
+    } else if (getSpace(program) || getEscape(program) || getGap(program)){
+    } else {break;}
+  }
+  if (program.getChar() === "\""){
+    program.addWordToken("end string","\"");
+    program.endMerge("String");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
