@@ -103,6 +103,7 @@ function getANY(program){
 }
 
 /**
+ * FIXME : Never used
  * Rule : any → graphic | space | tab 
  * @param {Program} program
  * @returns {Boolean} 

@@ -158,6 +158,7 @@ function getReservedop(program){
 }
 
 /**
+ * FIXME : Never used
  * Rule : tyvar → varid 
  * @param {Program} program 
  * @returns {Boolean}
@@ -228,6 +229,7 @@ function getQconid(program){
 }
 
 /**
+ * FIXME : Never used
  * Rule : qtycon → [ modid . ] tycon 
  * @param {Program} program 
  * @returns {Boolean}
@@ -241,6 +243,7 @@ function getQtycon(program){
 }
 
 /**
+ * FIXME : Never used
  * Rule : qtycls → [ modid . ] tycls 
  * @param {Program} program 
  * @returns {Boolean}
