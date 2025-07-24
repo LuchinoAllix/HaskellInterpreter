@@ -12,6 +12,7 @@ export class Program {
 
   /**
    * Increments the index if it does not surpasses the input length
+   * @returns {Boolean}
    */
   incIndex(){
     if(this.index + 1 > this.input.length){
@@ -23,6 +24,7 @@ export class Program {
 
   /**
    * Decrements the index if it does not go below 0
+   * @returns {Boolean}
    */
   decIndex(){
     if(this.index === 0){
@@ -34,6 +36,8 @@ export class Program {
 
   /**
    * Increments the index if it does not surpasses the input length
+   * @param {Int}
+   * @returns {Boolean}
    */
   incIndexN(i){
     if(this.index + i > this.input.length){
@@ -45,6 +49,8 @@ export class Program {
 
   /**
    * Decrements the index if it does not go below 0
+   * @param {Int}
+   * @returns {Boolean}
    */
   decIndexN(i){
     if (this.index - i < 0){
@@ -54,6 +60,11 @@ export class Program {
     return true;
   }
 
+  /**
+   * Set the index over the input 
+   * @param {Int}
+   * @returns {Boolean}
+   */
   setIndex(i){
     if (i <0){
       throw Error("Set index gor negative value");
@@ -149,7 +160,8 @@ export class Program {
   }
 
   /**
-   * 
+   * Removes the last token in the program if possible
+   * @returns {Boolean}
    */
   removeLastToken(){
     if (this.tokens.length > 0){
@@ -160,8 +172,11 @@ export class Program {
     return false;
   }
 
+
   /**
-   * 
+   * Removes the last char of the last token if possible
+   * (removes the token if the value becomes empty)
+   * @returns {Boolean}
    */
   removeLastTokensLastValue(){
     if (this.tokens.length > 0){
@@ -213,6 +228,10 @@ export class Program {
     return startIndex;
   }
 
+  /**
+   * Return the last token made in the program if there is one
+   * @returns {{type: String, value: String}}
+   */ 
   getLastToken(){
     if (this.tokens.length < 0){
       throw Error("Tried to get last token out of empty token list");
