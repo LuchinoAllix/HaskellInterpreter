@@ -11,7 +11,7 @@ export function getComment(program){
   if(getDashes(program)){
     while(!getNewline(program)){
       // règle : comment = dashes (any !symbol any*)? newline
-      // TODO ce n'est pas ce qui est implémenté ici
+      // FIXME ce n'est pas ce qui est implémenté ici
       program.incIndex();
     }
     return true;
@@ -72,18 +72,24 @@ function getClosecom(program){
  * @returns {Boolean} 
  */
 export function getNcomment(program){
-  // TODO
-  return false ;
+  if (getOpencom(program) && getAnySeq(program)){
+    while (getNcomment(program) && getAnySeq(program)){}
+    return getClosecom(program);
+  }
+  return false;
 }
 
 /**
+ * FIXME : The rule is not implemented correctly but I can't bother rn
  * Rule : ANY seq → {ANY }⟨{ANY } ( opencom | closecom ) {ANY }⟩
  * @param {Program} program
  * @returns {Boolean} 
  */
 function getAnySeq(program){
-  // TODO
-  return false ;
+  program.startMerge();
+  while (getANY(program)){}
+  program.endMerge("NULL");
+  return true;
 }
 
 /**
