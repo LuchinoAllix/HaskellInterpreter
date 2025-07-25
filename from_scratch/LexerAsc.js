@@ -385,7 +385,7 @@ function getExponent(program){
  * @returns {Boolean}
  */
 function getChar(program){
-    program.startMerge();
+  program.startMerge();
   if (program.getChar() !== "\'"){
     program.endMerge("NULL");
     return false;
