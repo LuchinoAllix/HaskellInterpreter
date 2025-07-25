@@ -193,14 +193,19 @@ function getTycls(program){
  * @returns {Boolean}
  */
 function getModid(program){
-  if (!getConid(program)){ return false;}
+  program.startMerge();
+  if (!getConid(program)){
+    program.endMerge("NULL");
+    return false;
+  }
   while (program.getChar() === '.'){
-    program.incIndex();
+    program.addToken("dot")
     if (!getConid(program)){
-      program.decIndex();
-      return true;
+      program.removeLastToken();
+      break;
     }
   }
+  program.endMerge("Modid");
   return true;
 }
 
