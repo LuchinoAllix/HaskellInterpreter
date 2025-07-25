@@ -195,7 +195,7 @@ export class Program {
   /**
    * Adds a mark in the tokens list that all following token must be merged as
    * one. The merging will be done by calling endMerge.
-   * @returns 
+   * @returns {Boolean}
    */
   startMerge(){
     this.tokens.push({type:"MERGE-START",value:this.index});
@@ -205,13 +205,13 @@ export class Program {
   /**
    * Merges all the tokens util the "MERGE-START" as one of the specified type 
    * @param {String} type 
-   * @returns 
+   * @returns {Integer}
    */
   endMerge(type){
-    var accumulator; 
+    var accumulator = ""; 
     var last = this.tokens.length-1
     if (last < 0){
-      throw Error("End Merge was called on token list of size :" + last + 1);
+      throw Error("End Merge was called on token list of size : " + (last + 1));
     }
     while (this.tokens[last].type !== "MERGE-START"){
       accumulator = this.tokens[last].value + accumulator;
