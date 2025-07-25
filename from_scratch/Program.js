@@ -208,10 +208,10 @@ export class Program {
    * @returns 
    */
   endMerge(type){
-    var accumulator = ""; 
+    var accumulator; 
     var last = this.tokens.length-1
     if (last < 0){
-      throw Error("End Merge was called on token list of size :" + last + 1);
+      throw Error("End Merge was called on token list of size : " + (last + 1));
     }
     while (this.tokens[last].type !== "MERGE-START"){
       accumulator = this.tokens[last].value + accumulator;
