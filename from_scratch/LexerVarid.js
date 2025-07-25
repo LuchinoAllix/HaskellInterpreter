@@ -40,9 +40,10 @@ function getVarid(program){
   program.startMerge();
   if (getSmall(program)){
     while(true){
+
       if (getSmall(program) || getLarge(program) || getDigit(program)){} 
-      else if (program.index <= program.input.length && 
-               program.input[index] === "\'"){
+      else if (program.index < program.input.length && 
+               program.input[program.index] === "\'"){
         program.addToken("\'");
       }
       else {break;}
