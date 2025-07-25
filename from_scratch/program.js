@@ -96,7 +96,7 @@ export class Program {
    * @param {Array} list 
    * @returns {Boolean}
    */
-  isNextInList(list){
+  isNextInList(list,type){
     for (let word of list){
       var len = word.length;
       if (len + this.index <= this.input.length){
