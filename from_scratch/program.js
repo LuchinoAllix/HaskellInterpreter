@@ -210,7 +210,7 @@ export class Program {
   endMerge(type){
     var accumulator; 
     var last = this.tokens.length-1
-    if (last <= 0){
+    if (last < 0){
       throw Error("End Merge was called on token list of size :" + last + 1);
     }
     while (this.tokens[last].type !== "MERGE-START"){
@@ -221,7 +221,7 @@ export class Program {
         throw Error("End Merge did not find MERGE-START");
       }
     }
-    startIndex = this.tokens.pop().value;
+    var startIndex = this.tokens.pop().value;
     if (type !== "NULL"){
       this.addWordToken(type,accumulator);
     }
