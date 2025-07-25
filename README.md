@@ -6,3 +6,5 @@
 
 [Peggy](https://peggyjs.org/documentation.html#grammar-syntax-and-semantics)
 
+To launch the from scratch : `node Main.js`
+
