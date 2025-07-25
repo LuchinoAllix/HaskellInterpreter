@@ -215,10 +215,19 @@ function getModid(program){
  * @returns {Boolean}
  */
 function getQvarid(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getVarid(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getVarid(program)){
+    program.endMerge("Qvarid");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
@@ -228,10 +237,19 @@ function getQvarid(program){
  * @returns {Boolean}
  */
 function getQconid(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getConid(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getConid(program)){
+    program.endMerge("Qconid");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
@@ -242,10 +260,19 @@ function getQconid(program){
  * @returns {Boolean}
  */
 function getQtycon(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getTycon(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getTycon(program)){
+    program.endMerge("Qtycon");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
@@ -256,10 +283,19 @@ function getQtycon(program){
  * @returns {Boolean}
  */
 function getQtycls(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getTycls(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getTycls(program)){
+    program.endMerge("Qtycls");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
@@ -269,10 +305,19 @@ function getQtycls(program){
  * @returns {Boolean}
  */
 function getQvarsym(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getVarsym(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getVarsym(program)){
+    program.endMerge("Qvarsym");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
@@ -282,10 +327,19 @@ function getQvarsym(program){
  * @returns {Boolean}
  */
 function getQconsym(program){
-  if (getModid(program) && program.getChar() === '.'){
-    program.incIndex();
-    return getConsym(program);
+  program.startMerge();
+  if (getModid(program)){
+    if (program.getChar() === '.'){
+      program.addToken("dot");
+    } else {
+      program.removeLastToken();
+    }
   }
+  if (getConsym(program)){
+    program.endMerge("Qconsym");
+    return true;
+  }
+  program.endMerge("NULL");
   return false;
 }
 
