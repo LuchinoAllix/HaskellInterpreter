@@ -1,5 +1,6 @@
 import { Program } from "./Program.js";
-import { getLiteral, getLarge, getDigit, getSmall, getSymbol } from "./LexerAsc.js"
+import { getLiteral, getLarge, getDigit, getSmall, 
+         getSymbol } from "./LexerAsc.js"
 import { getSpecial } from "./Lexer.js";
 
 
