@@ -223,7 +223,7 @@ export class Program {
     }
     var startIndex = this.tokens.pop().value;
     if (type !== "NULL"){
-      this.addWordToken(type,accumulator);
+      this.tokens.push({type:type,value:accumulator});
     }
     return startIndex;
   }
