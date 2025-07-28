@@ -3,7 +3,7 @@ import { tokenize }from './Lexer.js'
 import { parse } from './Parser.js'
 
 function main(){
-    const program = new Program("(let )");
+    const program = new Program("(let x = 3 in x + 3)");
     try {
         if(tokenize(program)){
             console.log("Successful tokenization :) ");
