@@ -20,7 +20,7 @@ export function tokenize(program){
  */
 function getProgram(program){
   while(getLexeme(program) || getWhitespace(program)){} 
-  if (program.index == program.input.length){
+  if (program.index === program.input.length){
     return true;
   } else if (program.index < program.input.length){
     throw Error("Not all input was parsed");

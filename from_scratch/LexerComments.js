@@ -10,7 +10,7 @@ import { getNewline } from "./LexerWhite.js";
  */
 export function getComment(program){
   if(getDashes(program)){
-    while(!getNewline(program)){
+    while(!getNewline(program) && program.index !== program.input.length){
       // règle : comment = dashes (any !symbol any*)? newline
       // FIXME ce n'est pas ce qui est implémenté ici
       program.incIndex();
