@@ -216,8 +216,6 @@ function getModid(program){
  */
 function getQvarid(program){
   program.startMerge();
-  console.log("in qvarid");
-  console.log(program.getChar());
   if (getModid(program)){
     if (program.getChar() === '.'){
       program.addToken("dot");
@@ -307,7 +305,6 @@ function getQtycls(program){
  * @returns {Boolean}
  */
 function getQvarsym(program){
-  //console.log(program.getChar());
   program.startMerge();
   if (getModid(program)){
     if (program.getChar() === '.'){
