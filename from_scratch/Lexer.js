@@ -19,7 +19,7 @@ export function tokenize(program){
  * @returns true if success, false otherwise 
  */
 function getProgram(program){
-  while(getLexeme(program) || getWhitespace(program)){} 
+  while(getWhitespace(program) || getLexeme(program)){} 
   if (program.index === program.input.length){
     return true;
   } else if (program.index < program.input.length){
