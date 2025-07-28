@@ -1,5 +1,7 @@
 import { Program } from "./Program.js";
-import { getNewline } from "./LexerWhite.js";
+import { getNewline, getWhitechar } from "./LexerWhite.js";
+import { getSmall, getLarge, getSymbol, getDigit } from "./LexerAsc.js";
+import { getSpecial } from "./Lexer.js";
 
 //--  File containing lexer functions for comments related rules  --//
 

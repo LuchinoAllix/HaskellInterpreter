@@ -45,7 +45,7 @@ function getWhitestuff(program){
  * @param {Program} program
  * @returns {Boolean}  
  */
-function getWhitechar(program){
+export function getWhitechar(program){
   return getNewline(program)
     || getVertab(program)
     || getSpace(program)
