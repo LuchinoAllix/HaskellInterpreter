@@ -13,7 +13,6 @@ import { getSpecial } from "./Lexer.js";
 export function getComment(program){
   if(getDashes(program)){
     while(!getNewline(program) && program.index !== program.input.length){
-      // règle : comment = dashes (any !symbol any*)? newline
       // FIXME ce n'est pas ce qui est implémenté ici
       program.incIndex();
     }
@@ -70,20 +69,23 @@ function getClosecom(program){
 }
 
 /**
+ * # FIXME : The rule is not implemented correctly but I can't bother rn
  * Rule : ncomment → opencom ANY seq {ncomment ANY seq} closecom 
  * @param {Program} program
  * @returns {Boolean} 
  */
 export function getNcomment(program){
-  if (getOpencom(program) && getAnySeq(program)){
-    while (getNcomment(program) && getAnySeq(program)){}
-    return getClosecom(program);
+  if (getOpencom(program)){
+    while (!getClosecom(program) && program.index !== program.input.length ){
+      program.incIndex();
+    }
+    return true;
   }
   return false;
 }
 
 /**
- * FIXME : The rule is not implemented correctly but I can't bother rn
+ * # FIXME : The rule is not implemented correctly but I can't bother rn
  * Rule : ANY seq → {ANY }⟨{ANY } ( opencom | closecom ) {ANY }⟩
  * @param {Program} program
  * @returns {Boolean} 
