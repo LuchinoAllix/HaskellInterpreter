@@ -107,7 +107,7 @@ function getVarsym(program){
   if (program.getChar() !== ":" && getSymbol(program)){
     while (getSymbol(program)){} 
     // We suppose getSymbol adds the symbol to the token list
-    startIndex = program.endMerge("Varsym"); 
+    var startIndex = program.endMerge("Varsym"); 
 
     // To verify that the var sym is not a reserved op or starts with '--'
     // FIXME : Does the rule imply that there cannot be any '--' anywhere ? 
@@ -135,7 +135,7 @@ function getConsym(program){
     while (getSymbol(program)){}
     // We suppose getSymbol adds the symbol to the token list
 
-    startIndex = program.endMerge("Consym");
+    var startIndex = program.endMerge("Consym");
 
     // To verify that the var sym is not a reserved op 
     if (HS_reservdop.includes(program.getLastToken().value)){
@@ -216,6 +216,8 @@ function getModid(program){
  */
 function getQvarid(program){
   program.startMerge();
+  console.log("in qvarid");
+  console.log(program.getChar());
   if (getModid(program)){
     if (program.getChar() === '.'){
       program.addToken("dot");
@@ -305,6 +307,7 @@ function getQtycls(program){
  * @returns {Boolean}
  */
 function getQvarsym(program){
+  //console.log(program.getChar());
   program.startMerge();
   if (getModid(program)){
     if (program.getChar() === '.'){
