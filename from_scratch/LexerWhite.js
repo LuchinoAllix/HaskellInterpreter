@@ -58,7 +58,7 @@ function getWhitechar(program){
  * @param {Program} program
  * @returns {Boolean} 
  */
-function getNewline(program){
+export function getNewline(program){
   // We have to use temporary variables because of the order of the rule
   let r = getReturn(program);
   let l = getLinefeed(program);

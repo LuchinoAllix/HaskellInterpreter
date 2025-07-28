@@ -1,4 +1,5 @@
 import { Program } from "./Program.js";
+import { getNewline } from "./LexerWhite.js";
 
 //--  File containing lexer functions for comments related rules  --//
 
