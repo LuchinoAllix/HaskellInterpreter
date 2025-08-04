@@ -62,7 +62,7 @@ function getOpencom(program){
 function getClosecom(program){
   if(program.index + 1 < program.input.length){
     if(program.getChar() === "-" && program.getNextChar() === "}"){
-      program.index += 2;
+      program.incIndexN(2);
       return true;
     }
   }
