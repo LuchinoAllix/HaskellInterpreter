@@ -7,7 +7,7 @@ export const HS_special = ["(",")",",",";","[","]","`","{","}"];
 /**
  * Allows to transform the input to a list of tokens  
  * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @returns {Boolean}  
  */
 export function tokenize(program){
   return getProgram(program);
@@ -15,8 +15,8 @@ export function tokenize(program){
 
 /**
  * Rule : program → { lexeme | whitespace } 
- * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @param {Program} program
+ * @returns {Boolean}
  */
 function getProgram(program){
   while(getWhitespace(program) || getLexeme(program)){} 
@@ -32,7 +32,7 @@ function getProgram(program){
 /**
  * Rule : special → ( | ) | , | ; | [ | ] | ` | { | }
  * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @returns {Boolean} 
  */
 export function getSpecial(program){
   if (HS_special.includes(program.getChar())){
