@@ -29,7 +29,7 @@ export function getComment(program){
 function getDashes(program){
   if(program.index + 1 < program.input.length){
     if(program.getChar() === "-" && program.getNextChar() === "-"){
-      program.index += 2;
+      program.incIndexN(2);
       while(program.index < program.input.length && program.getChar() ==="-"){
         program.incIndex();
       }
