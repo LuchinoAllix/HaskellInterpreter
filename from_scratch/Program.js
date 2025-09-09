@@ -5,7 +5,6 @@ export class Program {
     this.input = input;
     this.index = 0;
     this.tokens = [];
-    this.indentation = 1;
     this.AST = [];
     this.isLexed = false;
     this.isParsed = false;
@@ -137,7 +136,7 @@ export class Program {
    * Adds a whole word as a token and increments the index accordingly
    * @param {String} type 
    * @param {String} word 
-   * @returns 
+   * @returns {Boolean}
    */
   addWordToken(type, word){
     this.tokens.push({type:type,value:word});
@@ -178,7 +177,6 @@ export class Program {
     }
     return false;
   }
-
 
   /**
    * Removes the last char of the last token if possible
