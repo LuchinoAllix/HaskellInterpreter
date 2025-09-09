@@ -110,6 +110,10 @@ export class Program {
   }
 
   /**
+   * FIXME : Could it happen that two tokens of the same type follow 
+   * eachother ? Thus this function would merge them even though it should not
+   * This problem could be solved using merge.
+   * 
    * Adds the current char to list of tokens as type provided
    * Verifies if the last token is of the same type, if so, merges the tokens
    * @param {String} type 
