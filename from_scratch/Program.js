@@ -67,7 +67,7 @@ export class Program {
    */
   setIndex(i){
     if (i <0){
-      throw Error("Set index gor negative value");
+      throw Error("Set index got negative value");
     }
     this.index = i;
     return true;
@@ -85,7 +85,7 @@ export class Program {
    */
   getNextChar(){
     if(this.index + 1 > this.input.length){
-        throw Error("Index + 1 went too far over input :(");
+      throw Error("Index + 1 went too far over input :(");
     }
     return this.input[this.index+1];
   }
