@@ -17,8 +17,9 @@ export class Program {
    */
   incIndex(){
     if(this.index + 1 > this.input.length){
-        throw Error("Index went too far over input :(");
+      throw Error("Index went too far over input :(");
     }
+    this.incIndentation();
     this.index ++;
     return true;
   }
@@ -29,7 +30,7 @@ export class Program {
    */
   decIndex(){
     if(this.index === 0){
-        throw Error("Index went too far backwards :(");
+      throw Error("Index went too far backwards :(");
     }
     this.index --;
     return true;
@@ -245,7 +246,7 @@ export class Program {
   }
 
   incIndentation(){
-    if (isNewline(this.input[this.index])){
+    if (isNewline(this.getChar())){
       // after newline not in string : reset indentation
       this.indentation = 1;
     } else {
