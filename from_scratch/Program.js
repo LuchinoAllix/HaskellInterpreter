@@ -19,7 +19,6 @@ export class Program {
     if(this.index + 1 > this.input.length){
       throw Error("Index went too far over input :(");
     }
-    this.incIndentation();
     this.index ++;
     return true;
   }
@@ -245,22 +244,5 @@ export class Program {
     return this.tokens[this.tokens.length-1];
   }
 
-  incIndentation(){
-    if (isNewline(this.getChar())){
-      // after newline not in string : reset indentation
-      this.indentation = 1;
-    } else {
-      this.indentation += 1;
-    }
-  }
 
-}
-
-/**
- * Determines if a given char is a newline one.
- * @param {Char} char 
- * @returns {Boolean}
- */
-function isNewline(char){
-  return char === '\n' || char === '\r' || char === '\f';
 }
