@@ -75,6 +75,8 @@ export class Program {
   }
 
   /**
+   * TODO : should this method verify that the char it's 'looking for' exists 
+   * before getting it ?
    * @returns {Char} the char at this.index of the input
    */
   getChar(){
