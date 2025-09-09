@@ -1,3 +1,5 @@
+import { countIndentation } from "./indentation.js"
+
 //--  File containing Program object used for lexing and parsing  --//
 
 export class Program {
@@ -244,5 +246,12 @@ export class Program {
     return this.tokens[this.tokens.length-1];
   }
 
+  /**
+   * Adds the indentation level of every token of the program as an attribute
+   * @returns {Boolean}
+   */
+  setIndentation(){
+    return countIndentation(this.input,this.tokens);
+  }
 
 }
