@@ -16,7 +16,7 @@ export class Program {
    * @returns {Boolean}
    */
   incIndex(){
-    if(this.index + 1 > this.input.length){
+    if (this.index + 1 > this.input.length){
       throw Error("Index went too far over input :(");
     }
     this.index ++;
@@ -28,7 +28,7 @@ export class Program {
    * @returns {Boolean}
    */
   decIndex(){
-    if(this.index === 0){
+    if (this.index === 0){
       throw Error("Index went too far backwards :(");
     }
     this.index --;
@@ -41,8 +41,8 @@ export class Program {
    * @returns {Boolean}
    */
   incIndexN(i){
-    if(this.index + i > this.input.length){
-        throw Error("Index went too far over input :(");
+    if (this.index + i > this.input.length){
+      throw Error("Index went too far over input :(");
     }
     this.index += i;
     return true;
@@ -55,7 +55,7 @@ export class Program {
    */
   decIndexN(i){
     if (this.index - i < 0){
-        throw Error("Index went too far backwards:(");
+      throw Error("Index went too far backwards:(");
     }
     this.index -= i;
     return true;
@@ -85,7 +85,7 @@ export class Program {
    * @returns {Char} the char at this.index + 1 of the input
    */
   getNextChar(){
-    if(this.index + 1 > this.input.length){
+    if (this.index + 1 > this.input.length){
       throw Error("Index + 1 went too far over input :(");
     }
     return this.input[this.index+1];
