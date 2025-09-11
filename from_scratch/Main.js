@@ -7,8 +7,10 @@ import { extname, join } from 'path';
 
 const test_folder = './tests';
 
+/**
+ * Main function to test Parser
+ */
 async function main(){
-  
   const files = await readdir(test_folder);
   for (const file of files) {
     if (extname(file) === '.hs') {
@@ -17,6 +19,10 @@ async function main(){
   }
 }
 
+/**
+ * Funciton to test a specific file
+ * @param {String} file_path 
+ */
 async function testFile(file_path) {
   try {
     const content = await readFile(file_path, 'utf8');
