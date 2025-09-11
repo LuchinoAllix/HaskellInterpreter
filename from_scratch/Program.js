@@ -12,7 +12,8 @@ export class Program {
     this.isParsed = false;
     this.lineCount = 0;
     this.lastReturnIndex= 0;
-    this.tabLineIndentation = 1; // commence à 1 car ...
+    this.tabLineIndentation = 1;
+    // Starts at one because Haskell documentation says so
   }
 
   /**
@@ -264,7 +265,12 @@ export class Program {
     return this.tokens[this.tokens.length-1];
   }
 
-  // Works on the basis that we don't go over /n (and other newline encodings) again
+  /**
+   * Increments the line and column count variables (to use when encountering
+   * new line encodings like \n). Works on the basis that we don't go over /n 
+   * (and other newline encodings) again
+   * @returns {Boolean}
+   */
   incLineCount(){
     this.lineCount += 1 ;
     this.lastReturnIndex = this.index;
@@ -273,7 +279,7 @@ export class Program {
   }
 
   /**
-   * Adds the indentation level of every token of the program as an attribute
+   * Adds the indentation level of every token of the program
    * @returns {Boolean}
    */
   setIndentation(){
