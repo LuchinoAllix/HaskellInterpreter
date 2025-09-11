@@ -7,6 +7,4 @@
 [Peggy](https://peggyjs.org/documentation.html#grammar-syntax-and-semantics)
 
 To launch the from scratch with all tests : `node Main.js`
-Add a number to specify a certain test.
-#TODO make all the tests handelings
  
