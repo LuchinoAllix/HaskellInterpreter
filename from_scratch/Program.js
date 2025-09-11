@@ -131,8 +131,11 @@ export class Program {
         this.tokens[this.tokens.length - 1].type === type){
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
-      this.tokens.push({type:type,value:this.getChar(), line:this.line, 
-      column:this.index - this.lastReturnIndex + this.tabLineIndentation});
+      this.tokens.push({type:type,
+                        value:this.getChar(), 
+                        line:this.lineCount, 
+                        column:this.index - this.lastReturnIndex 
+                                          + this.tabLineIndentation});
     }
     this.incIndex();
     return true;
@@ -145,8 +148,11 @@ export class Program {
    * @returns {Boolean}
    */
   addWordToken(type, word){
-    this.tokens.push({type:type, value:word, line:this.line, 
-      column:this.index - this.lastReturnIndex + this.tabLineIndentation});
+    this.tokens.push({type:type, 
+                      value:word, 
+                      line:this.lineCount, 
+                      column:this.index - this.lastReturnIndex 
+                                        + this.tabLineIndentation});
     this.incIndexN(word.length);
     return true;
   }
@@ -215,18 +221,22 @@ export class Program {
   }
 
   /**
-   * Merges all the tokens util the "MERGE-START" as one of the specified type 
+   * Merges all the tokens until the "MERGE-START" as one of the specified type 
    * @param {String} type 
    * @returns {Integer}
    */
   endMerge(type){
     var accumulator = ""; 
+    var line = 0;
+    var column = 0;
     var last = this.tokens.length-1
     if (last < 0){
       throw Error("End Merge was called on token list of size : " + (last + 1));
     }
     while (this.tokens[last].type !== "MERGE-START"){
       accumulator = this.tokens[last].value + accumulator;
+      line = this.tokens[last].line;
+      column = this.tokens[last].column;
       this.tokens.pop();
       last --;
       if (last <= 0){
@@ -235,14 +245,17 @@ export class Program {
     }
     var startIndex = this.tokens.pop().value;
     if (type !== "NULL"){
-      this.tokens.push({type:type,value:accumulator});
+      this.tokens.push({type:type, 
+                        value:accumulator, 
+                        line:line, 
+                        column:column});
     }
     return startIndex;
   }
 
   /**
    * Return the last token made in the program if there is one
-   * @returns {{type: String, value: String}}
+   * @returns {{type: String, value: String, line: Integer, column: Integer}}
    */ 
   getLastToken(){
     if (this.tokens.length < 0){

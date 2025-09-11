@@ -142,8 +142,8 @@ export function getSpace(program){
 function getTab(program){
    if(program.getChar() === HS_tab){
     program.incIndex();
-    program.tabLineIndentation += 
-      HS_tabSize - ((program.index + program.tabLineIndentation) % HS_tabSize);
+    program.tabLineIndentation += HS_tabSize - ((program.index - 
+      program.lastReturnIndex + program.tabLineIndentation) % HS_tabSize);
     return true;
   }
   return false;
