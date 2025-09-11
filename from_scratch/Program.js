@@ -10,6 +10,9 @@ export class Program {
     this.AST = [];
     this.isLexed = false;
     this.isParsed = false;
+    this.lineCount = 0;
+    this.lastReturnIndex= 0;
+    this.tabLineIndentation = 1; // commence à 1 car ...
   }
 
   /**
@@ -128,7 +131,8 @@ export class Program {
         this.tokens[this.tokens.length - 1].type === type){
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
-      this.tokens.push({type:type,value:this.getChar()});
+      this.tokens.push({type:type,value:this.getChar(), line:this.line, 
+      column:this.index - this.lastReturnIndex + this.tabLineIndentation});
     }
     this.incIndex();
     return true;
@@ -141,7 +145,8 @@ export class Program {
    * @returns {Boolean}
    */
   addWordToken(type, word){
-    this.tokens.push({type:type,value:word});
+    this.tokens.push({type:type, value:word, line:this.line, 
+      column:this.index - this.lastReturnIndex + this.tabLineIndentation});
     this.incIndexN(word.length);
     return true;
   }
@@ -244,6 +249,14 @@ export class Program {
       throw Error("Tried to get last token out of empty token list");
     }
     return this.tokens[this.tokens.length-1];
+  }
+
+  // Works on the basis that we don't go over /n (and other newline encodings) again
+  incLineCount(){
+    this.lineCount += 1 ;
+    this.lastReturnIndex = this.index;
+    this.tabLineIndentation = 1;
+    return true;
   }
 
   /**

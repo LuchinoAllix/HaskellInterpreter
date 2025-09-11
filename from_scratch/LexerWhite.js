@@ -9,6 +9,7 @@ const HS_vertab = "\v";
 const HS_formfeed = "\f";
 const HS_space = " ";
 const HS_tab = "\t";
+const HS_tabSize = 8;
 
 const HS_uniWhite = [ // TODO : Verify
   '\u0085', '\u00A0', '\u1680', '\u180E', '\u2000', '\u2001', '\u2002',
@@ -73,6 +74,7 @@ export function getNewline(program){
 function getReturn(program){
   if(program.getChar() === HS_return){
     program.incIndex();
+    program.incLineCount();
     return true;
   }
   return false;
@@ -86,6 +88,7 @@ function getReturn(program){
 function getLinefeed(program){
   if(program.getChar() === HS_linefeed){
     program.incIndex();
+    program.incLineCount();
     return true;
   }
   return false;
@@ -99,6 +102,7 @@ function getLinefeed(program){
 function getFormfeed(program){
   if(program.getChar() === HS_formfeed){
     program.incIndex();
+    program.incLineCount();
     return true;
   }
   return false;
@@ -138,6 +142,8 @@ export function getSpace(program){
 function getTab(program){
    if(program.getChar() === HS_tab){
     program.incIndex();
+    program.tabLineIndentation += 
+      HS_tabSize - ((program.index + program.tabLineIndentation) % HS_tabSize);
     return true;
   }
   return false;
