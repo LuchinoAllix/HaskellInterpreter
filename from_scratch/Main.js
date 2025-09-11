@@ -3,7 +3,8 @@ import { tokenize }from './Lexer.js'
 import { parse } from './Parser.js'
 
 function main(){
-    const program = new Program("{- this is a comment \n -}");
+    //const program = new Program("{- this is a comment \n -}");
+    const program = new Program("let x = 3 in \n\t\tx + 3");
     try {
         if(tokenize(program)){
             console.log("Successful tokenization :) ");
