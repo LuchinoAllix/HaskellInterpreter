@@ -20,7 +20,7 @@ async function main(){
 }
 
 /**
- * Funciton to test a specific file
+ * Function to test a specific file
  * @param {String} file_path 
  */
 async function testFile(file_path) {
