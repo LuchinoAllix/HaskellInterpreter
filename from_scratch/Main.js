@@ -47,6 +47,10 @@ async function testFile(file_path) {
   }
 }
 
+/**
+ * Prints on the console all the tokens in a single line
+ * @param {{type: String, value: String, line: Integer, column: Integer}} tokens 
+ */
 function showTokens(tokens){
   console.log("Tokens : " );
   for (let token of tokens){
