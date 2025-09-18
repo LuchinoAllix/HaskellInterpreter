@@ -13,6 +13,12 @@ const r1_vars = ["let","where","do","of"];
  * Rule 2 : If the first lexeme of a module is not { or module, then it is 
  *          preceded by {n} where n is the indentation of the lexeme.
  * 
+ * Rule 3 : Where the start of a lexeme is preceded only by white space on the 
+ *          same line, this lexeme is preceded by < n > where n is the 
+ *          indentation of the lexeme, provided that it is not, as a consequence
+ *          of the first two rules, preceded by {n}. (NB: a string literal may
+ *          span multiple lines).
+ * 
  * # FIXME : this is a big funciton, perhaps it should be split
  * @param {String} input 
  * @param {[{type: String, value: String, 
