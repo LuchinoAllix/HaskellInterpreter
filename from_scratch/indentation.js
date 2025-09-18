@@ -19,7 +19,8 @@ const r1_vars = ["let","where","do","of"];
  *           line: Integer, column: Integer}]} tokens 
  * @returns {Boolean}
  */
-export function addIndentation(input, tokens){
+export function addIndentation(tokens){
+  ApplyRule2(tokens);
   for (i=0; i < tokens.length; i++){
     if (r1_vars.includes(tokens[i].value)){ // --- rule 1
       if (i+1 < tokens.length){
@@ -36,9 +37,30 @@ export function addIndentation(input, tokens){
                                  line: -1,
                                  column: -1});
       }
-    } else if (?){ // --- rule 2 TODO
+    } else if (?){ // --- rule 3 TODO
 
     }
   }
+}
+
+
+/**
+ * Applies the rule 2 to the list of tokens
+ * 
+ * Rule 2 : If the first lexeme of a module is not { or module, then it is 
+ *          preceded by {n} where n is the indentation of the lexeme.
+ * 
+ * @param {[{type: String, value: String, 
+ *           line: Integer, column: Integer}]} tokens
+ */
+function ApplyRule2(tokens){
+  if (tokens.length > 0){
+    if (tokens[0].value !== "module" && tokens[0].value !== "{"){
+      tokens.splice(0, 0, {type: "indentation",
+                           value: "{" + tokens[0].column + "}",
+                           line: -1,
+                           column: -1});
+        }
+    }
 }
 
