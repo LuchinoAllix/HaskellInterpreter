@@ -58,8 +58,8 @@ function ApplyRule2(tokens){
     if (tokens[0].value !== "module" && tokens[0].value !== "{"){
       tokens.splice(0, 0, {type: "indentation",
                            value: "{" + tokens[0].column + "}",
-                           line: -1,
-                           column: -1});
+                           line: tokens[0].line,
+                           column: tokens[0].column});
         }
     }
 }
