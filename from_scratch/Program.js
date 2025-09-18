@@ -1,4 +1,4 @@
-import { countIndentation } from "./indentation.js"
+import { addIndentation, countIndentation } from "./indentation.js"
 
 //--  File containing Program object used for lexing and parsing  --//
 
@@ -283,7 +283,7 @@ export class Program {
    * @returns {Boolean}
    */
   setIndentation(){
-    return countIndentation(this.input,this.tokens);
+    return addIndentation(this.tokens);
   }
 
 }
