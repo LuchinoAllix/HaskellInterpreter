@@ -8,6 +8,7 @@ import { extname, join } from 'path';
 const test_folder = './tests';
 
 /**
+ * # FIXME : Change order of evaluation to make sure it happens sequentially
  * Main function to test Parser
  */
 async function main(){
