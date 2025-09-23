@@ -29,14 +29,17 @@ async function testFile(file_path) {
     const program = new Program(content);
     try {
       if(tokenize(program)){
+        console.log("\nTest file :" + file_path);
         console.log("Successful tokenization :) ");
-      } else { 
+      } else {
+        console.log("\nTest file :" + file_path);
         console.log("Unsuccessful tokenization :( ");
         console.log("Input : " + program.input);
       }
       showTokens(program.tokens);
 
     } catch (error) {
+      console.log("\nTest file :" + file_path);
       console.log("Error while tokenization :");
       console.log("Input : " + program.input);
       showTokens(program.tokens);
