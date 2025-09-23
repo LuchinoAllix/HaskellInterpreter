@@ -12,12 +12,29 @@ const test_folder = './tests';
  * Main function to test Parser
  */
 async function main(){
-  const files = await readdir(test_folder);
-  for (const file of files) {
-    if (extname(file) === '.hs') {
-      testFile(join(test_folder, file));
-    }
+  switch (process.argv.length){
+
+    // test all files
+    case 2 :
+      const files = await readdir(test_folder);
+      for (const file of files) {
+        if (extname(file) === '.hs') {
+          testFile(join(test_folder, file));
+        }
+      }
+      break;
+
+    // test a single file
+    case 3 :
+      testFile(process.argv[2]);
+      break;
+
+    default :
+      console.log("Wrong number of arguments, usage :" + 
+                  "\n\t<Node Main.js> \t\t\tto test all files in /tests, or " + 
+                  "\n\t<Node Main.js pathToFile> \tto test a specific file");
   }
+
 }
 
 /**
