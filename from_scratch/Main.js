@@ -34,7 +34,6 @@ async function main(){
                   "\n\t<Node Main.js> \t\t\tto test all files in /tests, or " + 
                   "\n\t<Node Main.js pathToFile> \tto test a specific file");
   }
-
 }
 
 /**
