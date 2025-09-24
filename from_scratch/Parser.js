@@ -7,9 +7,9 @@ import { tokenize } from "./Lexer.js";
  * @returns true if success, false otherwise 
  */
 export function parse(program){
-    if(!program.isLexed){
-        program.tokenize();
-    }
-    // #TODO
-    return true;
+  if (!program.isLexed){
+    program.tokenize();
+  }
+  // # TODO
+  return true;
 }
