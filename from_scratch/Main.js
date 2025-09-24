@@ -51,8 +51,8 @@ async function testFile(file_path) {
       } else {
         console.log("\nTest file :" + file_path);
         console.log("Unsuccessful tokenization :( ");
-        console.log("Input : " + program.input);
       }
+      console.log("Input : " + program.input);
       showTokens(program.tokens);
 
     } catch (error) {
