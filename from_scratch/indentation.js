@@ -46,10 +46,10 @@ export function addIndentation(tokens){
       }
     } 
     
-    if (i == 0){ // --- rule 3 TODO
-
-    } else if (i == tokens.length){ // do nothing
-    } else if (tokens[i].line !== tokens[i+1].line & tokens[i+1].column > 1){
+    // --- rule 3
+    if (i < tokens.length-1 
+        && tokens[i].line !== tokens[i+1].line 
+        && tokens[i+1].column > 1){
       var indent = tokens[i+1].column;
       tokens.splice(i+1, 0, {type: "indentation",
                              value: "{" + indent + "}",
