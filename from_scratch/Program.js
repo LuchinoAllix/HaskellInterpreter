@@ -223,6 +223,7 @@ export class Program {
   }
 
   /**
+   * # FIXME : not sure the line and column is managed correctly (to verify)
    * Merges all the tokens until the "MERGE-START" as one of the specified type 
    * @param {String} type 
    * @returns {Integer}
