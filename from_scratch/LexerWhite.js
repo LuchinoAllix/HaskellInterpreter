@@ -121,14 +121,19 @@ function getVertab(program){
   return false;
 }
 
+
 /**
+ * Determines if the current char is a space, if addToken is specified,
+ * it gets added to the list of tokens (false by default), used in strings.
  * Rule : space → a space 
- * @param {Program} program
+ * @param {Program} program 
+ * @param {Boolean} addToken 
  * @returns {Boolean} 
  */
-export function getSpace(program){
+export function getSpace(program,addToken=false){
   if(program.getChar() === HS_space){
-    program.incIndex();
+    if (addToken){ program.addToken();}
+    else { program.incIndex();}
     return true;
   }
   return false;

@@ -448,7 +448,9 @@ function getString(program){
       } else if (lastToken.includes("\\")){  
         // # TODO : I don't know now
       }
-    } else if (getSpace(program) || getEscape(program) || getGap(program)){
+    } else if (getSpace(program, true) 
+               || getEscape(program) 
+               || getGap(program)){
     } else {break;}
   }
   if (program.getChar() === "\""){ 
@@ -558,6 +560,7 @@ function getGap(program){
         return program.addToken("gap");
       }
     }
+    program.decIndex();
   }
   return false;
 }
