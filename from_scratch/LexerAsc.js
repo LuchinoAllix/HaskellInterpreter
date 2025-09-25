@@ -415,12 +415,22 @@ function getChar(program){
 }
 
 /**
+ * Prints on the console all the tokens in a single line
+ * @param {{type: String, value: String, line: Integer, column: Integer}} tokens 
+ */
+function showTokens(tokens){
+  console.log("\tTokens : " );
+  for (let token of tokens){
+    console.log("\t" + JSON.stringify(token));
+  }
+}
+
+/**
  * Rule : string → " {graphic⟨" | \⟩ | space | escape | gap} "
  * @param {Program} program 
  * @returns {Boolean}
  */
 function getString(program){
-  console.log("start get string " + program.tokens);
   if (program.getChar() !== "\""){
     return false;
   }
@@ -429,13 +439,20 @@ function getString(program){
   while (true){
     if (getGraphic(program)){
       var lastToken = program.getLastToken().value; 
-      if (lastToken.includes("\"") || lastToken.includes("\\")){
-        if (getSpace(program) || getEscape(program) || getGap(program)){}
+      if (lastToken.includes("\"")){
+        // # FIXME : not ideal (needed because string rule is weird)
+        program.removeLastToken(); 
+        program.addToken("end string");
+        program.endMerge("String");
+        return true;
+      } else if (lastToken.includes("\\")){  
+        // # TODO : I don't know now
       }
     } else if (getSpace(program) || getEscape(program) || getGap(program)){
     } else {break;}
   }
-  if (program.getChar() === "\""){
+  if (program.getChar() === "\""){ 
+    // # FIXME : Will never happen because \" appears in getGraphic ...
     program.addToken("end string");
     program.endMerge("String");
     return true;
