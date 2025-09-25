@@ -23,7 +23,7 @@ const HS_uniWhite = [ // TODO : Verify
  * @returns {Boolean} 
  */
 export function getWhitespace(program){
-  if(getWhitestuff(program)){
+  if (getWhitestuff(program)){
     while(getWhitestuff(program)){}
     return true;
   }
@@ -72,7 +72,7 @@ export function getNewline(program){
  * @returns {Boolean} 
  */
 function getReturn(program){
-  if(program.getChar() === HS_return){
+  if (program.getChar() === HS_return){
     program.incIndex();
     program.incLineCount();
     return true;
@@ -86,7 +86,7 @@ function getReturn(program){
  * @returns {Boolean} 
  */
 function getLinefeed(program){
-  if(program.getChar() === HS_linefeed){
+  if (program.getChar() === HS_linefeed){
     program.incIndex();
     program.incLineCount();
     return true;
@@ -100,7 +100,7 @@ function getLinefeed(program){
  * @returns {Boolean} 
  */
 function getFormfeed(program){
-  if(program.getChar() === HS_formfeed){
+  if (program.getChar() === HS_formfeed){
     program.incIndex();
     program.incLineCount();
     return true;
@@ -114,7 +114,7 @@ function getFormfeed(program){
  * @returns {Boolean} 
  */
 function getVertab(program){
-  if(program.getChar() === HS_vertab){
+  if (program.getChar() === HS_vertab){
     program.incIndex();
     return true;
   }
@@ -131,7 +131,7 @@ function getVertab(program){
  * @returns {Boolean} 
  */
 export function getSpace(program,addToken=false){
-  if(program.getChar() === HS_space){
+  if (program.getChar() === HS_space){
     if (addToken){ program.addToken();}
     else { program.incIndex();}
     return true;
@@ -145,7 +145,7 @@ export function getSpace(program,addToken=false){
  * @returns {Boolean} 
  */
 function getTab(program){
-   if(program.getChar() === HS_tab){
+   if (program.getChar() === HS_tab){
     program.incIndex();
     program.tabLineIndentation += HS_tabSize - ((program.index - 
       program.lastReturnIndex + program.tabLineIndentation) % HS_tabSize);
@@ -160,7 +160,7 @@ function getTab(program){
  * @returns {Boolean} 
  */
 function getUniWhite(program){
-  if(HS_uniWhite.includes(program.getChar())){
+  if (HS_uniWhite.includes(program.getChar())){
     program.incIndex();
     return true;
   }

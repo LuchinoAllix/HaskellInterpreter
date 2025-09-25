@@ -121,7 +121,7 @@ function getAscSmall(program){
  * @returns {Boolean}
  */
 function getUniSmall(program){
-  if(HS_uniSmall.includes(program.getChar())){
+  if (HS_uniSmall.includes(program.getChar())){
     return program.addToken("uniSmall");
   }
   return false;
@@ -154,7 +154,7 @@ function getAscLarge(program){
  * @returns {Boolean}
  */
 function getUniLarge(program){
-  if(HS_uniLarge.includes(program.getChar())){
+  if (HS_uniLarge.includes(program.getChar())){
     return program.addToken("unilarge");
   }
   return false;
@@ -186,7 +186,7 @@ export function getSymbol(program){
  * @returns {Boolean}
  */
 function getAscSymbol(program){
-  if(HS_ascSymbol.includes(program.getChar())){
+  if (HS_ascSymbol.includes(program.getChar())){
     return program.addToken("ascSymbol");
   }
   return false;
@@ -198,7 +198,7 @@ function getAscSymbol(program){
  * @returns {Boolean}
  */
 function getUniSymbol(program){
-  if(HS_uniSymbol.includes(program.getChar())){
+  if (HS_uniSymbol.includes(program.getChar())){
     return program.addToken("uniSymbol");
   }
   return false;
@@ -231,7 +231,7 @@ function getAscDigit(program){
  * @returns {Boolean}
  */
 function getUniDigit(program){
-  if(HS_uniDigit.includes(program.getChar())){
+  if (HS_uniDigit.includes(program.getChar())){
     return program.addToken("uniDigit");
   }
   return false;
@@ -268,7 +268,7 @@ function getHexit(program){
  * @returns {Boolean}
  */
 function getDecimal(program){
-  if(getDigit(program)){
+  if (getDigit(program)){
     while(getDigit(program)){}
     program.overwriteTypeLastToken('decimal');
     return true;
@@ -282,7 +282,7 @@ function getDecimal(program){
  * @returns {Boolean}
  */
 function getOctal(program){
-  if(getOctit(program)){
+  if (getOctit(program)){
     while(getOctit(program)){}
     program.overwriteTypeLastToken('octal');
     return true;
@@ -296,7 +296,7 @@ function getOctal(program){
  * @returns {Boolean}
  */
 function getHexadecimal(program){
-  if(getHexit(program)){
+  if (getHexit(program)){
     while(getHexit(program)){}
     program.overwriteTypeLastToken('hexadecimal');
     return true;
@@ -552,7 +552,7 @@ function getCntrl(program){
  * @returns {Boolean}
  */
 function getGap(program){
-  if(program.getChar() === "\\"){
+  if (program.getChar() === "\\"){
     program.incIndex();
     if (getWhitespace(program)){
       while(getWhitespace(program)){}

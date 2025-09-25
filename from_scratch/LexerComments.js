@@ -11,7 +11,7 @@ import { getSpecial } from "./Lexer.js";
  * @returns {Boolean} 
  */
 export function getComment(program){
-  if(getDashes(program)){
+  if (getDashes(program)){
     while(!getNewline(program) && program.index !== program.input.length){
       // FIXME ce n'est pas ce qui est implémenté ici
       program.incIndex();
@@ -27,8 +27,8 @@ export function getComment(program){
  * @returns {Boolean} 
  */
 function getDashes(program){
-  if(program.index + 1 < program.input.length){
-    if(program.getChar() === "-" && program.getNextChar() === "-"){
+  if (program.index + 1 < program.input.length){
+    if (program.getChar() === "-" && program.getNextChar() === "-"){
       program.incIndexN(2);
       while(program.index < program.input.length && program.getChar() ==="-"){
         program.incIndex();
@@ -45,8 +45,8 @@ function getDashes(program){
  * @returns {Boolean} 
  */
 function getOpencom(program){
-  if(program.index + 1 < program.input.length){
-    if(program.getChar() === "{" && program.getNextChar() === "-"){
+  if (program.index + 1 < program.input.length){
+    if (program.getChar() === "{" && program.getNextChar() === "-"){
       program.incIndex();
       program.incIndex();
       return true;
@@ -60,8 +60,8 @@ function getOpencom(program){
  * @returns {Boolean} 
  */
 function getClosecom(program){
-  if(program.index + 1 < program.input.length){
-    if(program.getChar() === "-" && program.getNextChar() === "}"){
+  if (program.index + 1 < program.input.length){
+    if (program.getChar() === "-" && program.getNextChar() === "}"){
       program.incIndexN(2);
       return true;
     }

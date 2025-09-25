@@ -45,7 +45,7 @@ async function testFile(file_path) {
     const content = await readFile(file_path, 'utf8');
     const program = new Program(content);
     try {
-      if(tokenize(program)){
+      if (tokenize(program)){
         console.log("\nTest file :" + file_path);
         console.log("Successful tokenization :) ");
       } else {
