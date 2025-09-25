@@ -2,3 +2,8 @@ test_peggy/node_modules
 test_peggy/.package-lock.json
 test_peggy/package-lock.json
 test_peggy/package.json
+
+from_scratch/node_modules
+from_scratch/.package-lock.json
+from_scratch/package-lock.json
+from_scratch/package.json
