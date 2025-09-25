@@ -28,6 +28,7 @@ const r1_vars = ["let","where","do","of"];
 export function addIndentation(tokens){
   ApplyRule2(tokens);
   for (i=0; i < tokens.length; i++){
+
     if (r1_vars.includes(tokens[i].value)){ // --- rule 1
       if (i+1 < tokens.length){
         if (tokens[i+1].value !== "{"){
@@ -43,8 +44,17 @@ export function addIndentation(tokens){
                                  line: -1,
                                  column: -1});
       }
-    } else if (?){ // --- rule 3 TODO
+    } 
+    
+    if (i == 0){ // --- rule 3 TODO
 
+    } else if (i == tokens.length){ // do nothing
+    } else if (tokens[i].line !== tokens[i+1].line & tokens[i+1].column > 1){
+      var indent = tokens[i+1].column;
+      tokens.splice(i+1, 0, {type: "indentation",
+                             value: "{" + indent + "}",
+                             line: -1,
+                             column: -1});
     }
   }
 }
@@ -69,4 +79,3 @@ function ApplyRule2(tokens){
         }
     }
 }
-

@@ -8,14 +8,31 @@ import { extname, join } from 'path';
 const test_folder = './tests';
 
 /**
+ * # FIXME : Change order of evaluation to make sure it happens sequentially
  * Main function to test Parser
  */
 async function main(){
-  const files = await readdir(test_folder);
-  for (const file of files) {
-    if (extname(file) === '.hs') {
-      testFile(join(test_folder, file));
-    }
+  switch (process.argv.length){
+
+    // test all files
+    case 2 :
+      const files = await readdir(test_folder);
+      for (const file of files) {
+        if (extname(file) === '.hs') {
+          testFile(join(test_folder, file));
+        }
+      }
+      break;
+
+    // test a single file
+    case 3 :
+      testFile(process.argv[2]);
+      break;
+
+    default :
+      console.log("Wrong number of arguments, usage :" + 
+                  "\n\t<Node Main.js> \t\t\tto test all files in /tests, or " + 
+                  "\n\t<Node Main.js pathToFile> \tto test a specific file");
   }
 }
 
@@ -29,14 +46,17 @@ async function testFile(file_path) {
     const program = new Program(content);
     try {
       if(tokenize(program)){
+        console.log("\nTest file :" + file_path);
         console.log("Successful tokenization :) ");
-      } else { 
+      } else {
+        console.log("\nTest file :" + file_path);
         console.log("Unsuccessful tokenization :( ");
-        console.log("Input : " + program.input);
       }
+      console.log("Input : " + program.input);
       showTokens(program.tokens);
 
     } catch (error) {
+      console.log("\nTest file :" + file_path);
       console.log("Error while tokenization :");
       console.log("Input : " + program.input);
       showTokens(program.tokens);

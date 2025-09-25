@@ -420,11 +420,11 @@ function getChar(program){
  * @returns {Boolean}
  */
 function getString(program){
-  program.startMerge();
+  console.log("start get string " + program.tokens);
   if (program.getChar() !== "\""){
-    program.endMerge("NULL");
     return false;
   }
+  program.startMerge();
   program.addToken("start string");
   while (true){
     if (getGraphic(program)){

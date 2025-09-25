@@ -1,4 +1,4 @@
-import { addIndentation, countIndentation } from "./indentation.js"
+import { addIndentation } from "./indentation.js"
 
 //--  File containing Program object used for lexing and parsing  --//
 
@@ -21,6 +21,7 @@ export class Program {
    * @returns {Boolean}
    */
   incIndex(){
+    //console.log(this.index);
     if (this.index + 1 > this.input.length){
       throw Error("Index went too far over input :(");
     }
