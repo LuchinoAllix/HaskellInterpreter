@@ -241,7 +241,7 @@ export class Program {
       column = this.tokens[last].column;
       this.tokens.pop();
       last --;
-      if (last <= 0){
+      if (last < 0){
         throw Error("End Merge did not find MERGE-START");
       }
     }
