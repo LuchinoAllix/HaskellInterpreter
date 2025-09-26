@@ -33,13 +33,13 @@ export function addIndentation(tokens){
       if (i+1 < tokens.length){
         if (tokens[i+1].value !== "{"){
           var indent = tokens[i+1].column;
-          tokens.splice(i+1, 0, {type: "indentation",
+          tokens.splice(i+1, 0, {type: "indentation {",
                                  value: "{" + indent + "}",
                                  line: -1,
                                  column: -1});
-        } 
+        }
       } else { // end of file reached
-        tokens.splice(i+1, 0, {type: "indentation",
+        tokens.splice(i+1, 0, {type: "indentation {",
                                  value: "{0}",
                                  line: -1,
                                  column: -1});
@@ -51,8 +51,8 @@ export function addIndentation(tokens){
         && tokens[i].line !== tokens[i+1].line 
         && tokens[i+1].column > 1){
       var indent = tokens[i+1].column;
-      tokens.splice(i+1, 0, {type: "indentation",
-                             value: "{" + indent + "}",
+      tokens.splice(i+1, 0, {type: "indentation <",
+                             value: "<" + indent + ">",
                              line: -1,
                              column: -1});
     }
