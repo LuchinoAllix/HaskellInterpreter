@@ -270,7 +270,7 @@ export class Program {
   /**
    * Increments the line and column count variables (to use when encountering
    * new line encodings like \n). Works on the basis that we don't go over /n 
-   * (and other newline encodings) again
+   * (and other newline encodings) more than once
    * @returns {Boolean}
    */
   incLineCount(){
