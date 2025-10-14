@@ -7,3 +7,4 @@
 [Peggy](https://peggyjs.org/documentation.html#grammar-syntax-and-semantics)
 
 To launch the from scratch with all tests : `node Main.js`
+To launch the from scratch with a specific test : `node Main.js pathToTest.file`
