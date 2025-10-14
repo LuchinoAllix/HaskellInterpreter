@@ -27,22 +27,25 @@ const r1_vars = ["let","where","do","of"];
  */
 export function addIndentation(tokens){
   ApplyRule2(tokens);
-  for (i=0; i < tokens.length; i++){
-
+  for (let i=0; i < tokens.length; i++){
+    // offsets added when we add an element in tokens
     if (r1_vars.includes(tokens[i].value)){ // --- rule 1
       if (i+1 < tokens.length){
         if (tokens[i+1].value !== "{"){
           var indent = tokens[i+1].column;
-          tokens.splice(i+1, 0, {type: "indentation {",
+          tokens.splice(i+1, 0, {type: "indentation R1",
                                  value: "{" + indent + "}",
                                  line: -1,
                                  column: -1});
+          i += 2; // offset (larger to avoid collision between R1 and R3)
+
         }
       } else { // end of file reached
-        tokens.splice(i+1, 0, {type: "indentation {",
+        tokens.splice(i+1, 0, {type: "indentation R1",
                                  value: "{0}",
                                  line: -1,
                                  column: -1});
+        i += 1; // offset
       }
     } 
     
@@ -51,10 +54,11 @@ export function addIndentation(tokens){
         && tokens[i].line !== tokens[i+1].line 
         && tokens[i+1].column > 1){
       var indent = tokens[i+1].column;
-      tokens.splice(i+1, 0, {type: "indentation <",
+      tokens.splice(i+1, 0, {type: "indentation R3",
                              value: "<" + indent + ">",
                              line: -1,
                              column: -1});
+      i += 1; // offset 
     }
   }
 }
@@ -72,7 +76,7 @@ export function addIndentation(tokens){
 function ApplyRule2(tokens){
   if (tokens.length > 0){
     if (tokens[0].value !== "module" && tokens[0].value !== "{"){
-      tokens.splice(0, 0, {type: "indentation",
+      tokens.splice(0, 0, {type: "indentation R2",
                            value: "{" + tokens[0].column + "}",
                            line: tokens[0].line,
                            column: tokens[0].column});
