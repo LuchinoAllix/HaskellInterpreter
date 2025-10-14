@@ -1,6 +1,7 @@
 import { Program } from "./Program.js";
 import { getLexeme} from "./LexerVarid.js";
 import { getWhitespace } from "./LexerWhite.js";
+import { addIndentation } from "./indentation.js"
 
 export const HS_special = ["(",")",",",";","[","]","`","{","}"];
 
@@ -10,8 +11,7 @@ export const HS_special = ["(",")",",",";","[","]","`","{","}"];
  * @returns {Boolean}  
  */
 export function tokenize(program){
-  getProgram(program);
-  return program.setIndentation();
+  return getProgram(program) && addIndentation(program);
 }
 
 /**

@@ -1,5 +1,3 @@
-import { addIndentation } from "./indentation.js"
-
 //--  File containing Program object used for lexing and parsing  --//
 
 export class Program {
@@ -278,14 +276,6 @@ export class Program {
     this.lastReturnIndex = this.index;
     this.tabLineIndentation = 1;
     return true;
-  }
-
-  /**
-   * Adds the indentation level of every token of the program
-   * @returns {Boolean}
-   */
-  setIndentation(){
-    return addIndentation(this.tokens);
   }
 
 }
