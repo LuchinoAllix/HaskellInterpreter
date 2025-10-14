@@ -10,7 +10,8 @@ export const HS_special = ["(",")",",",";","[","]","`","{","}"];
  * @returns {Boolean}  
  */
 export function tokenize(program){
-  return getProgram(program);
+  getProgram(program);
+  return program.setIndentation();
 }
 
 /**
