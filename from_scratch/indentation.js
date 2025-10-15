@@ -12,9 +12,10 @@ const r1_vars = ["let","where","do","of"];
 export function addIndentation(program){
   ApplyRule2(program);
   for (let i=0; i < program.tokens.length; i++){
-    i += ApplyRule1(program,i)
-    i += ApplyRule3(program,i)
+    i += ApplyRule1(program,i);
+    i += ApplyRule3(program,i);
   }
+  proram.tokens = BigL(program,[]);
   return true;
 }
 
@@ -32,7 +33,7 @@ export function addIndentation(program){
  * @returns {Integer} Number of elements to skip in list of tokens 
  */
 function ApplyRule1(program, index){
-  if (r1_vars.includes(program.tokens[index].value)){ // --- rule 1
+  if (r1_vars.includes(program.tokens[index].value)){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
         var indent = program.tokens[index+1].column;
@@ -73,7 +74,6 @@ function ApplyRule2(program){
   }
 }
 
-
 /**
  * Applies the rule 3 to the list of tokens. Returns an offset because we may
  * add elements to the list of tokens
@@ -100,4 +100,70 @@ function ApplyRule3(program, index){
     return 1;
   }
   return 0;
+}
+
+/**
+ * Applies the application `L tokens []` to set the program to be layout 
+ * insensitive.
+ * This function could be merged with addIndentation to be more efficent.
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+function BigL(tokens, stack){
+
+  // Maj stack
+  if (r1_vars.includes(program.tokens[0].value)){
+    stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
+  } else if (program.tokens[i].value === '{'){
+    stack.push(0);
+  }
+
+  //  L (< n >: ts) (m : ms)
+  if (tokens[i].type === "indentation R3"){
+    if (stack.length >= 0){
+      let m = tokens[i].value.substring(1, tokens[i].value.length-2);
+      let n = stack[stack.length-1];
+      
+      // = ;  :  (L ts (m : ms)) if m = n 
+      if (m === n){ 
+        return [{type: "indentation L",
+                        value: ";",
+                        line: -1,
+                        column: -1}].concat(BigL(tokens.slice(1)), stack);                
+      } 
+      
+      // =  }  :  (L (< n >: ts) ms) if n < m 
+      else if (n < m){
+        return [{type: "indentation L",
+                        value: "}",
+                        line: -1,
+                        column: -1}].concat(BigL(tokens.slice(1)), 
+                                                 stack.slice(1));
+      }
+
+      //  L (< n >: ts) ms = L ts ms 
+      else {return BigL(token.slice(1),stack);}
+    }
+  } 
+}
+
+
+/**
+ * Return the index of the next token (starting at i) which is not an 
+ * indentation token
+ * @param {[{type: String, 
+ *           value: String, 
+ *           line: Integer, 
+ *           column: Integer}]} tokens
+ * @param {Integer} i starting index
+ * @returns {Integer} 
+*/
+function getNextNotIndentTokenIndex(tokens, i){
+  if (i >= tokens.length){
+    throw new Error("No not indentation token found, index too high.");
+  } else if (tokens[i].type.startsWith("indentation")){
+    this.getNextNotIndentTokenIndex(tokens, i+1);
+  } else {
+    return i;
+  }
 }
