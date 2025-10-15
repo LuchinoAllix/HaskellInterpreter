@@ -121,30 +121,34 @@ function BigL(tokens, stack){
   //  L (< n >: ts) (m : ms)
   if (tokens[i].type === "indentation R3"){
     if (stack.length >= 0){
-      let m = tokens[i].value.substring(1, tokens[i].value.length-2);
-      let n = stack[stack.length-1];
-      
-      // = ;  :  (L ts (m : ms)) if m = n 
-      if (m === n){ 
-        return [{type: "indentation L",
-                        value: ";",
-                        line: -1,
-                        column: -1}].concat(BigL(tokens.slice(1)), stack);                
-      } 
-      
-      // =  }  :  (L (< n >: ts) ms) if n < m 
-      else if (n < m){
-        return [{type: "indentation L",
-                        value: "}",
-                        line: -1,
-                        column: -1}].concat(BigL(tokens.slice(1)), 
-                                                 stack.slice(1));
-      }
-
-      //  L (< n >: ts) ms = L ts ms 
-      else {return BigL(token.slice(1),stack);}
+      return BigLR3(tokens, stack);
     }
   } 
+}
+
+function BigLR3(tokens, stack){
+  let m = tokens[i].value.substring(1, tokens[i].value.length-2);
+  let n = stack[stack.length-1];
+      
+  // = ;  :  (L ts (m : ms)) if m = n 
+  if (m === n){ 
+    return [{type: "indentation L",
+                    value: ";",
+                    line: -1,
+                    column: -1}].concat(BigL(tokens.slice(1), stack));                
+  } 
+  
+  // =  }  :  (L (< n >: ts) ms) if n < m 
+  else if (n < m){
+    return [{type: "indentation L",
+                    value: "}",
+                    line: -1,
+                    column: -1}].concat(BigL(tokens.slice(1), 
+                                              stack.slice(1)));
+  }
+
+  //  L (< n >: ts) ms = L ts ms 
+  else {return BigL(token.slice(1),stack);}
 }
 
 
