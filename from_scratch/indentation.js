@@ -126,6 +126,12 @@ function BigL(tokens, stack){
   } 
 }
 
+/** # TODO documentation
+ * 
+ * @param {*} tokens 
+ * @param {*} stack 
+ * @returns 
+ */
 function BigLR3(tokens, stack){
   let m = tokens[i].value.substring(1, tokens[i].value.length-2);
   let n = stack[stack.length-1];
@@ -148,7 +154,8 @@ function BigLR3(tokens, stack){
   }
 
   //  L (< n >: ts) ms = L ts ms 
-  else {return BigL(token.slice(1),stack);}
+  // # FIXME can stack be empty in this rule ?? if so change needed
+  else {return BigL(token.slice(1),stack);} 
 }
 
 
