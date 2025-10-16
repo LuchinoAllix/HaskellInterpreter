@@ -128,6 +128,7 @@ function bigL(tokens, stack){
 
 /** # TODO documentation
  * 
+ * 
  * @param {*} tokens 
  * @param {*} stack 
  * @returns 
@@ -138,19 +139,13 @@ function bigLR3(tokens, stack){
       
   // = ;  :  (L ts (m : ms)) if m = n 
   if (m === n){ 
-    return [{type: "indentation L",
-                    value: ";",
-                    line: -1,
-                    column: -1}].concat(bigL(tokens.slice(1), stack));
+    return [makeIndentToken("L", ":")].concat(bigL(tokens.slice(1), stack));
   } 
   
   // =  }  :  (L (< n >: ts) ms) if n < m 
   else if (n < m){
-    return [{type: "indentation L",
-                    value: "}",
-                    line: -1,
-                    column: -1}].concat(bigL(tokens.slice(1), 
-                                              stack.slice(1)));
+    return [makeIndentToken("L", "}")].concat(bigL(tokens.slice(1), 
+                                                   stack.slice(1)));
   }
 
   //  L (< n >: ts) ms = L ts ms 
@@ -171,29 +166,14 @@ function bigLR2(tokens, stack){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
-      return [{type: "indentation L",
-               value: "{",
-               line: -1,
-               column: -1}].concat(bigL(tokens.slice(1), stack));
+      return [makeIndentToken("L", "{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [{type: "indentation L",
-               value: "{",
-               line: -1,
-               column: -1},
-              {type: "indentation L",
-               value: "}",
-               line: -1,
-               column: -1}].concat(bigL([{type: "indentation R3",
-                                          value: "<" + n + ">",
-                                          line: -1,
-                                          column: -1}].concat(tokens.slice(1)) 
-                                        , stack));
+      return [makeIndentToken("L", "{"), makeIndentToken("L", "}")].concat(
+        bigL([makeIndentToken("R3","<" + n + ">")].concat(tokens.slice(1)),
+             stack));
     }
   } else if (n > 0){
-    return [{type: "indentation L",
-               value: "{",
-               line: -1,
-               column: -1}].concat(bigL(tokens.slice(1), [n]));
+    return [makeIndentToken("L","{")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 
@@ -215,4 +195,17 @@ function getNextNotIndentTokenIndex(tokens, i){
   } else {
     return i;
   }
+}
+
+/** # TODO
+ * 
+ * @param {*} type 
+ * @param {*} value 
+ * @returns 
+ */
+function makeIndentToken(type, value){
+  return {type: "indentation " + type,
+          value: value,
+          line: -1,
+          column: -1}
 }
