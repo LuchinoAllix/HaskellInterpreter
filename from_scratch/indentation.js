@@ -98,6 +98,7 @@ function ApplyRule3(program, index){
  * Applies the application `L tokens []` to set the program to be layout 
  * insensitive.
  * This function could be merged with addIndentation to be more efficent.
+ * 
  * @param {Program} program 
  * @returns {Boolean}
  */
@@ -118,8 +119,12 @@ function bigL(tokens, stack){
   } 
 }
 
-/** # TODO documentation
- * 
+/** 
+ * Applies the following rules :
+ *  L (< n >: ts) (m : ms) = ;  :  (L ts (m : ms))     if m = n
+ *                         = }  :  (L (< n >: ts) ms)  if n < m
+ *  L (< n >: ts) ms       = L ts ms 
+ * # FIXME can stack be empty in this rule ?? if so change needed
  * 
  * @param {[Token]} tokens
  * @param {[Integer]} stack 
@@ -129,22 +134,17 @@ function bigLR3(tokens, stack){
   let n = tokens[i].value.substring(1, tokens[i].value.length-2);
   let m = stack[stack.length-1];
       
-  // = ;  :  (L ts (m : ms)) if m = n 
   if (m === n){ 
     return [Token("L", ":")].concat(bigL(tokens.slice(1), stack));
-  } 
-  
-  // =  }  :  (L (< n >: ts) ms) if n < m 
-  else if (n < m){
+  } else if (n < m){
     return [Token("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
-  }
-
-  //  L (< n >: ts) ms = L ts ms 
-  // # FIXME can stack be empty in this rule ?? if so change needed
-  else {return bigL(token.slice(1),stack);} 
+  } else {
+    return bigL(token.slice(1),stack);
+  } 
 }
 
 /**
+ * Applies the following rules :
  *  L ({n} : ts) (m : ms) = {  :  (L ts (n : m : ms))       if n > m (Note 1)
  *  L ({n} : ts) []       = {  :  (L ts [n])                if n > 0 (Note 1)
  *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2)
@@ -174,7 +174,7 @@ function bigLR2(tokens, stack){
  * Return the index of the next token (starting at i) which is not an 
  * indentation token
  * 
- * @param {Tokens} tokens
+ * @param {[Token]} tokens
  * @param {Integer} i starting index
  * @returns {Integer} index of next desired token
 */
