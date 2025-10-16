@@ -133,15 +133,15 @@ function bigL(tokens, stack){
  * @returns 
  */
 function bigLR3(tokens, stack){
-  let m = tokens[i].value.substring(1, tokens[i].value.length-2);
-  let n = stack[stack.length-1];
+  let n = tokens[i].value.substring(1, tokens[i].value.length-2);
+  let m = stack[stack.length-1];
       
   // = ;  :  (L ts (m : ms)) if m = n 
   if (m === n){ 
     return [{type: "indentation L",
                     value: ";",
                     line: -1,
-                    column: -1}].concat(bigL(tokens.slice(1), stack));                
+                    column: -1}].concat(bigL(tokens.slice(1), stack));
   } 
   
   // =  }  :  (L (< n >: ts) ms) if n < m 
@@ -158,6 +158,44 @@ function bigLR3(tokens, stack){
   else {return bigL(token.slice(1),stack);} 
 }
 
+/**
+ *  L ({n} : ts) (m : ms) = {  :  (L ts (n : m : ms))       if n > m (Note 1)
+ *  L ({n} : ts) []       = {  :  (L ts [n])                if n > 0 (Note 1)
+ *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2) 
+ * @param {*} tokens 
+ * @param {*} stack 
+ */
+function bigLR2(tokens, stack){
+  let n = tokens[i].value.substring(1, tokens[i].value.length-2);
+  if (stack.length > 0){
+    let m = stack[stack.length-1];
+    if (n > m){
+      stack.push(n);
+      return [{type: "indentation L",
+               value: "{",
+               line: -1,
+               column: -1}].concat(bigL(tokens.slice(1), stack));
+    } else {
+      return [{type: "indentation L",
+               value: "{",
+               line: -1,
+               column: -1},
+              {type: "indentation L",
+               value: "}",
+               line: -1,
+               column: -1}].concat(bigL([{type: "indentation R3",
+                                          value: "<" + n + ">",
+                                          line: -1,
+                                          column: -1}].concat(tokens.slice(1)) 
+                                        , stack));
+    }
+  } else if (n > 0){
+    return [{type: "indentation L",
+               value: "{",
+               line: -1,
+               column: -1}].concat(bigL(tokens.slice(1), [n]));
+  }
+}
 
 /**
  * Return the index of the next token (starting at i) which is not an 
