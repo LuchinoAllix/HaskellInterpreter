@@ -112,11 +112,16 @@ function bigL(tokens, stack){
   }
 
   //  L (< n >: ts) (m : ms)
-  if (tokens[i].type === "indentation R3"){
+  if (tokens[0].type === "indentation R3"){
     if (stack.length >= 0){
       return bigLR3(tokens, stack);
     }
-  } 
+  } else if (tokens[0].type === "indentation R2" || 
+             tokens[0].type === "indentation R1"){
+    return bigLR2(tokens, stack);           
+  } else if (true){
+    // # TODO
+  }
 }
 
 /** 
@@ -153,7 +158,8 @@ function bigLR3(tokens, stack){
  * @param {[Integer]} stack 
  * @returns  
  */
-function bigLR2(tokens, stack){
+function bigLR2(tokens, stack){ 
+  // # TODO verify conditions upon which this function is called
   let n = tokens[i].value.substring(1, tokens[i].value.length-2);
   if (stack.length > 0){
     let m = stack[stack.length-1];
