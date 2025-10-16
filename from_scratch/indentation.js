@@ -15,7 +15,7 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  proram.tokens = BigL(program,[]);
+  proram.tokens = bigL(program,[]);
   return true;
 }
 
@@ -109,7 +109,7 @@ function ApplyRule3(program, index){
  * @param {Program} program 
  * @returns {Boolean}
  */
-function BigL(tokens, stack){
+function bigL(tokens, stack){
 
   // Maj stack
   if (r1_vars.includes(program.tokens[0].value)){
@@ -121,7 +121,7 @@ function BigL(tokens, stack){
   //  L (< n >: ts) (m : ms)
   if (tokens[i].type === "indentation R3"){
     if (stack.length >= 0){
-      return BigLR3(tokens, stack);
+      return bigLR3(tokens, stack);
     }
   } 
 }
@@ -132,7 +132,7 @@ function BigL(tokens, stack){
  * @param {*} stack 
  * @returns 
  */
-function BigLR3(tokens, stack){
+function bigLR3(tokens, stack){
   let m = tokens[i].value.substring(1, tokens[i].value.length-2);
   let n = stack[stack.length-1];
       
@@ -141,7 +141,7 @@ function BigLR3(tokens, stack){
     return [{type: "indentation L",
                     value: ";",
                     line: -1,
-                    column: -1}].concat(BigL(tokens.slice(1), stack));                
+                    column: -1}].concat(bigL(tokens.slice(1), stack));                
   } 
   
   // =  }  :  (L (< n >: ts) ms) if n < m 
@@ -149,13 +149,13 @@ function BigLR3(tokens, stack){
     return [{type: "indentation L",
                     value: "}",
                     line: -1,
-                    column: -1}].concat(BigL(tokens.slice(1), 
+                    column: -1}].concat(bigL(tokens.slice(1), 
                                               stack.slice(1)));
   }
 
   //  L (< n >: ts) ms = L ts ms 
   // # FIXME can stack be empty in this rule ?? if so change needed
-  else {return BigL(token.slice(1),stack);} 
+  else {return bigL(token.slice(1),stack);} 
 }
 
 
