@@ -1,5 +1,7 @@
 //--  File containing Program object used for lexing and parsing  --//
 
+import { Token } from "./Token.js";
+
 export class Program {
   constructor(input){
     this.input = input;
@@ -256,7 +258,7 @@ export class Program {
 
   /**
    * Return the last token made in the program if there is one
-   * @returns {{type: String, value: String, line: Integer, column: Integer}}
+   * @returns {Token}
    */ 
   getLastToken(){
     if (this.tokens.length < 0){

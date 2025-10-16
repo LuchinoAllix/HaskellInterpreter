@@ -1,5 +1,7 @@
 //--    File containing functions to make the program layout insensitive    --//
 
+import { Token } from "./Token.js";
+
 const r1_vars = ["let","where","do","of"];
 
 /**
@@ -37,17 +39,12 @@ function ApplyRule1(program, index){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
         var indent = program.tokens[index+1].column;
-        program.tokens.splice(index+1, 0, {type: "indentation R1",
-                                            value: "{" + indent + "}",
-                                            line: -1,
-                                            column: -1});
+        program.tokens.splice(index+1, 0, Token("indentation R1", 
+                                                "{" + indent + "}"));
         return 2 // (larger offset to avoid collision between R1 and R3)
       }
     } else { // end of file reached
-      program.tokens.splice(index+1, 0, {type: "indentation R1",
-                                          value: "{0}",
-                                          line: -1,
-                                          column: -1});
+      program.tokens.splice(index+1, 0, Token("indentation R1", "{0}"));
       return 1;
     }
   }
@@ -66,10 +63,8 @@ function ApplyRule2(program){
   if (program.tokens.length > 0){
     if (program.tokens[0].value !== "module" && 
         program.tokens[0].value !== "{"){
-      program.tokens.splice(0, 0, {type: "indentation R2",
-                                   value: "{" + program.tokens[0].column + "}",
-                                   line: program.tokens[0].line,
-                                   column: program.tokens[0].column});
+      program.tokens.splice(0, 0, Token("R2", 
+                                        "{" + program.tokens[0].column + "}"));
     }
   }
 }
@@ -93,10 +88,7 @@ function ApplyRule3(program, index){
       program.tokens[index].line !== program.tokens[index+1].line && 
       program.tokens[index+1].column > 1){
     var indent = program.tokens[index+1].column;
-    program.tokens.splice(index+1, 0, {type: "indentation R3",
-                                       value: "<" + indent + ">",
-                                       line: -1,
-                                       column: -1});
+    program.tokens.splice(index+1, 0, Token("R3", "<" + indent + ">"));
     return 1;
   }
   return 0;
@@ -129,9 +121,9 @@ function bigL(tokens, stack){
 /** # TODO documentation
  * 
  * 
- * @param {*} tokens 
- * @param {*} stack 
- * @returns 
+ * @param {[Token]} tokens
+ * @param {[Integer]} stack 
+ * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
   let n = tokens[i].value.substring(1, tokens[i].value.length-2);
@@ -139,13 +131,12 @@ function bigLR3(tokens, stack){
       
   // = ;  :  (L ts (m : ms)) if m = n 
   if (m === n){ 
-    return [makeIndentToken("L", ":")].concat(bigL(tokens.slice(1), stack));
+    return [Token("L", ":")].concat(bigL(tokens.slice(1), stack));
   } 
   
   // =  }  :  (L (< n >: ts) ms) if n < m 
   else if (n < m){
-    return [makeIndentToken("L", "}")].concat(bigL(tokens.slice(1), 
-                                                   stack.slice(1)));
+    return [Token("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
   }
 
   //  L (< n >: ts) ms = L ts ms 
@@ -156,9 +147,11 @@ function bigLR3(tokens, stack){
 /**
  *  L ({n} : ts) (m : ms) = {  :  (L ts (n : m : ms))       if n > m (Note 1)
  *  L ({n} : ts) []       = {  :  (L ts [n])                if n > 0 (Note 1)
- *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2) 
- * @param {*} tokens 
- * @param {*} stack 
+ *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2)
+ *  
+ * @param {[Tokens]} tokens
+ * @param {[Integer]} stack 
+ * @returns  
  */
 function bigLR2(tokens, stack){
   let n = tokens[i].value.substring(1, tokens[i].value.length-2);
@@ -166,26 +159,24 @@ function bigLR2(tokens, stack){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
-      return [makeIndentToken("L", "{")].concat(bigL(tokens.slice(1), stack));
+      return [Token("L", "{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [makeIndentToken("L", "{"), makeIndentToken("L", "}")].concat(
-        bigL([makeIndentToken("R3","<" + n + ">")].concat(tokens.slice(1)),
+      return [Token("L", "{"), Token("L", "}")].concat(
+        bigL([Token("R3","<" + n + ">")].concat(tokens.slice(1)),
              stack));
     }
   } else if (n > 0){
-    return [makeIndentToken("L","{")].concat(bigL(tokens.slice(1), [n]));
+    return [Token("L","{")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 
 /**
  * Return the index of the next token (starting at i) which is not an 
  * indentation token
- * @param {[{type: String, 
- *           value: String, 
- *           line: Integer, 
- *           column: Integer}]} tokens
+ * 
+ * @param {Tokens} tokens
  * @param {Integer} i starting index
- * @returns {Integer} 
+ * @returns {Integer} index of next desired token
 */
 function getNextNotIndentTokenIndex(tokens, i){
   if (i >= tokens.length){
@@ -197,15 +188,3 @@ function getNextNotIndentTokenIndex(tokens, i){
   }
 }
 
-/** # TODO
- * 
- * @param {*} type 
- * @param {*} value 
- * @returns 
- */
-function makeIndentToken(type, value){
-  return {type: "indentation " + type,
-          value: value,
-          line: -1,
-          column: -1}
-}
