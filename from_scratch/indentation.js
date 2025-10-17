@@ -17,7 +17,9 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
+  console.log(program.tokens);
   program.tokens = bigL(program.tokens,[]);
+  console.log(program.tokens);
   return true;
 }
 
@@ -39,12 +41,12 @@ function ApplyRule1(program, index){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
         var indent = program.tokens[index+1].column;
-        program.tokens.splice(index+1, 0, new Token("indentation R1", 
+        program.tokens.splice(index+1, 0, Token.new("indentation R1", 
                                                     "{" + indent + "}"));
         return 2 // (larger offset to avoid collision between R1 and R3)
       }
     } else { // end of file reached
-      program.tokens.splice(index+1, 0, new Token("indentation R1", "{0}"));
+      program.tokens.splice(index+1, 0, Token.new("indentation R1", "{0}"));
       return 1;
     }
   }
@@ -63,7 +65,7 @@ function ApplyRule2(program){
   if (program.tokens.length > 0){
     if (program.tokens[0].value !== "module" && 
         program.tokens[0].value !== "{"){
-      program.tokens.splice(0, 0, new Token("R2", 
+      program.tokens.splice(0, 0, Token.new("R2", 
                                         "{" + program.tokens[0].column + "}"));
     }
   }
@@ -88,7 +90,7 @@ function ApplyRule3(program, index){
       program.tokens[index].line !== program.tokens[index+1].line && 
       program.tokens[index+1].column > 1){
     var indent = program.tokens[index+1].column;
-    program.tokens.splice(index+1, 0, new Token("R3", "<" + indent + ">"));
+    program.tokens.splice(index+1, 0, Token.new("R3", "<" + indent + ">"));
     return 1;
   }
   return 0;
@@ -133,7 +135,7 @@ function bigL(tokens, stack){
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens[0].value === "}" && stack.length > 0){
     if (stack[0] === 0){
-      return [new Token("L","}")].concat(bigL(tokens.slice(1), stack.slice(1)));
+      return [Token.new("L","}")].concat(bigL(tokens.slice(1), stack.slice(1)));
     } else {
       throw new Error("Parse error bigL (note 3");
     }
@@ -141,7 +143,7 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens[0].value === "{" && stack.length > 0){
-    return [new Token("L","}")].concat(bigL(tokens.slice(1), [0].concat(stack)));
+    return [Token.new("L","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
   } 
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
@@ -162,7 +164,7 @@ function bigL(tokens, stack){
   
   // |  L [] (m : ms) = }  :  L [] ms if m≠0 (Note 6) 
   else if (tokens.length > 0 && stack[0] !== 0){
-    return [new Token("L", "{")].concat(bigL([], stack.slice(1)));
+    return [Token.new("L", "{")].concat(bigL([], stack.slice(1)));
   } 
   
   else {
@@ -185,9 +187,9 @@ function bigLR3(tokens, stack){
   let m = stack[stack.length-1];
       
   if (m === n){ 
-    return [new Token("L", ":")].concat(bigL(tokens.slice(1), stack));
+    return [Token.new("L", ":")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
-    return [new Token("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
+    return [Token.new("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
   } else {
     return bigL(token.slice(1),stack);
   } 
@@ -210,14 +212,14 @@ function bigLR2(tokens, stack){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
-      return [new Token("L", "{")].concat(bigL(tokens.slice(1), stack));
+      return [Token.new("L", "{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [new Token("L", "{"), new Token("L", "}")].concat(
-        bigL([new Token("R3","<" + n + ">")].concat(tokens.slice(1)),
+      return [Token.new("L", "{"), Token.new("L", "}")].concat(
+        bigL([Token.new("R3","<" + n + ">")].concat(tokens.slice(1)),
              stack));
     }
   } else if (n > 0){
-    return [new Token("L","{")].concat(bigL(tokens.slice(1), [n]));
+    return [Token.new("L","{")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 

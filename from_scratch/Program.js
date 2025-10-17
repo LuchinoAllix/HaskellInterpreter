@@ -133,11 +133,8 @@ export class Program {
         this.tokens[this.tokens.length - 1].type === type){
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
-      this.tokens.push({type:type,
-                        value:this.getChar(), 
-                        line:this.lineCount, 
-                        column:this.index - this.lastReturnIndex 
-                                          + this.tabLineIndentation});
+      this.tokens.push(new Token(type, this.getChar(), this.lineCount,
+        this.index - this.lastReturnIndex + this.tabLineIndentation));
     }
     this.incIndex();
     return true;
@@ -150,11 +147,8 @@ export class Program {
    * @returns {Boolean}
    */
   addWordToken(type, word){
-    this.tokens.push({type:type, 
-                      value:word, 
-                      line:this.lineCount, 
-                      column:this.index - this.lastReturnIndex 
-                                        + this.tabLineIndentation});
+    this.tokens.push(new Token(type, word, this.lineCount, 
+      this.index - this.lastReturnIndex + this.tabLineIndentation));
     this.incIndexN(word.length);
     return true;
   }
@@ -248,10 +242,7 @@ export class Program {
     }
     var startIndex = this.tokens.pop().value;
     if (type !== "NULL"){
-      this.tokens.push({type:type, 
-                        value:accumulator, 
-                        line:line, 
-                        column:column});
+      this.tokens.push(new Token(type, accumulator, line, column));
     }
     return startIndex;
   }
