@@ -17,7 +17,7 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  proram.tokens = bigL(program,[]);
+  program.tokens = bigL(program.tokens,[]);
   return true;
 }
 
@@ -205,7 +205,7 @@ function bigLR3(tokens, stack){
  */
 function bigLR2(tokens, stack){ 
   // # TODO verify conditions upon which this function is called
-  let n = tokens[i].value.substring(1, tokens[i].value.length-2);
+  let n = tokens[0].value.substring(1, tokens[0].value.length-2);
   if (stack.length > 0){
     let m = stack[stack.length-1];
     if (n > m){
