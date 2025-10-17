@@ -107,7 +107,7 @@ function bigL(tokens, stack){
   // Maj stack
   if (r1_vars.includes(program.tokens[0].value)){
     stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
-  } else if (program.tokens[i].value === '{'){
+  } else if (program.tokens[0].value === '{'){
     stack.push(0);
   }
 
