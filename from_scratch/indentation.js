@@ -17,9 +17,9 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  console.log(program.tokens);
-  program.tokens = bigL(program.tokens,[]);
-  console.log(program.tokens);
+  //program.tokens = 
+  console.log(bigL(program.tokens,[]));
+  // # FIXME : error with big L, output is only one element
   return true;
 }
 
@@ -109,9 +109,10 @@ function ApplyRule3(program, index){
  * @returns {Boolean}
  */
 function bigL(tokens, stack){
+  if (tokens.length > 0){
 
   // Maj stack
-  if (r1_vars.includes(tokens[0].value)){
+  if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
     stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
   } else if (tokens[0].value === '{'){
     stack.push(0);
@@ -144,7 +145,9 @@ function bigL(tokens, stack){
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens[0].value === "{" && stack.length > 0){
     return [Token.new("L","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
-  } 
+  }
+  
+  }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
   //                                               (Note 5)
@@ -183,7 +186,7 @@ function bigL(tokens, stack){
  * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
-  let n = tokens[i].value.substring(1, tokens[i].value.length-2);
+  let n = tokens[0].value.substring(1, tokens[0].value.length-1);
   let m = stack[stack.length-1];
       
   if (m === n){ 
@@ -191,7 +194,7 @@ function bigLR3(tokens, stack){
   } else if (n < m){
     return [Token.new("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
   } else {
-    return bigL(token.slice(1),stack);
+    return bigL(tokens.slice(1), stack);
   } 
 }
 
@@ -201,13 +204,12 @@ function bigLR3(tokens, stack){
  *  L ({n} : ts) []       = {  :  (L ts [n])                if n > 0 (Note 1)
  *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2)
  *  
- * @param {[Tokens]} tokens
+ * @param {[Token]} tokens
  * @param {[Integer]} stack 
  * @returns  
  */
 function bigLR2(tokens, stack){ 
-  // # TODO verify conditions upon which this function is called
-  let n = tokens[0].value.substring(1, tokens[0].value.length-2);
+  let n = tokens[0].value.substring(1, tokens[0].value.length-1);
   if (stack.length > 0){
     let m = stack[stack.length-1];
     if (n > m){
