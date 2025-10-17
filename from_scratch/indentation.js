@@ -115,16 +115,58 @@ function bigL(tokens, stack){
     stack.push(0);
   }
 
-  //  L (< n >: ts) (m : ms)
-  if (tokens[0].type === "indentation R3"){
-    if (stack.length >= 0){
-      return bigLR3(tokens, stack);
-    }
-  } else if (tokens[0].type === "indentation R2" || 
-             tokens[0].type === "indentation R1"){
+  // | L (< n >: ts) (m : ms) 
+  // | L (< n >: ts) ms 
+  if (tokens[0].type === "indentation R3" && stack.length > 0){
+    return bigLR3(tokens, stack);
+  } 
+  
+  // | L ({n} : ts) (m : ms)
+  // | L ({n} : ts) []
+  // | L ({n} : ts) ms 
+  else if (tokens[0].type === "indentation R2" || 
+           tokens[0].type === "indentation R1"){
     return bigLR2(tokens, stack);           
-  } else if (true){
-    // # TODO
+  } 
+  
+  // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
+  // | L (} : ts) ms        = parse-error     (Note 3) 
+  else if (tokens[0].value === "}" && stack.length > 0){
+    if (stack[0] === 0){
+      return [Token("L","}")].concat(bigL(tokens.slice(1), stack.slice(1)));
+    } else {
+      throw new Error("Parse error bigL (note 3");
+    }
+  } 
+  
+  // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
+  else if (tokens[0].value === "{" && stack.length > 0){
+    return [Token("L","}")].concat(bigL(tokens.slice(1), [0].concat(stack)));
+  } 
+  
+  // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
+  //                                               (Note 5)
+  // | L (t : ts) ms       = t  :  (L ts ms) 
+  else if (tokens.length > 0 && stack.length > 0){
+    if (false){
+      // # TODO figure out m ∕= 0 and parse-error(t)
+    } else {
+      return [tokens[0]].concat(bigL(tokens.slice(1), stack));
+    }
+  } 
+  
+  // |  L [] [] = [] 
+  else if (tokens.length === 0 && stack.length === 0){
+    return [];
+  } 
+  
+  // |  L [] (m : ms) = }  :  L [] ms if m≠0 (Note 6) 
+  else if (tokens.length > 0 && stack[0] !== 0){
+    return [Token("L", "{")].concat(bigL([], stack.slice(1)));
+  } 
+  
+  else {
+    throw new Error("Pattern matching not exhaustive in bigL")
   }
 }
 
