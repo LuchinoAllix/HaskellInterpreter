@@ -98,6 +98,10 @@ function ApplyRule3(program, index){
  * Applies the application `L tokens []` to set the program to be layout 
  * insensitive.
  * This function could be merged with addIndentation to be more efficent.
+ * In following the rules, we assume :
+ * - that if the parameter is not represented by [] then it cannot be empty
+ * - we go through the list of tokens left to rght 
+ * - we go through the stack from righ to left (because it's a stack)
  * 
  * @param {Program} program 
  * @returns {Boolean}
@@ -105,9 +109,9 @@ function ApplyRule3(program, index){
 function bigL(tokens, stack){
 
   // Maj stack
-  if (r1_vars.includes(program.tokens[0].value)){
+  if (r1_vars.includes(tokens[0].value)){
     stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
-  } else if (program.tokens[0].value === '{'){
+  } else if (tokens[0].value === '{'){
     stack.push(0);
   }
 
@@ -129,7 +133,6 @@ function bigL(tokens, stack){
  *  L (< n >: ts) (m : ms) = ;  :  (L ts (m : ms))     if m = n
  *                         = }  :  (L (< n >: ts) ms)  if n < m
  *  L (< n >: ts) ms       = L ts ms 
- * # FIXME can stack be empty in this rule ?? if so change needed
  * 
  * @param {[Token]} tokens
  * @param {[Integer]} stack 
