@@ -17,8 +17,7 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  //program.tokens = 
-  console.log(bigL(program.tokens,[]));
+  program.tokens = bigL(program.tokens, []);
   // # FIXME : error with big L, output is only one element
   return true;
 }
@@ -41,12 +40,12 @@ function ApplyRule1(program, index){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
         var indent = program.tokens[index+1].column;
-        program.tokens.splice(index+1, 0, Token.new("indentation R1", 
+        program.tokens.splice(index+1, 0, Token.new("R1", 
                                                     "{" + indent + "}"));
         return 2 // (larger offset to avoid collision between R1 and R3)
       }
     } else { // end of file reached
-      program.tokens.splice(index+1, 0, Token.new("indentation R1", "{0}"));
+      program.tokens.splice(index+1, 0, Token.new("R1", "{0}"));
       return 1;
     }
   }
@@ -109,32 +108,35 @@ function ApplyRule3(program, index){
  * @returns {Boolean}
  */
 function bigL(tokens, stack){
-  if (tokens.length > 0){
+  // console.log("BigL");
 
   // Maj stack
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
     stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
-  } else if (tokens[0].value === '{'){
+  } else if (tokens.length > 0 && tokens[0].value === '{'){
     stack.push(0);
   }
 
   // | L (< n >: ts) (m : ms) 
   // | L (< n >: ts) ms 
-  if (tokens[0].type === "indentation R3" && stack.length > 0){
+  if (tokens.length > 0 && 
+      tokens[0].type === "indentation R3" && 
+      stack.length > 0){
     return bigLR3(tokens, stack);
   } 
   
   // | L ({n} : ts) (m : ms)
   // | L ({n} : ts) []
   // | L ({n} : ts) ms 
-  else if (tokens[0].type === "indentation R2" || 
-           tokens[0].type === "indentation R1"){
+  else if (tokens.length > 0 && 
+           (tokens[0].type === "indentation R2" || 
+            tokens[0].type === "indentation R1")){
     return bigLR2(tokens, stack);           
   } 
   
   // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
   // | L (} : ts) ms        = parse-error     (Note 3) 
-  else if (tokens[0].value === "}" && stack.length > 0){
+  else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0] === 0){
       return [Token.new("L","}")].concat(bigL(tokens.slice(1), stack.slice(1)));
     } else {
@@ -143,10 +145,8 @@ function bigL(tokens, stack){
   } 
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
-  else if (tokens[0].value === "{" && stack.length > 0){
+  else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
     return [Token.new("L","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
-  }
-  
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
@@ -163,15 +163,15 @@ function bigL(tokens, stack){
   // |  L [] [] = [] 
   else if (tokens.length === 0 && stack.length === 0){
     return [];
-  } 
+  }
   
   // |  L [] (m : ms) = }  :  L [] ms if m≠0 (Note 6) 
-  else if (tokens.length > 0 && stack[0] !== 0){
-    return [Token.new("L", "{")].concat(bigL([], stack.slice(1)));
-  } 
+  else if (tokens.length === 0 && stack[0] !== 0){
+    return [Token.new("L", "}")].concat(bigL([], stack.slice(1)));
+  }
   
   else {
-    throw new Error("Pattern matching not exhaustive in bigL")
+    throw new Error("Pattern matching not exhaustive in bigL");
   }
 }
 
