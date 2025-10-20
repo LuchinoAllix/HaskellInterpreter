@@ -5,7 +5,8 @@ import { Token } from "./Token.js";
 const r1_vars = ["let","where","do","of"];
 
 /**
- * Applies the indentation <n> rules 
+ * Applies the indentation <n> rules and then the application to make the 
+ * program layout insensitive
  * 
  * @param {String} input 
  * @param {Program} program
@@ -18,11 +19,6 @@ export function addIndentation(program){
     i += ApplyRule3(program,i);
   }
   program.tokens = bigL(program.tokens, []);
-  
-  // # FIXME : error with big L, output often contain one :
-  // " {"type":"indentation L","value":"}","line":-1,"column":-1}"
-  // too much, because something is pushed on the stack and it should not
-  
   return true;
 }
 
@@ -142,7 +138,8 @@ function bigL(tokens, stack){
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0] === 0){
-      return [Token.new("L","}")].concat(bigL(tokens.slice(1), stack.slice(1)));
+      return [Token.new("L","}")].concat(bigL(tokens.slice(1), 
+                                              stack.splice(-1,1)));
     } else {
       throw new Error("Parse error bigL (note 3");
     }
@@ -150,7 +147,7 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
-    return [Token.new("L","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
+    return [Token.new("bigL","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
@@ -171,7 +168,10 @@ function bigL(tokens, stack){
   
   // |  L [] (m : ms) = }  :  L [] ms if m≠0 (Note 6) 
   else if (tokens.length === 0 && stack[0] !== 0){
-    return [Token.new("L", "}")].concat(bigL([], stack.slice(1)));
+    if (stack.length === 1){
+      stack = [];
+    }
+    return [Token.new("bigL", "}")].concat(bigL([], stack.splice(-1,1)));
   }
   
   else {
@@ -194,9 +194,10 @@ function bigLR3(tokens, stack){
   let m = stack[stack.length-1];
       
   if (m === n){ 
-    return [Token.new("L", ":")].concat(bigL(tokens.slice(1), stack));
+    return [Token.new("bigL", ":")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
-    return [Token.new("L", "}")].concat(bigL(tokens.slice(1), stack.slice(1)));
+    return [Token.new("bigL", "}")].concat(bigL(tokens.slice(1), 
+                                             stack.splice(-1,1)));
   } else {
     return bigL(tokens.slice(1), stack);
   } 
@@ -218,14 +219,14 @@ function bigLR2(tokens, stack){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
-      return [Token.new("L", "{")].concat(bigL(tokens.slice(1), stack));
+      return [Token.new("bigL", "{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [Token.new("L", "{"), Token.new("L", "}")].concat(
+      return [Token.new("bigL", "{"), Token.new("bigL", "}")].concat(
         bigL([Token.new("R3","<" + n + ">")].concat(tokens.slice(1)),
              stack));
     }
   } else if (n > 0){
-    return [Token.new("L","{")].concat(bigL(tokens.slice(1), [n]));
+    return [Token.new("bigL","{")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 
@@ -241,7 +242,7 @@ function getNextNotIndentTokenIndex(tokens, i){
   if (i >= tokens.length){
     throw new Error("No not indentation token found, index too high.");
   } else if (tokens[i].type.startsWith("indentation")){
-    this.getNextNotIndentTokenIndex(tokens, i+1);
+    getNextNotIndentTokenIndex(tokens, i+1);
   } else {
     return i;
   }
