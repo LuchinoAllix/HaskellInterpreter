@@ -18,7 +18,11 @@ export function addIndentation(program){
     i += ApplyRule3(program,i);
   }
   program.tokens = bigL(program.tokens, []);
-  // # FIXME : error with big L, output is only one element
+  
+  // # FIXME : error with big L, output often contain one :
+  // " {"type":"indentation L","value":"}","line":-1,"column":-1}"
+  // too much, because something is pushed on the stack and it should not
+  
   return true;
 }
 
