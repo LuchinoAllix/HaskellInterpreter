@@ -1,9 +1,9 @@
-//--    File containing functions to make the program layout insensitive    --//
-
 import { Token } from "../Token.js";
 
-// reserved names that can introduce indentation dependencies
-const r1_vars = ["let","where","do","of"];
+//--    File containing functions to make the program layout insensitive    --//
+
+const r1_vars = ["let","where","do","of"]; // reserved names that can introduce 
+                                           // indentation dependencies
 
 /**
  * Applies the indentation <n> rules and then the application to make the 
