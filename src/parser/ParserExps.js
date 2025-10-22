@@ -1,3 +1,6 @@
+import { Node } from "../Node.js";
+
+
 //--  File containing parser functions for expressions  related rules  --//
 
 /**
@@ -5,63 +8,63 @@
  *        | pat varop pat 
  *        | ( funlhs ) apat { apat }
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getFunlhs(program) {
+function getFunlhs(program){
     return false;
 }
 
 /**
  * rhs → = exp [where decls] | gdrhs [where decls]
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getRhs(program) {
+function getRhs(program){
     return false;
 }
 
 /**
  * gdrhs → guards = exp [gdrhs]
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGdrhs(program) {
+function getGdrhs(program){
     return false;
 }
 
 /**
  * guards → | guard1, …, guardn (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGuards(program) {
+function getGuards(program){
     return false;
 }
 
 /**
  * guard → pat <- infixexp | let decls | infixexp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGuard(program) {
+function getGuard(program){
     return false;
 }
 
 /**
  * exp → infixexp :: [context =>] type | infixexp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getExp(program) {
+function getExp(program){
     return false;
 }
 
 /**
  * infixexp → lexp qop infixexp | - infixexp | lexp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getInfixexp(program) {
+function getInfixexp(program){
     return false;
 }
 
@@ -73,18 +76,18 @@ function getInfixexp(program) {
  *      | do { stmts } 
  *      | fexp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getLexp(program) {
+function getLexp(program){
     return false;
 }
 
 /**
  * fexp → [fexp] aexp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getFexp(program) {
+function getFexp(program){
     return false;
 }
 
@@ -102,27 +105,27 @@ function getFexp(program) {
  *      | qcon { fbind1 , … , fbindn } 
  *      | aexp⟨qcon⟩ { fbind1 , … , fbindn }
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getAexp(program) {
+function getAexp(program){
     return false;
 }
 
 /**
  * qual → pat <- exp | let decls | exp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQual(program) {
+function getQual(program){
     return false;
 }
 
 /**
  * alts → alt1 ; … ; altn (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getAlts(program) {
+function getAlts(program){
     return false;
 }
 
@@ -131,27 +134,27 @@ function getAlts(program) {
  *     | pat gdpat [where decls] 
  *     | (empty alternative)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getAlt(program) {
+function getAlt(program){
     return false;
 }
 
 /**
  * gdpat → guards -> exp [ gdpat ]
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGdpat(program) {
+function getGdpat(program){
     return false;
 }
 
 /**
  * stmts → stmt1 … stmtn exp [;] (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getStmts(program) {
+function getStmts(program){
     return false;
 }
 
@@ -161,27 +164,27 @@ function getStmts(program) {
  *      | let decls ; 
  *      | ;             (empty statement)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getStmt(program) {
+function getStmt(program){
     return false;
 }
 
 /**
  * fbind → qvar = exp
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getFbind(program) {
+function getFbind(program){
     return false;
 }
 
 /**
  * pat → lpat qconop pat | lpat
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getPat(program) {
+function getPat(program){
     return false;
 }
 
@@ -190,9 +193,9 @@ function getPat(program) {
  *      | - (integer | float) 
  *      | gcon apat1 … apatk
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getLpat(program) {
+function getLpat(program){
     return false;
 }
 
@@ -207,18 +210,18 @@ function getLpat(program) {
  *      | [ pat1 , … , patk ] 
  *      | ~ apat
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getApat(program) {
+function getApat(program){
     return false;
 }
 
 /**
  * fpat → qvar = pat
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getFpat(program) {
+function getFpat(program){
     return false;
 }
 
@@ -228,107 +231,107 @@ function getFpat(program) {
  *      | (,{,}) 
  *      | qcon
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGcon(program) {
+function getGcon(program){
     return false;
 }
 
 /**
  * var → varid | ( varsym )
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getVar(program) {
+function getVar(program){
     return false;
 }
 
 /**
  * qvar → qvarid | ( qvarsym )
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQvar(program) {
+function getQvar(program){
     return false;
 }
 
 /**
  * con → conid | ( consym )
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getCon(program) {
+function getCon(program){
     return false;
 }
 
 /**
  * qcon → qconid | ( gconsym )
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQcon(program) {
+function getQcon(program){
     return false;
 }
 
 /**
  * varop → varsym | ` varid `
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getVarop(program) {
+function getVarop(program){
     return false;
 }
 
 /**
  * qvarop → qvarsym | ` qvarid `
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQvarop(program) {
+function getQvarop(program){
     return false;
 }
 
 /**
  * conop → consym | ` conid `
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getConop(program) {
+function getConop(program){
     return false;
 }
 
 /**
  * qconop → gconsym | ` qconid `
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQconop(program) {
+function getQconop(program){
     return false;
 }
 
 /**
  * op → varop | conop
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getOp(program) {
+function getOp(program){
     return false;
 }
 
 /**
  * qop → qvarop | qconop
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getQop(program) {
+function getQop(program){
     return false;
 }
 
 /**
  * gconsym → : | qconsym
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
-function getGconsym(program) {
+function getGconsym(program){
     return false;
 }

@@ -1,9 +1,11 @@
+import { Node } from "../Node.js";
+
 //--  File containing parer functions for type declaration  related rules  --//
 
 /**
  * type → btype [-> type] (function type)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getType(program){
     return false;
@@ -12,7 +14,7 @@ function getType(program){
 /**
  * btype → [btype] atype (type application)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getBtype(program){
     return false;
@@ -25,7 +27,7 @@ function getBtype(program){
  *       | [type]               (list type) 
  *       | (type)               (parenthesized constructor)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function gettype(program){
     return false;
@@ -38,7 +40,7 @@ function gettype(program){
  *        | (->) (function constructor) 
  *        | (,{,}) (tupling constructors)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getGtycon(program){
     return false;
@@ -48,7 +50,7 @@ function getGtycon(program){
  * context → class 
  *         | (class1, ..., classn) (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getContext(program){
     return false;
@@ -58,7 +60,7 @@ function getContext(program){
  * class → qtycls tyvar 
  *       | qtycls (tyvar atype1 ... atypen) (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getClass(program){
     return false;
@@ -68,7 +70,7 @@ function getClass(program){
  * scontext → simpleclass 
  *          | (simpleclass1, ..., simpleclassn) (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getScontext(program){
     return false;
@@ -77,7 +79,7 @@ function getScontext(program){
 /**
  * simpleclass → qtycls tyvar
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getSimpleClass(program){
     return false;
@@ -86,7 +88,7 @@ function getSimpleClass(program){
 /**
  * simpletype → tycon tyvar1 ... tyvark (k ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getSimpleType(program){
     return false;
@@ -95,7 +97,7 @@ function getSimpleType(program){
 /**
  * constrs → constr1 | ... | constrn (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getConstrs(program){
     return false;
@@ -106,7 +108,7 @@ function getConstrs(program){
  *        | (btype | ! atype) conop (btype | ! atype) (infix conop) 
  *        | con { fielddecl1, ..., fielddecln } (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getConstr(program){
     return false;
@@ -115,7 +117,7 @@ function getConstr(program){
 /**
  * newconstr → con atype | con { var :: type }
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getNewconstr(program){
     return false;
@@ -124,7 +126,7 @@ function getNewconstr(program){
 /**
  * fielddecl → vars :: (type | ! atype)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFielddecl(program){
     return false;
@@ -133,7 +135,7 @@ function getFielddecl(program){
 /**
  * deriving → deriving (dclass | (dclass1, ..., dclassn)) (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getDeriving(program){
     return false;
@@ -142,7 +144,7 @@ function getDeriving(program){
 /**
  * dclass → qtycls
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getDclass(program){
     return false;
@@ -155,7 +157,7 @@ function getDclass(program){
  *      | [tyvar] 
  *      | (tyvar1 -> tyvar2) (tyvar1 and tyvar2 distinct)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getInst(program){
     return false;
@@ -165,7 +167,7 @@ function getInst(program){
  * fdecl → import callconv [safety] impent var :: ftype (define variable) 
  *       | export callconv expent var :: ftype          (expose variable)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFdecl(program){
     return false;
@@ -175,7 +177,7 @@ function getFdecl(program){
  * callconv → ccall | stdcall | cplusplus | jvm | dotnet 
  *          | system-specific calling conventions
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getCallconv(program){
     return false;
@@ -184,7 +186,7 @@ function getCallconv(program){
 /**
  * impent → [string] (see Section 8.5.1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getImpent(program){
     return false;
@@ -193,7 +195,7 @@ function getImpent(program){
 /**
  * expent → [string] (see Section 8.5.1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getExpent(program){
     return false;
@@ -202,7 +204,7 @@ function getExpent(program){
 /**
  * safety → unsafe | safe
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getSafety(program){
     return false;
@@ -211,7 +213,7 @@ function getSafety(program){
 /**
  * ftype → frtype | fatype → ftype
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFtype(program){
     return false;
@@ -220,7 +222,7 @@ function getFtype(program){
 /**
  * frtype → fatype | ()
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFrtype(program){
     return false;
@@ -229,7 +231,7 @@ function getFrtype(program){
 /**
  * fatype → qtycon atype1 ... atypek (k ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFatype(program){
     return false;

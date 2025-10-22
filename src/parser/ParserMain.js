@@ -1,10 +1,12 @@
+import { Node } from "../Node.js";
+
 //--  File containing parser functions for "entry point" related rules  --//
 
 /**
  * module → module modid [exports] where body 
  *        | body
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getModule(program){
     return false;
@@ -15,7 +17,7 @@ function getModule(program){
  *	    | { impdecls }
  *	    | { topdecls }
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getBody(program){
     return false;
@@ -25,7 +27,7 @@ function getBody(program){
 /**
  * impdecls → impdecl1 ; … ; impdecln 	    (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getImpledcls(program){
     return false;
@@ -35,7 +37,7 @@ function getImpledcls(program){
 /**
  * exports → ( export1 , … , exportn [ , ] ) 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getExports(program){
     return false;
@@ -48,7 +50,7 @@ function getExports(program){
  *	      | qtycls [(..) | ( qvar1 , … , qvarn )]    	    (n ≥ 0)
  *	      | module modid
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getExport(program){
     return false;
@@ -59,7 +61,7 @@ function getExport(program){
  * impdecl → import [qualified] modid [as modid] [impspec]
  *	       | (empty declaration)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getImpdecl(program){
     return false;
@@ -70,7 +72,7 @@ function getImpdecl(program){
  * impspec → ( import1 , … , importn [ , ] ) 	            (n ≥ 0)
  *	       | hiding ( import1 , … , importn [ , ] ) 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getImpspec(program){
     return false;
@@ -82,7 +84,7 @@ function getImpspec(program){
  *	      | tycon [ (..) | ( cname1 , … , cnamen )] 	    (n ≥ 0)
  *	      | tycls [(..) | ( var1 , … , varn )] 	            (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getVar(program){
     return false;
@@ -92,7 +94,7 @@ function getVar(program){
 /**
  * cname → var | con
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getCname(program){
     return false;
@@ -102,7 +104,7 @@ function getCname(program){
 /**
  * topdecls → topdecl1 ; … ; topdecln 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getTopdecls(program){
     return false;
@@ -119,7 +121,7 @@ function getTopdecls(program){
  * 	       | foreign fdecl
  * 	       | decl
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getTopdecl(program){
     return false;
@@ -129,7 +131,7 @@ function getTopdecl(program){
 /**
  * decls → { decl1 ; … ; decln } 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getDecls(program){
     return false;
@@ -140,7 +142,7 @@ function getDecls(program){
  * decl → gendecl
  *	    | (funlhs | pat) rhs
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getDecl(program){
     return false;
@@ -150,7 +152,7 @@ function getDecl(program){
 /**
  * cdecls → { cdecl1 ; … ; cdecln } 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getcdecls(program){
     return false;
@@ -161,7 +163,7 @@ function getcdecls(program){
  * cdecl → gendecl
  *	     | (funlhs | var) rhs
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getCdecl(program){
     return false;
@@ -171,7 +173,7 @@ function getCdecl(program){
 /**
  * idecls → { idecl1 ; … ; idecln } 	    (n ≥ 0)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getIdecls(program){
     return false;
@@ -182,7 +184,7 @@ function getIdecls(program){
  * idecl → (funlhs | var) rhs
  *	     | (empty)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getIdecl(program){
     return false;
@@ -194,7 +196,7 @@ function getIdecl(program){
  *	       | fixity [integer] ops 	    (fixity declaration)
  *	       |                             (empty declaration)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getGendecl(program){
     return false;
@@ -204,7 +206,7 @@ function getGendecl(program){
 /**
  * ops → op1 , … , opn 	    (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getOps(program){
     return false;
@@ -214,7 +216,7 @@ function getOps(program){
 /**
  * vars → var1 , …, varn 	    (n ≥ 1)
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getVars(program){
     return false;
@@ -224,7 +226,7 @@ function getVars(program){
 /**
  * fixity → infixl | infixr | infix
  * @param {Program} program
- * @returns {Boolean}
+ * @returns {Node}
  */
 function getFixity(program){
     return false;
