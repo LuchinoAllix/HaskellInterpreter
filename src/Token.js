@@ -17,7 +17,8 @@ export class Token {
   }
 
   /**
-   * "Override"
+   * "Override" of constructor for indentation type
+   * Note : maybe new is not a smart name since it's a reserved word
    * @param {String} type 
    * @param {String} value 
    * @returns 
