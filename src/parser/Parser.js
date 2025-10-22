@@ -1,5 +1,5 @@
-import { Program } from "./Program.js";
-import { tokenize } from "./Lexer.js";
+import { Program } from "../Program.js";
+import { tokenize } from "../lexer/Lexer.js";
 
 /**
  * Allows to transform a list of tokens to an AST
@@ -8,7 +8,7 @@ import { tokenize } from "./Lexer.js";
  */
 export function parse(program){
   if (!program.isLexed){
-    program.tokenize();
+    tokenize(program);
   }
   // # TODO
   return true;
