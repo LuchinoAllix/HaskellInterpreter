@@ -1,13 +1,13 @@
 import { Program } from './Program.js'
-import { tokenize }from './Lexer.js'
-import { parse } from './Parser.js'
+import { tokenize }from './lexer/Lexer.js'
+import { parse } from './parser/Parser.js'
 import { Token } from "./Token.js";
 
 
 import { readdir, readFile } from 'fs/promises';
 import { extname, join } from 'path';
 
-const test_folder = './tests';
+const test_folder = '../tests';
 
 /**
  * # FIXME : Change order of evaluation to make sure it happens sequentially
