@@ -11,7 +11,7 @@ export class Program {
     this.isLexed = false;
     this.isParsed = false;
     this.lineCount = 0;
-    this.lastReturnIndex= 0;
+    this.lastReturnIndex = 0;
     this.tabLineIndentation = 1;
     // Starts at one because Haskell documentation says so
   }
