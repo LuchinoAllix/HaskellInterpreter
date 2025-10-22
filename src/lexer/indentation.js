@@ -1,7 +1,8 @@
 //--    File containing functions to make the program layout insensitive    --//
 
-import { Token } from "./Token.js";
+import { Token } from "../Token.js";
 
+// reserved names that can introduce indentation dependencies
 const r1_vars = ["let","where","do","of"];
 
 /**

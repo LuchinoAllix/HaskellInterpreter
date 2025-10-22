@@ -1,7 +1,6 @@
 import { getWhitespace } from "./LexerWhite.js";
-import { Program } from "./Program.js";
+import { Program } from "../Program.js";
 import { getGraphic } from "./LexerComments.js";
-import { getSpace } from "./LexerWhite.js"
 import { HS_special } from "./Lexer.js";
 
 //--  File containing lexer functions for symbols related rules   --//

@@ -1,4 +1,4 @@
-import { Program } from "./Program.js";
+import { Program } from "../Program.js";
 import { getLexeme} from "./LexerVarid.js";
 import { getWhitespace } from "./LexerWhite.js";
 import { addIndentation } from "./indentation.js"
