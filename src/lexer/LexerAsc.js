@@ -1,4 +1,4 @@
-import { getWhitespace } from "./LexerWhite.js";
+import { getWhitespace, getSpace } from "./LexerWhite.js";
 import { Program } from "../Program.js";
 import { getGraphic } from "./LexerComments.js";
 import { HS_special } from "./Lexer.js";

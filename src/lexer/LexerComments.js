@@ -1,5 +1,5 @@
 import { Program } from "../Program.js";
-import { getNewline, getWhitechar } from "./LexerWhite.js";
+import { getNewline, getWhitechar, getSpace } from "./LexerWhite.js";
 import { getSmall, getLarge, getSymbol, getDigit } from "./LexerAsc.js";
 import { getSpecial } from "./Lexer.js";
 
