@@ -34,7 +34,11 @@ export const HS_special = ["(",")",",",";","[","]","`","{","}"];
  * @returns {Boolean}  
  */
 export function tokenize(program){
-  return getProgram(program) && addIndentation(program);
+  if (getProgram(program) && addIndentation(program)){
+    program.isLexed = true;
+    return true;
+  }
+  return false;
 }
 
 /**
