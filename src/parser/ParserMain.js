@@ -50,7 +50,51 @@ function getModule(program){
  * @returns {Node}
  */
 function getBody(program){
-  return false;
+    let token = program.getToken();
+  let cnt = 0;
+  if (token.value === '{'){
+    let node = tokenToNode(token);
+    node.type = 'Body';
+    try{
+      program.incCursor();
+      let tmp = getImpledcls(program); 
+
+      if (tmp !== null){
+        cnt ++;
+        node.addChild(tokenToNode(tmp));
+        program.incCursor();
+        token = program.getToken();
+        if (token.value === ';'){
+          program.incCursor();
+        }
+      }
+
+      tmp = getTopdecls(program)
+
+      if (tmp !== null){
+        cnt ++;
+        node.addChild(tokenToNode(tmp));
+        program.incCursor();
+        token = program.getToken();
+      }
+
+      if (cnt === 0){
+        throw Error("impdecls or topdecls expected");
+      }
+
+      if (token.value === '}'){
+        return node;
+      } else {
+        throw Error("{ was expected");
+      }
+    } catch (error){
+      Error("Error in body parsing :\n" + error);
+    }
+  } else {
+    throw new Error('{ was expected'); 
+    // # FIXME : not sur if should return false or throw an error
+  }
+
 }
 
  
