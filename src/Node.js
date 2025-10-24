@@ -18,4 +18,14 @@ export class Node {
     this.childs = childs
   }
 
+  /**
+   * Adds a child to the list of the node
+   * @param {Node} node 
+   */
+  addChild(node){
+    if(node !== null && node !== false){ // # FIXME : not ideal
+      this.childs.push(node);
+    }
+  }
+
 }
