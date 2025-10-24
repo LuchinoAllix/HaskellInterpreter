@@ -1,4 +1,5 @@
 import { Node } from "../Node.js";
+import { Program, tokenToNode } from "../Program.js";
 
 //--  File containing parser functions for "entry point" related rules  --//
 
@@ -9,7 +10,7 @@ import { Node } from "../Node.js";
  * @returns {Node}
  */
 function getModule(program){
-    return false;
+  return false;
 }
 
 /**
@@ -20,7 +21,7 @@ function getModule(program){
  * @returns {Node}
  */
 function getBody(program){
-    return false;
+  return false;
 }
 
  
@@ -30,7 +31,7 @@ function getBody(program){
  * @returns {Node}
  */
 function getImpledcls(program){
-    return false;
+  return false;
 }
 
  
@@ -40,7 +41,7 @@ function getImpledcls(program){
  * @returns {Node}
  */
 function getExports(program){
-    return false;
+  return false;
 }
 
  
@@ -53,7 +54,7 @@ function getExports(program){
  * @returns {Node}
  */
 function getExport(program){
-    return false;
+  return false;
 }
 
  
@@ -64,7 +65,7 @@ function getExport(program){
  * @returns {Node}
  */
 function getImpdecl(program){
-    return false;
+  return false;
 }
 
  
@@ -75,7 +76,7 @@ function getImpdecl(program){
  * @returns {Node}
  */
 function getImpspec(program){
-    return false;
+  return false;
 }
 
  
@@ -87,7 +88,7 @@ function getImpspec(program){
  * @returns {Node}
  */
 function getVar(program){
-    return false;
+  return false;
 }
 
 
@@ -97,7 +98,7 @@ function getVar(program){
  * @returns {Node}
  */
 function getCname(program){
-    return false;
+  return false;
 }
 
  
@@ -107,7 +108,7 @@ function getCname(program){
  * @returns {Node}
  */
 function getTopdecls(program){
-    return false;
+  return false;
 }
 
 
@@ -124,7 +125,7 @@ function getTopdecls(program){
  * @returns {Node}
  */
 function getTopdecl(program){
-    return false;
+  return false;
 }
 
  
@@ -134,7 +135,7 @@ function getTopdecl(program){
  * @returns {Node}
  */
 function getDecls(program){
-    return false;
+  return false;
 }
 
 
@@ -145,7 +146,7 @@ function getDecls(program){
  * @returns {Node}
  */
 function getDecl(program){
-    return false;
+  return false;
 }
 
  
@@ -155,7 +156,7 @@ function getDecl(program){
  * @returns {Node}
  */
 function getcdecls(program){
-    return false;
+  return false;
 }
 
 
@@ -166,7 +167,7 @@ function getcdecls(program){
  * @returns {Node}
  */
 function getCdecl(program){
-    return false;
+  return false;
 }
 
  
@@ -176,7 +177,7 @@ function getCdecl(program){
  * @returns {Node}
  */
 function getIdecls(program){
-    return false;
+  return false;
 }
 
 
@@ -187,7 +188,7 @@ function getIdecls(program){
  * @returns {Node}
  */
 function getIdecl(program){
-    return false;
+  return false;
 }
 
  
@@ -199,7 +200,7 @@ function getIdecl(program){
  * @returns {Node}
  */
 function getGendecl(program){
-    return false;
+  return false;
 }
 
  
@@ -209,7 +210,7 @@ function getGendecl(program){
  * @returns {Node}
  */
 function getOps(program){
-    return false;
+  return false;
 }
 
 
@@ -219,7 +220,7 @@ function getOps(program){
  * @returns {Node}
  */
 function getVars(program){
-    return false;
+  return false;
 }
 
 
@@ -229,5 +230,5 @@ function getVars(program){
  * @returns {Node}
  */
 function getFixity(program){
-    return false;
+  return false;
 }

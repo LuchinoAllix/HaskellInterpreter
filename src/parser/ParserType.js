@@ -8,7 +8,7 @@ import { Node } from "../Node.js";
  * @returns {Node}
  */
 function getType(program){
-    return false;
+  return false;
 }
 
 /**
@@ -17,7 +17,7 @@ function getType(program){
  * @returns {Node}
  */
 function getBtype(program){
-    return false;
+  return false;
 }
 
 /**
@@ -30,7 +30,7 @@ function getBtype(program){
  * @returns {Node}
  */
 function gettype(program){
-    return false;
+  return false;
 }
 
 /**
@@ -43,7 +43,7 @@ function gettype(program){
  * @returns {Node}
  */
 function getGtycon(program){
-    return false;
+  return false;
 }
 
 /**
@@ -53,7 +53,7 @@ function getGtycon(program){
  * @returns {Node}
  */
 function getContext(program){
-    return false;
+  return false;
 }
 
 /**
@@ -63,7 +63,7 @@ function getContext(program){
  * @returns {Node}
  */
 function getClass(program){
-    return false;
+  return false;
 }
 
 /**
@@ -73,7 +73,7 @@ function getClass(program){
  * @returns {Node}
  */
 function getScontext(program){
-    return false;
+  return false;
 }
 
 /**
@@ -82,7 +82,7 @@ function getScontext(program){
  * @returns {Node}
  */
 function getSimpleClass(program){
-    return false;
+  return false;
 }
 
 /**
@@ -91,7 +91,7 @@ function getSimpleClass(program){
  * @returns {Node}
  */
 function getSimpleType(program){
-    return false;
+  return false;
 }
 
 /**
@@ -100,7 +100,7 @@ function getSimpleType(program){
  * @returns {Node}
  */
 function getConstrs(program){
-    return false;
+  return false;
 }
 
 /**
@@ -111,7 +111,7 @@ function getConstrs(program){
  * @returns {Node}
  */
 function getConstr(program){
-    return false;
+  return false;
 }
 
 /**
@@ -120,7 +120,7 @@ function getConstr(program){
  * @returns {Node}
  */
 function getNewconstr(program){
-    return false;
+  return false;
 }
 
 /**
@@ -129,7 +129,7 @@ function getNewconstr(program){
  * @returns {Node}
  */
 function getFielddecl(program){
-    return false;
+  return false;
 }
 
 /**
@@ -138,7 +138,7 @@ function getFielddecl(program){
  * @returns {Node}
  */
 function getDeriving(program){
-    return false;
+  return false;
 }
 
 /**
@@ -147,7 +147,7 @@ function getDeriving(program){
  * @returns {Node}
  */
 function getDclass(program){
-    return false;
+  return false;
 }
 
 /**
@@ -160,7 +160,7 @@ function getDclass(program){
  * @returns {Node}
  */
 function getInst(program){
-    return false;
+  return false;
 }
 
 /**
@@ -170,7 +170,7 @@ function getInst(program){
  * @returns {Node}
  */
 function getFdecl(program){
-    return false;
+  return false;
 }
 
 /**
@@ -180,7 +180,7 @@ function getFdecl(program){
  * @returns {Node}
  */
 function getCallconv(program){
-    return false;
+  return false;
 }
 
 /**
@@ -189,7 +189,7 @@ function getCallconv(program){
  * @returns {Node}
  */
 function getImpent(program){
-    return false;
+  return false;
 }
 
 /**
@@ -198,7 +198,7 @@ function getImpent(program){
  * @returns {Node}
  */
 function getExpent(program){
-    return false;
+  return false;
 }
 
 /**
@@ -207,7 +207,7 @@ function getExpent(program){
  * @returns {Node}
  */
 function getSafety(program){
-    return false;
+  return false;
 }
 
 /**
@@ -216,7 +216,7 @@ function getSafety(program){
  * @returns {Node}
  */
 function getFtype(program){
-    return false;
+  return false;
 }
 
 /**
@@ -225,7 +225,7 @@ function getFtype(program){
  * @returns {Node}
  */
 function getFrtype(program){
-    return false;
+  return false;
 }
 
 /**
@@ -234,5 +234,5 @@ function getFrtype(program){
  * @returns {Node}
  */
 function getFatype(program){
-    return false;
+  return false;
 }
