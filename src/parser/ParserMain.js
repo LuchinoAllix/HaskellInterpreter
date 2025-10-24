@@ -4,13 +4,42 @@ import { Program, tokenToNode } from "../Program.js";
 //--  File containing parser functions for "entry point" related rules  --//
 
 /**
- * module → module modid [exports] where body 
+ * module → 'module' modid [exports] 'where' body 
  *        | body
  * @param {Program} program
  * @returns {Node}
  */
 function getModule(program){
-  return false;
+  let token = program.getToken();
+  if (token.type === 'reservdid' && token.value === 'module'){
+    let node = tokenToNode(token);
+    try {
+      program.incCursor();
+      token = program.getToken();
+      if (token.type === 'modid'){
+        node.addChild(tokenToNode(token));
+        program.incCursor();
+        node.addChild(getExports(program));
+        program.incCursor();
+        token = program.getToken();
+        if (token.type === 'reservdid' && token.value === 'where'){
+          node.addChild(tokenToNode(token));
+          program.incCursor();
+          node.addChild(getBody(program));
+        } else {
+          throw new Error("'where' was expected after module");
+        }
+      } else {
+        throw new Error("modid was expected after module");
+      }
+    } catch (error){
+      throw new Error("Error in parsing module, probably because not enough "
+        + " tokens hav been provided :\n" + error);
+    }
+    return node;
+  } else {
+    return getBody(program);
+  }
 }
 
 /**
