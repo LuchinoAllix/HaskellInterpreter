@@ -79,16 +79,16 @@ function getBody(program){
       }
 
       if (cnt === 0){
-        throw Error("impdecls or topdecls expected");
+        throw new Error("impdecls or topdecls expected");
       }
 
       if (token.value === '}'){
         return node;
       } else {
-        throw Error("{ was expected");
+        throw new Error("{ was expected");
       }
     } catch (error){
-      Error("Error in body parsing :\n" + error);
+      throw new Error("Error in body parsing :\n" + error);
     }
   } else {
     throw new Error('{ was expected'); 
