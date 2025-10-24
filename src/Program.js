@@ -299,15 +299,11 @@ export class Program {
   }
 
   /**
-   * Return the token at the cursor position + 1 or false if end of tokens list
-   * is reached
-   * @returns {Token}
+   * Return if there is another token afterwards
+   * @returns {Boolean}
    */
   peek(){
-    if (this.cursor + 1 >= this.tokens.length){
-      return false;
-    }
-    return this.tokens[this.cursor + 1];
+    return this.cursor + 1 >= this.tokens.length ;
   }
 
   /**
@@ -317,4 +313,8 @@ export class Program {
   getToken(){
     return this.tokens[this.cursor];
   }
+}
+
+export function tokenToNode(token){
+  return new Node(token.type,token.value,token.line,token.column,[]);    
 }
