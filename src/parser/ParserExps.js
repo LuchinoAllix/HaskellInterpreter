@@ -11,7 +11,7 @@ import { Node } from "../Node.js";
  * @returns {Node}
  */
 function getFunlhs(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -20,7 +20,7 @@ function getFunlhs(program){
  * @returns {Node}
  */
 function getRhs(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -29,7 +29,7 @@ function getRhs(program){
  * @returns {Node}
  */
 function getGdrhs(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -38,7 +38,7 @@ function getGdrhs(program){
  * @returns {Node}
  */
 function getGuards(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -47,7 +47,7 @@ function getGuards(program){
  * @returns {Node}
  */
 function getGuard(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -56,7 +56,7 @@ function getGuard(program){
  * @returns {Node}
  */
 function getExp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -65,7 +65,7 @@ function getExp(program){
  * @returns {Node}
  */
 function getInfixexp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -79,7 +79,7 @@ function getInfixexp(program){
  * @returns {Node}
  */
 function getLexp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -88,7 +88,7 @@ function getLexp(program){
  * @returns {Node}
  */
 function getFexp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -108,7 +108,7 @@ function getFexp(program){
  * @returns {Node}
  */
 function getAexp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -117,7 +117,7 @@ function getAexp(program){
  * @returns {Node}
  */
 function getQual(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -126,7 +126,7 @@ function getQual(program){
  * @returns {Node}
  */
 function getAlts(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -137,7 +137,7 @@ function getAlts(program){
  * @returns {Node}
  */
 function getAlt(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -146,7 +146,7 @@ function getAlt(program){
  * @returns {Node}
  */
 function getGdpat(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -155,7 +155,7 @@ function getGdpat(program){
  * @returns {Node}
  */
 function getStmts(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -167,7 +167,7 @@ function getStmts(program){
  * @returns {Node}
  */
 function getStmt(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -176,7 +176,7 @@ function getStmt(program){
  * @returns {Node}
  */
 function getFbind(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -185,7 +185,7 @@ function getFbind(program){
  * @returns {Node}
  */
 function getPat(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -196,7 +196,7 @@ function getPat(program){
  * @returns {Node}
  */
 function getLpat(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -213,7 +213,7 @@ function getLpat(program){
  * @returns {Node}
  */
 function getApat(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -222,7 +222,7 @@ function getApat(program){
  * @returns {Node}
  */
 function getFpat(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -234,7 +234,7 @@ function getFpat(program){
  * @returns {Node}
  */
 function getGcon(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -243,7 +243,7 @@ function getGcon(program){
  * @returns {Node}
  */
 function getVar(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -252,7 +252,7 @@ function getVar(program){
  * @returns {Node}
  */
 function getQvar(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -261,7 +261,7 @@ function getQvar(program){
  * @returns {Node}
  */
 function getCon(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -270,7 +270,7 @@ function getCon(program){
  * @returns {Node}
  */
 function getQcon(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -279,7 +279,7 @@ function getQcon(program){
  * @returns {Node}
  */
 function getVarop(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -288,7 +288,7 @@ function getVarop(program){
  * @returns {Node}
  */
 function getQvarop(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -297,7 +297,7 @@ function getQvarop(program){
  * @returns {Node}
  */
 function getConop(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -306,7 +306,7 @@ function getConop(program){
  * @returns {Node}
  */
 function getQconop(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -315,7 +315,7 @@ function getQconop(program){
  * @returns {Node}
  */
 function getOp(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -324,7 +324,7 @@ function getOp(program){
  * @returns {Node}
  */
 function getQop(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 /**
@@ -333,5 +333,5 @@ function getQop(program){
  * @returns {Node}
  */
 function getGconsym(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }

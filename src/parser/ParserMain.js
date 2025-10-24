@@ -94,7 +94,6 @@ function getBody(program){
     throw new Error('{ was expected'); 
     // # FIXME : not sur if should return false or throw an error
   }
-
 }
 
  
@@ -133,7 +132,7 @@ function getImpledcls(program){
  * @returns {Node}
  */
 function getExports(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -146,7 +145,7 @@ function getExports(program){
  * @returns {Node}
  */
 function getExport(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -157,7 +156,7 @@ function getExport(program){
  * @returns {Node}
  */
 function getImpdecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -168,7 +167,7 @@ function getImpdecl(program){
  * @returns {Node}
  */
 function getImpspec(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -180,7 +179,7 @@ function getImpspec(program){
  * @returns {Node}
  */
 function getVar(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -190,7 +189,7 @@ function getVar(program){
  * @returns {Node}
  */
 function getCname(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -200,7 +199,7 @@ function getCname(program){
  * @returns {Node}
  */
 function getTopdecls(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -217,7 +216,7 @@ function getTopdecls(program){
  * @returns {Node}
  */
 function getTopdecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -227,7 +226,7 @@ function getTopdecl(program){
  * @returns {Node}
  */
 function getDecls(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -238,7 +237,7 @@ function getDecls(program){
  * @returns {Node}
  */
 function getDecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -248,7 +247,7 @@ function getDecl(program){
  * @returns {Node}
  */
 function getcdecls(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -259,7 +258,7 @@ function getcdecls(program){
  * @returns {Node}
  */
 function getCdecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -269,7 +268,7 @@ function getCdecl(program){
  * @returns {Node}
  */
 function getIdecls(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -280,7 +279,7 @@ function getIdecls(program){
  * @returns {Node}
  */
 function getIdecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -292,7 +291,7 @@ function getIdecl(program){
  * @returns {Node}
  */
 function getGendecl(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
  
@@ -302,7 +301,7 @@ function getGendecl(program){
  * @returns {Node}
  */
 function getOps(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -312,7 +311,7 @@ function getOps(program){
  * @returns {Node}
  */
 function getVars(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
 
 
@@ -322,5 +321,5 @@ function getVars(program){
  * @returns {Node}
  */
 function getFixity(program){
-  return false;
+  return null; // # TODO : not yet implemented
 }
