@@ -299,12 +299,13 @@ export class Program {
   }
 
   /**
-   * Return the token at the cursor position
+   * Return the token at the cursor position + 1 or false if end of tokens list
+   * is reached
    * @returns {Token}
    */
   peek(){
     if (this.cursor + 1 >= this.tokens.length){
-      throw Error("Peek went too far over tokens list");
+      return false;
     }
     return this.tokens[this.cursor + 1];
   }
