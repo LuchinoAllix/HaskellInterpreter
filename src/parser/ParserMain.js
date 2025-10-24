@@ -43,9 +43,9 @@ function getModule(program){
 }
 
 /**
- * body → { impdecls ; topdecls }
- *	    | { impdecls }
- *	    | { topdecls }
+ * body → '{' impdecls ';' topdecls '}'
+ *	    | '{' impdecls '}'
+ *	    | '{' topdecls '}'
  * @param {Program} program
  * @returns {Node}
  */
@@ -99,7 +99,7 @@ function getBody(program){
 
  
 /**
- * impdecls → impdecl1 ; … ; impdecln 	    (n ≥ 1)
+ * impdecls → impdecl1 ';' … ';' impdecln 	    (n ≥ 1)
  * @param {Program} program
  * @returns {Node}
  */
