@@ -104,7 +104,26 @@ function getBody(program){
  * @returns {Node}
  */
 function getImpledcls(program){
-  return false;
+  let node = null;  
+  let tmp = null;
+  try{
+    while(true){
+      tmp = getImpdecl(program);
+      if (tmp !== null){
+        program.incCursor();
+        if (program.getToken().value === ';'){
+          node.addChild(tokenToNode(tmp));
+          program.incCursor();
+        } else {
+          break;
+        }
+      }
+    node.addChild(tokenToNode(tmp));
+    }
+  } catch (error){
+    throw new Error("illformed impdecls")
+  }
+  return node;
 }
 
  
