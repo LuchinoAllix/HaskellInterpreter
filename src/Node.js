@@ -19,11 +19,11 @@ export class Node {
   }
 
   /**
-   * Adds a child to the list of the node
+   * Adds a child to the list of child for the node
    * @param {Node} node 
    */
   addChild(node){
-    if(node !== null && node !== false){ // # FIXME : not ideal
+    if(node !== null){
       this.childs.push(node);
     }
   }
