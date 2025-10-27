@@ -28,4 +28,13 @@ export class Node {
     }
   }
 
+  /**
+   * Return a node with null attributes except for the type
+   * @param {String} type 
+   * @returns {Node}
+   */
+  typeNode(type){
+    return new Node(type, null, null, null);
+  }
+
 }

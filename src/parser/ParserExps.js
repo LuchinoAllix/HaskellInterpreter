@@ -56,7 +56,9 @@ function getGuard(program){
  * @returns {Node}
  */
 function getExp(program){
-  let node = getInfixexp(program);
+  let node = typeNode("exp");
+  let infixexpNode = getInfixexp(program);
+  node.addChild(infixexpNode);
   if (program.peek()){
     program.incCursor();
     if (program.getToken().value == '::'){
