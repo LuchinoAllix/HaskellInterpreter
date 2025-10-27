@@ -52,7 +52,7 @@ function getGuard(program){
 }
 
 /**
- * exp → infixexp :: [context =>] type | infixexp
+ * exp → infixexp :: [context '=>'] type | infixexp
  * @param {Program} program
  * @returns {Node}
  */
@@ -92,7 +92,7 @@ function getExp(program){
 }
 
 /**
- * infixexp → lexp qop infixexp | - infixexp | lexp
+ * infixexp → lexp qop infixexp | '-' infixexp | lexp
  * @param {Program} program
  * @returns {Node}
  */
@@ -133,16 +133,112 @@ function getInfixexp(program){
 }
 
 /**
- * lexp → \ apat1 … apatn -> exp 
- *      | let decls in exp 
- *      | if exp [;] then exp [;] else exp 
- *      | case exp of { alts } 
- *      | do { stmts } 
+ * lexp → '\' apat1 … apatn '->' exp 
+ *      | 'let' decls 'in' exp 
+ *      | 'if' exp [';'] 'then' exp [';'] 'else' exp 
+ *      | 'case' exp 'of' '{' alts '}' 
+ *      | 'do' '{' stmts '}' 
  *      | fexp
  * @param {Program} program
  * @returns {Node}
  */
 function getLexp(program){
+  let lexpNode = typeNode("lexp");
+  let token = program.getToken(); 
+  switch(token.value){
+    case '\\' :
+      lexpNode.addChild(tokenToNode(token));
+      program.incCursor();
+      // # TODO
+      break;
+    case "let" :
+      lexpNode.addChild(tokenToNode(token));
+      program.incCursor();
+      let declsNode = getExp(program);
+      if (declsNode !== null){
+        lexpNode.addChild(declsNode);
+        token = program.getToken();
+        if (token.value === "in"){
+          lexpNode.addChild(tokenToNode(token));
+          program.incCursor();
+          let expNode = getExp(program);
+          if (expNode !== null){
+            lexpNode.addChild(expNode);
+          } else {
+            throw new Error("There should be an exp after the in");
+          }
+        } else {
+          throw new Error("There should be an in after the let");
+        }
+      } else {
+        throw new Error("decls expected after let");
+      }
+      break;
+    case "if" :
+      lexpNode.addChild(tokenToNode(token));
+      program.incCursor();
+      let expNode = getExp(program);
+      if (expNode !== null){
+        lexpNode.addChild(expNode);
+        token = program.getToken();
+        if (token.value === ';'){
+          lexpNode.addChild(tokenToNode(token));
+          program.incCursor();
+          token = program.getToken();
+        }
+        if (token.value === "then"){
+          lexpNode.addChild(tokenToNode(token));
+          program.incCursor();
+          expNode = getExp(program); // override
+          if (expNode !== null){
+            lexpNode.addChild(expNode);
+            program.incCursor();
+            if (token.value === ';'){
+              lexpNode.addChild(tokenToNode(token));
+              program.incCursor();
+              token = program.getToken();
+            }
+            if (token.value === "else"){
+              lexpNode.addChild(tokenToNode(token));
+              program.incCursor();
+              expNode = getExp(program); // override
+              if (expNode !== null){
+                lexpNode.addChild(expNode);
+                program.incCursor();
+                // # todo
+              } else {
+                throw new Error("exp expected after else");
+              }
+            } else {
+              throw new Error("else expected after if");
+            }
+          } else {
+            throw new Error("exp expected after then");
+          }
+        } else {
+          throw new Error("then expected after if");
+        }
+      } else {
+        throw new Error("exp expected after if");
+      }
+
+      // # TODO
+      break;
+    case "case" :
+      lexpNode.addChild(tokenToNode(token));
+      program.incCursor();
+
+      // # TODO
+      break;
+    case "do":
+      lexpNode.addChild(tokenToNode(token));
+      program.incCursor();
+
+      // # TODO    
+      break;
+    default :
+
+  }
   return null; // # TODO : not yet implemented
 }
 
