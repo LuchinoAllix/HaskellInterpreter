@@ -56,9 +56,9 @@ function getGuard(program){
  * @returns {Node}
  */
 function getExp(program){
-  let node = typeNode("exp");
+  let expNode = typeNode("exp");
   let infixexpNode = getInfixexp(program);
-  node.addChild(infixexpNode);
+  expNode.addChild(infixexpNode);
   if (program.peek()){
     program.incCursor();
     if (program.getToken().value == '::'){
@@ -66,7 +66,7 @@ function getExp(program){
         program.incCursor();
         let contextNode = getContext(program);
         if (contextNode !== null){
-          node.addChild(contextNode);
+          expNode.addChild(contextNode);
           program.incCursor();
           if (program.getToken().value !== '=>'){
             throw new Error("=> was expected after context\n");
@@ -75,7 +75,7 @@ function getExp(program){
         }
         let typeNode = getType(program);
         if (typeNode !== null){
-          node.addChild(typeNode);
+          expNode.addChild(typeNode);
         } else {
           throw new Error("Illformed exp, was expecting type");
         }
@@ -84,10 +84,10 @@ function getExp(program){
           error);
       }
     } else {
-      return node;
+      return expNode;
     }
   }
-  return node;
+  return expNode;
 }
 
 /**
