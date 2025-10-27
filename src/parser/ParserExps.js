@@ -80,7 +80,7 @@ function getExp(program){
           throw new Error("Illformed exp, was expecting type");
         }
       } catch (error){
-        throw new Error("illformed exp, was expecting [context =>] type\n" + 
+        throw new Error("Illformed exp, was expecting [context =>] type\n" + 
           error);
       }
     } else {
