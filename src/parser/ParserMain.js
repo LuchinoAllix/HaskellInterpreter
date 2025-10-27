@@ -120,7 +120,7 @@ function getImpledcls(program){
     node.addChild(tokenToNode(tmp));
     }
   } catch (error){
-    throw new Error("illformed impdecls")
+    throw new Error("illformed impdecls\n" + error)
   }
   return node;
 }
