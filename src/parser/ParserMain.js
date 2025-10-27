@@ -12,20 +12,20 @@ import { Program, tokenToNode } from "../Program.js";
 function getModule(program){
   let token = program.getToken();
   if (token.type === 'reservdid' && token.value === 'module'){
-    let node = tokenToNode(token);
+    let moduleNode = tokenToNode(token);
     try {
       program.incCursor();
       token = program.getToken();
       if (token.type === 'modid'){
-        node.addChild(tokenToNode(token));
+        moduleNode.addChild(tokenToNode(token));
         program.incCursor();
-        node.addChild(getExports(program));
+        moduleNode.addChild(getExports(program));
         program.incCursor();
         token = program.getToken();
         if (token.type === 'reservdid' && token.value === 'where'){
-          node.addChild(tokenToNode(token));
+          moduleNode.addChild(tokenToNode(token));
           program.incCursor();
-          node.addChild(getBody(program));
+          moduleNode.addChild(getBody(program));
         } else {
           throw new Error("'where' was expected after module");
         }
@@ -36,7 +36,7 @@ function getModule(program){
       throw new Error("Error in parsing module, probably because not enough "
         + " tokens hav been provided :\n" + error);
     }
-    return node;
+    return moduleNode;
   } else {
     return getBody(program);
   }
@@ -51,39 +51,39 @@ function getModule(program){
  */
 function getBody(program){
   let token = program.getToken();
-  let cnt = 0;
   if (token.value === '{'){
-    let node = tokenToNode(token);
-    node.type = 'Body';
+    let bodyNode = typeNode("Body");
+    bodyNode.addChild(tokenToNode(token));
     try{
       program.incCursor();
-      let tmp = getImpledcls(program); 
+      let impledclsNode = getImpledcls(program); 
 
-      if (tmp !== null){
-        cnt ++;
-        node.addChild(tokenToNode(tmp));
+      if (impledclsNode !== null){
+        bodyNode.addChild(tokenToNode(impledclsNode));
         program.incCursor();
         token = program.getToken();
         if (token.value === ';'){
+          bodyNode.addChild(tokenToNode(token));
           program.incCursor();
         }
       }
 
-      tmp = getTopdecls(program)
+      topdeclsNode = getTopdecls(program);
 
-      if (tmp !== null){
-        cnt ++;
-        node.addChild(tokenToNode(tmp));
+      if (topdeclsNode !== null){
+        bodyNode.addChild(topdeclsNode);
         program.incCursor();
         token = program.getToken();
       }
 
-      if (cnt === 0){
+      if (impledclsNode === null && topdeclsNode === null){
         throw new Error("impdecls or topdecls expected");
       }
 
       if (token.value === '}'){
-        return node;
+        bodyNode.addChild(tokenToNode(token));
+        program.incCursor();
+        return bodyNode;
       } else {
         throw new Error("{ was expected");
       }
@@ -103,26 +103,28 @@ function getBody(program){
  * @returns {Node}
  */
 function getImpledcls(program){
-  let node = null;  
-  let tmp = null;
+  let impdeclsNode = typeNode("impledcls");
+  let impdeclNode = null;
   try{
     while(true){
-      tmp = getImpdecl(program);
-      if (tmp !== null){
+      impdeclNode = getImpdecl(program);
+      if (impdeclNode !== null){
         program.incCursor();
-        if (program.getToken().value === ';'){
-          node.addChild(tokenToNode(tmp));
+        let token = program.getToken();
+        if (token.value === ';'){
+          impdeclsNode.addChild(impdeclNode);
+          impdeclsNode.addChild(tokenToNode(token));
           program.incCursor();
         } else {
           break;
         }
       }
-    node.addChild(tokenToNode(tmp));
     }
+    impdeclsNode.addChild(impdeclNode);
   } catch (error){
     throw new Error("illformed impdecls\n" + error)
   }
-  return node;
+  return impdeclsNode;
 }
 
  
