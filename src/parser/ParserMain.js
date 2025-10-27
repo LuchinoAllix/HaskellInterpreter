@@ -50,7 +50,7 @@ function getModule(program){
  * @returns {Node}
  */
 function getBody(program){
-    let token = program.getToken();
+  let token = program.getToken();
   let cnt = 0;
   if (token.value === '{'){
     let node = tokenToNode(token);
