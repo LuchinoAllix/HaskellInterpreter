@@ -1,4 +1,5 @@
 import { Node } from "../Node.js";
+import { tokenToNode } from "../Program.js";
 
 
 //--  File containing parser functions for expressions  related rules  --//
@@ -96,7 +97,39 @@ function getExp(program){
  * @returns {Node}
  */
 function getInfixexp(program){
-  return null; // # TODO : not yet implemented
+  let infixexpNode = typeNode("infixexp");
+  let lexpNode = getLexp(program);
+  if (lexpNode !== null){
+    infixexpNode.addChild(lexpNode);
+    let qopNode = getQop(program);
+    if (qopNode !== null){
+      infixexpNode.addChild(qopNode);
+      let newInfixexpNode = getInfixexp(program);
+      if (newInfixexpNode !== null){
+        infixexpNode.addChild(newInfixexpNode);
+        return infixexpNode;
+      } else {
+        throw new Error("infixexp expected after qop in infixexp");
+      }
+    } else {
+      return infixexpNode;
+    }
+  } else {
+    let token = program.getToken();
+    if (token.value = '-'){
+      infixexpNode.addChild(tokenToNode(token));
+      let newInfixexpNode = getInfixexp(program);
+      if (newInfixexpNode !== null){
+        infixexpNode.addChild(newInfixexpNode);
+        return infixexpNode;
+      } else {
+        throw new Error("infixexp expected after qop in infixexp");
+        // FIXME : Duplicated code
+      }
+    } else {
+      return null;
+    }
+  }
 }
 
 /**
