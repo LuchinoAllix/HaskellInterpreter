@@ -1,6 +1,6 @@
 import { branch, data, rule } from "./src/Node"
 
-const rules = {
+export const rules = {
   exp : 
     rule([branch([[rules.infixexp, 1], // expression type signature
                   [data("::"), 1],

@@ -41,3 +41,7 @@ export function branch(nodes){
 export function newData(name, data){
   return new Node("Data", name, null, data);
 }
+
+function mainLoop(){
+  
+}
