@@ -9,11 +9,10 @@ export class Elem {
    * @param {[[[Node, Option]]]} childs 
    * @param {Token} data 
    */  
-  constructor(type, value, childs, data){
+  constructor(type, value, childs){
     this.type = type;
     this.value = value;
     this.childs = childs;
-    this.data = data;
   }
 }
 
@@ -31,17 +30,14 @@ const Option = {
 } 
 
 export function rule(branches){
-  return new Node("Rule", null, branches, null);
+  return new Node("Rule", null, branches);
 }
 
 export function branch(nodes){
-  return new Node("Branch", null, nodes, null);
+  return new Node("Branch", null, nodes);
 }
 
-export function newData(name, data){
-  return new Node("Data", name, null, data);
+export function data(name){
+  return new Node("Data", name, null);
 }
 
-function mainLoop(){
-  
-}
