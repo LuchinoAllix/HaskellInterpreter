@@ -10,8 +10,6 @@ import { rules } from "./ParserRules.js";
  * Source : https://www.haskell.org/onlinereport/haskell2010/haskellch10.html
  * Chapter : 10.5 
  * 
- * How the rules were split in different files in purely arbitrary, grouping 
- * them somewhat together to avoid having one big file.
  * 
  * Notational conventions :
  *  [pattern]     optional
@@ -38,6 +36,8 @@ export function parse(program){
   // # TODO
   return true;
 }
+
+
 // todo, manage the actual making of the ast
 function mainLoop(program,){
   let root = mtNode("root");
@@ -51,6 +51,13 @@ function mainLoop(program,){
 
 }
 
+/**
+ * 
+ * @param {*} rule 
+ * @param {*} program 
+ * @param {*} currNode 
+ * @returns {Boolean}
+ */
 function ruleLoop(rule, program, currNode){
   let tmpNode = mtNode("tmpNode");
   for (let branch in rule){
@@ -61,6 +68,13 @@ function ruleLoop(rule, program, currNode){
   }
 }
 
+/**
+ * 
+ * @param {*} branch 
+ * @param {*} program 
+ * @param {*} currNode 
+ * @returns {Boolean}
+ */
 function branchLoop(branch, program, currNode){
   let cursorStart = program.cursor;
   let func = null;
@@ -84,6 +98,15 @@ function branchLoop(branch, program, currNode){
 // could be refactored, lot of duplicated code
 // todo : manage options that are next to one another 
 // like [a] [b] and [a [b] [c]]
+
+/**
+ * 
+ * @param {*} elem 
+ * @param {*} program 
+ * @param {*} ruleFunc 
+ * @param {*} currNode 
+ * @returns {Boolean}
+ */
 function manageOption(elem, program, ruleFunc, currNode){
   let cursorStart = program.cursor;
   let passRule = ruleFunc(elem[0], program, currNode);
@@ -135,6 +158,13 @@ function manageOption(elem, program, ruleFunc, currNode){
   return true;
 }
 
+/**
+ * 
+ * @param {*} elem 
+ * @param {*} program 
+ * @param {*} currNode 
+ * @returns {Boolean}
+ */
 function dataLoop(elem, program, currNode){
   let token = program.getToken();
   if(elem.value === token.value){
