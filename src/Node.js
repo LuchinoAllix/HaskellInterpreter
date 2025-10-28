@@ -4,44 +4,37 @@ export class Node {
 
   /**
    * Constructor for node
-   * @param {Elem} type Rule | Branch | data
-   * @param {String} value name of rule or data 
-   * @param {[[[Node, Option]]]} childs 
-   * @param {Token} data 
+   * @param {String} type 
+   * @param {String} value 
+   * @param {Integer} line 
+   * @param {Integer} column 
+   * @param {[Node]} childs 
    */  
-  constructor(type, value, childs, data){
+  constructor(type, value, line, column, childs){
     this.type = type;
     this.value = value;
-    this.childs = childs;
-    this.data = data;
+    this.line = line;
+    this.column = column;
+    this.childs = childs
   }
-}
 
-const Elem = {
-  rule : "rule",
-  branch : "branch",
-  data : "data"
-}
+  /**
+   * Adds a child to the list of child for the node
+   * @param {Node} node 
+   */
+  addChild(node){
+    if(node !== null){
+      this.childs.push(node);
+    }
+  }
 
-const Option = {
-  0 : "optional",
-  1 : "mandatory",
-  2 : "at Least 1",
-  3 : "0 or more"
-} 
+  /**
+   * Return a node with null attributes except for the type
+   * @param {String} type 
+   * @returns {Node}
+   */
+  mtNode(type){
+    return new Node(type, null, null, null, []);
+  }
 
-export function rule(branches){
-  return new Node("Rule", null, branches, null);
-}
-
-export function branch(nodes){
-  return new Node("Branch", null, nodes, null);
-}
-
-export function newData(name, data){
-  return new Node("Data", name, null, data);
-}
-
-function mainLoop(){
-  
 }
