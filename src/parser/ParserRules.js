@@ -1,4 +1,4 @@
-import { branch, data, rule } from "./src/Node"
+import { branch, data, rule } from "./Elem.js"
 
 export const rules = {
   exp : 
@@ -16,7 +16,8 @@ export const rules = {
           branch([[data('-'), 1], // prefix negation
                   [rules.infixexp, 1]]),
           branch([[rules.lexp, 1]])]),
-  lexp : 
+
+  lexp :
     rule([branch([[data("\\"), 1], // lambda abstraction
                   [rules.apat, 2], 
                   [data("->"), 1],
