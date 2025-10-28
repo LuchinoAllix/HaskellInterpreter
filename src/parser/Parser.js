@@ -1,6 +1,8 @@
-import { Program } from "../Program.js";
+import { Program, tokenToNode } from "../Program.js";
 import { tokenize } from "../lexer/Lexer.js";
-import { Node } from "../Node.js";
+import { Node, mtNode } from "../Node.js";
+import { Elem } from ".Elem.js";
+import { rules } from "./ParserRules.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -35,4 +37,110 @@ export function parse(program){
   }
   // # TODO
   return true;
+}
+// todo, manage the actual making of the ast
+function mainLoop(program,){
+  let root = mtNode("root");
+  while(program.peek()){
+    for (let rule in rules){
+      if (ruleLoop(rule, program, root)){
+        break;
+      }
+    }
+  }
+
+}
+
+function ruleLoop(rule, program, currNode){
+  let tmpNode = mtNode("tmpNode");
+  for (let branch in rule){
+    if (branchLoop(branch, program, tmpNode)){
+      currNode.childs = tmpNode.childs;
+      return true;
+    }
+  }
+}
+
+function branchLoop(branch, program, currNode){
+  let cursorStart = program.cursor;
+  let func = null;
+  for (let elem in branch){
+    if (elem[0].type === "rule"){
+      func = ruleLoop;
+    } else if (elem[0].type === "data"){
+      func = dataLoop;
+    } else {
+      throw new Error("Ill-formed branch, elems in branch should be either a" +
+                      " rule or data, at :\n" + branch);
+    }
+    if (!manageOption(elem, program, func, currNode)){
+      program.cursor = cursorStart;
+      return false;
+    }
+  }
+  return true;
+}
+
+// could be refactored, lot of duplicated code
+// todo : manage options that are next to one another 
+// like [a] [b] and [a [b] [c]]
+function manageOption(elem, program, ruleFunc, currNode){
+  let cursorStart = program.cursor;
+  let passRule = ruleFunc(elem[0], program, currNode);
+  switch (elem[1]){ 
+    case 0 :
+      if (!passRule){
+        program.cursor = cursorStart;
+      }
+      break;
+
+    case 1 :
+      if (!passRule){
+        program.cursor = cursorStart;
+        return false;
+      }
+      break;
+
+    case 2 :
+      if(!passRule){
+        program.cursor = cursorStart;
+        return false;
+      } 
+      while(true){
+        cursorStart = program.cursor;
+        passRule = ruleFunc(elem[0], program, currNode);
+        if (!passRule){
+          program.cursor = cursorStart;
+          break;
+        }
+      }
+      break;
+
+    case 3 :
+      if (!passRule){
+        program.cursor = cursorStart;
+      }
+      while(true){
+        cursorStart = program.cursor;
+        passRule = ruleFunc(elem[0], program, currNode);
+        if (!passRule){
+          program.cursor = cursorStart;
+          break;
+        }
+      }
+
+    default :
+      throw new Error("Ill formed rule, option should be 0,1,2 or 3");
+  }
+  return true;
+}
+
+function dataLoop(elem, program, currNode){
+  let token = program.getToken();
+  if(elem.value === token.value){
+    program.incCursor();
+    currNode.addChild(tokenToNode(token));
+    return true;
+  }
+  return false;
 }
