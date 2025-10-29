@@ -303,7 +303,7 @@ export class Program {
    * @returns {Boolean}
    */
   peek(){
-    return this.cursor + 1 >= this.tokens.length ;
+    return this.cursor + 1 < this.tokens.length ;
   }
 
   /**
@@ -315,6 +315,4 @@ export class Program {
   }
 }
 
-export function tokenToNode(token){
-  return new Node(token.type,token.value,token.line,token.column,[]);    
-}
+
