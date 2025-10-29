@@ -1,8 +1,9 @@
-import { Program, tokenToNode } from "../Program.js";
+import { Program } from "../Program.js";
 import { tokenize } from "../lexer/Lexer.js";
-import { Node, mtNode } from "../Node.js";
-import { Elem } from ".Elem.js";
-import { rules } from "./ParserRules.js";
+import { mtNode } from "../Node.js";
+import { Elem } from "./Elem.js";
+import { Rules } from "./ParserRules.js";
+import { Token, tokenToNode } from "../Token.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -24,6 +25,8 @@ import { rules } from "./ParserRules.js";
  *  nonterm 	→ 	alt1 | alt2 | … | altn
 */
 
+let rulesObject = new Rules();
+
 /**
  * Allows to transform a list of tokens to an AST
  * @param {Program} program 
@@ -33,20 +36,26 @@ export function parse(program){
   if (!program.isLexed){
     tokenize(program);
   }
-  // # TODO
+  mainLoop(program);
   return true;
 }
 
 
 // todo, manage the actual making of the ast
 function mainLoop(program,){
+  
+  //console.log(JSON.stringify(rulesObject.rules, null, 4));
   let root = mtNode("root");
   while(program.peek()){
-    for (let rule in rules){
-      if (ruleLoop(rule, program, root)){
+    for (let key_rule in rulesObject.rules){
+      let rule = rulesObject.rules[key_rule];
+      if (ruleLoop(rule, program, root, "root")){
+        program.AST = root;
         break;
       }
+      break;
     }
+    break
   }
 
 }
@@ -59,13 +68,17 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
-  let tmpNode = mtNode("tmpNode");
-  for (let branch in rule){
+
+  let result= false;
+  rule.childs.some(branch => {
+    let tmpNode = mtNode(rule.value);
     if (branchLoop(branch, program, tmpNode)){
-      currNode.childs = tmpNode.childs;
-      return true;
+      currNode.addChild(tmpNode);
+      result = true
+      return true; // global or local
     }
-  }
+  });
+  return result;
 }
 
 /**
@@ -76,11 +89,16 @@ function ruleLoop(rule, program, currNode){
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
+
   let cursorStart = program.cursor;
   let func = null;
-  for (let elem in branch){
+  let result= true;
+  branch.childs.some(elem => {
     if (elem[0].type === "rule"){
       func = ruleLoop;
+    } else if (elem[0].type === "ref"){
+      func = ruleLoop;
+      elem[0] = rulesObject.rules[elem[0].value];
     } else if (elem[0].type === "data"){
       func = dataLoop;
     } else {
@@ -89,10 +107,12 @@ function branchLoop(branch, program, currNode){
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
-      return false;
+      result=false;
+      return true;
     }
-  }
-  return true;
+    return false;
+  });
+  return result;
 }
 
 // could be refactored, lot of duplicated code
@@ -167,6 +187,7 @@ function manageOption(elem, program, ruleFunc, currNode){
  */
 function dataLoop(elem, program, currNode){
   let token = program.getToken();
+  if (token === undefined) {return false;}
   if(elem.value === token.value){
     program.incCursor();
     currNode.addChild(tokenToNode(token));
@@ -174,3 +195,29 @@ function dataLoop(elem, program, currNode){
   }
   return false;
 }
+
+function test(){
+  let prog = new Program("");
+  prog.tokens = [Token.new("test","do"), 
+                 Token.new("test","{"), 
+                 Token.new("test","a"),
+                 Token.new("test","}")];
+  mainLoop(prog);
+  console.log(JSON.stringify(prog, null, 4));
+
+  /*
+  prog = new Program("");
+  prog.tokens = [Token.new("test","do"), 
+                 Token.new("test","{"), 
+                 Token.new("test","a"),
+                 Token.new("test","}"),
+                 Token.new("test","::"),
+                 Token.new("test","context"),
+                 Token.new("test","=>")];
+  mainLoop(prog);
+  console.log(JSON.stringify(prog, null, 4));
+  */
+
+  }
+
+test();
