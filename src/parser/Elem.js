@@ -1,4 +1,5 @@
 //--  File containing "type" token for lexer and parser  --//
+import { Node } from "../Node.js";
 
 export class Elem {
 
@@ -19,7 +20,8 @@ export class Elem {
 const Genre = {
   rule : "rule",
   branch : "branch",
-  data : "data"
+  data : "data",
+  ref : "ref"
 }
 
 const Option = {
@@ -29,15 +31,19 @@ const Option = {
   3 : "0 or more"
 } 
 
-export function rule(branches){
-  return new Node("Rule", null, branches);
+export function rule(name){
+  return new Elem("rule", name, []);
 }
 
 export function branch(nodes){
-  return new Node("Branch", null, nodes);
+  return new Elem("branch", null, nodes);
 }
 
 export function data(name){
-  return new Node("Data", name, null);
+  return new Elem("data", name, null);
+}
+
+export function ref(name){
+  return new Elem("ref",name,null);
 }
 
