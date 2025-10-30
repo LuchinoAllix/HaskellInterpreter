@@ -48,6 +48,7 @@ async function testFile(file_path) {
     const program = new Program(content);
     console.log("\nTest file : " + file_path);
     console.log("Input : " + program.input);
+
     try {
       if (tokenize(program)){
         console.log("Successful tokenization :) ");
@@ -60,7 +61,23 @@ async function testFile(file_path) {
       console.log("Error while tokenization :");
       showTokens(program.tokens);
       console.error(error);
+      return 
     }
+
+    try {
+      if (parse(program)){
+        console.log("Successful parsing :) ");
+      } else {
+        console.log("Unsuccessful parsing :( ");
+      }
+      showAST(program.AST);
+
+    } catch (error) {
+      console.log("Error while parsing :");
+      showAST(program.AST);
+      console.error(error);
+    }
+
   } catch (err) {
     console.error("Error while reading test file:", err);
   }
@@ -75,6 +92,11 @@ function showTokens(tokens){
   for (let token of tokens){
     console.log("\t" + JSON.stringify(token));
   }
+}
+
+function showAST(ast){
+  console.log("AST :");
+  console.log(JSON.stringify(ast, null, 4));
 }
 
 main()
