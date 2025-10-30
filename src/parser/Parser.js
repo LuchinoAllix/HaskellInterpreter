@@ -30,7 +30,7 @@ let rulesObject = new Rules();
 /**
  * Allows to transform a list of tokens to an AST
  * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @returns {Boolean} true if success, false otherwise 
  */
 export function parse(program){
   if (!program.isLexed){
@@ -43,7 +43,9 @@ export function parse(program){
 
 
 /**
- * 
+ * Tries all the rules until it finds one applicable and adds the resulting AST
+ * nodes accordingly. Does this until the full list of token is parsed.
+ * Nothing is returned but the program.AST is modified if success.
  * @param {Program} program 
  */
 function mainLoop(program,){
@@ -78,7 +80,7 @@ function ruleLoop(rule, program, currNode){
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
       result = true
-      return true;
+      return true; // to break form the .some
     }
   });
   return result;
@@ -86,7 +88,8 @@ function ruleLoop(rule, program, currNode){
 
 /**
  * Tests all the elements of a branch, returns true if they are all true and
- * adds the nodes to the given one if it is the case. Otherwise returns false
+ * adds the nodes to the given one (currNode) if it is the case. 
+ * Otherwise returns false.
  * @param {Elem} branch 
  * @param {Program} program 
  * @param {Node} currNode 
@@ -125,38 +128,43 @@ function branchLoop(branch, program, currNode){
 // like [a] [b] and [a [b] [c]]
 
 /**
- * 
- * @param {*} elem 
- * @param {*} program 
- * @param {*} ruleFunc 
- * @param {*} currNode 
+ * Verifies if a rule or data elem is valid based on it option value
+ * If the rule passe, the resulting node is added to the given node (currNode)
+ * elemOption is a list of the elem to try, it's option (int) and if the option
+ * is 4, another elem (for negation rules)
+ * @param {[Elem, Int, Elem]} elemOption
+ * @param {Program} program 
+ * @param {function ruleFunc([Elem, Int, Elem], Program, Node) {}} ruleFunc 
+ * @param {Node} currNode 
  * @returns {Boolean}
  */
-function manageOption(elem, program, ruleFunc, currNode){
-  let cursorStart = program.cursor;
-  let passRule = ruleFunc(elem[0], program, currNode);
-  switch (elem[1]){ 
-    case 0 :
+function manageOption(elemOption, program, ruleFunc, currNode){
+  let cursorStart = program.cursor; // for rollback in case of failure
+  let elem = elemOption[0];
+  let option = elemOption[1];
+  let passRule = ruleFunc(elem, program, currNode);
+  switch (option){ 
+    case 0 : // optional
       if (!passRule){
         program.cursor = cursorStart;
       }
       break;
 
-    case 1 :
+    case 1 : // mandatory
       if (!passRule){
         program.cursor = cursorStart;
         return false;
       }
       break;
 
-    case 2 :
+    case 2 : // at least one
       if(!passRule){
         program.cursor = cursorStart;
         return false;
       } 
       while(true){
         cursorStart = program.cursor;
-        passRule = ruleFunc(elem[0], program, currNode);
+        passRule = ruleFunc(elem, program, currNode);
         if (!passRule){
           program.cursor = cursorStart;
           break;
@@ -164,24 +172,24 @@ function manageOption(elem, program, ruleFunc, currNode){
       }
       break;
 
-    case 3 :
+    case 3 : // any number
       if (!passRule){
         program.cursor = cursorStart;
       }
       while(true){
         cursorStart = program.cursor;
-        passRule = ruleFunc(elem[0], program, currNode);
+        passRule = ruleFunc(elem, program, currNode);
         if (!passRule){
           program.cursor = cursorStart;
           break;
         }
       }
 
-    case 4 :
+    case 4 : // once but not with another rule (specified)
       if (!passRule){
         program.cursor = cursorStart;
       } else {
-        let cursorEnd = cursorStart;
+        let cursorEnd = cursorStart; // for rollforward in case of success
         program.cursor = cursorStart;
         let passNegateRule = false;
         let mtNode = Node.mtNode("negate node");
@@ -208,15 +216,19 @@ function manageOption(elem, program, ruleFunc, currNode){
 }
 
 /**
- * 
- * @param {*} elem 
- * @param {*} program 
- * @param {*} currNode 
+ * Verifies if a data elem is the same as the current token,
+ * if so goes forward in the token list and adds the node to the current node
+ * if not returns false.
+ * @param {Elem} elem 
+ * @param {Program} program 
+ * @param {Node} currNode 
  * @returns {Boolean}
  */
 function dataLoop(elem, program, currNode){
   let token = program.getToken();
-  if (token === undefined) {return false;}
+  if (token === undefined) {
+    return false; // FIXME : thsi should not happen (yet it does)
+  } 
   if(elem.value === token.value){
     program.incCursor();
     currNode.addChild(tokenToNode(token));
@@ -225,6 +237,7 @@ function dataLoop(elem, program, currNode){
   return false;
 }
 
+// simple test
 function test(){
   let prog = new Program("");
   prog.tokens = [Token.new("test","do"), 
@@ -247,6 +260,6 @@ function test(){
   console.log(JSON.stringify(prog, null, 4));
   */
 
-  }
+}
 
 test();
