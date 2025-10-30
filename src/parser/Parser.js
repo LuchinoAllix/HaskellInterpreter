@@ -1,7 +1,6 @@
 import { Program } from "../Program.js";
 import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../Node.js";
-import { Elem } from "./Elem.js";
 import { Rules } from "./ParserRules.js";
 import { Token, tokenToNode } from "../Token.js";
 
@@ -53,9 +52,7 @@ function mainLoop(program,){
         program.AST = root;
         break;
       }
-      break;
     }
-    break
   }
 
 }
@@ -169,6 +166,30 @@ function manageOption(elem, program, ruleFunc, currNode){
         if (!passRule){
           program.cursor = cursorStart;
           break;
+        }
+      }
+
+    case 4 :
+      if (!passRule){
+        program.cursor = cursorStart;
+      } else {
+        let cursorEnd = cursorStart;
+        program.cursor = cursorStart;
+        let passNegateRule = false;
+        let mtNode = Node.mtNode("negate node");
+        if (elem[2].type === "ref"){
+          passNegateRule = ruleLoop(rulesObject.rules[elem[2].value], 
+                                    program, mtNode);
+        } else if (elem[2].type === "rule"){
+          passNegateRule = ruleLoop(elem[2], program, mtNode);
+        } else if (elem[2].type === "data"){
+          passNegateRule = dataLoop(elem[2], program, mtNode);
+        }
+        if (passNegateRule){
+            program.cursor = cursorStart;
+            return false;
+        } else {
+          program.cursor = cursorEnd;
         }
       }
 

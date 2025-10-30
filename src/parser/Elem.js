@@ -28,7 +28,8 @@ const Option = {
   0 : "optional",
   1 : "mandatory",
   2 : "at Least 1",
-  3 : "0 or more"
+  3 : "0 or more",
+  4 : "negate"
 } 
 
 export function rule(name){
