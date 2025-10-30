@@ -75,8 +75,6 @@ export class Rules {
         ]
         );
 
-
-
         this.rules.fexp.childs =(
         [branch([[ref("fexp"), 0],
         [ref("aexp"), 1]])]
@@ -85,6 +83,10 @@ export class Rules {
         this.rules.stmts.childs = (                        // tmp for testing
         [branch([[data("a"), 0]])]
         );
+
+        this.rules.aexp.childs=(
+        [branch([ref("aexp"), 4, ref("qcon")])]
+        )
   }
 
 }
