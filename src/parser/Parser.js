@@ -227,9 +227,10 @@ function manageOption(elemOption, program, ruleFunc, currNode){
 function dataLoop(elem, program, currNode){
   let token = program.getToken();
   if (token === undefined) {
-    return false; // FIXME : thsi should not happen (yet it does)
+    return false; // FIXME : this should not happen (yet it does)
   } 
-  if(elem.value === token.value){
+  if(elem.value === token.value || elem.value === token.type){ 
+    // verify token type in case of rule based on lexer token type 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
     return true;
