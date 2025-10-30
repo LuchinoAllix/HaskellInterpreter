@@ -30,6 +30,11 @@ export class Token {
   }
 }
 
+/**
+ * Creates a node based on a token
+ * @param {Token} token 
+ * @returns {Node}
+ */
 export function tokenToNode(token){
   return new Node(token.type,token.value,token.line,token.column,null);    
 }
