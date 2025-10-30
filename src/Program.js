@@ -307,6 +307,7 @@ export class Program {
   }
 
   /**
+   * FIXME : should throw error if cursor went too far ?
    * Return the token at the cursor position
    * @returns {Token}
    */
