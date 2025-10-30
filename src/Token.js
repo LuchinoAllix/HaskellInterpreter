@@ -31,5 +31,5 @@ export class Token {
 }
 
 export function tokenToNode(token){
-  return new Node(token.type,token.value,token.line,token.column,[]);    
+  return new Node(token.type,token.value,token.line,token.column,null);    
 }
