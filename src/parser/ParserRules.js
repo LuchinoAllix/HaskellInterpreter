@@ -11,9 +11,9 @@ export class Rules {
   
   createRules(){
     this.rules = {
-            exp : rule("exp"),
-            infixexp : rule("infixexp"),
-            lexp : rule("lexp"),
+      exp : rule("exp"),
+      infixexp : rule("infixexp"),
+      lexp : rule("lexp"),
       stmts : rule("stmts"),            
       fexp : rule("fexp"),
       qop : rule("qop"),
@@ -26,34 +26,34 @@ export class Rules {
 
   initRules(){
     this.rules.exp.childs = (
-        [branch([[ref("infixexp"), 1],                  // expression type signature
-                [data("::"), 1],
-                [data("context"), 0],
-                [data("=>"), 0],
+        [branch([[ref("infixexp"), 1],           // expression type signature
+                 [data("::"), 1],
+                 [data("context"), 0],
+                 [data("=>"), 0],
                 //[ref("type"), 1]
         ]), 
          branch([[ref("infixexp"), 1]])]);
 
     this.rules.infixexp.childs = (
-        [branch([[ref("lexp"), 1],                      // infix operator application
+        [branch([[ref("lexp"), 1],               // infix operator application
                 [ref("qop"), 1],
                 [ref("infixexp"), 1]]),
-        branch([[data('-'), 1],                       // prefix negation
+        branch([[data('-'), 1],                  // prefix negation
                 [ref("infixexp"), 1]]),
         branch([[ref("lexp"), 1]])]
         );
 
         this.rules.lexp.childs = (
-        [branch([[data("\\"), 1],                      // lambda abstraction
+        [branch([[data("\\"), 1],                // lambda abstraction
                 [ref("apat"), 2], 
                 [data("->"), 1],
                 [ref("exp"), 1]]),
-        branch([[data("let"), 1],                     // let expression
+        branch([[data("let"), 1],                // let expression
                 [ref("decl"), 1],
                 [data("in"), 1],
                 [ref("exp"), 1],
                 [ref("exp"), 1]]),
-        branch([[data("if"), 1],                      // conditional
+        branch([[data("if"), 1],                 // conditional
                 [ref("exp"), 1],
                 [data(";"), 0],
                 [data("then"), 1],
@@ -61,13 +61,13 @@ export class Rules {
                 [data(";"), 0],
                 [data("else"), 1],
                 [ref("exp"), 1]]),
-        branch([[data("case"), 1],                    // case expression
+        branch([[data("case"), 1],               // case expression
                 [ref("exp"), 1],
                 [data("of"), 1],
                 [data("{"), 0],
                 [ref("alts"), 1],
                 [data("}"), 0]]),
-        branch([[data("do"), 1],                      // do expression
+        branch([[data("do"), 1],                 // do expression
                 [data("{"), 0],
                 [ref("stmts"), 1],
                 [data("}"), 0]]),
@@ -80,7 +80,7 @@ export class Rules {
         [ref("aexp"), 1]])]
         );
 
-        this.rules.stmts.childs = (                        // tmp for testing
+        this.rules.stmts.childs = (              // tmp for testing
         [branch([[data("a"), 0]])]
         );
 
