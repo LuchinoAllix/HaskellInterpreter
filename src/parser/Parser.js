@@ -3,6 +3,7 @@ import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../Node.js";
 import { Rules } from "./ParserRules.js";
 import { Token, tokenToNode } from "../Token.js";
+import { Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -36,14 +37,16 @@ export function parse(program){
     tokenize(program);
   }
   mainLoop(program);
+  program.isParsed = true;
   return true;
 }
 
 
-// todo, manage the actual making of the ast
+/**
+ * 
+ * @param {Program} program 
+ */
 function mainLoop(program,){
-  
-  //console.log(JSON.stringify(rulesObject.rules, null, 4));
   let root = mtNode("root");
   while(program.peek()){
     for (let key_rule in rulesObject.rules){
@@ -58,40 +61,45 @@ function mainLoop(program,){
 }
 
 /**
+ * Tests all the branches until it finds one that matches.
+ * If so the tokens created by the branch will be added to the current node.
+ * Otherwise, if no branch is found, returns false because the rule is not
+ * applicable.
  * 
- * @param {*} rule 
- * @param {*} program 
- * @param {*} currNode 
+ * @param {Elem} rule 
+ * @param {Program} program 
+ * @param {Node} currNode 
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
-
   let result= false;
   rule.childs.some(branch => {
     let tmpNode = mtNode(rule.value);
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
       result = true
-      return true; // global or local
+      return true;
     }
   });
   return result;
 }
 
 /**
- * 
- * @param {*} branch 
- * @param {*} program 
- * @param {*} currNode 
+ * Tests all the elements of a branch, returns true if they are all true and
+ * adds the nodes to the given one if it is the case. Otherwise returns false
+ * @param {Elem} branch 
+ * @param {Program} program 
+ * @param {Node} currNode 
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
-
-  let cursorStart = program.cursor;
+  let cursorStart = program.cursor; // need to rollback in case of failure
   let func = null;
   let result= true;
   branch.childs.some(elem => {
-    if (elem[0].type === "rule"){
+    if (elem[0].type === "rule"){ 
+      // doesn't appear in branches but needed for root rules that are passed 
+      // at the begining (when looking at all the rules in mainLoop)
       func = ruleLoop;
     } else if (elem[0].type === "ref"){
       func = ruleLoop;
@@ -105,14 +113,14 @@ function branchLoop(branch, program, currNode){
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
       result=false;
-      return true;
+      return true; // to break out of the .some 
     }
     return false;
   });
   return result;
 }
 
-// could be refactored, lot of duplicated code
+
 // todo : manage options that are next to one another 
 // like [a] [b] and [a [b] [c]]
 
@@ -194,7 +202,7 @@ function manageOption(elem, program, ruleFunc, currNode){
       }
 
     default :
-      throw new Error("Ill formed rule, option should be 0,1,2 or 3");
+      throw new Error("Ill formed rule, option should be 0, 1, 2, 3 or 4");
   }
   return true;
 }
