@@ -109,7 +109,7 @@ export class Rules {
     this.rules.module.childs = [
       branch([
         [data("module"), 1],
-        [ref("modid"), 1],
+        [data("modid"), 1],
         [ref("exports"), 0],
         [data("where"), 1],
         [ref("body"), 1],
@@ -138,7 +138,7 @@ export class Rules {
      * impdecls -> impdecl1 ; … ; impdecln (n ≥ 1)
      * ------------------------- */
     this.rules.impdecls.childs = [
-      branch([[ref("impdecl"), 1], [data(";"), 0], [ref("impdecls"), 0]])
+      branch([[ref("impdecl"), 1], [data(";"), 1], [ref("impdecls"), 0]])
     ];
 
     /** ------------------------- AI
@@ -154,7 +154,7 @@ export class Rules {
     /** ------------------------- AI
      * exports -> ( export1 , … , exportn [ , ] )
      * ------------------------- */
-    this.rules.exports.childs = [
+    this.rules.exports.childs = [ // TODO
       branch([
         [data("("), 1],
         [ref("export"), 0],
@@ -173,13 +173,13 @@ export class Rules {
     this.rules.export.childs = [
       branch([[ref("qvar"), 1]]),
       branch([
-        [ref("qtycon"), 1],
+        [data("qtycon"), 1],
         [data("("), 1],
         [data(".."), 1],
         [data(")"), 1],
       ]),
-      branch([
-        [ref("qtycon"), 1],
+      branch([ // TODO
+        [data("qtycon"), 1],
         [data("("), 1],
         [ref("cname"), 1],
         [data(","), 0],
@@ -187,20 +187,20 @@ export class Rules {
         [data(")"), 1],
       ]),
       branch([
-        [ref("qtycls"), 1],
+        [data("qtycls"), 1],
         [data("("), 1],
         [data(".."), 1],
         [data(")"), 1],
       ]),
-      branch([
-        [ref("qtycls"), 1],
+      branch([ // TODO
+        [data("qtycls"), 1],
         [data("("), 1],
         [ref("qvar"), 1],
         [data(","), 0],
         [ref("qvar"), 0],
         [data(")"), 1],
       ]),
-      branch([[data("module"), 1], [ref("modid"), 1]]),
+      branch([[data("module"), 1], [data("modid"), 1]]),
     ];
 
     /** ------------------------- AI
@@ -211,27 +211,26 @@ export class Rules {
       branch([
         [data("import"), 1],
         [data("qualified"), 0],
-        [ref("modid"), 1],
+        [data("modid"), 1],
         [data("as"), 0],
-        [ref("modid"), 0],
+        [data("modid"), 0],
         [ref("impspec"), 0],
       ]),
       branch([]), // empty declaration
     ];
 
     /** ------------------------- AI
-
      * impspec -> ( import1 , … , importn [ , ] )
      *           | hiding ( import1 , … , importn [ , ] )
      * ------------------------- */
     this.rules.impspec.childs = [
-      branch([
+      branch([ // TODO
         [data("("), 1],
         [ref("import"), 3], // FIXME : make a seperate rule to allow any 
         [data(","), 0],     // number of 'import,'
         [data(")"), 1],
       ]),
-      branch([
+      branch([ // TODO
         [data("hiding"), 1],
         [data("("), 1],
         [ref("import"), 1],
@@ -254,7 +253,7 @@ export class Rules {
         [data(".."), 1],
         [data(")"), 1],
       ]),
-      branch([
+      branch([ // TODO
         [ref("tycon"), 1],
         [data("("), 1],
         [ref("cname"), 1],
@@ -268,7 +267,7 @@ export class Rules {
         [data(".."), 1],
         [data(")"), 1],
       ]),
-      branch([
+      branch([ // TODO
         [ref("tycls"), 1],
         [data("("), 1],
         [ref("var"), 1],
@@ -290,7 +289,7 @@ export class Rules {
      * topdecls -> topdecl1 ; … ; topdecln (n ≥ 0)
      * ------------------------- */
     this.rules.topdecls.childs = [
-      branch([[ref("topdecl"), 1], [data(";"), 0], [ref("topdecls"), 0]]),
+      branch([[ref("topdecl"), 1], [data(";"), 1], [ref("topdecls"), 0]]),
     ];
 
     /** ------------------------- AI
@@ -336,12 +335,12 @@ export class Rules {
         [data("instance"), 1],
         [ref("scontext"), 0],
         [data("=>"), 0],
-        [ref("qtycls"), 1],
+        [data("qtycls"), 1],
         [ref("inst"), 1],
         [data("where"), 0],
         [ref("idecls"), 0],
       ]),
-      branch([
+      branch([ // TODO
         [data("default"), 1],
         [data("("), 1],
         [ref("type"), 0],
@@ -360,8 +359,10 @@ export class Rules {
       branch([
         [data("{"), 1],
         [ref("decl"), 0],
-        [data(";"), 0],
-        [ref("decl"), 0],
+        [branch([
+                [data(";"), 1],
+                [ref("decl"), 1],
+        ]), 3],
         [data("}"), 1],
       ]),
     ];
@@ -383,8 +384,10 @@ export class Rules {
       branch([
         [data("{"), 1],
         [ref("cdecl"), 0],
-        [data(";"), 0],
-        [ref("cdecl"), 0],
+        [branch([
+                [data(";"), 1],
+                [ref("cdecl"), 1],
+        ]), 3],
         [data("}"), 1],
       ]),
     ];
@@ -441,7 +444,7 @@ export class Rules {
      * ops -> op1 , … , opn
      * ------------------------- */
     this.rules.ops.childs = [
-      branch([[ref("op"), 1], [data(","), 0], [ref("ops"), 0]]),
+      branch([[ref("op"), 1], [data(","), 1], [ref("ops"), 0]]),
     ];
         
 
@@ -449,7 +452,7 @@ export class Rules {
      * vars -> var1 , … , varn
      * ------------------------- */
     this.rules.vars.childs = [
-      branch([[ref("var"), 1], [data(","), 0], [ref("vars"), 0]]),
+      branch([[ref("var"), 1], [data(","), 1], [ref("vars"), 0]]),
     ];
 
     /** ------------------------- AI
@@ -506,7 +509,7 @@ export class Rules {
      *   | (,{,})
      * ------------------------- */
     this.rules.gtycon.childs = [
-      branch([[ref("qtycon"), 1]]),
+      branch([[data("qtycon"), 1]]),
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([[data("(->)"), 1]]),
@@ -527,9 +530,9 @@ export class Rules {
      *        | qtycls ( tyvar atype1 … atypen )
      * ------------------------- */
     this.rules.class_.childs = [
-      branch([[ref("qtycls"), 1], [ref("tyvar"), 1]]),
+      branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
       branch([
-        [ref("qtycls"), 1],
+        [data("qtycls"), 1],
         [data("("), 1],
         [ref("tyvar"), 1],
         [ref("atype"), 1],
@@ -541,7 +544,7 @@ export class Rules {
      * scontext -> simpleclass
      *           | ( simpleclass1 , … , simpleclassn )
      * ------------------------- */
-    this.rules.scontext.childs = [
+    this.rules.scontext.childs = [ // TODO
       branch([[ref("simpleclass"), 1]]),
       branch([[data("("), 1], [ref("simpleclass"), 1], [data(","), 0], [ref("simpleclass"), 0], [data(")"), 1]]),
     ];
@@ -550,7 +553,7 @@ export class Rules {
      * simpleclass -> qtycls tyvar
      * ------------------------- */
     this.rules.simpleclass.childs = [
-      branch([[ref("qtycls"), 1], [ref("tyvar"), 1]]),
+      branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
     ];
 
     /** ------------------------- AI
@@ -584,7 +587,7 @@ export class Rules {
         [ref("btype"), 1],
         [data(")"), 0],
       ]),
-      branch([
+      branch([ // TODO
         [ref("con"), 1],
         [data("{"), 1],
         [ref("fielddecl"), 0],
@@ -623,7 +626,7 @@ export class Rules {
      * ------------------------- */
     this.rules.deriving.childs = [
       branch([[data("deriving"), 1], [data("("), 1], [ref("dclass"), 1], [data(")"), 1]]),
-      branch([
+      branch([ // TODO
         [data("deriving"), 1],
         [data("("), 1],
         [ref("dclass"), 1],
@@ -637,7 +640,7 @@ export class Rules {
      * dclass -> qtycls
      * ------------------------- */
     this.rules.dclass.childs = [
-      branch([[ref("qtycls"), 1]]),
+      branch([[data("qtycls"), 1]]),
     ];
 
     /** ------------------------- AI
@@ -704,7 +707,7 @@ export class Rules {
      * fatype -> qtycon atype1 … atypek
      * ---------------------------------------- */
     this.rules.fatype.childs = [
-      branch([[ref("qtycon"), 1], [ref("atype"), 0]]),
+      branch([[data("qtycon"), 1], [ref("atype"), 0]]),
     ];
 
     /** ------------------------- AI
@@ -824,7 +827,7 @@ export class Rules {
       branch([[ref("literal"), 1]]),
       branch([[data("("), 1], [ref("exp"), 1], [data(")"), 1]]),
       branch([[data("("), 1], [ref("exp"), 1], [data(","), 1], [ref("exp"), 1], [data(")"), 1]]),
-      branch([[data("["), 1], [ref("exp"), 1], [data(","), 0], [ref("exp"), 0], [data("]"), 1]]),
+      branch([[data("["), 1], [ref("exp"), 1], [data(","), 0], [ref("exp"), 0], [data("]"), 1]]), // TODO
       branch([[data("["), 1], [ref("exp"), 1], [data("|"), 1], [ref("qual"), 1], [data("]"), 1]]),
       branch([[data("("), 1], [ref("qop"), 1], [ref("infixexp"), 1], [data(")"), 1]]),
       branch([[data("("), 1], [ref("infixexp"), 1], [ref("qop"), 1], [data(")"), 1]]),
@@ -847,8 +850,8 @@ export class Rules {
     this.rules.alts.childs = [
       branch([[ref("alt"), 1], [data(";"), 0], [ref("alts"), 0]]),
     ];
+    
     /** ------------------------- AI---------------
-
      *      | pat gdpat [where decls]
      * alt -> pat -> exp [where decls]
      *      | (empty)
@@ -932,7 +935,7 @@ export class Rules {
       branch([[data("_"), 1]]),
       branch([[data("("), 1], [ref("pat"), 1], [data(")"), 1]]),
       branch([[data("("), 1], [ref("pat"), 1], [data(","), 1], [ref("pat"), 1], [data(")"), 1]]),
-      branch([[data("["), 1], [ref("pat"), 1], [data(","), 0], [ref("pat"), 0], [data("]"), 1]]),
+      branch([[data("["), 1], [ref("pat"), 1], [data(","), 0], [ref("pat"), 0], [data("]"), 1]]), // TODO
       branch([[data("~"), 1], [ref("apat"), 1]]),
     ];
 
@@ -957,7 +960,7 @@ export class Rules {
      * var -> varid | ( varsym )
      * ---------------------------------------- */
     this.rules.var.childs = [
-      branch([[ref("varid"), 1]]),
+      branch([[data("varid"), 1]]),
       branch([[data("("), 1], [ref("varsym"), 1], [data(")"), 1]]),
     ];
 
@@ -965,8 +968,8 @@ export class Rules {
      * qvar -> qvarid | ( qvarsym )
      * ---------------------------------------- */
     this.rules.qvar.childs = [
-      branch([[ref("qvarid"), 1]]),
-      branch([[data("("), 1], [ref("qvarsym"), 1], [data(")"), 1]]),
+      branch([[data("qvarid"), 1]]),
+      branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]]),
     ];
 
     /** ------------------------- AI---------------
@@ -981,7 +984,7 @@ export class Rules {
      * qcon -> qconid | ( gconsym )
      * ---------------------------------------- */
     this.rules.qcon.childs = [
-      branch([[ref("qconid"), 1]]),
+      branch([[data("qconid"), 1]]),
       branch([[data("("), 1], [ref("gconsym"), 1], [data(")"), 1]]),
     ];
 
@@ -990,15 +993,15 @@ export class Rules {
      * ---------------------------------------- */
     this.rules.varop.childs = [
       branch([[ref("varsym"), 1]]),
-      branch([[data("`"), 1], [ref("varid"), 1], [data("`"), 1]]),
+      branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]]),
     ];
 
     /** ------------------------- AI---------------
      * qvarop -> qvarsym | ` qvarid `
      * ---------------------------------------- */
     this.rules.qvarop.childs = [
-      branch([[ref("qvarsym"), 1]]),
-      branch([[data("`"), 1], [ref("qvarid"), 1], [data("`"), 1]]),
+      branch([[data("qvarsym"), 1]]),
+      branch([[data("`"), 1], [data("qvarid"), 1], [data("`"), 1]]),
     ];
 
     /** ------------------------- AI---------------
@@ -1014,7 +1017,7 @@ export class Rules {
      * ---------------------------------------- */
     this.rules.qconop.childs = [
       branch([[ref("gconsym"), 1]]),
-      branch([[data("`"), 1], [ref("qconid"), 1], [data("`"), 1]]),
+      branch([[data("`"), 1], [data("qconid"), 1], [data("`"), 1]]),
     ];
 
     /** ------------------------- AI---------------
@@ -1038,7 +1041,7 @@ export class Rules {
      * ---------------------------------------- */
     this.rules.gconsym.childs = [
       branch([[data(":"), 1]]),
-      branch([[ref("qconsym"), 1]]),
+      branch([[data("qconsym"), 1]]),
     ];
   }
 
