@@ -73,6 +73,7 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
+  console.log("ruleloop ", rule.value);
   let result= false;
   rule.childs.some(branch => {
     let tmpNode = mtNode(rule.value);
@@ -95,10 +96,11 @@ function ruleLoop(rule, program, currNode){
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
+  console.log("branchloop ", branch.childs);
   let cursorStart = program.cursor; // need to rollback in case of failure
   let func = null;
-  let result= true;
-  branch.childs.some(elem => {
+  for (let i = 0; i < branch.childs.length; i++){
+    let elem = branch.childs[i];
     if (elem[0].type === "rule"){ 
       // doesn't appear in branches but needed for root rules that are passed 
       // at the begining (when looking at all the rules in mainLoop)
@@ -109,17 +111,17 @@ function branchLoop(branch, program, currNode){
     } else if (elem[0].type === "data"){
       func = dataLoop;
     } else {
-      throw new Error("Ill-formed branch, elems in branch should be either a" +
-                      " rule or data, at :\n" + branch);
+      throw new Error("Ill-formed branch, elems in branch should be either a"+
+                      " rule or data, at :\n" + JSON.stringify(branch, null, 4));
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
-      result=false;
-      return true; // to break out of the .some 
+      console.log("false")
+      return false;
     }
-    return false;
-  });
-  return result;
+  }
+      console.log("true")
+  return true;
 }
 
 
@@ -138,6 +140,7 @@ function branchLoop(branch, program, currNode){
  * @returns {Boolean}
  */
 function manageOption(elemOption, program, ruleFunc, currNode){
+  console.log("manageoption");
   let cursorStart = program.cursor; // for rollback in case of failure
   let elem = elemOption[0];
   let option = elemOption[1];
@@ -224,6 +227,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
  * @returns {Boolean}
  */
 function dataLoop(elem, program, currNode){
+  console.log("dataloop ", elem.value);
   let token = program.getToken();
   if (token === undefined) {
     return false; // FIXME : this should not happen (yet it does)
@@ -232,7 +236,7 @@ function dataLoop(elem, program, currNode){
     // verify token type in case of rule based on lexer token type 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
-    return true;
+    console.log("true");
   }
   return false;
 }
