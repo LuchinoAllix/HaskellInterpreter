@@ -19,7 +19,7 @@ export class Rules {
       export: rule("export"),
       impdecl: rule("impdecl"),
       impspec: rule("impspec"),
-      import_: rule("import_"),
+      import: rule("import"),
       cname: rule("cname"),
       topdecls: rule("topdecls"),
       topdecl: rule("topdecl"),
@@ -225,19 +225,18 @@ export class Rules {
      *           | hiding ( import1 , … , importn [ , ] )
      * ------------------------- */
     this.rules.impspec.childs = [
-            [data("("), 1],
       branch([
-        [ref("import_"), 1],
-        [data(","), 0],
-        [ref("import_"), 0],
+        [data("("), 1],
+        [ref("import"), 3], // FIXME : make a seperate rule to allow any 
+        [data(","), 0],     // number of 'import,'
         [data(")"), 1],
       ]),
       branch([
         [data("hiding"), 1],
         [data("("), 1],
-        [ref("import_"), 1],
+        [ref("import"), 1],
         [data(","), 0],
-        [ref("import_"), 0],
+        [ref("import"), 0],
         [data(")"), 1],
       ]),
     ];
@@ -247,7 +246,7 @@ export class Rules {
      *         | tycon [(..) | ( cname1 , … , cnamen )]
      *         | tycls [(..) | ( var1 , … , varn )]
      * ------------------------- */
-    this.rules.import_.childs = [
+    this.rules.import.childs = [
       branch([[ref("var"), 1]]),
       branch([
         [ref("tycon"), 1],
