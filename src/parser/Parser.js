@@ -58,6 +58,7 @@ function mainLoop(program,){
         break;
       }
     }
+    break;
   }
 }
 
@@ -73,7 +74,8 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
-  console.log("ruleloop ", rule.value);
+  console.log('\x1b[31m%s\x1b[0m', 'ruleloop', rule.value);
+
   let result= false;
   rule.childs.some(branch => {
     let tmpNode = mtNode(rule.value);
@@ -96,7 +98,7 @@ function ruleLoop(rule, program, currNode){
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
-  console.log("branchloop ", branch.childs);
+  console.log("branchloop ");//, branch.childs);
   let cursorStart = program.cursor; // need to rollback in case of failure
   let func = null;
   for (let i = 0; i < branch.childs.length; i++){
@@ -110,17 +112,20 @@ function branchLoop(branch, program, currNode){
       elem[0] = rulesObject.rules[elem[0].value];
     } else if (elem[0].type === "data"){
       func = dataLoop;
+    } else if (elem[0].type === "branch"){
+      func = branchLoop;
     } else {
       throw new Error("Ill-formed branch, elems in branch should be either a"+
                       " rule or data, at :\n" + JSON.stringify(branch, null, 4));
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
-      console.log("false")
+console.log('\x1b[34m%s\x1b[0m', 'false');
       return false;
     }
   }
-      console.log("true")
+
+console.log('\x1b[32m%s\x1b[0m', 'true');
   return true;
 }
 
@@ -236,7 +241,8 @@ function dataLoop(elem, program, currNode){
     // verify token type in case of rule based on lexer token type 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
-    console.log("true");
+console.log('\x1b[32m%s\x1b[0m', 'true2');
+    return true;
   }
   return false;
 }
