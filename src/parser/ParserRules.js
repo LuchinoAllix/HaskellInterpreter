@@ -17,6 +17,8 @@ export class Rules {
       impdecls: rule("impdecls"),
       exports: rule("exports"),
       export: rule("export"),
+      export_1: rule("export_1"),
+      export_2: rule("export_2"),
       impdecl: rule("impdecl"),
       impspec: rule("impspec"),
       import: rule("import"),
@@ -102,7 +104,7 @@ export class Rules {
    */
   initRules() {
 
-    /** ------------------------- AI
+    /** -------------------------
      * module -> module modid [exports] where body
      *         | body
      * ------------------------- */
@@ -117,10 +119,10 @@ export class Rules {
       branch([[ref("body"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * body -> { impdecls ; topdecls }
-     *       | { impdecls }
-     *       | { topdecls }
+    /** -------------------------
+     * body -> '{' impdecls ';' topdecls '}'
+     *       | '{' impdecls '}'
+     *       | '{' topdecls '}'
      * ------------------------- */
     this.rules.body.childs = [
       branch([
@@ -130,80 +132,113 @@ export class Rules {
         [ref("topdecls"), 1],
         [data("}"), 1]
       ]),
-      branch([[data("{"), 1], [ref("impdecls"), 1], [data("}"), 1]]),
-      branch([[data("{"), 1], [ref("topdecls"), 1], [data("}"), 1]])
+      branch([
+        [data("{"), 1], 
+        [ref("impdecls"), 1], 
+        [data("}"), 1]]),
+      branch([
+        [data("{"), 1], 
+        [ref("topdecls"), 1], 
+        [data("}"), 1]])
     ];
 
-    /** ------------------------- AI
-     * impdecls -> impdecl1 ; … ; impdecln (n ≥ 1)
+    /** -------------------------
+     * impdecls -> impdecl1 ';' … ';' impdecln (n ≥ 1)
      * ------------------------- */
     this.rules.impdecls.childs = [
-      branch([[ref("impdecl"), 1], [data(";"), 1], [ref("impdecls"), 0]])
+      branch([
+        [ref("impdecl"), 1], 
+        [data(";"), 1], 
+        [branch([
+          [ref("impdecls"), 0]
+        ]), 0]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * impent -> [string]  (see Section 8.5.1) 
      * ------------------------- */ 
     this.rules.impent.childs = [branch([[data("string"), 0]])];
 
-    /** ------------------------- AI
+    /** -------------------------
      * expent -> [string]  (see Section 8.5.1) 
      * ------------------------- */
     this.rules.expent.childs = [branch([[data("string"), 0]])];
 
-    /** ------------------------- AI
-     * exports -> ( export1 , … , exportn [ , ] )
+    /** -------------------------
+     * exports -> '(' export1 , … , exportn [ ',' ] ')'     (n ≥ 0) 
      * ------------------------- */
-    this.rules.exports.childs = [ // TODO
+    this.rules.exports.childs = [
       branch([
         [data("("), 1],
         [ref("export"), 0],
-        [data(","), 0],
-        [ref("export"), 0],
+        [branch([
+          [ref("export"),1]
+          [data(","), 1]
+        ]), 3]
+        [data(","), 0]
         [data(")"), 1],
       ]),
     ];
 
     /** ------------------------- AI
      * export -> qvar
-     *         | qtycon [(..) | ( cname1 , … , cnamen )]
-     *         | qtycls [(..) | ( qvar1 , … , qvarn )]
+     *         | qtycon [(..) | ( cname1 , … , cnamen )] (n ≥ 0) 
+     *         | qtycls [(..) | ( qvar1 , … , qvarn )]   (n ≥ 0)
      *         | module modid
      * ------------------------- */
     this.rules.export.childs = [
       branch([[ref("qvar"), 1]]),
       branch([
-        [data("qtycon"), 1],
-        [data("("), 1],
-        [data(".."), 1],
-        [data(")"), 1],
-      ]),
-      branch([ // TODO
-        [data("qtycon"), 1],
-        [data("("), 1],
-        [ref("cname"), 1],
-        [data(","), 0],
-        [ref("cname"), 0],
-        [data(")"), 1],
+        [data("qtycon"), 1],          
+        [ref("export_1"), 0],
       ]),
       branch([
         [data("qtycls"), 1],
-        [data("("), 1],
-        [data(".."), 1],
-        [data(")"), 1],
-      ]),
-      branch([ // TODO
-        [data("qtycls"), 1],
-        [data("("), 1],
-        [ref("qvar"), 1],
-        [data(","), 0],
-        [ref("qvar"), 0],
-        [data(")"), 1],
+        [ref("export_2"), 0],
       ]),
       branch([[data("module"), 1], [data("modid"), 1]]),
     ];
 
-    /** ------------------------- AI
+    /** ------------------------- (added rule for export)
+     * export_1 -> '(..)' | '(' cname1 ',' … ',' cnamen ')'   (n ≥ 0)
+     * ------------------------- */
+    this.rules.export_1.childs = [
+      branch([
+        [data("("), 1],
+        [data(".."), 1],
+        [data(")"), 1],
+      ]),
+      branch([
+        [data("("), 1],
+        [branch([
+          [ref("cname"), 1]
+          [data(','), 0]
+        ]), 3]
+        [data(")"), 1],
+      ])
+    ]
+
+    /** ------------------------- (added rule for export)
+     * export_2 -> '(..)' | '(' qvar1 ',' … ',' qvar ')'   (n ≥ 0)
+     * ------------------------- */
+    this.rules.export_2.childs = [
+      branch([
+        [data("("), 1],
+        [data(".."), 1],
+        [data(")"), 1],
+      ]),
+      branch([
+        [data("("), 1],
+        [branch([
+          [ref("qvar"), 1]
+          [data(','), 0]
+        ]), 3]
+        [data(")"), 1],
+      ])
+    ]
+
+    /** -------------------------
      * impdecl -> import [qualified] modid [as modid] [impspec]
      *          | (empty declaration)
      * ------------------------- */
@@ -212,16 +247,18 @@ export class Rules {
         [data("import"), 1],
         [data("qualified"), 0],
         [data("modid"), 1],
-        [data("as"), 0],
-        [data("modid"), 0],
+        [branch([
+          [data("as"), 1],
+          [data("modid"), 1],
+        ]), 0]
         [ref("impspec"), 0],
       ]),
       branch([]), // empty declaration
     ];
 
     /** ------------------------- AI
-     * impspec -> ( import1 , … , importn [ , ] )
-     *           | hiding ( import1 , … , importn [ , ] )
+     * impspec -> '(' import1 ',' … ',' importn [ ',' ] ')'
+     *           | 'hiding (' import1 ',' … ',' importn [ ',' ] ')'
      * ------------------------- */
     this.rules.impspec.childs = [
       branch([ // TODO
@@ -850,7 +887,7 @@ export class Rules {
     this.rules.alts.childs = [
       branch([[ref("alt"), 1], [data(";"), 0], [ref("alts"), 0]]),
     ];
-    
+
     /** ------------------------- AI---------------
      *      | pat gdpat [where decls]
      * alt -> pat -> exp [where decls]
