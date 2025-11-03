@@ -1,3 +1,5 @@
+import { Node } from "./Node.js";
+
 //--  File containing "type" token for lexer and parser  --//
 
 export class Token {
@@ -26,4 +28,13 @@ export class Token {
   static new(type, value){
     return new Token("indentation " + type, value,  -1, -1);
   }
+}
+
+/**
+ * Creates a node based on a token
+ * @param {Token} token 
+ * @returns {Node}
+ */
+export function tokenToNode(token){
+  return new Node(token.type,token.value,token.line,token.column,null);    
 }

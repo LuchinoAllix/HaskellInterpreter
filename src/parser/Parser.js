@@ -1,6 +1,9 @@
 import { Program } from "../Program.js";
 import { tokenize } from "../lexer/Lexer.js";
-import { Node } from "../Node.js";
+import { mtNode } from "../Node.js";
+import { Rules } from "./ParserRules.js";
+import { Token, tokenToNode } from "../Token.js";
+import { Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -8,8 +11,6 @@ import { Node } from "../Node.js";
  * Source : https://www.haskell.org/onlinereport/haskell2010/haskellch10.html
  * Chapter : 10.5 
  * 
- * How the rules were split in different files in purely arbitrary, grouping 
- * them somewhat together to avoid having one big file.
  * 
  * Notational conventions :
  *  [pattern]     optional
@@ -24,15 +25,251 @@ import { Node } from "../Node.js";
  *  nonterm 	→ 	alt1 | alt2 | … | altn
 */
 
+let rulesObject = new Rules();
+
 /**
  * Allows to transform a list of tokens to an AST
  * @param {Program} program 
- * @returns true if success, false otherwise 
+ * @returns {Boolean} true if success, false otherwise 
  */
 export function parse(program){
   if (!program.isLexed){
     tokenize(program);
   }
-  // # TODO
+  mainLoop(program);
+  program.isParsed = true;
   return true;
 }
+
+
+/**
+ * Tries all the rules until it finds one applicable and adds the resulting AST
+ * nodes accordingly. Does this until the full list of token is parsed.
+ * Nothing is returned but the program.AST is modified if success.
+ * @param {Program} program 
+ */
+function mainLoop(program,){
+  let root = mtNode("root");
+  while(program.peek()){
+    for (let key_rule in rulesObject.rules){
+      let rule = rulesObject.rules[key_rule];
+      if (ruleLoop(rule, program, root, "root")){
+        program.AST = root;
+        break;
+      }
+    }
+    break;
+  }
+}
+
+/**
+ * Tests all the branches until it finds one that matches.
+ * If so the tokens created by the branch will be added to the current node.
+ * Otherwise, if no branch is found, returns false because the rule is not
+ * applicable.
+ * 
+ * @param {Elem} rule 
+ * @param {Program} program 
+ * @param {Node} currNode 
+ * @returns {Boolean}
+ */
+function ruleLoop(rule, program, currNode){
+  console.log('\x1b[31m%s\x1b[0m', 'ruleloop', rule.value);
+
+  let result= false;
+  rule.childs.some(branch => {
+    let tmpNode = mtNode(rule.value);
+    if (branchLoop(branch, program, tmpNode)){
+      currNode.addChild(tmpNode);
+      result = true
+      return true; // to break form the .some
+    }
+  });
+  return result;
+}
+
+/**
+ * Tests all the elements of a branch, returns true if they are all true and
+ * adds the nodes to the given one (currNode) if it is the case. 
+ * Otherwise returns false.
+ * @param {Elem} branch 
+ * @param {Program} program 
+ * @param {Node} currNode 
+ * @returns {Boolean}
+ */
+function branchLoop(branch, program, currNode){
+  console.log("branchloop ");//, branch.childs);
+  let cursorStart = program.cursor; // need to rollback in case of failure
+  let func = null;
+  for (let i = 0; i < branch.childs.length; i++){
+    let elem = branch.childs[i];
+    if (elem[0].type === "rule"){ 
+      // doesn't appear in branches but needed for root rules that are passed 
+      // at the begining (when looking at all the rules in mainLoop)
+      func = ruleLoop;
+    } else if (elem[0].type === "ref"){
+      func = ruleLoop;
+      elem[0] = rulesObject.rules[elem[0].value];
+    } else if (elem[0].type === "data"){
+      func = dataLoop;
+    } else if (elem[0].type === "branch"){
+      func = branchLoop;
+    } else {
+      throw new Error("Ill-formed branch, elems in branch should be either a"+
+                      " rule or data, at :\n" + JSON.stringify(branch, null, 4));
+    }
+    if (!manageOption(elem, program, func, currNode)){
+      program.cursor = cursorStart;
+console.log('\x1b[34m%s\x1b[0m', 'false');
+      return false;
+    }
+  }
+
+console.log('\x1b[32m%s\x1b[0m', 'true');
+  return true;
+}
+
+
+// todo : manage options that are next to one another 
+// like [a] [b] and [a [b] [c]]
+
+/**
+ * Verifies if a rule or data elem is valid based on it option value
+ * If the rule passe, the resulting node is added to the given node (currNode)
+ * elemOption is a list of the elem to try, it's option (int) and if the option
+ * is 4, another elem (for negation rules)
+ * @param {[Elem, Int, Elem]} elemOption
+ * @param {Program} program 
+ * @param {function ruleFunc([Elem, Int, Elem], Program, Node) {}} ruleFunc 
+ * @param {Node} currNode 
+ * @returns {Boolean}
+ */
+function manageOption(elemOption, program, ruleFunc, currNode){
+  console.log("manageoption");
+  let cursorStart = program.cursor; // for rollback in case of failure
+  let elem = elemOption[0];
+  let option = elemOption[1];
+  let passRule = ruleFunc(elem, program, currNode);
+  switch (option){ 
+    case 0 : // optional
+      if (!passRule){
+        program.cursor = cursorStart;
+      }
+      break;
+
+    case 1 : // mandatory
+      if (!passRule){
+        program.cursor = cursorStart;
+        return false;
+      }
+      break;
+
+    case 2 : // at least one
+      if(!passRule){
+        program.cursor = cursorStart;
+        return false;
+      } 
+      while(true){
+        cursorStart = program.cursor;
+        passRule = ruleFunc(elem, program, currNode);
+        if (!passRule){
+          program.cursor = cursorStart;
+          break;
+        }
+      }
+      break;
+
+    case 3 : // any number
+      if (!passRule){
+        program.cursor = cursorStart;
+      }
+      while(true){
+        cursorStart = program.cursor;
+        passRule = ruleFunc(elem, program, currNode);
+        if (!passRule){
+          program.cursor = cursorStart;
+          break;
+        }
+      }
+
+    case 4 : // once but not with another rule (specified)
+      if (!passRule){
+        program.cursor = cursorStart;
+      } else {
+        let cursorEnd = cursorStart; // for rollforward in case of success
+        program.cursor = cursorStart;
+        let passNegateRule = false;
+        let mtNode = Node.mtNode("negate node");
+        if (elem[2].type === "ref"){
+          passNegateRule = ruleLoop(rulesObject.rules[elem[2].value], 
+                                    program, mtNode);
+        } else if (elem[2].type === "rule"){
+          passNegateRule = ruleLoop(elem[2], program, mtNode);
+        } else if (elem[2].type === "data"){
+          passNegateRule = dataLoop(elem[2], program, mtNode);
+        }
+        if (passNegateRule){
+            program.cursor = cursorStart;
+            return false;
+        } else {
+          program.cursor = cursorEnd;
+        }
+      }
+
+    default :
+      throw new Error("Ill formed rule, option should be 0, 1, 2, 3 or 4");
+  }
+  return true;
+}
+
+/**
+ * Verifies if a data elem is the same as the current token,
+ * if so goes forward in the token list and adds the node to the current node
+ * if not returns false.
+ * @param {Elem} elem 
+ * @param {Program} program 
+ * @param {Node} currNode 
+ * @returns {Boolean}
+ */
+function dataLoop(elem, program, currNode){
+  console.log("dataloop ", elem.value);
+  let token = program.getToken();
+  if (token === undefined) {
+    return false; // FIXME : this should not happen (yet it does)
+  } 
+  if(elem.value === token.value || elem.value === token.type){ 
+    // verify token type in case of rule based on lexer token type 
+    program.incCursor();
+    currNode.addChild(tokenToNode(token));
+console.log('\x1b[32m%s\x1b[0m', 'true2');
+    return true;
+  }
+  return false;
+}
+
+// simple test
+function test(){
+  let prog = new Program("");
+  prog.tokens = [Token.new("test","do"), 
+                 Token.new("test","{"), 
+                 Token.new("test","a"),
+                 Token.new("test","}")];
+  mainLoop(prog);
+  console.log(JSON.stringify(prog, null, 4));
+
+  /*
+  prog = new Program("");
+  prog.tokens = [Token.new("test","do"), 
+                 Token.new("test","{"), 
+                 Token.new("test","a"),
+                 Token.new("test","}"),
+                 Token.new("test","::"),
+                 Token.new("test","context"),
+                 Token.new("test","=>")];
+  mainLoop(prog);
+  console.log(JSON.stringify(prog, null, 4));
+  */
+
+}
+
+//test();
