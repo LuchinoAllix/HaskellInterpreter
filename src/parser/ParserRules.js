@@ -1369,7 +1369,7 @@ export class Rules {
      * ------------------------- */
     this.rules.var.childs = [
       branch([[data("varid"), 1]]),
-      branch([[data("("), 1], [ref("varsym"), 1], [data(")"), 1]])
+      branch([[data("("), 1], [data("varsym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
@@ -1400,7 +1400,7 @@ export class Rules {
      * varop -> varsym | '`' varid '`'                       (variable operator) 
      * ------------------------- */
     this.rules.varop.childs = [
-      branch([[ref("varsym"), 1]]),
+      branch([[data("varsym"), 1]]),
       branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]])
     ];
 
