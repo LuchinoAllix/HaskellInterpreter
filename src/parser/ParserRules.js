@@ -1088,21 +1088,31 @@ export class Rules {
     ];
 
     /** ------------------------- AI
-     * apat ->
-     *   var [@ apat]
-     *   | gcon (arity gcon = 0)
-     *   | qcon { fpat1 , … , fpatk }
-     *   | literal
-     *   | _
-     *   | ( pat )
-     *   | ( pat1 , … , patk )
-     *   | [ pat1 , … , patk ]
-     *   | ~ apat
+     * apat -> var [@ apat]                                         (as pattern) 
+     *       | gcon                                             (arity gcon = 0)
+     *       | qcon '{' fpat1 ',' … ',' fpatk '}'       (labeled pattern, k ≥ 0) 
+     *       | literal
+     *       | '_'                                                    (wildcard)
+     *       | '(' pat ')'                               (parenthesized pattern)
+     *       | '(' pat1 ',' … ',' patk ')'                (tuple pattern, k ≥ 2)
+     *       | '[' pat1 ',' … ',' patk ']'                 (list pattern, k ≥ 1)
+     *       | '~' apat                                    (irrefutable pattern) 
      * ------------------------- */
     this.rules.apat.childs = [
-      branch([[ref("var"), 1], [data("@"), 0], [ref("apat"), 0]]),
+      branch([
+        [ref("var"), 1], 
+        [branch([
+          [data("@"), 1], 
+          [ref("apat"), 1]
+        ]), 0]
+      ]),
       branch([[ref("gcon"), 1]]),
-      branch([[ref("qcon"), 1], [data("{"), 1], [ref("fpat"), 0], [data("}"), 1]]),
+      branch([
+        [ref("qcon"), 1], 
+        [data("{"), 1], 
+        [ref("fpat"), 0], 
+        [data("}"), 1]
+      ]),
       branch([[ref("literal"), 1]]),
       branch([[data("_"), 1]]),
       branch([[data("("), 1], [ref("pat"), 1], [data(")"), 1]]),
