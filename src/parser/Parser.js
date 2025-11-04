@@ -145,10 +145,11 @@ console.log('\x1b[32m%s\x1b[0m', 'true');
  * @returns {Boolean}
  */
 function manageOption(elemOption, program, ruleFunc, currNode){
-  console.log("manageoption");
+  console.log("manageoption ", elemOption);
   let cursorStart = program.cursor; // for rollback in case of failure
   let elem = elemOption[0];
   let option = elemOption[1];
+  console.log(option);
   let passRule = ruleFunc(elem, program, currNode);
   switch (option){ 
     case 0 : // optional
@@ -191,6 +192,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
           break;
         }
       }
+    break;
 
     case 4 : // once but not with another rule (specified)
       if (!passRule){
@@ -215,6 +217,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
           program.cursor = cursorEnd;
         }
       }
+      break;
 
     default :
       throw new Error("Ill formed rule, option should be 0, 1, 2, 3 or 4");
