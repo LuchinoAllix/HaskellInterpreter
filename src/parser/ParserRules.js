@@ -430,7 +430,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * decls -> { decl1 ; … ; decln }                                    (n ≥ 0)
+     * decls -> '{' decl1 ';' … ';' decln '}'                            (n ≥ 0)
      * ------------------------- */
     this.rules.decls.childs = [
       branch([
@@ -455,7 +455,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * cdecls -> { cdecl1 ; … ; cdecln }                                 (n ≥ 0)
+     * cdecls -> '{' cdecl1 ';' … ';' cdecln '}'                         (n ≥ 0)
      * ------------------------- */
     this.rules.cdecls.childs = [
       branch([
@@ -479,7 +479,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * idecls -> { idecl1 ; … ; idecln }                                 (n ≥ 0)
+     * idecls -> '{' idecl1 ';' … ';' idecln '}'                         (n ≥ 0)
      * ------------------------- */
     this.rules.idecls.childs = [
       branch([
@@ -503,7 +503,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * gendecl -> vars :: [context =>] type
+     * gendecl -> vars '::' [context '=>'] type
      *           | fixity [integer] ops
      *           | (empty declaration)
      * ------------------------- */
@@ -526,7 +526,7 @@ export class Rules {
     ];
     
     /** -------------------------
-     * ops -> op1 , … , opn                                              (n ≥ 1)
+     * ops -> op1 ',' … ',' opn                                          (n ≥ 1)
      * ------------------------- */
     this.rules.ops.childs = [
       branch([
@@ -539,7 +539,7 @@ export class Rules {
     ];        
 
     /** -------------------------
-     * vars -> var1 , … , varn                                           (n ≥ 1)
+     * vars -> var1 ',' … ',' varn                                       (n ≥ 1)
      * ------------------------- */
     this.rules.vars.childs = [
       branch([
@@ -552,7 +552,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * fixity -> infixl | infixr | infix
+     * fixity -> 'infixl' | 'infixr' | 'infix'
      * ------------------------- */
     this.rules.fixity.childs = [
       branch([[data("infixl"), 1]]),
@@ -560,27 +560,35 @@ export class Rules {
       branch([[data("infix"), 1]])
     ];
 
-    /** ------------------------- AI
-     * type -> btype [-> type]
+    /** -------------------------
+     * type -> btype [-> type]                                   (function type) 
      * ------------------------- */
     this.rules.type.childs = [
-      branch([[ref("btype"), 1], [data("->"), 0], [ref("type"), 0]]),
+      branch([
+        [ref("btype"), 1],
+        [branch([
+          [data("->"), 1], 
+          [ref("type"), 1]
+        ]), 0]
+      ])
     ];
 
-    /** ------------------------- AI
-     * btype -> [btype] atype (type application)
+    /** -------------------------
+     * btype -> [btype] atype                                 (type application)
      * ------------------------- */
     this.rules.btype.childs = [
-      branch([[ref("btype"), 0], [ref("atype"), 1]]),
+      branch([
+        [ref("btype"), 0], 
+        [ref("atype"), 1]
+      ])
     ];
 
-    /** ------------------------- AI
-     * atype ->
-     *     gtycon
-     *   | tyvar
-     *   | ( type1 , … , typek ) (tuple type)
-     *   | [ type ] (list type)
-     *   | ( type ) (parenthesized constructor)
+    /** -------------------------
+     * atype -> gtycon
+     *        | tyvar
+     *        | '(' type1 ',' … ',' typek ')'               (tuple type,  k ≥ 2)
+     *        | '[' type ']'                                         (list type)
+     *        | '(' type ')'                         (parenthesized constructor)
      * ------------------------- */
     this.rules.atype.childs = [
       branch([[ref("gtycon"), 1]]),
@@ -590,35 +598,53 @@ export class Rules {
         [ref("type"), 1],
         [data(","), 1],
         [ref("type"), 1],
-        [data(")"), 1],
+        [branch([
+          [data(","), 1],
+          [ref("type"), 1],
+        ]),3]
+        [data(")"), 1]
       ]),
       branch([[data("["), 1], [ref("type"), 1], [data("]"), 1]]),
-      branch([[data("("), 1], [ref("type"), 1], [data(")"), 1]]),
+      branch([[data("("), 1], [ref("type"), 1], [data(")"), 1]])
     ];
 
-    /** ------------------------- AI
-     * gtycon ->
-     *     qtycon
-     *   | ()
-     *   | []
-     *   | (->)
-     *   | (,{,})
+    /** ------------------------- 
+     * gtycon -> qtycon
+     *         | '()'
+     *         | '[]'
+     *         | '(->)'
+     *         | '(,'{','}')' // FIXME : not sure this will be matched because
+     *                        // always comparing to a single token, need to 
+     *                        // verify how input like (,,,,,,) would be 
+     *                        // tokenized 
      * ------------------------- */
     this.rules.gtycon.childs = [
       branch([[data("qtycon"), 1]]),
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([[data("(->)"), 1]]),
-      branch([[data("(,)"), 1]]),
+      branch([
+        [data("(,"), 1],
+        [data(","), 3], 
+        [data(")"), 1]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** ------------------------- 
      * context -> class
-     *          | ( class1 , … , classn )
+     *          | ( class1 , … , classn )                                (n ≥ 0) 
      * ------------------------- */
     this.rules.context.childs = [
-      branch([[ref("class_"), 1]]),
-      branch([[data("("), 1], [ref("class_"), 1], [data(","), 0], [ref("class_"), 0], [data(")"), 1]]),
+      branch([[ref("class"), 1]]),
+      branch([
+        [data("("), 1],
+        [branch([
+          [ref("class_"), 1],
+          [data(","), 1]
+        ]), 3],
+        [ref("class"), 0],
+        [data(")"), 1]
+      ])
     ];
 
     /** ------------------------- AI
