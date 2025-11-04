@@ -99,9 +99,6 @@ export class Rules {
   /**
    * Adds the elements of the rules (seperated from createRules to avoid 
    * circular definitions problems)
-   * AI tags are indicated next to rules made by AI based on the haskell
-   * context free syntax documentation and not manually verified.
-   * (the abscence of tag does not imply the abscence of errors).
    */
   initRules() {
 
@@ -637,9 +634,9 @@ export class Rules {
       ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * class -> qtycls tyvar
-     *        | qtycls ( tyvar atype1 … atypen )
+     *        | qtycls ( tyvar atype1 … atypen )                         (n ≥ 1) 
      * ------------------------- */
     this.rules.class_.childs = [
       branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
@@ -647,71 +644,103 @@ export class Rules {
         [data("qtycls"), 1],
         [data("("), 1],
         [ref("tyvar"), 1],
-        [ref("atype"), 1],
+        [ref("atype"), 2],
         [data(")"), 1],
       ]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * scontext -> simpleclass
-     *           | ( simpleclass1 , … , simpleclassn )
+     *           | ( simpleclass1 , … , simpleclassn )                   (n ≥ 0) 
      * ------------------------- */
     this.rules.scontext.childs = [ // TODO
       branch([[ref("simpleclass"), 1]]),
-      branch([[data("("), 1], [ref("simpleclass"), 1], [data(","), 0], [ref("simpleclass"), 0], [data(")"), 1]]),
+      branch([
+        [data("("), 1], 
+        [branch([
+          [ref("simpleclass"), 1], 
+          [data(","), 1], 
+        ])]
+        [ref("simpleclass"), 0], 
+        [data(")"), 1]
+      ]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * simpleclass -> qtycls tyvar
      * ------------------------- */
     this.rules.simpleclass.childs = [
       branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * simpletype -> tycon tyvar1 … tyvark (k ≥ 0)
+    /** -------------------------
+     * simpletype -> tycon tyvar1 … tyvark                               (k ≥ 0)
      * ------------------------- */
     this.rules.simpletype.childs = [
-      branch([[ref("tycon"), 1], [ref("tyvar"), 0]]),
+      branch([[ref("tycon"), 1], [ref("tyvar"), 3]])
     ];
 
-    /** ------------------------- AI
-     * constrs -> constr1 | … | constrn
+    /** -------------------------
+     * constrs -> constr1 | … | constrn                                  (n ≥ 1) 
      * ------------------------- */
     this.rules.constrs.childs = [
-      branch([[ref("constr"), 1], [data("|"), 0], [ref("constrs"), 0]]),
+      branch([
+        [ref("constr"), 1],
+        [branch([
+          [data("|"), 1], 
+          [ref("constr"), 1]
+        ]), 3] 
+      ])
     ];
 
-    /** ------------------------- AI
-     * constr ->
-     *   con [!] atype1 … [!] atypek
-     *   | (btype | !atype) conop (btype | !atype)
-     *   | con { fielddecl1 , … , fielddecln }
+    /** ------------------------- (arity con not used)
+     * constr -> con ['!'] atype1 … ['!'] atypek        (arity con  =  k, k ≥ 0) 
+     *         | (btype | '!'atype) conop (btype | '!'atype)       (infix conop) 
+     *         | con '{' fielddecl1 ',' … ',' fielddecln '}'             (n ≥ 0) 
      * ------------------------- */
     this.rules.constr.childs = [
-      branch([[ref("con"), 1], [ref("atype"), 0]]),
       branch([
-        [data("("), 1],
-        [ref("btype"), 1],
-        [data(")"), 0],
-        [ref("conop"), 1],
-        [data("("), 1],
-        [ref("btype"), 1],
-        [data(")"), 0],
+        [ref("con"), 1],
+        [branch([
+          [data("!"), 0]
+          [ref("atype"), 1]
+        ]), 3] 
       ]),
-      branch([ // TODO
+      branch([
+        [ref("btype"), 1], 
+        [ref("conop"), 1], 
+        [ref("btype"), 1]
+      ]),
+      branch([
+        [data("!"), 1], [ref("atype"), 1], 
+        [ref("conop"), 1], 
+        [ref("btype"), 1]
+      ]),
+      branch([
+        [ref("btype"), 1], 
+        [ref("conop"), 1],
+        [data("!"), 1], [ref("atype"), 1]
+      ]),
+      branch([
+        [data("!"), 1], [ref("atype"), 1], 
+        [ref("conop"), 1],
+        [data("!"), 1], [ref("atype"), 1]
+      ]),
+      branch([
         [ref("con"), 1],
         [data("{"), 1],
-        [ref("fielddecl"), 0],
-        [data(","), 0],
+        [branch([
+          [ref("fielddecl"), 1],
+          [data(","), 1],
+        ]), 3] 
         [ref("fielddecl"), 0],
         [data("}"), 1],
       ]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * newconstr -> con atype
-     *             | con { var :: type }
+     *             | con '{' var '::' type '}'
      * ------------------------- */
     this.rules.newconstr.childs = [
       branch([[ref("con"), 1], [ref("atype"), 1]]),
@@ -725,59 +754,104 @@ export class Rules {
       ]),
     ];
 
-    /** ------------------------- AI
-     * fielddecl -> vars :: (type | !atype)
+    /** -------------------------
+     * fielddecl -> vars :: (type | '!'atype)
      * ------------------------- */
     this.rules.fielddecl.childs = [
-      branch([[ref("vars"), 1], [data("::"), 1], [ref("type"), 1]]),
-      branch([[ref("vars"), 1], [data("::"), 1], [data("!"), 1], [ref("atype"), 1]]),
+      branch([
+        [ref("vars"), 1], [data("::"), 1], [ref("type"), 1]
+      ]),
+      branch([
+        [ref("vars"), 1], [data("::"), 1], [data("!"), 1], [ref("atype"), 1]
+      ]),
     ];
 
-    /** ------------------------- AI
-     * deriving -> deriving (dclass | (dclass1, … , dclassn))
+    /** -------------------------
+     * deriving -> 'deriving' (dclass | '('dclass1 ',' … ',' dclassn')') (n ≥ 0) 
      * ------------------------- */
     this.rules.deriving.childs = [
-      branch([[data("deriving"), 1], [data("("), 1], [ref("dclass"), 1], [data(")"), 1]]),
-      branch([ // TODO
+      branch([[data("deriving"), 1], [ref("dclass"), 1]]),
+      branch([
         [data("deriving"), 1],
         [data("("), 1],
-        [ref("dclass"), 1],
-        [data(","), 0],
+        [branch([
+          [ref("dclass"), 1],
+          [data(","), 1],
+        ]), 3]
         [ref("dclass"), 0],
         [data(")"), 1],
       ]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * dclass -> qtycls
      * ------------------------- */
     this.rules.dclass.childs = [
       branch([[data("qtycls"), 1]]),
     ];
 
-    /** ------------------------- AI
+    /** ------------------------- (distinctness not verified)
      * inst -> gtycon
-     *        | ( gtycon tyvar1 … tyvark )
-     *        | ( tyvar1 , … , tyvark )
-     *        | [ tyvar ]
-     *        | ( tyvar1 -> tyvar2 )
+     *        | '(' gtycon tyvar1 … tyvark ')'          (k ≥ 0, tyvars distinct) 
+     *        | '(' tyvar1 ',' … ',' tyvark ')'         (k ≥ 2, tyvars distinct) 
+     *        | '[' tyvar ']'
+     *        | '(' tyvar1 '->' tyvar2 ')'            tyvar1 and tyvar2 distinct 
      * ------------------------- */
     this.rules.inst.childs = [
       branch([[ref("gtycon"), 1]]),
-      branch([[data("("), 1], [ref("gtycon"), 1], [ref("tyvar"), 1], [data(")"), 1]]),
-      branch([[data("("), 1], [ref("tyvar"), 1], [data(","), 1], [ref("tyvar"), 1], [data(")"), 1]]),
-      branch([[data("["), 1], [ref("tyvar"), 1], [data("]"), 1]]),
-      branch([[data("("), 1], [ref("tyvar"), 1], [data("->"), 1], [ref("tyvar"), 1], [data(")"), 1]]),
+      branch([
+        [data("("), 1], 
+        [ref("gtycon"), 1], 
+        [ref("tyvar"), 3], 
+        [data(")"), 1]
+      ]),
+      branch([
+        [data("("), 1], 
+        [ref("tyvar"), 1],
+        [data(","), 1], 
+        [ref("tyvar"), 1],
+        [branch([
+          [data(","), 1], 
+          [ref("tyvar"), 1]
+        ]), 3],
+        [data(")"), 1]
+      ]),
+      branch([
+        [data("["), 1], 
+        [ref("tyvar"), 1], 
+        [data("]"), 1]
+      ]),
+      branch([
+        [data("("), 1], 
+        [ref("tyvar"), 1], 
+        [data("->"), 1], 
+        [ref("tyvar"), 1], 
+        [data(")"), 1]
+      ]),
     ];
 
-    /** ------------------------- AI
-     * fdecl ->
-     *   import callconv [safety] impent var :: ftype
-     *   | export callconv expent var :: ftype
+    /** -------------------------
+     * fdecl -> 'import' callconv [safety] impent var '::' ftype
+     *        | 'export' callconv expent var '::' ftype
      * ------------------------- */
     this.rules.fdecl.childs = [
-      branch([[data("import"), 1], [ref("callconv"), 1], [ref("safety"), 0], [ref("impent"), 1], [ref("var"), 1], [data("::"), 1], [ref("ftype"), 1]]),
-      branch([[data("export"), 1], [ref("callconv"), 1], [ref("expent"), 1], [ref("var"), 1], [data("::"), 1], [ref("ftype"), 1]]),
+      branch([
+        [data("import"), 1], 
+        [ref("callconv"), 1], 
+        [ref("safety"), 0], 
+        [ref("impent"), 1], 
+        [ref("var"), 1], 
+        [data("::"), 1], 
+        [ref("ftype"), 1]
+      ]),
+      branch([
+        [data("export"), 1], 
+        [ref("callconv"), 1], 
+        [ref("expent"), 1], 
+        [ref("var"), 1], 
+        [data("::"), 1], 
+        [ref("ftype"), 1]
+      ]),
     ];
 
     /** -------------------------
@@ -809,15 +883,15 @@ export class Rules {
       branch([[data("safe"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * ftype -> frtype | fatype -> ftype
+    /** -------------------------
+     * ftype -> frtype | fatype '->' ftype
      * ------------------------- */
     this.rules.ftype.childs = [
       branch([[ref("frtype"), 1]]),
       branch([[ref("fatype"), 1], [data("->"), 1], [ref("ftype"), 1]]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * frtype -> fatype | ()
      * ------------------------- */
     this.rules.frtype.childs = [
@@ -825,22 +899,24 @@ export class Rules {
       branch([[data("()"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * fatype -> qtycon atype1 … atypek
+    /** -------------------------
+     * fatype -> qtycon atype1 … atypek                                (k  ≥  0) 
      * ------------------------- */
     this.rules.fatype.childs = [
-      branch([[data("qtycon"), 1], [ref("atype"), 0]]),
+      branch([[data("qtycon"), 1], [ref("atype"), 3]]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * funlhs -> var apat { apat }
      *          | pat varop pat
-     *          | ( funlhs ) apat { apat }
+     *          | '(' funlhs ')' apat { apat }
      * ------------------------- */
     this.rules.funlhs.childs = [
-      branch([[ref("var"), 1], [ref("apat"), 1]]),
+      branch([[ref("var"), 1], [ref("apat"), 2]]),
       branch([[ref("pat"), 1], [ref("varop"), 1], [ref("pat"), 1]]),
-      branch([[data("("), 1], [ref("funlhs"), 1], [data(")"), 1], [ref("apat"), 1]]),
+      branch([
+        [data("("), 1], [ref("funlhs"), 1], [data(")"), 1], [ref("apat"), 2]
+      ]),
     ];
 
     /** -------------------------
@@ -877,11 +953,18 @@ export class Rules {
       ])
     ];
 
-    /** ------------------------- AI
-     * guards -> | guard1, …, guardn (n ≥ 1)
+    /** -------------------------
+     * guards -> | guard1 ',' … ',' guardn                               (n ≥ 1)
      * ------------------------- */
     this.rules.guards.childs = [
-      branch([[data("|"), 1], [ref("guard"), 1], [data(","), 0], [ref("guard"), 0]]),
+      branch([
+        [data("|"), 1],
+        [ref("guard"), 1],
+        [branch([
+          [data(","), 1],
+          [ref("guard"), 1]
+        ]), 3]
+      ])
     ];
 
     /** -------------------------
@@ -896,7 +979,7 @@ export class Rules {
     ];
     
      /** -------------------------
-     * exp -> infixexp '::' [context '=>'] type          (expression type signature) 
+     * exp -> infixexp '::' [context '=>'] type      (expression type signature) 
      *      | infixexp
      * ------------------------- */
     this.rules.exp.childs = [
@@ -923,17 +1006,27 @@ export class Rules {
       branch([[ref("lexp"), 1]])
     ];
 
-    /** ------------------------- AI
-     * lexp -> \ apat1 … apatn -> exp
-     *        | let decls in exp
-     *        | if exp [;] then exp [;] else exp
-     *        | case exp of { alts }
-     *        | do { stmts }
+    /** -------------------------
+     * lexp -> '\' apat1 … apatn '->' exp            (lambda abstraction, n ≥ 1) 
+     *        | 'let' decls 'in' exp                            (let expression) 
+     *        | 'if' exp [';'] 'then' exp [';'] 'else' exp         (conditional) 
+     *        | 'case' exp 'of' '{' alts '}'                   (case expression) 
+     *        | 'do' '{' stmts '}'                               (do expression) 
      *        | fexp
      * ------------------------- */
     this.rules.lexp.childs = [
-      branch([[data("\\"), 1], [ref("apat"), 1], [data("->"), 1], [ref("exp"), 1]]),
-      branch([[data("let"), 1], [ref("decls"), 1], [data("in"), 1], [ref("exp"), 1]]),
+      branch([
+        [data("\\"), 1],
+        [ref("apat"), 2], 
+        [data("->"), 1], 
+        [ref("exp"), 1]
+      ]),
+      branch([
+        [data("let"), 1], 
+        [ref("decls"), 1], 
+        [data("in"), 1], 
+        [ref("exp"), 1]
+      ]),
       branch([
         [data("if"), 1],
         [ref("exp"), 1],
@@ -942,45 +1035,124 @@ export class Rules {
         [ref("exp"), 1],
         [data(";"), 0],
         [data("else"), 1],
-        [ref("exp"), 1],
+        [ref("exp"), 1]
       ]),
-      branch([[data("case"), 1], [ref("exp"), 1], [data("of"), 1], [data("{"), 1], [ref("alts"), 1], [data("}"), 1]]),
-      branch([[data("do"), 1], [data("{"), 1], [ref("stmts"), 1], [data("}"), 1]]),
-      branch([[ref("fexp"), 1]]),
+      branch([
+        [data("case"), 1], 
+        [ref("exp"), 1], 
+        [data("of"), 1], 
+        [data("{"), 1], 
+        [ref("alts"), 1], 
+        [data("}"), 1]
+      ]),
+      branch([
+        [data("do"), 1], 
+        [data("{"), 1], 
+        [ref("stmts"), 1], 
+        [data("}"), 1]
+      ]),
+      branch([[ref("fexp"), 1]])
     ];
 
-    /** ------------------------- AI
-     * fexp -> [fexp] aexp
+    /** ------------------------- (modified to avoid infinite loop)
+     * fexp -> [fexp] aexp                                (function application) 
      * ------------------------- */
     this.rules.fexp.childs = [
-      branch([[ref("fexp"), 0], [ref("aexp"), 1]]),
+      branch([[ref("aexp"), 2]]),
     ];
 
-    /** ------------------------- AI
-     * aexp ->
-     *   qvar | gcon | literal
-     *   | ( exp )
-     *   | ( exp1 , … , expk )
-     *   | [ exp1 , … , expk ]
-     *   | [ exp1 [, exp2] .. [exp3] ]
-     *   | [ exp | qual1 , … , qualn ]
-     *   | ( infixexp qop )
-     *   | ( qop infixexp )
-     *   | qcon { fbind1 , … , fbindn }
-     *   | aexp qcon { fbind1 , … , fbindn }
+    /** -------------------------
+     * aexp -> qvar                                                   (variable) 
+     *       | gcon                                        (general constructor) 
+     *       | literal
+     *       | '(' exp ')'                            (parenthesized expression) 
+     *       | '(' exp1 ',' … , expk ')'                          (tuple, k ≥ 2) 
+     *       | '[' exp1 ',' … , expk ']'                           (list, k ≥ 1) 
+     *       | '[' exp1 [',' exp2] '..' [exp3] ']'         (arithmetic sequence) 
+     *       | '[' exp '|' qual1 ',' … ',' qualn ']' (list comprehension, n ≥ 1) 
+     *       | '(' infixexp qop ')'                               (left section) 
+     *       | '(' qop infixexp ')'                              (right section) 
+     *       | qcon '{' fbind1 , … , fbindn '}'    (labeled construction, n ≥ 0) 
+     *       | aexp <qcon> '{' fbind1 ',' … ',' fbindn '}' (labeled update, n≥1) 
      * ------------------------- */
     this.rules.aexp.childs = [
       branch([[ref("qvar"), 1]]),
       branch([[ref("gcon"), 1]]),
       branch([[ref("literal"), 1]]),
-      branch([[data("("), 1], [ref("exp"), 1], [data(")"), 1]]),
-      branch([[data("("), 1], [ref("exp"), 1], [data(","), 1], [ref("exp"), 1], [data(")"), 1]]),
-      branch([[data("["), 1], [ref("exp"), 1], [data(","), 0], [ref("exp"), 0], [data("]"), 1]]), // TODO
-      branch([[data("["), 1], [ref("exp"), 1], [data("|"), 1], [ref("qual"), 1], [data("]"), 1]]),
-      branch([[data("("), 1], [ref("qop"), 1], [ref("infixexp"), 1], [data(")"), 1]]),
-      branch([[data("("), 1], [ref("infixexp"), 1], [ref("qop"), 1], [data(")"), 1]]),
-      branch([[ref("qcon"), 1], [data("{"), 1], [ref("fbind"), 0], [data("}"), 1]]),
-      branch([[ref("aexp"), 1], [ref("qcon"), 1], [data("{"), 1], [ref("fbind"), 1], [data("}"), 1]]),
+      branch([
+        [data("("), 1], [ref("exp"), 1], [data(")"), 1]
+      ]),
+      branch([
+        [data("("), 1], 
+        [ref("exp"), 1], 
+        [data(","), 1], 
+        [ref("exp"), 1], 
+        [branch([
+          [data(","), 1], 
+          [ref("exp"), 1]
+        ]), 3],
+        [data(")"), 1]
+      ]),
+      branch([
+        [data("["), 1], 
+        [ref("exp"), 1], 
+        [branch([
+          [data(","), 1], 
+          [ref("exp"), 1]
+        ]), 3],
+        [data("]"), 1]
+      ]),
+      branch([
+        [data("["), 1], 
+        [ref("exp"), 1], 
+        [branch([
+          [data(","), 1], 
+          [ref("exp"), 1]
+        ]), 0]
+        [data(".."), 1],
+        [branch([
+          [ref("exp"), 1]
+        ]), 0],
+        [data("]"), 1]
+      ]),
+      branch([
+        [data("["), 1], 
+        [ref("exp"), 1],
+        [data("|"), 1], 
+        [ref("qual"), 1]
+        [branch([
+          [data(","), 1], 
+          [ref("qual"), 1]
+        ]), 3],
+        [data("]"), 1]
+      ]),
+      branch([
+        [data("("), 1], [ref("infixexp"), 1], [ref("qop"), 1], [data(")"), 1]
+      ]),
+      branch([
+        [data("("), 1], [ref("qop"), 1], [ref("infixexp"), 1], [data(")"), 1]
+      ]),
+      branch([
+        [ref("qcon"), 1], 
+        [data("{"), 1],
+        [branch([
+          [ref("fbind"), 1], 
+          [data(","), 1],
+        ]), 3]
+        [ref("fbind"), 0], 
+        [data("}"), 1]
+      ]),
+      branch([
+        [ref("aexp"), 1], 
+        [ref("qcon"), 4],
+        [data("{"), 1], 
+        [ref("fbind"), 1], 
+        [branch([
+          [data(","), 1],
+          [ref("fbind"), 1], 
+        ]), 3]
+        [data("}"), 1]
+      ]),
     ];
 
     /** -------------------------
@@ -994,11 +1166,17 @@ export class Rules {
       branch([[ref("exp"), 1]])
     ];
 
-    /** ------------------------- AI
-     * alts -> alt1 ; … ; altn
+    /** -------------------------
+     * alts -> alt1 ';' … ';' altn                                       (n ≥ 1) 
      * ------------------------- */
     this.rules.alts.childs = [
-      branch([[ref("alt"), 1], [data(";"), 0], [ref("alts"), 0]]),
+      branch([
+        [ref("alt"), 1],
+        branch([
+          [data(";"), 1], 
+          [ref("alt"), 1]
+        ], 3)
+      ]),
     ];
 
     /** -------------------------
@@ -1039,27 +1217,32 @@ export class Rules {
       ])
     ];
 
-    /** ------------------------- AI
-     * stmts -> stmt1 … stmtn exp [;]
+    /** -------------------------
+     * stmts -> stmt1 … stmtn exp [';']                                  (n ≥ 0) 
      * ------------------------- */
     this.rules.stmts.childs = [
-      branch([[ref("stmt"), 0], [ref("exp"), 1], [data(";"), 0]]),
+      branch([[ref("stmt"), 3], [ref("exp"), 1], [data(";"), 0]]),
     ];
 
-    /** ------------------------- AI
-     * stmt -> exp ;
-     *        | pat <- exp ;
-     *        | let decls ;
-     *        | ; (empty)
+    /** -------------------------
+     * stmt -> exp ';'
+     *        | pat '<-' exp ;
+     *        | 'let' decls ;
+     *        | ';'                                            (empty statement)
      * ------------------------- */
     this.rules.stmt.childs = [
       branch([[ref("exp"), 1], [data(";"), 1]]),
-      branch([[ref("pat"), 1], [data("<-"), 1], [ref("exp"), 1], [data(";"), 1]]),
+      branch([
+        [ref("pat"), 1], 
+        [data("<-"), 1], 
+        [ref("exp"), 1], 
+        [data(";"), 1]
+      ]),
       branch([[data("let"), 1], [ref("decls"), 1], [data(";"), 1]]),
       branch([[data(";"), 1]]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * fbind -> qvar '=' exp
      * ------------------------- */
     this.rules.fbind.childs = [
@@ -1075,19 +1258,28 @@ export class Rules {
       branch([[ref("lpat"), 1]])
     ];
 
-    /** ------------------------- AI
-     * lpat ->
-     *   apat
-     *   | - (integer | float)
-     *   | gcon apat1 … apatk
+    /** -------------------------
+     * lpat -> apat
+     *       | '-' (integer | float)                          (negative literal) 
+     *       | gcon apat1 … apatk                      (arity gcon  =  k, k ≥ 1) 
      * ------------------------- */
     this.rules.lpat.childs = [
       branch([[ref("apat"), 1]]),
-      branch([[data("-"), 1], [data("("), 1], [ref("literal"), 1], [data(")"), 1]]),
-      branch([[ref("gcon"), 1], [ref("apat"), 1]]),
+      branch([
+        [data("-"), 1],
+        [ref("literal"), 1]
+      ]),
+      branch([
+        [data("-"), 1],
+        [data("float"), 1]
+      ]),
+      branch(
+        [[ref("gcon"), 1], 
+        [ref("apat"), 2]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * apat -> var [@ apat]                                         (as pattern) 
      *       | gcon                                             (arity gcon = 0)
      *       | qcon '{' fpat1 ',' … ',' fpatk '}'       (labeled pattern, k ≥ 0) 
@@ -1109,15 +1301,39 @@ export class Rules {
       branch([[ref("gcon"), 1]]),
       branch([
         [ref("qcon"), 1], 
-        [data("{"), 1], 
+        [data("{"), 1],
+        [branch([
+          [ref("fpat"), 1], 
+          [data(","), 1]
+        ]), 3],
         [ref("fpat"), 0], 
         [data("}"), 1]
       ]),
       branch([[ref("literal"), 1]]),
       branch([[data("_"), 1]]),
-      branch([[data("("), 1], [ref("pat"), 1], [data(")"), 1]]),
-      branch([[data("("), 1], [ref("pat"), 1], [data(","), 1], [ref("pat"), 1], [data(")"), 1]]),
-      branch([[data("["), 1], [ref("pat"), 1], [data(","), 0], [ref("pat"), 0], [data("]"), 1]]), // TODO
+      branch([
+        [data("("), 1],
+        [ref("pat"), 1], 
+        [data(")"), 1]
+      ]),
+      branch([
+        [data("("), 1],
+        [branch([
+          [ref("pat"), 1], 
+          [data(","), 1]
+        ]), 3],
+        [ref("pat"), 1], 
+        [data(")"), 1]
+      ]),
+      branch([
+        [data("["), 1],
+        [branch([
+          [ref("pat"), 1], 
+          [data(","), 1]
+        ]), 3],
+        [ref("pat"), 1], 
+        [data("]"), 1]
+      ]),
       branch([[data("~"), 1], [ref("apat"), 1]]),
     ];
 
@@ -1128,13 +1344,23 @@ export class Rules {
       branch([[ref("qvar"), 1], [data("="), 1], [ref("pat"), 1]])
     ];
 
-    /** ------------------------- AI
-     * gcon -> () | [] | (,{,}) | qcon
+    /** -------------------------
+     * gcon -> '()' 
+     *       | '[]' 
+     *       | '(,'{','}')' 
+     *       | qcon           // FIXME : not sure this will be matched because
+     *                        // always comparing to a single token, need to 
+     *                        // verify how input like (,,,,,,) would be 
+     *                        // tokenized 
      * ------------------------- */
     this.rules.gcon.childs = [
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
-      branch([[data("(,)"), 1]]),
+      branch([
+        [data("(,"), 1]
+        [data(","), 3]
+        [data(")"), 1]      
+      ]),
       branch([[ref("qcon"), 1]]),
     ];
 
