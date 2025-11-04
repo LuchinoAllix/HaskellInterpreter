@@ -780,19 +780,19 @@ export class Rules {
       branch([[data("("), 1], [ref("tyvar"), 1], [data("->"), 1], [ref("tyvar"), 1], [data(")"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * fdecl ->
      *   import callconv [safety] impent var :: ftype
      *   | export callconv expent var :: ftype
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.fdecl.childs = [
       branch([[data("import"), 1], [ref("callconv"), 1], [ref("safety"), 0], [ref("impent"), 1], [ref("var"), 1], [data("::"), 1], [ref("ftype"), 1]]),
       branch([[data("export"), 1], [ref("callconv"), 1], [ref("expent"), 1], [ref("var"), 1], [data("::"), 1], [ref("ftype"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * callconv -> ccall | stdcall | cplusplus | jvm | dotnet | system-specific
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.callconv.childs = [
       branch([[data("ccall"), 1]]),
       branch([[data("stdcall"), 1]]),
@@ -801,33 +801,33 @@ export class Rules {
       branch([[data("dotnet"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * safety -> unsafe | safe
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.safety.childs = [
       branch([[data("unsafe"), 1]]),
       branch([[data("safe"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * ftype -> frtype | fatype -> ftype
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.ftype.childs = [
       branch([[ref("frtype"), 1]]),
       branch([[ref("fatype"), 1], [data("->"), 1], [ref("ftype"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * frtype -> fatype | ()
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.frtype.childs = [
       branch([[ref("fatype"), 1]]),
       branch([[data("()"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * fatype -> qtycon atype1 … atypek
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.fatype.childs = [
       branch([[data("qtycon"), 1], [ref("atype"), 0]]),
     ];
@@ -877,34 +877,34 @@ export class Rules {
       branch([[ref("infixexp"), 1]]),
     ];
     
-     /** ------------------------- AI---------------
+     /** ------------------------- AI
      * exp -> infixexp :: [context =>] type
      *      | infixexp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.exp.childs = [
       branch([[ref("infixexp"), 1], [data("::"), 1], [ref("type"), 1]]),
       branch([[ref("infixexp"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * infixexp -> lexp qop infixexp
      *            | - infixexp
      *            | lexp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.infixexp.childs = [
       branch([[ref("lexp"), 1], [ref("qop"), 1], [ref("infixexp"), 1]]),
       branch([[data("-"), 1], [ref("infixexp"), 1]]),
       branch([[ref("lexp"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * lexp -> \ apat1 … apatn -> exp
      *        | let decls in exp
      *        | if exp [;] then exp [;] else exp
      *        | case exp of { alts }
      *        | do { stmts }
      *        | fexp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.lexp.childs = [
       branch([[data("\\"), 1], [ref("apat"), 1], [data("->"), 1], [ref("exp"), 1]]),
       branch([[data("let"), 1], [ref("decls"), 1], [data("in"), 1], [ref("exp"), 1]]),
@@ -923,14 +923,14 @@ export class Rules {
       branch([[ref("fexp"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * fexp -> [fexp] aexp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.fexp.childs = [
       branch([[ref("fexp"), 0], [ref("aexp"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * aexp ->
      *   qvar | gcon | literal
      *   | ( exp )
@@ -942,7 +942,7 @@ export class Rules {
      *   | ( qop infixexp )
      *   | qcon { fbind1 , … , fbindn }
      *   | aexp qcon { fbind1 , … , fbindn }
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.aexp.childs = [
       branch([[ref("qvar"), 1]]),
       branch([[ref("gcon"), 1]]),
@@ -957,52 +957,52 @@ export class Rules {
       branch([[ref("aexp"), 1], [ref("qcon"), 1], [data("{"), 1], [ref("fbind"), 1], [data("}"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qual -> pat <- exp | let decls | exp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qual.childs = [
       branch([[ref("pat"), 1], [data("<-"), 1], [ref("exp"), 1]]),
       branch([[data("let"), 1], [ref("decls"), 1]]),
       branch([[ref("exp"), 1]]),
 
     ];
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * alts -> alt1 ; … ; altn
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.alts.childs = [
       branch([[ref("alt"), 1], [data(";"), 0], [ref("alts"), 0]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      *      | pat gdpat [where decls]
      * alt -> pat -> exp [where decls]
      *      | (empty)
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.alt.childs = [
       branch([[ref("pat"), 1], [data("->"), 1], [ref("exp"), 1]]),
       branch([[ref("pat"), 1], [ref("gdpat"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * gdpat -> guards -> exp [gdpat]
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.gdpat.childs = [
       branch([[ref("guards"), 1], [data("->"), 1], [ref("exp"), 1], [ref("gdpat"), 0]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * stmts -> stmt1 … stmtn exp [;]
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.stmts.childs = [
       branch([[ref("stmt"), 0], [ref("exp"), 1], [data(";"), 0]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * stmt -> exp ;
      *        | pat <- exp ;
      *        | let decls ;
      *        | ; (empty)
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.stmt.childs = [
       branch([[ref("exp"), 1], [data(";"), 1]]),
       branch([[ref("pat"), 1], [data("<-"), 1], [ref("exp"), 1], [data(";"), 1]]),
@@ -1010,34 +1010,34 @@ export class Rules {
       branch([[data(";"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * fbind -> qvar = exp
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.fbind.childs = [
       branch([[ref("qvar"), 1], [data("="), 1], [ref("exp"), 1]]),
     ];
 
-     /** ------------------------- AI---------------
+     /** ------------------------- AI
      * pat -> lpat qconop pat | lpat
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.pat.childs = [
       branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 1]]),
       branch([[ref("lpat"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * lpat ->
      *   apat
      *   | - (integer | float)
      *   | gcon apat1 … apatk
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.lpat.childs = [
       branch([[ref("apat"), 1]]),
       branch([[data("-"), 1], [data("("), 1], [ref("literal"), 1], [data(")"), 1]]),
       branch([[ref("gcon"), 1], [ref("apat"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * apat ->
      *   var [@ apat]
      *   | gcon (arity gcon = 0)
@@ -1048,7 +1048,7 @@ export class Rules {
      *   | ( pat1 , … , patk )
      *   | [ pat1 , … , patk ]
      *   | ~ apat
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.apat.childs = [
       branch([[ref("var"), 1], [data("@"), 0], [ref("apat"), 0]]),
       branch([[ref("gcon"), 1]]),
@@ -1061,16 +1061,16 @@ export class Rules {
       branch([[data("~"), 1], [ref("apat"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * fpat -> qvar = pat
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.fpat.childs = [
       branch([[ref("qvar"), 1], [data("="), 1], [ref("pat"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * gcon -> () | [] | (,{,}) | qcon
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.gcon.childs = [
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
@@ -1078,89 +1078,89 @@ export class Rules {
       branch([[ref("qcon"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * var -> varid | ( varsym )
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.var.childs = [
       branch([[data("varid"), 1]]),
       branch([[data("("), 1], [ref("varsym"), 1], [data(")"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qvar -> qvarid | ( qvarsym )
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qvar.childs = [
       branch([[data("qvarid"), 1]]),
       branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * con -> conid | ( consym )
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.con.childs = [
       branch([[ref("conid"), 1]]),
       branch([[data("("), 1], [ref("consym"), 1], [data(")"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qcon -> qconid | ( gconsym )
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qcon.childs = [
       branch([[data("qconid"), 1]]),
       branch([[data("("), 1], [ref("gconsym"), 1], [data(")"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * varop -> varsym | ` varid `
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.varop.childs = [
       branch([[ref("varsym"), 1]]),
       branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qvarop -> qvarsym | ` qvarid `
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qvarop.childs = [
       branch([[data("qvarsym"), 1]]),
       branch([[data("`"), 1], [data("qvarid"), 1], [data("`"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * conop -> consym | ` conid `
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.conop.childs = [
       branch([[ref("consym"), 1]]),
       branch([[data("`"), 1], [ref("conid"), 1], [data("`"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qconop -> gconsym | ` qconid `
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qconop.childs = [
       branch([[ref("gconsym"), 1]]),
       branch([[data("`"), 1], [data("qconid"), 1], [data("`"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * op -> varop | conop
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.op.childs = [
       branch([[ref("varop"), 1]]),
       branch([[ref("conop"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** ------------------------- AI
      * qop -> qvarop | qconop
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.qop.childs = [
       branch([[ref("qvarop"), 1]]),
       branch([[ref("qconop"), 1]]),
     ];
 
-    /** ------------------------- AI---------------
+    /** -------------------------
      * gconsym -> : | qconsym
-     * ---------------------------------------- */
+     * ------------------------- */
     this.rules.gconsym.childs = [
       branch([[data(":"), 1]]),
       branch([[data("qconsym"), 1]]),
@@ -1168,12 +1168,3 @@ export class Rules {
   }
 
 }
-
-
-
-// idée pour gérer les [a b] ou [a [b] [c]]
-// par défaut si on regarde un un optionnel 
-// on dit que si il est suivit d'un optionnel 
-// alors il doivent être optionels ensemble 
-// sinon on les sépare d'un data vide "obligatoire"
-// devra être géré par la fonction principale
