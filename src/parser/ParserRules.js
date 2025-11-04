@@ -157,16 +157,6 @@ export class Rules {
     ];
 
     /** -------------------------
-     * impent -> [string]                                    (see Section 8.5.1) 
-     * ------------------------- */ 
-    this.rules.impent.childs = [branch([[data("string"), 0]])];
-
-    /** -------------------------
-     * expent -> [string]                                    (see Section 8.5.1) 
-     * ------------------------- */
-    this.rules.expent.childs = [branch([[data("string"), 0]])];
-
-    /** -------------------------
      * exports -> '(' export1 , … , exportn [ ',' ] ')'                  (n ≥ 0) 
      * ------------------------- */
     this.rules.exports.childs = [
@@ -790,7 +780,7 @@ export class Rules {
       branch([[data("export"), 1], [ref("callconv"), 1], [ref("expent"), 1], [ref("var"), 1], [data("::"), 1], [ref("ftype"), 1]]),
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * callconv -> ccall | stdcall | cplusplus | jvm | dotnet | system-specific
      * ------------------------- */
     this.rules.callconv.childs = [
@@ -798,11 +788,21 @@ export class Rules {
       branch([[data("stdcall"), 1]]),
       branch([[data("cplusplus"), 1]]),
       branch([[data("jvm"), 1]]),
-      branch([[data("dotnet"), 1]]),
+      branch([[data("dotnet"), 1]])
     ];
 
-    /** ------------------------- AI
-     * safety -> unsafe | safe
+    /** -------------------------
+     * impent -> [string]                                    (see Section 8.5.1) 
+     * ------------------------- */ 
+    this.rules.impent.childs = [branch([[data("string"), 0]])];
+
+    /** -------------------------
+     * expent -> [string]                                    (see Section 8.5.1) 
+     * ------------------------- */
+    this.rules.expent.childs = [branch([[data("string"), 0]])];
+
+    /** -------------------------
+     * safety -> 'unsafe' | 'safe'
      * ------------------------- */
     this.rules.safety.childs = [
       branch([[data("unsafe"), 1]]),
@@ -843,20 +843,38 @@ export class Rules {
       branch([[data("("), 1], [ref("funlhs"), 1], [data(")"), 1], [ref("apat"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * rhs -> = exp [where decls]
+    /** -------------------------
+     * rhs -> '=' exp [where decls]
      *      | gdrhs [where decls]
      * ------------------------- */
     this.rules.rhs.childs = [
-      branch([[data("="), 1], [ref("exp"), 1], [data("where"), 0], [ref("decls"), 0]]),
-      branch([[ref("gdrhs"), 1], [data("where"), 0], [ref("decls"), 0]]),
+      branch([
+        [data("="), 1], 
+        [ref("exp"), 1], 
+        [branch([
+          [data("where"), 1], 
+          [ref("decls"), 1]
+        ]), 0]
+      ]),
+      branch([
+        [ref("gdrhs"), 1],
+        [branch([
+          [data("where"), 1], 
+          [ref("decls"), 1]
+        ]), 0]
+      ])
     ];
 
-    /** ------------------------- AI
-     * gdrhs -> guards = exp [gdrhs]
+    /** -------------------------
+     * gdrhs -> guards '=' exp [gdrhs]
      * ------------------------- */
     this.rules.gdrhs.childs = [
-      branch([[ref("guards"), 1], [data("="), 1], [ref("exp"), 1], [ref("gdrhs"), 0]]),
+      branch([
+        [ref("guards"), 1], 
+        [data("="), 1], 
+        [ref("exp"), 1], 
+        [ref("gdrhs"), 0]
+      ])
     ];
 
     /** ------------------------- AI
@@ -866,35 +884,43 @@ export class Rules {
       branch([[data("|"), 1], [ref("guard"), 1], [data(","), 0], [ref("guard"), 0]]),
     ];
 
-    /** ------------------------- AI
-     * guard -> pat <- infixexp
-     *        | let decls
-     *        | infixexp
+    /** -------------------------
+     * guard -> pat '<-' infixexp                                (pattern guard)
+     *        | let decls                                    (local declaration)
+     *        | infixexp                                         (boolean guard) 
      * ------------------------- */
     this.rules.guard.childs = [
       branch([[ref("pat"), 1], [data("<-"), 1], [ref("infixexp"), 1]]),
       branch([[data("let"), 1], [ref("decls"), 1]]),
-      branch([[ref("infixexp"), 1]]),
+      branch([[ref("infixexp"), 1]])
     ];
     
-     /** ------------------------- AI
-     * exp -> infixexp :: [context =>] type
+     /** -------------------------
+     * exp -> infixexp '::' [context '=>'] type          (expression type signature) 
      *      | infixexp
      * ------------------------- */
     this.rules.exp.childs = [
-      branch([[ref("infixexp"), 1], [data("::"), 1], [ref("type"), 1]]),
-      branch([[ref("infixexp"), 1]]),
+      branch([
+        [ref("infixexp"), 1], 
+        [data("::"), 1], 
+        [branch([
+          [ref("context"), 1], 
+          [data("=>"), 1]
+        ]), 0]
+        [ref("type"), 1]
+      ]),
+      branch([[ref("infixexp"), 1]])
     ];
 
-    /** ------------------------- AI
-     * infixexp -> lexp qop infixexp
-     *            | - infixexp
+    /** -------------------------
+     * infixexp -> lexp qop infixexp                (infix operator application) 
+     *            | '-' infixexp                               (prefix negation) 
      *            | lexp
      * ------------------------- */
     this.rules.infixexp.childs = [
       branch([[ref("lexp"), 1], [ref("qop"), 1], [ref("infixexp"), 1]]),
       branch([[data("-"), 1], [ref("infixexp"), 1]]),
-      branch([[ref("lexp"), 1]]),
+      branch([[ref("lexp"), 1]])
     ];
 
     /** ------------------------- AI
@@ -957,15 +983,17 @@ export class Rules {
       branch([[ref("aexp"), 1], [ref("qcon"), 1], [data("{"), 1], [ref("fbind"), 1], [data("}"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * qual -> pat <- exp | let decls | exp
+    /** -------------------------
+     * qual -> pat '<-' exp                                          (generator) 
+     *       | 'let' decls                                   (local declaration) 
+     *       | exp                                                       (guard) 
      * ------------------------- */
     this.rules.qual.childs = [
       branch([[ref("pat"), 1], [data("<-"), 1], [ref("exp"), 1]]),
       branch([[data("let"), 1], [ref("decls"), 1]]),
-      branch([[ref("exp"), 1]]),
-
+      branch([[ref("exp"), 1]])
     ];
+
     /** ------------------------- AI
      * alts -> alt1 ; … ; altn
      * ------------------------- */
@@ -973,21 +1001,42 @@ export class Rules {
       branch([[ref("alt"), 1], [data(";"), 0], [ref("alts"), 0]]),
     ];
 
-    /** ------------------------- AI
-     *      | pat gdpat [where decls]
-     * alt -> pat -> exp [where decls]
-     *      | (empty)
+    /** -------------------------
+     * alt -> pat '->' exp ['where' decls]
+     *      | pat gdpat ['where' decls]
+     *      | (empty)                                        (empty alternative) 
      * ------------------------- */
     this.rules.alt.childs = [
-      branch([[ref("pat"), 1], [data("->"), 1], [ref("exp"), 1]]),
-      branch([[ref("pat"), 1], [ref("gdpat"), 1]]),
+      branch([
+        [ref("pat"), 1], 
+        [data("->"), 1], 
+        [ref("exp"), 1],
+        [branch([
+          [data("where"), 1],
+          [ref("ecls"), 1]
+        ]), 0]
+      ]),
+      branch([
+        [ref("pat"), 1], 
+        [ref("gdpat"), 1]
+        [branch([
+          [data("where"), 1],
+          [ref("ecls"), 1]
+        ]), 0]
+      ]),
+      branch([])
     ];
 
-    /** ------------------------- AI
-     * gdpat -> guards -> exp [gdpat]
+    /** -------------------------
+     * gdpat -> guards '->' exp [gdpat]
      * ------------------------- */
     this.rules.gdpat.childs = [
-      branch([[ref("guards"), 1], [data("->"), 1], [ref("exp"), 1], [ref("gdpat"), 0]]),
+      branch([
+        [ref("guards"), 1], 
+        [data("->"), 1], 
+        [ref("exp"), 1], 
+        [ref("gdpat"), 0]
+      ])
     ];
 
     /** ------------------------- AI
@@ -1011,18 +1060,19 @@ export class Rules {
     ];
 
     /** ------------------------- AI
-     * fbind -> qvar = exp
+     * fbind -> qvar '=' exp
      * ------------------------- */
     this.rules.fbind.childs = [
-      branch([[ref("qvar"), 1], [data("="), 1], [ref("exp"), 1]]),
+      branch([[ref("qvar"), 1], [data("="), 1], [ref("exp"), 1]])
     ];
 
-     /** ------------------------- AI
-     * pat -> lpat qconop pat | lpat
+     /** -------------------------
+     * pat -> lpat qconop pat                                (infix constructor) 
+     *      | lpat 
      * ------------------------- */
     this.rules.pat.childs = [
       branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 1]]),
-      branch([[ref("lpat"), 1]]),
+      branch([[ref("lpat"), 1]])
     ];
 
     /** ------------------------- AI
@@ -1061,11 +1111,11 @@ export class Rules {
       branch([[data("~"), 1], [ref("apat"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * fpat -> qvar = pat
+    /** -------------------------
+     * fpat -> qvar '=' pat
      * ------------------------- */
     this.rules.fpat.childs = [
-      branch([[ref("qvar"), 1], [data("="), 1], [ref("pat"), 1]]),
+      branch([[ref("qvar"), 1], [data("="), 1], [ref("pat"), 1]])
     ];
 
     /** ------------------------- AI
@@ -1078,92 +1128,92 @@ export class Rules {
       branch([[ref("qcon"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * var -> varid | ( varsym )
+    /** -------------------------
+     * var -> varid | '(' varsym ')'                                  (variable) 
      * ------------------------- */
     this.rules.var.childs = [
       branch([[data("varid"), 1]]),
-      branch([[data("("), 1], [ref("varsym"), 1], [data(")"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * qvar -> qvarid | ( qvarsym )
-     * ------------------------- */
-    this.rules.qvar.childs = [
-      branch([[data("qvarid"), 1]]),
-      branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * con -> conid | ( consym )
-     * ------------------------- */
-    this.rules.con.childs = [
-      branch([[ref("conid"), 1]]),
-      branch([[data("("), 1], [ref("consym"), 1], [data(")"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * qcon -> qconid | ( gconsym )
-     * ------------------------- */
-    this.rules.qcon.childs = [
-      branch([[data("qconid"), 1]]),
-      branch([[data("("), 1], [ref("gconsym"), 1], [data(")"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * varop -> varsym | ` varid `
-     * ------------------------- */
-    this.rules.varop.childs = [
-      branch([[ref("varsym"), 1]]),
-      branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * qvarop -> qvarsym | ` qvarid `
-     * ------------------------- */
-    this.rules.qvarop.childs = [
-      branch([[data("qvarsym"), 1]]),
-      branch([[data("`"), 1], [data("qvarid"), 1], [data("`"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * conop -> consym | ` conid `
-     * ------------------------- */
-    this.rules.conop.childs = [
-      branch([[ref("consym"), 1]]),
-      branch([[data("`"), 1], [ref("conid"), 1], [data("`"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * qconop -> gconsym | ` qconid `
-     * ------------------------- */
-    this.rules.qconop.childs = [
-      branch([[ref("gconsym"), 1]]),
-      branch([[data("`"), 1], [data("qconid"), 1], [data("`"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * op -> varop | conop
-     * ------------------------- */
-    this.rules.op.childs = [
-      branch([[ref("varop"), 1]]),
-      branch([[ref("conop"), 1]]),
-    ];
-
-    /** ------------------------- AI
-     * qop -> qvarop | qconop
-     * ------------------------- */
-    this.rules.qop.childs = [
-      branch([[ref("qvarop"), 1]]),
-      branch([[ref("qconop"), 1]]),
+      branch([[data("("), 1], [ref("varsym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
-     * gconsym -> : | qconsym
+     * qvar -> qvarid | '(' qvarsym ')'                     (qualified variable) 
+     * ------------------------- */
+    this.rules.qvar.childs = [
+      branch([[data("qvarid"), 1]]),
+      branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]])
+    ];
+
+    /** -------------------------
+     * con -> conid | '(' consym ')'                               (constructor) 
+     * ------------------------- */
+    this.rules.con.childs = [
+      branch([[ref("conid"), 1]]),
+      branch([[data("("), 1], [ref("consym"), 1], [data(")"), 1]])
+    ];
+
+    /** -------------------------
+     * qcon -> qconid | '(' gconsym ')'                  (qualified constructor) 
+     * ------------------------- */
+    this.rules.qcon.childs = [
+      branch([[data("qconid"), 1]]),
+      branch([[data("("), 1], [ref("gconsym"), 1], [data(")"), 1]])
+    ];
+
+    /** -------------------------
+     * varop -> varsym | '`' varid '`'                       (variable operator) 
+     * ------------------------- */
+    this.rules.varop.childs = [
+      branch([[ref("varsym"), 1]]),
+      branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]])
+    ];
+
+    /** -------------------------
+     * qvarop -> qvarsym | '`' qvarid '`'          (qualified variable operator) 
+     * ------------------------- */
+    this.rules.qvarop.childs = [
+      branch([[data("qvarsym"), 1]]),
+      branch([[data("`"), 1], [data("qvarid"), 1], [data("`"), 1]])
+    ];
+
+    /** -------------------------
+     * conop -> consym | '`' conid '`'                    (constructor operator) 
+     * ------------------------- */
+    this.rules.conop.childs = [
+      branch([[ref("consym"), 1]]),
+      branch([[data("`"), 1], [ref("conid"), 1], [data("`"), 1]])
+    ];
+
+    /** -------------------------
+     * qconop -> gconsym | '`' qconid '`'       (qualified constructor operator) 
+     * ------------------------- */
+    this.rules.qconop.childs = [
+      branch([[ref("gconsym"), 1]]),
+      branch([[data("`"), 1], [data("qconid"), 1], [data("`"), 1]])
+    ];
+
+    /** -------------------------
+     * op -> varop | conop                                            (operator) 
+     * ------------------------- */
+    this.rules.op.childs = [
+      branch([[ref("varop"), 1]]),
+      branch([[ref("conop"), 1]])
+    ];
+
+    /** -------------------------
+     * qop -> qvarop | qconop                               (qualified operator)
+     * ------------------------- */
+    this.rules.qop.childs = [
+      branch([[ref("qvarop"), 1]]),
+      branch([[ref("qconop"), 1]])
+    ];
+
+    /** -------------------------
+     * gconsym -> : | qconsym                                
      * ------------------------- */
     this.rules.gconsym.childs = [
       branch([[data(":"), 1]]),
-      branch([[data("qconsym"), 1]]),
+      branch([[data("qconsym"), 1]])
     ];
   }
 
