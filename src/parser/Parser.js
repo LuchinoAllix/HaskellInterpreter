@@ -51,7 +51,7 @@ export function parse(program){
 function mainLoop(program,){
   let root = mtNode("root");
   while(program.peek()){
-    for (let key_rule in rulesObject.rules){
+    for (let key_rule in rulesObject.rules){ // not sure this is a good idea
       let rule = rulesObject.rules[key_rule];
       if (ruleLoop(rule, program, root, "root")){
         program.AST = root;
@@ -61,6 +61,8 @@ function mainLoop(program,){
     break;
   }
 }
+
+// for the moment, no rules accepts the input fully
 
 /**
  * Tests all the branches until it finds one that matches.
@@ -74,7 +76,7 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
-  console.log('\x1b[31m%s\x1b[0m', 'ruleloop', rule.value);
+  console.log('\x1b[32m%s\x1b[0m', 'ruleloop', rule.value);
 
   let result= false;
   rule.childs.some(branch => {
@@ -82,9 +84,14 @@ function ruleLoop(rule, program, currNode){
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
       result = true
+      console.log('\x1b[31m%s\x1b[0m', '\t ruleloop true ', rule.value);
       return true; // to break form the .some
     }
   });
+  if(!result){
+      console.log('\x1b[34m%s\x1b[0m', ' \truleloop false ', rule.value);
+
+  }
   return result;
 }
 
@@ -98,7 +105,7 @@ function ruleLoop(rule, program, currNode){
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
-  console.log("branchloop ");//, branch.childs);
+  //console.log("branchloop ");//, branch.childs);
   let cursorStart = program.cursor; // need to rollback in case of failure
   let func = null;
   for (let i = 0; i < branch.childs.length; i++){
@@ -116,16 +123,16 @@ function branchLoop(branch, program, currNode){
       func = branchLoop;
     } else {
       throw new Error("Ill-formed branch, elems in branch should be either a"+
-                      " rule or data, at :\n" + JSON.stringify(branch, null, 4));
+                     " rule or data, at :\n" + JSON.stringify(branch, null, 4));
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
-console.log('\x1b[34m%s\x1b[0m', 'false');
+//console.log('\x1b[34m%s\x1b[0m', 'false');
       return false;
     }
   }
 
-console.log('\x1b[32m%s\x1b[0m', 'true');
+//console.log('\x1b[32m%s\x1b[0m', 'true');
   return true;
 }
 
@@ -145,11 +152,10 @@ console.log('\x1b[32m%s\x1b[0m', 'true');
  * @returns {Boolean}
  */
 function manageOption(elemOption, program, ruleFunc, currNode){
-  console.log("manageoption ", elemOption);
+  //console.log("manageoption ");//, elemOption);
   let cursorStart = program.cursor; // for rollback in case of failure
   let elem = elemOption[0];
   let option = elemOption[1];
-  console.log(option);
   let passRule = ruleFunc(elem, program, currNode);
   switch (option){ 
     case 0 : // optional
@@ -183,13 +189,14 @@ function manageOption(elemOption, program, ruleFunc, currNode){
     case 3 : // any number
       if (!passRule){
         program.cursor = cursorStart;
-      }
-      while(true){
-        cursorStart = program.cursor;
-        passRule = ruleFunc(elem, program, currNode);
-        if (!passRule){
-          program.cursor = cursorStart;
-          break;
+      } else {
+        while(true){
+          cursorStart = program.cursor;
+          passRule = ruleFunc(elem, program, currNode);
+          if (!passRule){
+            program.cursor = cursorStart;
+            break;
+          }
         }
       }
     break;
@@ -235,7 +242,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
  * @returns {Boolean}
  */
 function dataLoop(elem, program, currNode){
-  console.log("dataloop ", elem.value);
+  //console.log("dataloop ", elem.value);
   let token = program.getToken();
   if (token === undefined) {
     return false; // FIXME : this should not happen (yet it does)
@@ -244,9 +251,10 @@ function dataLoop(elem, program, currNode){
     // verify token type in case of rule based on lexer token type 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
-console.log('\x1b[32m%s\x1b[0m', 'true2');
+console.log('\x1b[33m%s\x1b[0m', '\t\tdataloop true2', elem.value);
     return true;
   }
+console.log('\x1b[35m%s\x1b[0m', '\t\tdataloop false2', elem.value);
   return false;
 }
 

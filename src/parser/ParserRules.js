@@ -133,11 +133,13 @@ export class Rules {
       branch([
         [data("{"), 1], 
         [ref("impdecls"), 1], 
-        [data("}"), 1]]),
+        [data("}"), 1]
+      ]),
       branch([
         [data("{"), 1], 
         [ref("topdecls"), 1], 
-        [data("}"), 1]])
+        [data("}"), 1]
+      ])
     ];
 
     /** -------------------------
