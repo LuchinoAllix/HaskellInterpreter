@@ -22,6 +22,7 @@ export class Rules {
       impdecl: rule("impdecl"),
       impspec: rule("impspec"),
       import: rule("import"),
+      import_1: rule("import_1"),
       cname: rule("cname"),
       topdecls: rule("topdecls"),
       topdecl: rule("topdecl"),
@@ -116,7 +117,7 @@ export class Rules {
         [data("where"), 1],
         [ref("body"), 1],
       ]),
-      branch([[ref("body"), 1]]),
+      branch([[ref("body"), 1]])
     ];
 
     /** -------------------------
@@ -143,30 +144,30 @@ export class Rules {
     ];
 
     /** -------------------------
-     * impdecls -> impdecl1 ';' … ';' impdecln (n ≥ 1)
+     * impdecls -> impdecl1 ';' … ';' impdecln                           (n ≥ 1)
      * ------------------------- */
     this.rules.impdecls.childs = [
       branch([
         [ref("impdecl"), 1], 
-        [data(";"), 1], 
         [branch([
-          [ref("impdecls"), 0]
-        ]), 0]
+          [data(";"), 1], 
+          [ref("impdecl"), 1], 
+        ]), 3],
       ])
     ];
 
     /** -------------------------
-     * impent -> [string]  (see Section 8.5.1) 
+     * impent -> [string]                                    (see Section 8.5.1) 
      * ------------------------- */ 
     this.rules.impent.childs = [branch([[data("string"), 0]])];
 
     /** -------------------------
-     * expent -> [string]  (see Section 8.5.1) 
+     * expent -> [string]                                    (see Section 8.5.1) 
      * ------------------------- */
     this.rules.expent.childs = [branch([[data("string"), 0]])];
 
     /** -------------------------
-     * exports -> '(' export1 , … , exportn [ ',' ] ')'     (n ≥ 0) 
+     * exports -> '(' export1 , … , exportn [ ',' ] ')'                  (n ≥ 0) 
      * ------------------------- */
     this.rules.exports.childs = [
       branch([
@@ -178,30 +179,30 @@ export class Rules {
         ]), 3]
         [data(","), 0]
         [data(")"), 1],
-      ]),
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * export -> qvar
-     *         | qtycon [(..) | ( cname1 , … , cnamen )] (n ≥ 0) 
-     *         | qtycls [(..) | ( qvar1 , … , qvarn )]   (n ≥ 0)
+     *         | qtycon ['(..)' | '(' cname1 ',' … ',' cnamen ')']       (n ≥ 0) 
+     *         | qtycls ['(..)' | '(' qvar1 ',' … ',' qvarn ')']         (n ≥ 0)
      *         | module modid
      * ------------------------- */
     this.rules.export.childs = [
       branch([[ref("qvar"), 1]]),
       branch([
         [data("qtycon"), 1],          
-        [ref("export_1"), 0],
+        [ref("export_1"), 0]
       ]),
       branch([
         [data("qtycls"), 1],
-        [ref("export_2"), 0],
+        [ref("export_2"), 0]
       ]),
-      branch([[data("module"), 1], [data("modid"), 1]]),
+      branch([[data("module"), 1], [data("modid"), 1]])
     ];
 
     /** ------------------------- (added rule for export)
-     * export_1 -> '(..)' | '(' cname1 ',' … ',' cnamen ')'   (n ≥ 0)
+     * export_1 -> '(..)' | '(' cname1 ',' … ',' cnamen ')'              (n ≥ 0)
      * ------------------------- */
     this.rules.export_1.childs = [
       branch([
@@ -212,15 +213,16 @@ export class Rules {
       branch([
         [data("("), 1],
         [branch([
-          [ref("cname"), 1]
-          [data(','), 0]
-        ]), 3]
-        [data(")"), 1],
+          [ref("cname"), 1],
+          [data(','), 1]
+        ]), 3],
+        [ref("cname"), 0],
+        [data(")"), 1]
       ])
     ]
 
     /** ------------------------- (added rule for export)
-     * export_2 -> '(..)' | '(' qvar1 ',' … ',' qvar ')'   (n ≥ 0)
+     * export_2 -> '(..)' | '(' qvar1 ',' … ',' qvar ')'                 (n ≥ 0)
      * ------------------------- */
     this.rules.export_2.childs = [
       branch([
@@ -231,10 +233,11 @@ export class Rules {
       branch([
         [data("("), 1],
         [branch([
-          [ref("qvar"), 1]
-          [data(','), 0]
-        ]), 3]
-        [data(")"), 1],
+          [ref("qvar"), 1],
+          [data(','), 1]
+        ]), 3],
+        [ref("qvar"), 0],
+        [data(")"), 1]
       ])
     ]
 
@@ -253,68 +256,73 @@ export class Rules {
         ]), 0]
         [ref("impspec"), 0],
       ]),
-      branch([]), // empty declaration
+      branch([]) // empty declaration
     ];
 
-    /** ------------------------- AI
-     * impspec -> '(' import1 ',' … ',' importn [ ',' ] ')'
-     *           | 'hiding (' import1 ',' … ',' importn [ ',' ] ')'
+    /** -------------------------
+     * impspec -> '(' import1 ',' … ',' importn [ ',' ] ')'              (n ≥ 0)
+     *           | 'hiding (' import1 ',' … ',' importn [ ',' ] ')'      (n ≥ 0)
      * ------------------------- */
     this.rules.impspec.childs = [
-      branch([ // TODO
+      branch([
         [data("("), 1],
-        [ref("import"), 3], // FIXME : make a seperate rule to allow any 
-        [data(","), 0],     // number of 'import,'
-        [data(")"), 1],
+        [branch(
+          [ref("import"), 1],
+          [data(","), 1]
+        ), 3],
+        [ref("import"), 0],
+        [data(")"), 1]
       ]),
-      branch([ // TODO
+      branch([
         [data("hiding"), 1],
         [data("("), 1],
-        [ref("import"), 1],
-        [data(","), 0],
+        [branch(
+          [ref("import"), 1],
+          [data(","), 1]
+        ), 3],
         [ref("import"), 0],
-        [data(")"), 1],
-      ]),
+        [data(")"), 1]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * import -> var
-     *         | tycon [(..) | ( cname1 , … , cnamen )]
-     *         | tycls [(..) | ( var1 , … , varn )]
+     *         | tycon ['(..)' | '(' cname1 ',' … ',' cnamen ')']        (n ≥ 0)
+     *         | tycls ['(..)' | '(' var1 ',' … ',' varn ')']            (n ≥ 0)
      * ------------------------- */
     this.rules.import.childs = [
       branch([[ref("var"), 1]]),
       branch([
         [ref("tycon"), 1],
-        [data("("), 1],
-        [data(".."), 1],
-        [data(")"), 1],
-      ]),
-      branch([ // TODO
-        [ref("tycon"), 1],
-        [data("("), 1],
-        [ref("cname"), 1],
-        [data(","), 0],
-        [ref("cname"), 0],
-        [data(")"), 1],
+        [ref("export_1"), 0]
       ]),
       branch([
         [ref("tycls"), 1],
+        [ref("import_1"), 0]
+      ])
+    ];
+
+    /** ------------------------- (added rule for import)
+     * import_1 -> '(..)' | '(' var1 ',' … ',' varn ')'                  (n ≥ 0)
+     * ------------------------- */
+    this.rules.import_1.childs = [
+      branch([
         [data("("), 1],
         [data(".."), 1],
         [data(")"), 1],
       ]),
-      branch([ // TODO
-        [ref("tycls"), 1],
+      branch([
         [data("("), 1],
-        [ref("var"), 1],
-        [data(","), 0],
+        [branch([
+          [ref("var"), 1],
+          [data(','), 1]
+        ]), 3],
         [ref("var"), 0],
-        [data(")"), 1],
-      ]),
-    ];
+        [data(")"), 1]
+      ])
+    ]
 
-    /** ------------------------- AI
+    /** -------------------------
      * cname -> var | con
      * ------------------------- */
     this.rules.cname.childs = [
@@ -322,145 +330,179 @@ export class Rules {
       branch([[ref("con"), 1]]),
     ];
 
-    /** ------------------------- AI
-     * topdecls -> topdecl1 ; … ; topdecln (n ≥ 0)
+    /** -------------------------
+     * topdecls -> topdecl1 ; … ; topdecln                               (n ≥ 0)
      * ------------------------- */
     this.rules.topdecls.childs = [
-      branch([[ref("topdecl"), 1], [data(";"), 1], [ref("topdecls"), 0]]),
+      branch([
+        [branch([
+          [ref("topdecl"), 1], 
+          [data(";"), 1], 
+        ]), 3],
+        [ref("topdecl"), 0]
+      ])
     ];
 
-    /** ------------------------- AI
-     * topdecl -> type simpletype = type
-     *          | data [context =>] simpletype [= constrs] [deriving]
-     *          | newtype [context =>] simpletype = newconstr [deriving]
-     *          | class [scontext =>] tycls tyvar [where cdecls]
-     *          | instance [scontext =>] qtycls inst [where idecls]
-     *          | default (type1 , … , typen)
-     *          | foreign fdecl
+    /** -------------------------
+     * topdecl -> 'type' simpletype '=' type
+     *          | 'data' [context '=>'] simpletype ['=' constrs] [deriving]
+     *          | 'newtype' [context '=>'] simpletype '=' newconstr [deriving]
+     *          | 'class' [scontext '=>'] tycls tyvar ['where' cdecls]
+     *          | 'instance' [scontext '=>'] qtycls inst ['where' idecls]
+     *          | 'default' (type1 , … , typen)                          (n ≥ 0) 
+     *          | 'foreign' fdecl
      *          | decl
      * ------------------------- */
     this.rules.topdecl.childs = [
-      branch([[data("type"), 1], [ref("simpletype"), 1], [data("="), 1], [ref("type"), 1]]),
+      branch([
+        [data("type"), 1], 
+        [ref("simpletype"), 1], 
+        [data("="), 1], 
+        [ref("type"), 1]
+      ]),
       branch([
         [data("data"), 1],
-        [ref("context"), 0],
-        [data("=>"), 0],
+        [branch([
+          [ref("context"), 0],
+          [data("=>"), 1]
+        ]), 0]
         [ref("simpletype"), 1],
-        [data("="), 0],
-        [ref("constrs"), 0],
+        [branch([
+          [data("="), 1],
+          [ref("constrs"), 1]
+        ]), 0]
         [ref("deriving"), 0],
       ]),
       branch([
         [data("newtype"), 1],
-        [ref("context"), 0],
-        [data("=>"), 0],
+        [branch([
+          [ref("context"), 0],
+          [data("=>"), 1]
+        ]), 0]
         [ref("simpletype"), 1],
-        [data("="), 1],
-        [ref("newconstr"), 1],
+        [branch([
+          [data("="), 1],
+          [ref("newconstr"), 1]
+        ]), 0]
         [ref("deriving"), 0],
       ]),
       branch([
         [data("class"), 1],
-        [ref("scontext"), 0],
-        [data("=>"), 0],
+        [branch([
+          [ref("scontext"), 0],
+          [data("=>"), 1]
+        ]), 0]
         [ref("tycls"), 1],
         [ref("tyvar"), 1],
-        [data("where"), 0],
-        [ref("cdecls"), 0],
+        [branch([
+          [data("where"), 1],
+          [ref("cdecls"), 1]
+        ]), 0]
       ]),
       branch([
         [data("instance"), 1],
-        [ref("scontext"), 0],
-        [data("=>"), 0],
+        [branch([
+          [ref("scontext"), 0],
+          [data("=>"), 1]
+        ]), 0]
         [data("qtycls"), 1],
         [ref("inst"), 1],
-        [data("where"), 0],
-        [ref("idecls"), 0],
+        [branch([
+          [data("where"), 1],
+          [ref("idecls"), 1]
+        ]), 0]
       ]),
-      branch([ // TODO
+      branch([
         [data("default"), 1],
         [data("("), 1],
-        [ref("type"), 0],
-        [data(","), 0],
+        [branch([
+          [ref("type"), 1],
+          [data(","), 1]
+        ]), 3]
         [ref("type"), 0],
         [data(")"), 1],
       ]),
-      branch([[data("foreign"), 1], [ref("fdecl"), 1]]),
-      branch([[ref("decl"), 1]]),
+      branch([
+        [data("foreign"), 1], 
+        [ref("fdecl"), 1]
+      ]),
+      branch([[ref("decl"), 1]])
     ];
 
-    /** ------------------------- AI
-     * decls -> { decl1 ; … ; decln } (n ≥ 0)
+    /** -------------------------
+     * decls -> { decl1 ; … ; decln }                                    (n ≥ 0)
      * ------------------------- */
     this.rules.decls.childs = [
       branch([
         [data("{"), 1],
-        [ref("decl"), 0],
         [branch([
-                [data(";"), 1],
-                [ref("decl"), 1],
+          [ref("decl"), 1],
+          [data(";"), 1]
         ]), 3],
-        [data("}"), 1],
-      ]),
+        [ref("decl"), 0],
+        [data("}"), 1]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * decl -> gendecl
      *       | (funlhs | pat) rhs
      * ------------------------- */
     this.rules.decl.childs = [
       branch([[ref("gendecl"), 1]]),
       branch([[ref("funlhs"), 1], [ref("rhs"), 1]]),
-      branch([[ref("pat"), 1], [ref("rhs"), 1]]),
+      branch([[ref("pat"), 1], [ref("rhs"), 1]])
     ];
 
-    /** ------------------------- AI
-     * cdecls -> { cdecl1 ; … ; cdecln } (n ≥ 0)
+    /** -------------------------
+     * cdecls -> { cdecl1 ; … ; cdecln }                                 (n ≥ 0)
      * ------------------------- */
     this.rules.cdecls.childs = [
       branch([
         [data("{"), 1],
-        [ref("cdecl"), 0],
         [branch([
-                [data(";"), 1],
-                [ref("cdecl"), 1],
+          [ref("cdecl"), 1],
+          [data(";"), 1],
         ]), 3],
+        [ref("cdecl"), 0],
         [data("}"), 1],
-      ]),
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * cdecl -> gendecl | (funlhs | var) rhs
      * ------------------------- */
     this.rules.cdecl.childs = [
       branch([[ref("gendecl"), 1]]),
       branch([[ref("funlhs"), 1], [ref("rhs"), 1]]),
-      branch([[ref("var"), 1], [ref("rhs"), 1]]),
+      branch([[ref("var"), 1], [ref("rhs"), 1]])
     ];
 
-    /** ------------------------- AI
-     * idecls -> { idecl1 ; … ; idecln } (n ≥ 0)
+    /** -------------------------
+     * idecls -> { idecl1 ; … ; idecln }                                 (n ≥ 0)
      * ------------------------- */
     this.rules.idecls.childs = [
       branch([
         [data("{"), 1],
-        [ref("idecl"), 0],
-        [data(";"), 0],
+        [branch([
+          [ref("idecl"), 1],
+          [data(";"), 1],
+        ]), 3],
         [ref("idecl"), 0],
         [data("}"), 1],
-      ]),
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * idecl -> (funlhs | var) rhs | (empty)
      * ------------------------- */
     this.rules.idecl.childs = [
       branch([[ref("funlhs"), 1], [ref("rhs"), 1]]),
       branch([[ref("var"), 1], [ref("rhs"), 1]]),
-      branch([]),
+      branch([])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * gendecl -> vars :: [context =>] type
      *           | fixity [integer] ops
      *           | (empty declaration)
@@ -469,36 +511,53 @@ export class Rules {
       branch([
         [ref("vars"), 1],
         [data("::"), 1],
-        [ref("context"), 0],
-        [data("=>"), 0],
+        [branch([
+          [ref("context"), 1],
+          [data("=>"), 1]
+        ]), 0]
         [ref("type"), 1],
       ]),
-      branch([[ref("fixity"), 1], [ref("ops"), 1]]),
-      branch([]),
+      branch([
+        [ref("fixity"), 1], 
+        [data("integer"), 0], 
+        [ref("ops"), 1]
+      ]),
+      branch([])
     ];
     
-    /** ------------------------- AI
-     * ops -> op1 , … , opn
+    /** -------------------------
+     * ops -> op1 , … , opn                                              (n ≥ 1)
      * ------------------------- */
     this.rules.ops.childs = [
-      branch([[ref("op"), 1], [data(","), 1], [ref("ops"), 0]]),
-    ];
-        
+      branch([
+        [ref("op"), 1], 
+        [branch([
+          [data(";"), 1], 
+          [ref("op"), 1] 
+        ]), 3]
+      ])
+    ];        
 
-    /** ------------------------- AI
-     * vars -> var1 , … , varn
+    /** -------------------------
+     * vars -> var1 , … , varn                                           (n ≥ 1)
      * ------------------------- */
     this.rules.vars.childs = [
-      branch([[ref("var"), 1], [data(","), 1], [ref("vars"), 0]]),
+      branch([
+        [ref("var"), 1], 
+        [branch([
+          [data(";"), 1], 
+          [ref("var"), 1] 
+        ]), 3]
+      ])
     ];
 
-    /** ------------------------- AI
+    /** -------------------------
      * fixity -> infixl | infixr | infix
      * ------------------------- */
     this.rules.fixity.childs = [
       branch([[data("infixl"), 1]]),
       branch([[data("infixr"), 1]]),
-      branch([[data("infix"), 1]]),
+      branch([[data("infix"), 1]])
     ];
 
     /** ------------------------- AI
