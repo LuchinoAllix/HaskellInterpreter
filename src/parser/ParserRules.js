@@ -1357,8 +1357,8 @@ export class Rules {
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([
-        [data("(,"), 1]
-        [data(","), 3]
+        [data("(,"), 1],
+        [data(","), 3],
         [data(")"), 1]      
       ]),
       branch([[ref("qcon"), 1]]),
