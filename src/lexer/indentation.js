@@ -195,7 +195,7 @@ function bigLR3(tokens, stack){
   let m = stack[stack.length-1];
       
   if (m === n){ 
-    return [Token.new("bigL", ":")].concat(bigL(tokens.slice(1), stack));
+    return [Token.new("bigL", ";")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
     return [Token.new("bigL", "}")].concat(bigL(tokens.slice(1), 
                                              stack.splice(-1,1)));
