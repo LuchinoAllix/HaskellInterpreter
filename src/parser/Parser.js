@@ -3,7 +3,7 @@ import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../Node.js";
 import { Rules } from "./ParserRules.js";
 import { Token, tokenToNode } from "../Token.js";
-import { Elem } from "./Elem.js";
+import { branch, data, rule, ref, Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -27,6 +27,9 @@ import { Elem } from "./Elem.js";
 
 let rulesObject = new Rules();
 
+const printDebug = true;
+let space = 0;
+
 /**
  * Allows to transform a list of tokens to an AST
  * @param {Program} program 
@@ -41,7 +44,6 @@ export function parse(program){
   return true;
 }
 
-
 /**
  * Tries all the rules until it finds one applicable and adds the resulting AST
  * nodes accordingly. Does this until the full list of token is parsed.
@@ -50,15 +52,13 @@ export function parse(program){
  */
 function mainLoop(program,){
   let root = mtNode("root");
-  while(program.peek()){
-    for (let key_rule in rulesObject.rules){ // not sure this is a good idea
-      let rule = rulesObject.rules[key_rule];
-      if (ruleLoop(rule, program, root, "root")){
-        program.AST = root;
-        break;
-      }
-    }
-    break;
+  if (ruleLoop(rulesObject.rules["module"], program, root, "root")){
+    program.AST = root;
+  } else {
+    throw Error("First rule (module) did not yield any result");
+  }
+  if (program.peek()){
+    throw Error("Not all tokens were parsed");
   }
 }
 
@@ -76,23 +76,18 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
-  console.log('\x1b[32m%s\x1b[0m', 'ruleloop', rule.value);
-
-  let result= false;
-  rule.childs.some(branch => {
+  debug(2,'ruleloop', rule.value);
+  for (let i = 0; i < rule.childs.length; i ++){
+    let branch = rule.childs[i];
     let tmpNode = mtNode(rule.value);
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
-      result = true
-      console.log('\x1b[31m%s\x1b[0m', '\t ruleloop true ', rule.value);
-      return true; // to break form the .some
+      debug(1,'ruleloop true', rule.value);
+      return true;
     }
-  });
-  if(!result){
-      console.log('\x1b[34m%s\x1b[0m', ' \truleloop false ', rule.value);
-
   }
-  return result;
+  debug(4,'ruleloop false', rule.value);  
+  return false;
 }
 
 /**
@@ -105,7 +100,7 @@ function ruleLoop(rule, program, currNode){
  * @returns {Boolean}
  */
 function branchLoop(branch, program, currNode){
-  //console.log("branchloop ");//, branch.childs);
+  space += 1;
   let cursorStart = program.cursor; // need to rollback in case of failure
   let func = null;
   for (let i = 0; i < branch.childs.length; i++){
@@ -123,16 +118,15 @@ function branchLoop(branch, program, currNode){
       func = branchLoop;
     } else {
       throw new Error("Ill-formed branch, elems in branch should be either a"+
-                     " rule or data, at :\n" + JSON.stringify(branch, null, 4));
+                    " rule or data, at :\n" + JSON.stringify(branch, null, 4));
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
-//console.log('\x1b[34m%s\x1b[0m', 'false');
+      space -= 1;
       return false;
     }
   }
-
-//console.log('\x1b[32m%s\x1b[0m', 'true');
+  space -= 1;
   return true;
 }
 
@@ -142,7 +136,7 @@ function branchLoop(branch, program, currNode){
 
 /**
  * Verifies if a rule or data elem is valid based on it option value
- * If the rule passe, the resulting node is added to the given node (currNode)
+ * If the rule passes, the resulting node is added to the given node (currNode)
  * elemOption is a list of the elem to try, it's option (int) and if the option
  * is 4, another elem (for negation rules)
  * @param {[Elem, Int, Elem]} elemOption
@@ -152,7 +146,7 @@ function branchLoop(branch, program, currNode){
  * @returns {Boolean}
  */
 function manageOption(elemOption, program, ruleFunc, currNode){
-  //console.log("manageoption ");//, elemOption);
+  space += 1;
   let cursorStart = program.cursor; // for rollback in case of failure
   let elem = elemOption[0];
   let option = elemOption[1];
@@ -167,6 +161,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
     case 1 : // mandatory
       if (!passRule){
         program.cursor = cursorStart;
+            space -= 1;
         return false;
       }
       break;
@@ -174,6 +169,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
     case 2 : // at least one
       if(!passRule){
         program.cursor = cursorStart;
+            space -= 1;
         return false;
       } 
       while(true){
@@ -219,6 +215,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
         }
         if (passNegateRule){
             program.cursor = cursorStart;
+            space -= 1;
             return false;
         } else {
           program.cursor = cursorEnd;
@@ -227,8 +224,10 @@ function manageOption(elemOption, program, ruleFunc, currNode){
       break;
 
     default :
-      throw new Error("Ill formed rule, option should be 0, 1, 2, 3 or 4");
+      throw new Error("Ill formed rule, option should be 0, 1, 2, 3 or 4 : " 
+        + option);
   }
+  space -= 1;
   return true;
 }
 
@@ -242,7 +241,6 @@ function manageOption(elemOption, program, ruleFunc, currNode){
  * @returns {Boolean}
  */
 function dataLoop(elem, program, currNode){
-  //console.log("dataloop ", elem.value);
   let token = program.getToken();
   if (token === undefined) {
     return false; // FIXME : this should not happen (yet it does)
@@ -251,11 +249,23 @@ function dataLoop(elem, program, currNode){
     // verify token type in case of rule based on lexer token type 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
-console.log('\x1b[33m%s\x1b[0m', '\t\tdataloop true2', elem.value);
+    debug(3,'dataloop true', elem.value);
     return true;
   }
-console.log('\x1b[35m%s\x1b[0m', '\t\tdataloop false2', elem.value);
+  debug(5,'dataloop true', elem.value);
   return false;
+}
+
+/** TODO
+ * 
+ * @param {*} col 
+ * @param {*} text 
+ * @param {*} val 
+ */
+function debug(col, text, val){
+  if(printDebug){
+    console.log('%s\x1b[3' + col + 'm%s\x1b[0m', " ".repeat(space), text, val);
+  }
 }
 
 // simple test
