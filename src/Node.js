@@ -27,7 +27,26 @@ export class Node {
       this.childs.push(node);
     }
   }
-    
+
+  /*
+   * 
+   * 
+  empty(){
+    if (this.childs.length === 0){
+      if (this.value !== null) {
+        return false;
+      }
+      return true;
+    }
+    for (let i = 0; i<this.childs.length; i++){
+      if (!this.childs[i].empty()){
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  */
 }
 
 /**
