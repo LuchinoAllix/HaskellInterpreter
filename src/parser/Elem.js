@@ -15,6 +15,8 @@ export class Elem {
    * A, B, C and R1 are references to rules
    * A B C is a branch (so are B "y" and "x" R1)
    * "x" and "y" are data elements
+   * references may be a reference to a rule not defined in the parser
+   * but in the lexer, in this case they become 'token type'.
    * 
    * 
    * @param {Genre} type Rule | Branch | data
@@ -34,7 +36,8 @@ const Genre = {
   rule : "rule",
   branch : "branch",
   data : "data",
-  ref : "ref"
+  ref : "ref",
+  toktype : "tokentype"
 }
 
 // options for elements
@@ -79,6 +82,16 @@ export function data(name){
  * @returns {Elem}
  */
 export function ref(name){
-  return new Elem("ref",name,null);
+  return new Elem("ref", name, null);
 }
+
+/**
+ * construcotr for ref kind of element
+ * @param {String} name 
+ * @returns {Elem}
+ */
+export function tokentype(name){
+  return new Elem("tokentype", name, null);
+}
+
 

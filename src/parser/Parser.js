@@ -112,7 +112,7 @@ function branchLoop(branch, program, currNode){
     } else if (elem[0].type === "ref"){
       func = ruleLoop;
       elem[0] = rulesObject.rules[elem[0].value];
-    } else if (elem[0].type === "data"){
+    } else if (elem[0].type === "data" || elem[0].type === "tokentype"){
       func = dataLoop;
     } else if (elem[0].type === "branch"){
       func = branchLoop;
@@ -210,7 +210,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
                                     program, mtNode);
         } else if (elem[2].type === "rule"){
           passNegateRule = ruleLoop(elem[2], program, mtNode);
-        } else if (elem[2].type === "data"){
+        } else if (elem[2].type === "data" || elem[2].type === "tokentype"){
           passNegateRule = dataLoop(elem[2], program, mtNode);
         }
         if (passNegateRule){
@@ -245,14 +245,14 @@ function dataLoop(elem, program, currNode){
   if (token === undefined) {
     return false; // FIXME : this should not happen (yet it does)
   } 
-  if(elem.value === token.value || elem.value === token.type){ 
-    // verify token type in case of rule based on lexer token type 
+  if((elem.type === "data" && elem.value === token.value) || 
+     (elem.type === "tokentype" && elem.value === token.type)){ 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
     debug(3,'dataloop true', elem.value);
     return true;
   }
-  debug(5,'dataloop true', elem.value);
+  debug(5,'dataloop false', elem.value);
   return false;
 }
 

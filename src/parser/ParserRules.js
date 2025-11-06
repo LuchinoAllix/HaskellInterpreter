@@ -1,4 +1,4 @@
-import { branch, data, rule, ref} from "./Elem.js";
+import { branch, data, rule, ref, tokentype} from "./Elem.js";
 
 export class Rules {
   constructor() {
@@ -110,7 +110,7 @@ export class Rules {
     this.rules.module.childs = [
       branch([
         [data("module"), 1],
-        [data("modid"), 1],
+        [tokentype("modid"), 1],
         [ref("exports"), 0],
         [data("where"), 1],
         [ref("body"), 1],
@@ -181,14 +181,14 @@ export class Rules {
     this.rules.export.childs = [
       branch([[ref("qvar"), 1]]),
       branch([
-        [data("qtycon"), 1],          
+        [tokentype("qtycon"), 1],          
         [ref("export_1"), 0]
       ]),
       branch([
-        [data("qtycls"), 1],
+        [tokentype("qtycls"), 1],
         [ref("export_2"), 0]
       ]),
-      branch([[data("module"), 1], [data("modid"), 1]])
+      branch([[data("module"), 1], [tokentype("modid"), 1]])
     ];
 
     /** ------------------------- (added rule for export)
@@ -239,10 +239,10 @@ export class Rules {
       branch([
         [data("import"), 1],
         [data("qualified"), 0],
-        [data("modid"), 1],
+        [tokentype("modid"), 1],
         [branch([
           [data("as"), 1],
-          [data("modid"), 1],
+          [tokentype("modid"), 1],
         ]), 0]
         [ref("impspec"), 0],
       ]),
@@ -283,7 +283,7 @@ export class Rules {
     this.rules.import.childs = [
       branch([[ref("var"), 1]]),
       branch([
-        [data("tycon"), 1],
+        [tokentype("tycon"), 1],
         [ref("export_1"), 0]
       ]),
       branch([
@@ -383,7 +383,7 @@ export class Rules {
           [data("=>"), 1]
         ]), 0]
         [data("tycls"), 1],
-        [data("tyvar"), 1],
+        [tokentype("tyvar"), 1],
         [branch([
           [data("where"), 1],
           [ref("cdecls"), 1]
@@ -395,7 +395,7 @@ export class Rules {
           [ref("scontext"), 0],
           [data("=>"), 1]
         ]), 0]
-        [data("qtycls"), 1],
+        [tokentype("qtycls"), 1],
         [ref("inst"), 1],
         [branch([
           [data("where"), 1],
@@ -509,7 +509,7 @@ export class Rules {
       ]),
       branch([
         [ref("fixity"), 1], 
-        [data("integer"), 0], 
+        [tokentype("integer"), 0], 
         [ref("ops"), 1]
       ]),
       branch([])
@@ -581,7 +581,7 @@ export class Rules {
      * ------------------------- */
     this.rules.atype.childs = [
       branch([[ref("gtycon"), 1]]),
-      branch([[data("tyvar"), 1]]),
+      branch([[tokentype("tyvar"), 1]]),
       branch([
         [data("("), 1],
         [ref("type"), 1],
@@ -608,7 +608,7 @@ export class Rules {
      *                        // tokenized 
      * ------------------------- */
     this.rules.gtycon.childs = [
-      branch([[data("qtycon"), 1]]),
+      branch([[tokentype("qtycon"), 1]]),
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([[data("(->)"), 1]]),
@@ -641,11 +641,11 @@ export class Rules {
      *        | qtycls ( tyvar atype1 … atypen )                         (n ≥ 1) 
      * ------------------------- */
     this.rules.class.childs = [
-      branch([[data("qtycls"), 1], [data("tyvar"), 1]]),
+      branch([[tokentype("qtycls"), 1], [tokentype("tyvar"), 1]]),
       branch([
-        [data("qtycls"), 1],
+        [tokentype("qtycls"), 1],
         [data("("), 1],
-        [data("tyvar"), 1],
+        [tokentype("tyvar"), 1],
         [ref("atype"), 2],
         [data(")"), 1],
       ]),
@@ -672,14 +672,14 @@ export class Rules {
      * simpleclass -> qtycls tyvar
      * ------------------------- */
     this.rules.simpleclass.childs = [
-      branch([[data("qtycls"), 1], [data("tyvar"), 1]]),
+      branch([[tokentype("qtycls"), 1], [tokentype("tyvar"), 1]]),
     ];
 
     /** -------------------------
      * simpletype -> tycon tyvar1 … tyvark                               (k ≥ 0)
      * ------------------------- */
     this.rules.simpletype.childs = [
-      branch([[data("tycon"), 1], [data("tyvar"), 3]])
+      branch([[tokentype("tycon"), 1], [tokentype("tyvar"), 3]])
     ];
 
     /** -------------------------
@@ -789,7 +789,7 @@ export class Rules {
      * dclass -> qtycls
      * ------------------------- */
     this.rules.dclass.childs = [
-      branch([[data("qtycls"), 1]]),
+      branch([[tokentype("qtycls"), 1]]),
     ];
 
     /** ------------------------- (distinctness not verified)
@@ -804,30 +804,30 @@ export class Rules {
       branch([
         [data("("), 1], 
         [ref("gtycon"), 1], 
-        [data("tyvar"), 3], 
+        [tokentype("tyvar"), 3], 
         [data(")"), 1]
       ]),
       branch([
         [data("("), 1], 
-        [data("tyvar"), 1],
+        [tokentype("tyvar"), 1],
         [data(","), 1], 
-        [data("tyvar"), 1],
+        [tokentype("tyvar"), 1],
         [branch([
           [data(","), 1], 
-          [data("tyvar"), 1]
+          [tokentype("tyvar"), 1]
         ]), 3],
         [data(")"), 1]
       ]),
       branch([
         [data("["), 1], 
-        [data("tyvar"), 1], 
+        [tokentype("tyvar"), 1], 
         [data("]"), 1]
       ]),
       branch([
         [data("("), 1], 
-        [data("tyvar"), 1], 
+        [tokentype("tyvar"), 1], 
         [data("->"), 1], 
-        [data("tyvar"), 1], 
+        [tokentype("tyvar"), 1], 
         [data(")"), 1]
       ]),
     ];
@@ -870,12 +870,12 @@ export class Rules {
     /** -------------------------
      * impent -> [string]                                    (see Section 8.5.1) 
      * ------------------------- */ 
-    this.rules.impent.childs = [branch([[data("string"), 0]])];
+    this.rules.impent.childs = [branch([[tokentype("string"), 0]])];
 
     /** -------------------------
      * expent -> [string]                                    (see Section 8.5.1) 
      * ------------------------- */
-    this.rules.expent.childs = [branch([[data("string"), 0]])];
+    this.rules.expent.childs = [branch([[tokentype("string"), 0]])];
 
     /** -------------------------
      * safety -> 'unsafe' | 'safe'
@@ -905,7 +905,7 @@ export class Rules {
      * fatype -> qtycon atype1 … atypek                                (k  ≥  0) 
      * ------------------------- */
     this.rules.fatype.childs = [
-      branch([[data("qtycon"), 1], [ref("atype"), 3]]),
+      branch([[tokentype("qtycon"), 1], [ref("atype"), 3]]),
     ];
 
     /** -------------------------
@@ -1099,7 +1099,7 @@ export class Rules {
     this.rules.aexp_.childs = [
       branch([[ref("qvar"), 1]]),
       branch([[ref("gcon"), 1]]),
-      branch([[data("literal"), 1]]),
+      branch([[tokentype("literal"), 1]]),
       branch([
         [data("("), 1], [ref("exp"), 1], [data(")"), 1]
       ]),
@@ -1277,11 +1277,11 @@ export class Rules {
       branch([[ref("apat"), 1]]),
       branch([
         [data("-"), 1],
-        [data("literal"), 1]
+        [tokentype("literal"), 1]
       ]),
       branch([
         [data("-"), 1],
-        [data("float"), 1]
+        [tokentype("float"), 1]
       ]),
       branch(
         [[ref("gcon"), 1], 
@@ -1319,7 +1319,7 @@ export class Rules {
         [ref("fpat"), 0], 
         [data("}"), 1]
       ]),
-      branch([[data("literal"), 1]]),
+      branch([[tokentype("literal"), 1]]),
       branch([[data("_"), 1]]),
       branch([
         [data("("), 1],
@@ -1378,31 +1378,31 @@ export class Rules {
      * var -> varid | '(' varsym ')'                                  (variable) 
      * ------------------------- */
     this.rules.var.childs = [
-      branch([[data("Qvarid"), 1]]),
-      branch([[data("("), 1], [data("varsym"), 1], [data(")"), 1]])
+      branch([[tokentype("qvarid"), 1]]),
+      branch([[data("("), 1], [tokentype("varsym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
      * qvar -> qvarid | '(' qvarsym ')'                     (qualified variable) 
      * ------------------------- */
     this.rules.qvar.childs = [
-      branch([[data("Qvarid"), 1]]),
-      branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]])
+      branch([[tokentype("qvarid"), 1]]),
+      branch([[data("("), 1], [tokentype("qvarsym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
      * con -> conid | '(' consym ')'                               (constructor) 
      * ------------------------- */
     this.rules.con.childs = [
-      branch([[data("conid"), 1]]),
-      branch([[data("("), 1], [data("consym"), 1], [data(")"), 1]])
+      branch([[tokentype("conid"), 1]]),
+      branch([[data("("), 1], [tokentype("consym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
      * qcon -> qconid | '(' gconsym ')'                  (qualified constructor) 
      * ------------------------- */
     this.rules.qcon.childs = [
-      branch([[data("qconid"), 1]]),
+      branch([[tokentype("qconid"), 1]]),
       branch([[data("("), 1], [ref("gconsym"), 1], [data(")"), 1]])
     ];
 
@@ -1410,24 +1410,24 @@ export class Rules {
      * varop -> varsym | '`' varid '`'                       (variable operator) 
      * ------------------------- */
     this.rules.varop.childs = [
-      branch([[data("varsym"), 1]]),
-      branch([[data("`"), 1], [data("varid"), 1], [data("`"), 1]])
+      branch([[tokentype("varsym"), 1]]),
+      branch([[data("`"), 1], [tokentype("varid"), 1], [data("`"), 1]])
     ];
 
     /** -------------------------
      * qvarop -> qvarsym | '`' qvarid '`'          (qualified variable operator) 
      * ------------------------- */
     this.rules.qvarop.childs = [
-      branch([[data("qvarsym"), 1]]),
-      branch([[data("`"), 1], [data("qvarid"), 1], [data("`"), 1]])
+      branch([[tokentype("qvarsym"), 1]]),
+      branch([[data("`"), 1], [tokentype("qvarid"), 1], [data("`"), 1]])
     ];
 
     /** -------------------------
      * conop -> consym | '`' conid '`'                    (constructor operator) 
      * ------------------------- */
     this.rules.conop.childs = [
-      branch([[data("consym"), 1]]),
-      branch([[data("`"), 1], [data("conid"), 1], [data("`"), 1]])
+      branch([[tokentype("consym"), 1]]),
+      branch([[data("`"), 1], [tokentype("conid"), 1], [data("`"), 1]])
     ];
 
     /** -------------------------
@@ -1435,7 +1435,7 @@ export class Rules {
      * ------------------------- */
     this.rules.qconop.childs = [
       branch([[ref("gconsym"), 1]]),
-      branch([[data("`"), 1], [data("qconid"), 1], [data("`"), 1]])
+      branch([[data("`"), 1], [tokentype("qconid"), 1], [data("`"), 1]])
     ];
 
     /** -------------------------
@@ -1459,7 +1459,7 @@ export class Rules {
      * ------------------------- */
     this.rules.gconsym.childs = [
       branch([[data(":"), 1]]),
-      branch([[data("qconsym"), 1]])
+      branch([[tokentype("qconsym"), 1]])
     ];
   }
 
