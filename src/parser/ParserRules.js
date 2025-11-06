@@ -1,4 +1,4 @@
-import { branch, data, rule, ref} from "./Elem.js"
+import { branch, data, rule, ref} from "./Elem.js";
 
 export class Rules {
   constructor() {
@@ -41,7 +41,7 @@ export class Rules {
       atype: rule("atype"),
       gtycon: rule("gtycon"),
       context: rule("context"),
-      class_: rule("class_"),
+      class: rule("class"),
       scontext: rule("scontext"),
       simpleclass: rule("simpleclass"),
       simpletype: rule("simpletype"),
@@ -70,6 +70,7 @@ export class Rules {
       lexp: rule("lexp"),
       fexp: rule("fexp"),
       aexp: rule("aexp"),
+      aexp_: rule("aexp_"),
       qual: rule("qual"),
       alts: rule("alts"),
       alt: rule("alt"),
@@ -147,11 +148,11 @@ export class Rules {
      * ------------------------- */
     this.rules.impdecls.childs = [
       branch([
-        [ref("impdecl"), 1], 
         [branch([
-          [data(";"), 1], 
           [ref("impdecl"), 1], 
-        ]), 3],
+          [data(";"), 1], 
+        ]), 2],
+        [ref("impdecl"), 0]
       ])
     ];
 
@@ -282,11 +283,11 @@ export class Rules {
     this.rules.import.childs = [
       branch([[ref("var"), 1]]),
       branch([
-        [ref("tycon"), 1],
+        [data("tycon"), 1],
         [ref("export_1"), 0]
       ]),
       branch([
-        [ref("tycls"), 1],
+        [data("tycls"), 1],
         [ref("import_1"), 0]
       ])
     ];
@@ -381,8 +382,8 @@ export class Rules {
           [ref("scontext"), 0],
           [data("=>"), 1]
         ]), 0]
-        [ref("tycls"), 1],
-        [ref("tyvar"), 1],
+        [data("tycls"), 1],
+        [data("tyvar"), 1],
         [branch([
           [data("where"), 1],
           [ref("cdecls"), 1]
@@ -519,11 +520,11 @@ export class Rules {
      * ------------------------- */
     this.rules.ops.childs = [
       branch([
-        [ref("op"), 1], 
         [branch([
+          [ref("op"), 1], 
           [data(";"), 1], 
-          [ref("op"), 1] 
-        ]), 3]
+        ]), 2],
+        [ref("op"), 0]
       ])
     ];        
 
@@ -532,11 +533,11 @@ export class Rules {
      * ------------------------- */
     this.rules.vars.childs = [
       branch([
-        [ref("var"), 1], 
         [branch([
-          [data(";"), 1], 
-          [ref("var"), 1] 
-        ]), 3]
+          [ref("var"), 1], 
+          [data(","), 1], 
+        ]), 2],
+        [ref("var"), 0]
       ])
     ];
 
@@ -567,8 +568,7 @@ export class Rules {
      * ------------------------- */
     this.rules.btype.childs = [
       branch([
-        [ref("btype"), 0], 
-        [ref("atype"), 1]
+        [ref("atype"), 2]
       ])
     ];
 
@@ -581,7 +581,7 @@ export class Rules {
      * ------------------------- */
     this.rules.atype.childs = [
       branch([[ref("gtycon"), 1]]),
-      branch([[ref("tyvar"), 1]]),
+      branch([[data("tyvar"), 1]]),
       branch([
         [data("("), 1],
         [ref("type"), 1],
@@ -628,7 +628,7 @@ export class Rules {
       branch([
         [data("("), 1],
         [branch([
-          [ref("class_"), 1],
+          [ref("class"), 1],
           [data(","), 1]
         ]), 3],
         [ref("class"), 0],
@@ -640,12 +640,12 @@ export class Rules {
      * class -> qtycls tyvar
      *        | qtycls ( tyvar atype1 … atypen )                         (n ≥ 1) 
      * ------------------------- */
-    this.rules.class_.childs = [
-      branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
+    this.rules.class.childs = [
+      branch([[data("qtycls"), 1], [data("tyvar"), 1]]),
       branch([
         [data("qtycls"), 1],
         [data("("), 1],
-        [ref("tyvar"), 1],
+        [data("tyvar"), 1],
         [ref("atype"), 2],
         [data(")"), 1],
       ]),
@@ -672,14 +672,14 @@ export class Rules {
      * simpleclass -> qtycls tyvar
      * ------------------------- */
     this.rules.simpleclass.childs = [
-      branch([[data("qtycls"), 1], [ref("tyvar"), 1]]),
+      branch([[data("qtycls"), 1], [data("tyvar"), 1]]),
     ];
 
     /** -------------------------
      * simpletype -> tycon tyvar1 … tyvark                               (k ≥ 0)
      * ------------------------- */
     this.rules.simpletype.childs = [
-      branch([[ref("tycon"), 1], [ref("tyvar"), 3]])
+      branch([[data("tycon"), 1], [data("tyvar"), 3]])
     ];
 
     /** -------------------------
@@ -687,11 +687,11 @@ export class Rules {
      * ------------------------- */
     this.rules.constrs.childs = [
       branch([
-        [ref("constr"), 1],
         [branch([
+          [ref("constr"), 1], 
           [data("|"), 1], 
-          [ref("constr"), 1]
-        ]), 3] 
+        ]), 2],
+        [ref("constr"), 0]
       ])
     ];
 
@@ -804,30 +804,30 @@ export class Rules {
       branch([
         [data("("), 1], 
         [ref("gtycon"), 1], 
-        [ref("tyvar"), 3], 
+        [data("tyvar"), 3], 
         [data(")"), 1]
       ]),
       branch([
         [data("("), 1], 
-        [ref("tyvar"), 1],
+        [data("tyvar"), 1],
         [data(","), 1], 
-        [ref("tyvar"), 1],
+        [data("tyvar"), 1],
         [branch([
           [data(","), 1], 
-          [ref("tyvar"), 1]
+          [data("tyvar"), 1]
         ]), 3],
         [data(")"), 1]
       ]),
       branch([
         [data("["), 1], 
-        [ref("tyvar"), 1], 
+        [data("tyvar"), 1], 
         [data("]"), 1]
       ]),
       branch([
         [data("("), 1], 
-        [ref("tyvar"), 1], 
+        [data("tyvar"), 1], 
         [data("->"), 1], 
-        [ref("tyvar"), 1], 
+        [data("tyvar"), 1], 
         [data(")"), 1]
       ]),
     ];
@@ -1060,7 +1060,27 @@ export class Rules {
      * fexp -> [fexp] aexp                                (function application) 
      * ------------------------- */
     this.rules.fexp.childs = [
-      branch([[ref("aexp"), 2]]),
+      branch([[ref("aexp"), 2]])
+    ];
+
+    /** -------------------------
+     * aexp -> aexp_ { <qcon> '{' fbind1 ',' … ',' fbindn '}'} 
+     * (labeled update, n≥1) 
+     * ------------------------- */
+    this.rules.aexp.childs = [
+      branch([
+        [ref("aexp_"), 1],
+        [branch([
+          [ref("qcon"), 4], // FIXME : verify negation
+          [data("{"), 1], 
+          [ref("fbind"), 1], 
+          [branch([
+            [data(","), 1],
+            [ref("fbind"), 1], 
+          ]), 3],
+          [data("}"), 1] 
+        ]), 3]
+      ])
     ];
 
     /** -------------------------
@@ -1075,12 +1095,11 @@ export class Rules {
      *       | '(' infixexp qop ')'                               (left section) 
      *       | '(' qop infixexp ')'                              (right section) 
      *       | qcon '{' fbind1 , … , fbindn '}'    (labeled construction, n ≥ 0) 
-     *       | aexp <qcon> '{' fbind1 ',' … ',' fbindn '}' (labeled update, n≥1) 
      * ------------------------- */
-    this.rules.aexp.childs = [
+    this.rules.aexp_.childs = [
       branch([[ref("qvar"), 1]]),
       branch([[ref("gcon"), 1]]),
-      branch([[ref("literal"), 1]]),
+      branch([[data("literal"), 1]]),
       branch([
         [data("("), 1], [ref("exp"), 1], [data(")"), 1]
       ]),
@@ -1144,17 +1163,6 @@ export class Rules {
         [ref("fbind"), 0], 
         [data("}"), 1]
       ]),
-      branch([
-        [ref("aexp"), 1], 
-        [ref("qcon"), 4],
-        [data("{"), 1], 
-        [ref("fbind"), 1], 
-        [branch([
-          [data(","), 1],
-          [ref("fbind"), 1], 
-        ]), 3]
-        [data("}"), 1]
-      ]),
     ];
 
     /** -------------------------
@@ -1174,10 +1182,10 @@ export class Rules {
     this.rules.alts.childs = [
       branch([
         [ref("alt"), 1],
-        branch([
+        [branch([
           [data(";"), 1], 
           [ref("alt"), 1]
-        ], 3)
+        ], 3), 3]
       ]),
     ];
 
@@ -1269,7 +1277,7 @@ export class Rules {
       branch([[ref("apat"), 1]]),
       branch([
         [data("-"), 1],
-        [ref("literal"), 1]
+        [data("literal"), 1]
       ]),
       branch([
         [data("-"), 1],
@@ -1311,7 +1319,7 @@ export class Rules {
         [ref("fpat"), 0], 
         [data("}"), 1]
       ]),
-      branch([[ref("literal"), 1]]),
+      branch([[data("literal"), 1]]),
       branch([[data("_"), 1]]),
       branch([
         [data("("), 1],
@@ -1370,7 +1378,7 @@ export class Rules {
      * var -> varid | '(' varsym ')'                                  (variable) 
      * ------------------------- */
     this.rules.var.childs = [
-      branch([[data("varid"), 1]]),
+      branch([[data("Qvarid"), 1]]),
       branch([[data("("), 1], [data("varsym"), 1], [data(")"), 1]])
     ];
 
@@ -1378,7 +1386,7 @@ export class Rules {
      * qvar -> qvarid | '(' qvarsym ')'                     (qualified variable) 
      * ------------------------- */
     this.rules.qvar.childs = [
-      branch([[data("qvarid"), 1]]),
+      branch([[data("Qvarid"), 1]]),
       branch([[data("("), 1], [data("qvarsym"), 1], [data(")"), 1]])
     ];
 
@@ -1386,8 +1394,8 @@ export class Rules {
      * con -> conid | '(' consym ')'                               (constructor) 
      * ------------------------- */
     this.rules.con.childs = [
-      branch([[ref("conid"), 1]]),
-      branch([[data("("), 1], [ref("consym"), 1], [data(")"), 1]])
+      branch([[data("conid"), 1]]),
+      branch([[data("("), 1], [data("consym"), 1], [data(")"), 1]])
     ];
 
     /** -------------------------
@@ -1418,8 +1426,8 @@ export class Rules {
      * conop -> consym | '`' conid '`'                    (constructor operator) 
      * ------------------------- */
     this.rules.conop.childs = [
-      branch([[ref("consym"), 1]]),
-      branch([[data("`"), 1], [ref("conid"), 1], [data("`"), 1]])
+      branch([[data("consym"), 1]]),
+      branch([[data("`"), 1], [data("conid"), 1], [data("`"), 1]])
     ];
 
     /** -------------------------
