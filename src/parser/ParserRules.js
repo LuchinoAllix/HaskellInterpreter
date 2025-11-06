@@ -151,13 +151,13 @@ export class Rules {
         [branch([
           [ref("impdecl"), 1], 
           [data(";"), 1], 
-        ]), 2],
-        [ref("impdecl"), 0]
+        ]), 3],
+        [ref("impdecl"), 1]
       ])
     ];
 
     /** -------------------------
-     * exports -> '(' export1 , … , exportn [ ',' ] ')'                  (n ≥ 0) 
+     * exports -> '(' export1 ',' … ',' exportn [ ',' ] ')'              (n ≥ 0) 
      * ------------------------- */
     this.rules.exports.childs = [
       branch([
@@ -243,8 +243,8 @@ export class Rules {
         [branch([
           [data("as"), 1],
           [tokentype("modid"), 1],
-        ]), 0]
-        [ref("impspec"), 0],
+        ]), 0],
+        [ref("impspec"), 0]
       ]),
       branch([]) // empty declaration
     ];
@@ -329,7 +329,7 @@ export class Rules {
           [ref("topdecl"), 1], 
           [data(";"), 1], 
         ]), 3],
-        [ref("topdecl"), 0]
+        [ref("topdecl"), 1]
       ])
     ];
 
@@ -1065,7 +1065,7 @@ export class Rules {
 
     /** -------------------------
      * aexp -> aexp_ { <qcon> '{' fbind1 ',' … ',' fbindn '}'} 
-     * (labeled update, n≥1) 
+     *                                                     (labeled update, n≥1) 
      * ------------------------- */
     this.rules.aexp.childs = [
       branch([
@@ -1083,18 +1083,18 @@ export class Rules {
       ])
     ];
 
-    /** -------------------------
-     * aexp -> qvar                                                   (variable) 
+    /** ------------------------- (added rule to avoid cyclic problems)
+     * aexp_ -> qvar                                                  (variable) 
      *       | gcon                                        (general constructor) 
      *       | literal
      *       | '(' exp ')'                            (parenthesized expression) 
-     *       | '(' exp1 ',' … , expk ')'                          (tuple, k ≥ 2) 
-     *       | '[' exp1 ',' … , expk ']'                           (list, k ≥ 1) 
+     *       | '(' exp1 ',' … ',' expk ')'                        (tuple, k ≥ 2) 
+     *       | '[' exp1 ',' … ',' expk ']'                         (list, k ≥ 1) 
      *       | '[' exp1 [',' exp2] '..' [exp3] ']'         (arithmetic sequence) 
      *       | '[' exp '|' qual1 ',' … ',' qualn ']' (list comprehension, n ≥ 1) 
      *       | '(' infixexp qop ')'                               (left section) 
      *       | '(' qop infixexp ')'                              (right section) 
-     *       | qcon '{' fbind1 , … , fbindn '}'    (labeled construction, n ≥ 0) 
+     *       | qcon '{' fbind1 ',' … ',' fbindn '}'(labeled construction, n ≥ 0) 
      * ------------------------- */
     this.rules.aexp_.childs = [
       branch([[ref("qvar"), 1]]),
@@ -1316,7 +1316,7 @@ export class Rules {
           [ref("fpat"), 1], 
           [data(","), 1]
         ]), 3],
-        [ref("fpat"), 0], 
+        [ref("fpat"), 1], 
         [data("}"), 1]
       ]),
       branch([[tokentype("literal"), 1]]),
