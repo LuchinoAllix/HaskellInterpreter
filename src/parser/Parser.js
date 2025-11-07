@@ -252,7 +252,7 @@ function dataLoop(elem, program, currNode){
     debug(3,'dataloop true', elem.value);
     return true;
   }
-  debug(5,'dataloop false', elem.value);
+  debug(5,'dataloop false', elem.value + " !== " + token.value);
   return false;
 }
 
