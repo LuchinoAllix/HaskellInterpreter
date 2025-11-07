@@ -96,7 +96,7 @@ function showTokens(tokens){
 
 function showAST(ast){
   console.log("AST :");
-  console.log(JSON.stringify(ast, null, 4));
+  console.log(JSON.stringify(ast, null, 1));
 }
 
 main()
