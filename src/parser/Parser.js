@@ -29,7 +29,7 @@ let rulesObject = new Rules(); // Haskell parsing rules
 let fails = {}; // optimisation dictionnary to not try a rule we know failed
                 // at a certain index in the program
 
-const printDebug = true;
+const printDebug = false;
 let space = 0;
 
 /**
@@ -110,8 +110,8 @@ function branchLoop(branch, program, currNode){
   for (let i = 0; i < branch.childs.length; i++){
     let elem = branch.childs[i];
     if (elem[0].type === "rule"){ 
-      // doesn't appear in branches but needed for root rules that are passed 
-      // at the begining (when looking at all the rules in mainLoop)
+      // doesn't appear in branches but needed for root rule that is passed 
+      // at the begining (module)
       func = ruleLoop;
     } else if (elem[0].type === "ref"){
       func = ruleLoop;
@@ -133,10 +133,6 @@ function branchLoop(branch, program, currNode){
   space -= 1;
   return true;
 }
-
-
-// todo : manage options that are next to one another 
-// like [a] [b] and [a [b] [c]]
 
 /**
  * Verifies if a rule or data elem is valid based on it option value
