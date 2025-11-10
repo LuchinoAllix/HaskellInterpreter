@@ -130,6 +130,13 @@ function branchLoop(branch, program, currNode){
       program.cursor = cursorStart;
       currNode.childs.length = nbChilds; // truncate to delete any childs that
                                          // may have been added
+                                         // FIXME : I don't believe it covers
+                                         // the option 0 case (as in a branch
+                                         // composed of at least 2 elements is
+                                         // optional (0) and the first element
+                                         // passes but not the second, manage 
+                                         // option will return true so the first
+                                         // element will not be removed)
       space -= 1;
       return false;
     }
