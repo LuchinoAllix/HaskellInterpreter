@@ -3,7 +3,7 @@ import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../Node.js";
 import { Rules } from "./ParserRules.js";
 import { Token, tokenToNode } from "../Token.js";
-import { branch, data, rule, ref, Elem } from "./Elem.js";
+import { Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
 
@@ -29,7 +29,7 @@ let rulesObject = new Rules(); // Haskell parsing rules
 let fails = {}; // optimisation dictionnary to not try a rule we know failed
                 // at a certain index in the program
 
-const printDebug = false;
+const printDebug = true;
 let space = 0;
 
 /**
