@@ -128,6 +128,7 @@ export class Rules {
      *       | '{' interactive '}' // added rule to be ghci-like 
      * ------------------------- */
     this.rules.body.childs = [
+      /*
       branch([
         [data("{"), 1],
         [ref("impdecls"), 1],
@@ -145,6 +146,7 @@ export class Rules {
         [ref("topdecls"), 1], 
         [data("}"), 1]
       ]),
+      */
       branch([
         [data("{"), 1], 
         [ref("lexp"), 1], // fixme marche avec lexp mais pas interactive
