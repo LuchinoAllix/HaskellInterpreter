@@ -294,7 +294,7 @@ function updateFails(ruleName,index){
 }
 
 /** 
- * Looks into the dictionnat fails if a rule at a certain index failed already 
+ * Looks into the dictionnary fails if a rule at a certain index failed already 
  * or not, which optimises the recursive descent.
  * @param {String} ruleName 
  * @param {Integer} index 
