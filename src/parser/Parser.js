@@ -85,12 +85,12 @@ function ruleLoop(rule, program, currNode){
     let tmpNode = mtNode(rule.value);
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
-      debug(1,'ruleloop true', rule.value);
+      debug(1, 'ruleloop true', rule.value);
       return true;
     }
   }
   updateFails(rule.value, program.cursor);
-  debug(4,'ruleloop false', rule.value);  
+  debug(4, 'ruleloop false', rule.value);  
   return false;
 }
 
@@ -105,7 +105,9 @@ function ruleLoop(rule, program, currNode){
  */
 function branchLoop(branch, program, currNode){
   space += 1;
-  let cursorStart = program.cursor; // need to rollback in case of failure
+  let cursorStart = program.cursor;     // need to rollback in case of failure
+  let nbChilds = currNode.childs.length;//
+
   let func = null;
   for (let i = 0; i < branch.childs.length; i++){
     let elem = branch.childs[i];
@@ -126,6 +128,8 @@ function branchLoop(branch, program, currNode){
     }
     if (!manageOption(elem, program, func, currNode)){
       program.cursor = cursorStart;
+      currNode.childs.length = nbChilds; // truncate to delete any childs that
+                                         // may have been added
       space -= 1;
       return false;
     }
@@ -137,8 +141,8 @@ function branchLoop(branch, program, currNode){
 /**
  * Verifies if a rule or data elem is valid based on it option value
  * If the rule passes, the resulting node is added to the given node (currNode)
- * elemOption is a list of the elem to try, it's option (int) and if the option
- * is 4, another elem (for negation rules)
+ * elemOption is a list of the elem to try and it's option (int)
+ * if the option is 4, another ref is in the list (the negation rules)
  * @param {[Elem, Int, Elem]} elemOption
  * @param {Program} program 
  * @param {function ruleFunc([Elem, Int, Elem], Program, Node) {}} ruleFunc 
@@ -182,7 +186,7 @@ function manageOption(elemOption, program, ruleFunc, currNode){
       }
       break;
 
-    case 3 : // any number
+    case 3 : // 0 or more 
       if (!passRule){
         program.cursor = cursorStart;
       } else {
