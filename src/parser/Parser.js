@@ -25,7 +25,9 @@ import { branch, data, rule, ref, Elem } from "./Elem.js";
  *  nonterm 	→ 	alt1 | alt2 | … | altn
 */
 
-let rulesObject = new Rules();
+let rulesObject = new Rules(); // Haskell parsing rules
+let fails = {}; // optimisation dictionnary to not try a rule we know failed
+                // at a certain index in the program
 
 const printDebug = true;
 let space = 0;
@@ -62,8 +64,6 @@ function mainLoop(program,){
   }
 }
 
-// for the moment, no rules accepts the input fully
-
 /**
  * Tests all the branches until it finds one that matches.
  * If so the tokens created by the branch will be added to the current node.
@@ -76,6 +76,9 @@ function mainLoop(program,){
  * @returns {Boolean}
  */
 function ruleLoop(rule, program, currNode){
+  if (didItFail(rule.value, program.cursor)){
+    return false;
+  }
   debug(2,'ruleloop', rule.value);
   for (let i = 0; i < rule.childs.length; i ++){
     let branch = rule.childs[i];
@@ -86,6 +89,7 @@ function ruleLoop(rule, program, currNode){
       return true;
     }
   }
+  updateFails(rule.value, program.cursor);
   debug(4,'ruleloop false', rule.value);  
   return false;
 }
@@ -266,6 +270,25 @@ function debug(col, text, val){
   if(printDebug){
     console.log('%s\x1b[3' + col + 'm%s\x1b[0m', " ".repeat(space), text, val);
   }
+}
+
+/** TODO
+ * 
+ * @param {*} ruleName 
+ * @param {*} index 
+ */
+function updateFails(ruleName,index){
+  fails[ruleName+index] = false;
+}
+
+/** TODO
+ * 
+ * @param {*} ruleName 
+ * @param {*} index 
+ * @returns 
+ */
+function didItFail(ruleName, index){
+  return (ruleName + index) in fails;
 }
 
 // simple test
