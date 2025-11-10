@@ -1161,9 +1161,7 @@ export class Rules {
           [ref("exp"), 1]
         ]), 0]
         [data(".."), 1],
-        [branch([
-          [ref("exp"), 1]
-        ]), 0],
+        [ref("exp"), 1],
         [data("]"), 1]
       ]),
       branch([
