@@ -1,7 +1,8 @@
 import { Program } from './Program.js'
 import { tokenize }from './lexer/Lexer.js'
 import { parse } from './parser/Parser.js'
-import { Token } from "./Token.js";
+import { Token, tokenToNode } from "./Token.js";
+import { Node, compressTree } from './Node.js';
 
 
 import { readdir, readFile } from 'fs/promises';
@@ -96,7 +97,8 @@ function showTokens(tokens){
 
 function showAST(ast){
   console.log("AST :");
-  console.log(JSON.stringify(ast, null, 1));
+  compressTree(ast);
+  console.log(JSON.stringify(ast , null, 1));
 }
 
 main()

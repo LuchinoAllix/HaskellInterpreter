@@ -57,3 +57,24 @@ export class Node {
 export function mtNode(type){
   return new Node(type, null, null, null, []);
 }
+
+/**
+ * Permet de compresser un arbre, si un noeud ne possède qu'un seul enfant,
+ * cet enfant le remplace.
+ * @param {Node} node 
+ * @returns {Node} 
+ */
+export function compressTree(node) {
+  if (!node || !node.childs) return node;
+
+  // D'abord, on compresse récursivement tous les enfants
+  node.childs = node.childs.map(compressTree).filter(Boolean);
+
+  // Si le noeud n'a qu'un seul enfant, on le remplace par cet enfant
+  if (node.childs.length === 1) {
+    return node.childs[0];
+  }
+
+  // Sinon, on garde le noeud tel quel
+  return node;
+}
