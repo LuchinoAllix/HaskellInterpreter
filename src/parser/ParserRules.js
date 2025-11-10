@@ -95,7 +95,6 @@ export class Rules {
       qop: rule("qop"),
       gconsym: rule("gconsym"),
       interactive: rule("interactive"),
-      top_stmt: rule("top_stmt"),
       literal: rule("literal")
     };
   }
@@ -128,7 +127,7 @@ export class Rules {
      *       | '{' interactive '}' // added rule to be ghci-like 
      * ------------------------- */
     this.rules.body.childs = [
-      /*
+      /*  commented out to only try ghci like expressions
       branch([
         [data("{"), 1],
         [ref("impdecls"), 1],
@@ -149,28 +148,17 @@ export class Rules {
       */
       branch([
         [data("{"), 1], 
-        [ref("lexp"), 1], // fixme marche avec lexp mais pas interactive
+        [ref("interactive"), 1],
         [data("}"), 1]
       ])
     ];
 
     /** ------------------------- // added rule to be ghci-like
-     * interactive -> top_stmt | exp
+     * interactive -> lexp | exp
      * ------------------------- */
     this.rules.interactive.childs = [
-      branch([[ref("top_stmt"),1]]),
+      branch([[ref("lexp"),1]]),
       branch([[ref("exp"),1]])
-    ];
-
-    /** ------------------------- // added rule to be ghci-like
-     * top_stmt -> 'let' decls | decl
-     * ------------------------- */
-    this.rules.top_stmt.childs = [
-      branch([
-        [data("let"),1],
-        [ref("decls"),1],
-      ]),
-      branch([[ref("decl"),1]])
     ];
 
     /** -------------------------
