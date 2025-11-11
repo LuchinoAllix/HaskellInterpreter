@@ -260,10 +260,12 @@ function dataLoop(elem, program, currNode){
      (elem.type === "tokentype" && elem.value === token.type)){ 
     program.incCursor();
     currNode.addChild(tokenToNode(token));
-    debug(3,'dataloop true', elem.value);
+    debug(3,'dataloop true', elem.value + " ===  " + token.value 
+                                        + " (" + token.type + ")");
     return true;
   }
-  debug(5,'dataloop false', elem.value + " !== " + token.value);
+  debug(5,'dataloop false', elem.value + " !== " + token.value 
+                                        + " (" + token.type+")");
   return false;
 }
 
