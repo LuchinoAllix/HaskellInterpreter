@@ -520,15 +520,15 @@ export class Rules {
         [branch([
           [ref("context"), 1],
           [data("=>"), 1]
-        ]), 0]
-        [ref("type"), 1],
+        ]), 0],
+        [ref("type"), 1]
       ]),
       branch([
         [ref("fixity"), 1], 
         [tokentype("integer"), 0], 
         [ref("ops"), 1]
       ]),
-      //branch([])
+      //branch([]) FIXME : normal que ceci soit commenté ?
     ];
     
     /** -------------------------
@@ -567,7 +567,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * type -> btype [-> type]                                   (function type) 
+     * type -> btype ['->' type]                                 (function type) 
      * ------------------------- */
     this.rules.type.childs = [
       branch([
@@ -624,7 +624,12 @@ export class Rules {
      *                        // tokenized 
      * ------------------------- */
     this.rules.gtycon.childs = [
-      branch([[tokentype("Qtycon"), 1]]),
+      branch([[tokentype("Qconid"), 1]]), //branch([[tokentype("Qtycon"), 1]]),
+                                          // commented line is the actual rule
+                                          // but changed for testing the rules
+                                          // that ar not called in the lexer
+                                          // need to find permanent solution
+
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([[data("(->)"), 1]]),
