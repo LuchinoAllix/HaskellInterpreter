@@ -127,7 +127,6 @@ export class Rules {
      *       | '{' interactive '}' // added rule to be ghci-like 
      * ------------------------- */
     this.rules.body.childs = [
-      /*  commented out to only try ghci like expressions
       branch([
         [data("{"), 1],
         [ref("impdecls"), 1],
@@ -145,7 +144,6 @@ export class Rules {
         [ref("topdecls"), 1], 
         [data("}"), 1]
       ]),
-      */
       branch([
         [data("{"), 1], 
         [ref("interactive"), 1],
