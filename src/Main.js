@@ -72,6 +72,7 @@ async function testFile(file_path) {
         console.log("Unsuccessful parsing :( ");
       }
       showAST(program.AST);
+      return program.AST;
 
     } catch (error) {
       console.log("Error while parsing :");
