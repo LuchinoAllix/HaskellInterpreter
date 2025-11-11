@@ -29,7 +29,7 @@ let rulesObject = new Rules(); // Haskell parsing rules
 let fails = {}; // optimisation dictionnary to not try a rule we know failed
                 // at a certain index in the program
 
-const printDebug = true;
+let printDebug = false;
 let space = 0;
 
 /**
@@ -302,6 +302,13 @@ function updateFails(ruleName,index){
  */
 function didItFail(ruleName, index){
   return (ruleName + index) in fails;
+}
+
+/**
+ * TODO
+ */
+export function activateDebug(){
+  printDebug = true;
 }
 
 // simple test
