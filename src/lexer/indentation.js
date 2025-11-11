@@ -86,11 +86,11 @@ function ApplyRule2(program){
  * @returns {Integer} Number of elements to skip in list of tokens
  */
 function ApplyRule3(program, index){
-  if (index < program.tokens.length-1 && 
-      program.tokens[index].line !== program.tokens[index+1].line && 
-      program.tokens[index+1].column > 1){
-    var indent = program.tokens[index+1].column;
-    program.tokens.splice(index+1, 0, Token.new("R3", "<" + indent + ">"));
+  if (index > 1 && index < program.tokens.length-1 &&
+      program.tokens[index].line !== program.tokens[index-1].line &&
+      program.tokens[index].column > 0){
+    var indent = program.tokens[index].column ;
+    program.tokens.splice(index, 0, Token.new("R3", "<" + indent + ">"));
     return 1;
   }
   return 0;
