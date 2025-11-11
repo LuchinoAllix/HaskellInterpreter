@@ -11,16 +11,18 @@ import {writeFileSync } from 'fs';
 
 
 /**
- * # FIXME : Change order of evaluation to make sure it happens sequentially
  * Main function to test Parser
+ * Does not check if an option is given twice, but not really important
  */
 async function main(){
   
   let pathToFile = process.argv[2];
-  const args = process.argv.slice(3); // enlève "node", "Main.js" et "TestPath"
+  const args = process.argv.slice(3); // removes "node", "Main.js" and 
+                                      // "pathToFile"
 
   if (args.length > 7) {
     printOptions();
+    return ;
   }
 
   let printAST = false;
@@ -65,7 +67,7 @@ async function main(){
 
 
 /**
- * TODO
+ * Prints all the options to execute the code
  */
 function printOptions(){
   console.log(
@@ -82,13 +84,13 @@ function printOptions(){
 }
 
 /**
- * TODO
- * @param {*} file_path 
- * @param {*} printTokens 
- * @param {*} printAST 
- * @param {*} debug 
- * @param {*} nosave 
- * @param {*} der 
+ * Tests a file according to the options specified
+ * @param {String} file_path the path of the file to test
+ * @param {Boolean} printTokens to print the tokens to the console
+ * @param {Boolean} printAST to print the AST to the console
+ * @param {Boolean} debug to show the rules taken by the parser
+ * @param {Boolean} nosave to not save the newly generated AST
+ * @param {Boolean} der show derivative tree instead of AST
  */
 async function testFile(file_path, printTokens, printAST, debug, nosave, der){
   try {
@@ -152,7 +154,7 @@ async function testFile(file_path, printTokens, printAST, debug, nosave, der){
 }
 
 /**
- * Prints on the console all the tokens in a single line
+ * Prints on the console all the tokens, one by line
  * @param {Token} tokens 
  */
 function showTokens(tokens){
@@ -163,7 +165,7 @@ function showTokens(tokens){
 }
 
 /**
- * 
+ * Prints to the console the ast with stringify
  * @param {Node} ast 
  */
 function showAST(ast){
