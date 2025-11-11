@@ -29,8 +29,8 @@ let rulesObject = new Rules(); // Haskell parsing rules
 let fails = {}; // optimisation dictionnary to not try a rule we know failed
                 // at a certain index in the program
 
-let printDebug = false;
-let space = 0;
+let printDebug = false; // for debug, edited in activateDebug
+let space = 0;          // indentation used in debug print
 
 /**
  * Allows to transform a list of tokens to an AST
