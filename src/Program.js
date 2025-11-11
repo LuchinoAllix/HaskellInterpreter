@@ -1,7 +1,6 @@
 //--  File containing Program object used for lexing and parsing  --//
 
 import { Token } from "./Token.js";
-import { Node } from "./Node.js";
 
 export class Program {
 

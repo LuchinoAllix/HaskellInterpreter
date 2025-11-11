@@ -2,7 +2,7 @@ import { Program } from "../Program.js";
 import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../Node.js";
 import { Rules } from "./ParserRules.js";
-import { Token, tokenToNode } from "../Token.js";
+import { tokenToNode } from "../Token.js";
 import { Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//
@@ -305,35 +305,9 @@ function didItFail(ruleName, index){
 }
 
 /**
- * TODO
+ * Sets printDebug to true, used in TestFile.
  */
 export function activateDebug(){
   printDebug = true;
 }
 
-// simple test
-function test(){
-  let prog = new Program("");
-  prog.tokens = [Token.new("test","do"), 
-                 Token.new("test","{"), 
-                 Token.new("test","a"),
-                 Token.new("test","}")];
-  mainLoop(prog);
-  console.log(JSON.stringify(prog, null, 4));
-
-  /*
-  prog = new Program("");
-  prog.tokens = [Token.new("test","do"), 
-                 Token.new("test","{"), 
-                 Token.new("test","a"),
-                 Token.new("test","}"),
-                 Token.new("test","::"),
-                 Token.new("test","context"),
-                 Token.new("test","=>")];
-  mainLoop(prog);
-  console.log(JSON.stringify(prog, null, 4));
-  */
-
-}
-
-//test();
