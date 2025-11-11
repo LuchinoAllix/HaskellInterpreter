@@ -6,5 +6,13 @@
 
 [Peggy](https://peggyjs.org/documentation.html#grammar-syntax-and-semantics)
 
-To launch the from scratch with all tests : `node Main.js`
-To launch the from scratch with a specific test : `node Main.js pathToTest.file`
+
+Usage:
+  `node Main.js <pathToTestFile> [options]`
+
+Options :
+   `--Tokens`      shows the list of token after lexing  <br>
+  `--AST`         shows the AST after parsing <br>
+  `--Debug`       shows the rules took whilst parsing <br>
+  `--nosave`      doesn't save the AST after parsing <br>
+  `--derivative`  shows/saves the derivative tree instead of the AST <br>
