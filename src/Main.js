@@ -3,52 +3,100 @@ import { tokenize }from './lexer/Lexer.js'
 import { parse } from './parser/Parser.js'
 import { Token, tokenToNode } from "./Token.js";
 import { Node, compressTree } from './Node.js';
+import { activateDebug } from './parser/Parser.js';
 
 
 import { readdir, readFile } from 'fs/promises';
+import {writeFileSync } from 'fs';
 import { extname, join } from 'path';
 
-const test_folder = '../tests';
 
 /**
  * # FIXME : Change order of evaluation to make sure it happens sequentially
  * Main function to test Parser
  */
 async function main(){
-  switch (process.argv.length){
+  
+  let pathToFile = process.argv[2];
+  const args = process.argv.slice(3); // enlève "node", "Main.js" et "TestPath"
 
-    // test all files
-    case 2 :
-      const files = await readdir(test_folder);
-      for (const file of files) {
-        if (extname(file) === '.hs') {
-          testFile(join(test_folder, file));
-        }
-      }
-      break;
-
-    // test a single file
-    case 3 :
-      testFile(process.argv[2]);
-      break;
-
-    default :
-      console.log("Wrong number of arguments, usage :" + 
-                  "\n\t<Node Main.js> \t\t\tto test all files in /tests, or " + 
-                  "\n\t<Node Main.js pathToFile> \tto test a specific file");
+  if (args.length > 7) {
+    printOptions();
   }
+
+  let printAST = false;
+  let printDebug = false;
+  let nosave = false;
+  let printTokens = false;
+  let derivative = false;
+
+  // Parcourt tous les arguments restants pour voir les options
+  for (const arg of args) {
+    switch (arg){
+      case "--Tokens" :
+        printTokens = true;
+        break;
+
+      case "--AST" :
+        printAST = true;
+        break;
+
+      case "--Debug" :
+        printDebug = true;
+        break;
+
+      case "--nosave" :
+        nosave = true;
+        break;
+
+      case "--derivative" :
+        derivative = true;
+        break;
+
+      default :
+        console.log("\nArgument specified unrecognised : ", arg);
+        printOptions();
+        return ;
+    }
+  }
+
+  testFile(pathToFile, printTokens, printAST, printDebug, nosave, derivative);
+
+}
+
+
+/**
+ * TODO
+ */
+function printOptions(){
+  console.log(
+      "\nUsage:\n" +
+      "  node Main.js <pathToTestFile> [options]\n\n" +
+
+      "Options :\n" +
+      "  --Tokens      shows the list of token after lexing\n" +
+      "  --AST         shows the AST after parsing\n" +
+      "  --Debug       shows the rules took whilst parsing\n" +
+      "  --nosave      doesn't save the AST after parsing\n" +
+      "  --derivative  shows/saves the derivative tree instead of the AST\n" 
+    );
 }
 
 /**
- * Function to test a specific file
- * @param {String} file_path 
+ * TODO
+ * @param {*} file_path 
+ * @param {*} printTokens 
+ * @param {*} printAST 
+ * @param {*} debug 
+ * @param {*} nosave 
+ * @param {*} der 
  */
-async function testFile(file_path) {
+async function testFile(file_path, printTokens, printAST, debug, nosave, der){
   try {
     const content = await readFile(file_path, 'utf8');
     const program = new Program(content);
     console.log("\nTest file : " + file_path);
-    console.log("Input : " + program.input);
+    console.log("Input : \n" + program.input);
 
     try {
       if (tokenize(program)){
@@ -56,23 +104,42 @@ async function testFile(file_path) {
       } else {
         console.log("Unsuccessful tokenization :( ");
       }
-      showTokens(program.tokens);
+
+      if(printTokens){
+        showTokens(program.tokens);
+      }
 
     } catch (error) {
       console.log("Error while tokenization :");
       showTokens(program.tokens);
       console.error(error);
-      return 
     }
 
     try {
+      if (debug){
+        activateDebug();
+      }
+
       if (parse(program)){
         console.log("Successful parsing :) ");
+        
       } else {
         console.log("Unsuccessful parsing :( ");
       }
-      showAST(program.AST);
-      return program.AST;
+
+      if (!der){
+        compressTree(program.AST);
+      }
+
+      if (printAST){
+        showAST(program.AST);
+      }
+
+      if (!nosave){
+        writeFileSync("../visualisation/ast.json", 
+                         JSON.stringify(program.AST, null, 2));
+        console.log("AST saved to ast.json");
+      }
 
     } catch (error) {
       console.log("Error while parsing :");
@@ -96,9 +163,9 @@ function showTokens(tokens){
   }
 }
 
+
 function showAST(ast){
   console.log("AST :");
-  compressTree(ast);
   console.log(JSON.stringify(ast , null, 1));
 }
 
