@@ -52,9 +52,9 @@ function getVarid(program){
 
     // to verify that the var id is not a reserved id 
     if (HS_reservdid.includes(program.tokens[program.tokens.length-1].value)){
-        program.tokens.pop();
-        program.setIndex(startIndex);
-        return false;
+      program.tokens.pop();
+      program.setIndex(startIndex);
+      return false;
     }
     return true;
   }
