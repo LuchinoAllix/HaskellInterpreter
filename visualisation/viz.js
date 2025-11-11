@@ -6,7 +6,7 @@ import { Program } from "../src/Program.js";
 // AI generated code for visualizing the parsing result
 
 window.addEventListener("DOMContentLoaded", () => {
-  const prog = new Program("fact n = n + fact n - 1");
+  const prog = new Program("fact 0 = 1 ; fact n = n * fact n - 1");
   tokenize(prog);
   parse(prog);
   compressTree(prog.AST);
