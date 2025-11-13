@@ -159,6 +159,9 @@ function bigL(tokens, stack){
   else if (tokens.length > 0 && stack.length > 0){
     if (false){
       // # TODO figure out m ∕= 0 and parse-error(t)
+      // FIXME : there should be a '}' after the "in" token, should come from
+      // the parse error function, should check that there is not any excess '}'
+      // at the end
     } else {
       return [tokens[0]].concat(bigL(tokens.slice(1), stack));
     }
