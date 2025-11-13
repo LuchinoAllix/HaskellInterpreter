@@ -255,11 +255,19 @@ function dataLoop(elem, program, currNode){
   let token = program.getToken();
   if (token === undefined) {
     return false; // FIXME : this should not happen (yet it does)
-  } 
-  if((elem.type === "data" && elem.value === token.value) || 
-     (elem.type === "tokentype" && elem.value === token.type)){ 
+  }
+  let pass = elem.type === "data" && elem.value === token.value;
+  let node = tokenToNode(token);
+  if(!pass && elem.type === "tokentype") {
+    let newType = verifyAmbi(elem, token);
+    if (newType !== null){
+      node.type = newType;
+      pass = true;
+    }
+  }
+  if (pass){
     program.incCursor();
-    currNode.addChild(tokenToNode(token));
+    currNode.addChild(node);
     debug(3,'dataloop true', elem.value + " ===  " + token.value 
                                         + " (" + token.type + ")");
     return true;
@@ -267,6 +275,23 @@ function dataLoop(elem, program, currNode){
   debug(5,'dataloop false', elem.value + " !== " + token.value 
                                         + " (" + token.type+")");
   return false;
+}
+
+/**
+ * Determines if 
+ * @param {Elem} elem data element
+ * @param {Token} token the token being analyse currently 
+ * @returns {String} the accepted type, null otherwise
+ */
+function verifyAmbi(elem, token){
+  if (elem.value === token.type){
+    return elem.value;
+  }
+  let alternatives = ["Tycls", "Qtycls", "Qtycon","Qtyvar","Tycon"];
+  if (alternatives.includes(elem.value)){
+    return elem.value;
+  }
+  return null;
 }
 
 /** 
