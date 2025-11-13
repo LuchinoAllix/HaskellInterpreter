@@ -126,7 +126,8 @@ function getAny(program){
  */
 export function getGraphic(program){
   if (program.getChar() === "\"" || program.getChar() === "\'"){
-    program.addToken("" + program.getChar()); // # FIXME : find a better type name ?
+    program.addToken("" + program.getChar()); 
+                                    // # FIXME : find a better type name ?
     return true ;
   }
   return getSmall(program)
