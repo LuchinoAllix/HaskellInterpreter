@@ -88,7 +88,9 @@ function ApplyRule2(program){
 function ApplyRule3(program, index){
   if (index > 1 && index < program.tokens.length-1 &&
       program.tokens[index].line !== program.tokens[index-1].line &&
-      program.tokens[index].column > 0){
+      program.tokens[index].column > 0 &&
+      program.tokens[index-1].type !== "indentation R1"){ 
+        // no need to check for R2 since we start at index 1
     var indent = program.tokens[index].column ;
     program.tokens.splice(index, 0, Token.new("R3", "<" + indent + ">"));
     return 1;
