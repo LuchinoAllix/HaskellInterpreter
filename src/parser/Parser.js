@@ -253,9 +253,6 @@ function manageOption(elemOption, program, ruleFunc, currNode){
  */
 function dataLoop(elem, program, currNode){
   let token = program.getToken();
-  if (token === undefined) {
-    return false; // FIXME : this should not happen (yet it does)
-  }
   let pass = elem.type === "data" && elem.value === token.value;
   let node = tokenToNode(token);
   if(!pass && elem.type === "tokentype") {
