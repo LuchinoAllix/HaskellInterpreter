@@ -624,12 +624,7 @@ export class Rules {
      *                        // tokenized 
      * ------------------------- */
     this.rules.gtycon.childs = [
-      branch([[tokentype("Qtycon"), 1]]), //branch([[tokentype("Qtycon"), 1]]),
-                                          // commented line is the actual rule
-                                          // but changed for testing the rules
-                                          // that ar not called in the lexer
-                                          // need to find permanent solution
-
+      branch([[tokentype("Qtycon"), 1]]), 
       branch([[data("()"), 1]]),
       branch([[data("[]"), 1]]),
       branch([[data("(->)"), 1]]),
