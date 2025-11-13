@@ -278,9 +278,19 @@ function dataLoop(elem, program, currNode){
 }
 
 /**
- * Determines if 
+ * Determines if the there is a compatibility between the type of the rule
+ * (elem) being tested and the token currently analysed. This is requiered
+ * because some lexing rules are never called and the type of an element can
+ * only be determined in the parsing.
+ * For the moment it just tests any known tokens types that could be replaced,
+ * there is only Qconid presently but futher analysis of the lexing rules might
+ * yield some more.
+ * There is no "logic" as to which alternative is actually right, it just tests
+ * if it's a rule that could be changed. A little like :
+ * Parser says we need x alternative, did lexer give problematic ? If so switch
+ * happens.
  * @param {Elem} elem data element
- * @param {Token} token the token being analyse currently 
+ * @param {Token} token the token being analysed currently 
  * @returns {String} the accepted type, null otherwise
  */
 function verifyAmbi(elem, token){
@@ -288,7 +298,11 @@ function verifyAmbi(elem, token){
     return elem.value;
   }
   let problematic = ["Qconid"];
-  let alternatives = ["Tycls", "Qtycls", "Qtycon","Qtyvar","Tycon"];
+  // list of elements that could be something else
+  
+  let alternatives = ["Tycls", "Qtycls", "Qtycon","Qtyvar","Tycon"]; 
+  // list of elements that could replace rules that are not called in the lexer
+
   if (problematic.includes(token.type) && alternatives.includes(elem.value)){
     return elem.value;
   }
