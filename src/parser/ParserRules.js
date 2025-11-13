@@ -303,7 +303,7 @@ export class Rules {
         [ref("export_1"), 0]
       ]),
       branch([
-        [data("tycls"), 1],
+        [tokentype("Tycls"), 1], // fixme
         [ref("import_1"), 0]
       ])
     ];
@@ -398,7 +398,7 @@ export class Rules {
           [ref("scontext"), 0],
           [data("=>"), 1]
         ]), 0]
-        [data("tycls"), 1],
+        [tokentype("Tycls"), 1],
         [tokentype("Tyvar"), 1],
         [branch([
           [data("where"), 1],
