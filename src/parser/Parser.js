@@ -268,7 +268,7 @@ function dataLoop(elem, program, currNode){
   if (pass){
     program.incCursor();
     currNode.addChild(node);
-    debug(3,'dataloop true', elem.value + " ===  " + token.value 
+    debug(3,'dataloop true', elem.value + " === " + token.value 
                                         + " (" + token.type + ")");
     return true;
   }
@@ -287,8 +287,9 @@ function verifyAmbi(elem, token){
   if (elem.value === token.type){
     return elem.value;
   }
+  let problematic = ["Qconid"];
   let alternatives = ["Tycls", "Qtycls", "Qtycon","Qtyvar","Tycon"];
-  if (alternatives.includes(elem.value)){
+  if (problematic.includes(token.type) && alternatives.includes(elem.value)){
     return elem.value;
   }
   return null;

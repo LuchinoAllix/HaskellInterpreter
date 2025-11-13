@@ -63,7 +63,7 @@
                           "childs": null
                         },
                         {
-                          "type": "Qconid",
+                          "type": "Qtycon",
                           "value": "Int",
                           "line": 0,
                           "column": 9,
@@ -86,7 +86,7 @@
                       "childs": null
                     },
                     {
-                      "type": "Qconid",
+                      "type": "Qtycon",
                       "value": "Int",
                       "line": 0,
                       "column": 17,
