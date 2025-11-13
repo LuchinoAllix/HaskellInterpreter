@@ -118,14 +118,14 @@
                     {
                       "type": "Qvarid",
                       "value": "sum",
-                      "line": 2,
+                      "line": 1,
                       "column": 1,
                       "childs": null
                     },
                     {
                       "type": "Special",
                       "value": "[]",
-                      "line": 2,
+                      "line": 1,
                       "column": 5,
                       "childs": null
                     }
@@ -140,14 +140,14 @@
                     {
                       "type": "reservdop",
                       "value": "=",
-                      "line": 2,
+                      "line": 1,
                       "column": 8,
                       "childs": null
                     },
                     {
                       "type": "integer",
                       "value": "0",
-                      "line": 2,
+                      "line": 1,
                       "column": 10,
                       "childs": null
                     }
@@ -177,7 +177,7 @@
                     {
                       "type": "Qvarid",
                       "value": "sum",
-                      "line": 4,
+                      "line": 2,
                       "column": 1,
                       "childs": null
                     },
@@ -190,35 +190,35 @@
                         {
                           "type": "Special",
                           "value": "(",
-                          "line": 4,
+                          "line": 2,
                           "column": 5,
                           "childs": null
                         },
                         {
                           "type": "Qvarid",
                           "value": "head",
-                          "line": 4,
+                          "line": 2,
                           "column": 6,
                           "childs": null
                         },
                         {
                           "type": "Special",
                           "value": ",",
-                          "line": 4,
+                          "line": 2,
                           "column": 10,
                           "childs": null
                         },
                         {
                           "type": "Qvarid",
                           "value": "rest",
-                          "line": 4,
+                          "line": 2,
                           "column": 12,
                           "childs": null
                         },
                         {
                           "type": "Special",
                           "value": ")",
-                          "line": 4,
+                          "line": 2,
                           "column": 16,
                           "childs": null
                         }
@@ -235,7 +235,7 @@
                     {
                       "type": "reservdop",
                       "value": "=",
-                      "line": 4,
+                      "line": 2,
                       "column": 18,
                       "childs": null
                     },
@@ -248,14 +248,14 @@
                         {
                           "type": "Qvarid",
                           "value": "head",
-                          "line": 4,
+                          "line": 2,
                           "column": 20,
                           "childs": null
                         },
                         {
                           "type": "Qvarsym",
                           "value": "+",
-                          "line": 4,
+                          "line": 2,
                           "column": 25,
                           "childs": null
                         },
@@ -268,14 +268,14 @@
                             {
                               "type": "Qvarid",
                               "value": "sum",
-                              "line": 4,
+                              "line": 2,
                               "column": 27,
                               "childs": null
                             },
                             {
                               "type": "Qvarid",
                               "value": "rest",
-                              "line": 4,
+                              "line": 2,
                               "column": 31,
                               "childs": null
                             }
