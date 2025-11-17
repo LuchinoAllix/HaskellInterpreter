@@ -10,9 +10,9 @@
 Usage:
   `node Main.js <pathToTestFile> [options]`
 
-Options :
-   `--Tokens`      shows the list of token after lexing  <br>
-  `--AST`         shows the AST after parsing <br>
-  `--Debug`       shows the rules took whilst parsing <br>
-  `--nosave`      doesn't save the AST after parsing <br>
-  `--derivative`  shows/saves the derivative tree instead of the AST <br>
+Options :<br>
+  -  `--Tokens` shows the list of token after lexing
+  - `--AST` shows the AST after parsing
+  - `--Debug` shows the rules took whilst parsing
+  - `--nosave` doesn't save the AST after parsing
+  - `--derivative` shows/saves the derivative tree instead of the AST
