@@ -17,17 +17,20 @@ export class Token {
     this.line = line;
     this.column = column;
   }
+}
 
-  /**
-   * "Override" of constructor for indentation type
-   * Note : maybe new is not a smart name since it's a reserved word
-   * @param {String} type 
-   * @param {String} value 
-   * @returns 
-   */
-  static new(type, value){
-    return new Token("indentation " + type, value,  -1, -1);
+
+/**
+ * "Override" of constructor for layout type
+ * @param {String} type 
+ * @param {String} value 
+ * @returns {Token}
+ */
+export function newLayoutToken(value, type){
+  if (arguments.length === 1){
+    return new Token("layout", value,  -1, -1);
   }
+  return new Token("layout " + type, value,  -1, -1);
 }
 
 /**

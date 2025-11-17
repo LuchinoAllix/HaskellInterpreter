@@ -1,4 +1,4 @@
-import { Token } from "../Token.js";
+import { Token, newLayoutToken } from "../Token.js";
 
 //--    File containing functions to make the program layout insensitive    --//
 
@@ -41,12 +41,12 @@ function ApplyRule1(program, index){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
         var indent = program.tokens[index+1].column;
-        program.tokens.splice(index+1, 0, Token.new("R1", 
-                                                    "{" + indent + "}"));
+        program.tokens.splice(index+1, 0, newLayoutToken("{" + indent + "}", 
+                                                         "R1"));
         return 2 // (larger offset to avoid collision between R1 and R3)
       }
     } else { // end of file reached
-      program.tokens.splice(index+1, 0, Token.new("R1", "{0}"));
+      program.tokens.splice(index+1, 0, newLayoutToken("{0}", "R1"));
       return 1;
     }
   }
@@ -65,8 +65,8 @@ function ApplyRule2(program){
   if (program.tokens.length > 0){
     if (program.tokens[0].value !== "module" && 
         program.tokens[0].value !== "{"){
-      program.tokens.splice(0, 0, Token.new("R2", 
-                                        "{" + program.tokens[0].column + "}"));
+      program.tokens.splice(0, 0, newLayoutToken( 
+        "{" + program.tokens[0].column + "}", "R2"));
     }
   }
 }
@@ -89,10 +89,10 @@ function ApplyRule3(program, index){
   if (index > 1 && index < program.tokens.length-1 &&
       program.tokens[index].line !== program.tokens[index-1].line &&
       program.tokens[index].column > 0 &&
-      program.tokens[index-1].type !== "indentation R1"){ 
+      program.tokens[index-1].type !== "layout R1"){ 
         // no need to check for R2 since we start at index 1
     var indent = program.tokens[index].column ;
-    program.tokens.splice(index, 0, Token.new("R3", "<" + indent + ">"));
+    program.tokens.splice(index, 0, newLayoutToken("<" + indent + ">", "R3"));
     return 1;
   }
   return 0;
@@ -123,7 +123,7 @@ function bigL(tokens, stack){
   // | L (< n >: ts) (m : ms) 
   // | L (< n >: ts) ms 
   if (tokens.length > 0 && 
-      tokens[0].type === "indentation R3" && 
+      tokens[0].type === "layout R3" && 
       stack.length > 0){
     return bigLR3(tokens, stack);
   } 
@@ -132,8 +132,8 @@ function bigL(tokens, stack){
   // | L ({n} : ts) []
   // | L ({n} : ts) ms 
   else if (tokens.length > 0 && 
-           (tokens[0].type === "indentation R2" || 
-            tokens[0].type === "indentation R1")){
+           (tokens[0].type === "layout R2" || 
+            tokens[0].type === "layout R1")){
     return bigLR2(tokens, stack);           
   }
   
@@ -141,8 +141,8 @@ function bigL(tokens, stack){
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0] === 0){
-      return [Token.new("L","}")].concat(bigL(tokens.slice(1), 
-                                              stack.splice(-1,1)));
+      return [newLayoutToken("}")].concat(bigL(tokens.slice(1), 
+                                               stack.splice(-1,1)));
     } else {
       throw new Error("Parse error bigL (note 3");
     }
@@ -150,8 +150,8 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
-    return [Token.new("bigL","}")].concat(bigL(tokens.slice(1),
-                                               [0].concat(stack)));
+    return [newLayoutToken("}")].concat(bigL(tokens.slice(1),
+                                             [0].concat(stack)));
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
@@ -161,8 +161,8 @@ function bigL(tokens, stack){
     if (isNextTokenIn(tokens)){
       // add } before an "in" because grammar requires it but perhaps it is not
       // the only situation where this is required
-      return [Token.new("bigL", "}"), tokens[0]].concat(bigL(tokens.slice(1), 
-                                                             stack));
+      return [newLayoutToken("}"), tokens[0]].concat(bigL(tokens.slice(1), 
+                                                          stack));
       // # TODO figure out m ∕= 0 and parse-error(t)
     } else {
       return [tokens[0]].concat(bigL(tokens.slice(1), stack));
@@ -179,7 +179,7 @@ function bigL(tokens, stack){
     if (stack.length === 1){
       stack = [];
     }
-    return [Token.new("bigL", "}")].concat(bigL([], stack.splice(-1,1)));
+    return [newLayoutToken("}")].concat(bigL([], stack.splice(-1,1)));
   }
   
   else {
@@ -204,9 +204,9 @@ function bigLR3(tokens, stack){
   let m = stack[stack.length-1];
       
   if (m === n){ 
-    return [Token.new("bigL", ";")].concat(bigL(tokens.slice(1), stack));
+    return [newLayoutToken(";")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
-    return [Token.new("bigL", "}")].concat(bigL(tokens.slice(1), 
+    return [newLayoutToken("}")].concat(bigL(tokens.slice(1), 
                                              stack.splice(-1,1)));
   } else {
     return bigL(tokens.slice(1), stack);
@@ -229,14 +229,14 @@ function bigLR2(tokens, stack){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
-      return [Token.new("bigL", "{")].concat(bigL(tokens.slice(1), stack));
+      return [newLayoutToken("{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [Token.new("bigL", "{"), Token.new("bigL", "}")].concat(
-        bigL([Token.new("R3","<" + n + ">")].concat(tokens.slice(1)),
-             stack));
+      return [newLayoutToken("{"), newLayoutToken("}")].concat(
+        bigL([newLayoutToken("<" + n + ">", "R3")].concat(tokens.slice(1)),
+                                                          stack));
     }
   } else if (n > 0){
-    return [Token.new("bigL","{")].concat(bigL(tokens.slice(1), [n]));
+    return [newLayoutToken("{")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 
