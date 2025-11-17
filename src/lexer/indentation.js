@@ -150,7 +150,8 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
-    return [Token.new("bigL","}")].concat(bigL(tokens.slice(1),[0].concat(stack)));
+    return [Token.new("bigL","}")].concat(bigL(tokens.slice(1),
+                                               [0].concat(stack)));
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
