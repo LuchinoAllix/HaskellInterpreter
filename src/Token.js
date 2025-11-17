@@ -5,7 +5,7 @@ import { Node } from "./Node.js";
 export class Token {
 
   /**
-   * Constuctor for Token
+   * Constuctor for Token (a list of tokens is the result of lexing)
    * @param {String} type 
    * @param {String} value 
    * @param {Int} line 

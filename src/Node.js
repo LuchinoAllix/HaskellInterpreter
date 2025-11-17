@@ -3,7 +3,7 @@
 export class Node {
 
   /**
-   * Constructor for node
+   * Constructor for node (nodes are used to constitue a tree)
    * @param {String} type 
    * @param {String} value 
    * @param {Integer} line 
@@ -27,26 +27,6 @@ export class Node {
       this.childs.push(node);
     }
   }
-
-  /*
-   * 
-   * 
-  empty(){
-    if (this.childs.length === 0){
-      if (this.value !== null) {
-        return false;
-      }
-      return true;
-    }
-    for (let i = 0; i<this.childs.length; i++){
-      if (!this.childs[i].empty()){
-        return false;
-      }
-    }
-    return true;
-  }
-  
-  */
 }
 
 /**
