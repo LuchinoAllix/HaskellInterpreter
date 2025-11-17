@@ -159,6 +159,8 @@ function bigL(tokens, stack){
   // | L (t : ts) ms       = t  :  (L ts ms) 
   else if (tokens.length > 0 && stack.length > 0){
     if (isNextTokenIn(tokens)){
+      // add } before an "in" because grammar requires it but perhaps it is not
+      // the only situation where this is required
       return [Token.new("bigL", "}"), tokens[0]].concat(bigL(tokens.slice(1), 
                                                              stack));
       // # TODO figure out m ∕= 0 and parse-error(t)
