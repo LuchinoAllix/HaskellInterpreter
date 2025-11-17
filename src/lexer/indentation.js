@@ -257,9 +257,9 @@ function getNextNotIndentTokenIndex(tokens, i){
 }
 
 /**
- * TODO
+ * Returns true if the first element of the tokens list is "in"
  * @param {[Token]} tokens 
- * @returns 
+ * @returns {Boolean}
  */
 function isNextTokenIn(tokens){
   if (tokens.length >= 1){
