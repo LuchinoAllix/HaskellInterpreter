@@ -135,7 +135,7 @@ function bigL(tokens, stack){
            (tokens[0].type === "indentation R2" || 
             tokens[0].type === "indentation R1")){
     return bigLR2(tokens, stack);           
-  } 
+  }
   
   // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
   // | L (} : ts) ms        = parse-error     (Note 3) 
@@ -183,7 +183,9 @@ function bigL(tokens, stack){
   }
   
   else {
-    throw new Error("Pattern matching not exhaustive in bigL");
+    throw new Error("Pattern matching not exhaustive in bigL", 
+                    "tokens : ", JSON.stringify(tokens), 
+                    "stack : ", stack);
   }
 }
 
