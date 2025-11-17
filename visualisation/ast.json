@@ -18,272 +18,110 @@
           "childs": null
         },
         {
-          "type": "topdecls",
+          "type": "lexp",
           "value": null,
           "line": null,
           "column": null,
           "childs": [
             {
-              "type": "gendecl",
+              "type": "reservdid",
+              "value": "let",
+              "line": 0,
+              "column": 1,
+              "childs": null
+            },
+            {
+              "type": "decls",
+              "value": null,
+              "line": null,
+              "column": null,
+              "childs": [
+                {
+                  "type": "indentation bigL",
+                  "value": "{",
+                  "line": -1,
+                  "column": -1,
+                  "childs": null
+                },
+                {
+                  "type": "decl",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Qvarid",
+                      "value": "x",
+                      "line": 0,
+                      "column": 5,
+                      "childs": null
+                    },
+                    {
+                      "type": "rhs",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "reservdop",
+                          "value": "=",
+                          "line": 0,
+                          "column": 7,
+                          "childs": null
+                        },
+                        {
+                          "type": "integer",
+                          "value": "3",
+                          "line": 0,
+                          "column": 9,
+                          "childs": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "indentation bigL",
+                  "value": "}",
+                  "line": -1,
+                  "column": -1,
+                  "childs": null
+                }
+              ]
+            },
+            {
+              "type": "reservdid",
+              "value": "in",
+              "line": 0,
+              "column": 11,
+              "childs": null
+            },
+            {
+              "type": "infixexp",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
                 {
                   "type": "Qvarid",
-                  "value": "sum",
+                  "value": "x",
                   "line": 0,
-                  "column": 1,
+                  "column": 14,
                   "childs": null
                 },
                 {
-                  "type": "reservdop",
-                  "value": "::",
+                  "type": "Qvarsym",
+                  "value": "+",
                   "line": 0,
-                  "column": 5,
+                  "column": 16,
                   "childs": null
                 },
                 {
-                  "type": "type",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "atype",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "Special",
-                          "value": "[",
-                          "line": 0,
-                          "column": 8,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qtycon",
-                          "value": "Int",
-                          "line": 0,
-                          "column": 9,
-                          "childs": null
-                        },
-                        {
-                          "type": "Special",
-                          "value": "]",
-                          "line": 0,
-                          "column": 12,
-                          "childs": null
-                        }
-                      ]
-                    },
-                    {
-                      "type": "reservdop",
-                      "value": "->",
-                      "line": 0,
-                      "column": 14,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qtycon",
-                      "value": "Int",
-                      "line": 0,
-                      "column": 17,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "indentation bigL",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "funlhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Qvarid",
-                      "value": "sum",
-                      "line": 1,
-                      "column": 1,
-                      "childs": null
-                    },
-                    {
-                      "type": "Special",
-                      "value": "[]",
-                      "line": 1,
-                      "column": 5,
-                      "childs": null
-                    }
-                  ]
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 1,
-                      "column": 8,
-                      "childs": null
-                    },
-                    {
-                      "type": "integer",
-                      "value": "0",
-                      "line": 1,
-                      "column": 10,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "indentation bigL",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "funlhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Qvarid",
-                      "value": "sum",
-                      "line": 2,
-                      "column": 1,
-                      "childs": null
-                    },
-                    {
-                      "type": "apat",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "Special",
-                          "value": "(",
-                          "line": 2,
-                          "column": 5,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qvarid",
-                          "value": "head",
-                          "line": 2,
-                          "column": 6,
-                          "childs": null
-                        },
-                        {
-                          "type": "Special",
-                          "value": ",",
-                          "line": 2,
-                          "column": 10,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qvarid",
-                          "value": "rest",
-                          "line": 2,
-                          "column": 12,
-                          "childs": null
-                        },
-                        {
-                          "type": "Special",
-                          "value": ")",
-                          "line": 2,
-                          "column": 16,
-                          "childs": null
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 2,
-                      "column": 18,
-                      "childs": null
-                    },
-                    {
-                      "type": "infixexp",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "Qvarid",
-                          "value": "head",
-                          "line": 2,
-                          "column": 20,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qvarsym",
-                          "value": "+",
-                          "line": 2,
-                          "column": 25,
-                          "childs": null
-                        },
-                        {
-                          "type": "fexp",
-                          "value": null,
-                          "line": null,
-                          "column": null,
-                          "childs": [
-                            {
-                              "type": "Qvarid",
-                              "value": "sum",
-                              "line": 2,
-                              "column": 27,
-                              "childs": null
-                            },
-                            {
-                              "type": "Qvarid",
-                              "value": "rest",
-                              "line": 2,
-                              "column": 31,
-                              "childs": null
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+                  "type": "integer",
+                  "value": "3",
+                  "line": 0,
+                  "column": 18,
+                  "childs": null
                 }
               ]
             }
