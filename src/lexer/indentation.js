@@ -158,11 +158,10 @@ function bigL(tokens, stack){
   //                                               (Note 5)
   // | L (t : ts) ms       = t  :  (L ts ms) 
   else if (tokens.length > 0 && stack.length > 0){
-    if (false){
+    if (isNextTokenIn(tokens)){
+      return [Token.new("bigL", "}"), tokens[0]].concat(bigL(tokens.slice(1), 
+                                                             stack));
       // # TODO figure out m ∕= 0 and parse-error(t)
-      // FIXME : there should be a '}' after the "in" token, should come from
-      // the parse error function, should check that there is not any excess '}'
-      // at the end
     } else {
       return [tokens[0]].concat(bigL(tokens.slice(1), stack));
     }
@@ -253,5 +252,17 @@ function getNextNotIndentTokenIndex(tokens, i){
   } else {
     return i;
   }
+}
+
+/**
+ * TODO
+ * @param {[Token]} tokens 
+ * @returns 
+ */
+function isNextTokenIn(tokens){
+  if (tokens.length >= 1){
+    return (tokens[0].value === "in");
+  }
+  return false;
 }
 
