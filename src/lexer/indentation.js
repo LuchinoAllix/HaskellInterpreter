@@ -19,9 +19,13 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
+  console.log(program.tokens);
   program.tokens = bigL(program.tokens, []);
   return true;
 }
+
+// FIXME : add line indentation in lexing
+
 
 /**
  * Applies the rule 1 to the list of tokens. Returns an offset because we may
@@ -40,7 +44,7 @@ function ApplyRule1(program, index){
   if (r1_vars.includes(program.tokens[index].value)){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
-        var indent = program.tokens[index+1].column;
+        var indent = program.tokens[index+1].column; // fixme should be line indentation not tokens
         program.tokens.splice(index+1, 0, newLayoutToken("{" + indent + "}", 
                                                          "R1"));
         return 2 // (larger offset to avoid collision between R1 and R3)
@@ -114,6 +118,8 @@ function bigL(tokens, stack){
   // console.log("BigL");
 
   // Maj stack
+
+  // FIXME : not what the spec says
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
     stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
   } else if (tokens.length > 0 && tokens[0].value === '{'){
@@ -141,7 +147,7 @@ function bigL(tokens, stack){
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0] === 0){
-      return [newLayoutToken("}")].concat(bigL(tokens.slice(1), 
+      return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
                                                stack.splice(-1,1)));
     } else {
       throw new Error("Parse error bigL (note 3");
@@ -150,7 +156,7 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
-    return [newLayoutToken("}")].concat(bigL(tokens.slice(1),
+    return [newLayoutToken("}","2")].concat(bigL(tokens.slice(1),
                                              [0].concat(stack)));
   }
   
@@ -161,7 +167,7 @@ function bigL(tokens, stack){
     if (isNextTokenIn(tokens)){
       // add } before an "in" because grammar requires it but perhaps it is not
       // the only situation where this is required
-      return [newLayoutToken("}"), tokens[0]].concat(bigL(tokens.slice(1), 
+      return [newLayoutToken("}","3"), tokens[0]].concat(bigL(tokens.slice(1), 
                                                           stack));
       // # TODO figure out m ∕= 0 and parse-error(t)
     } else {
@@ -179,7 +185,7 @@ function bigL(tokens, stack){
     if (stack.length === 1){
       stack = [];
     }
-    return [newLayoutToken("}")].concat(bigL([], stack.splice(-1,1)));
+    return [newLayoutToken("}","4")].concat(bigL([], stack.splice(-1,1)));
   }
   
   else {
@@ -206,7 +212,7 @@ function bigLR3(tokens, stack){
   if (m === n){ 
     return [newLayoutToken(";")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
-    return [newLayoutToken("}")].concat(bigL(tokens.slice(1), 
+    return [newLayoutToken("}","5")].concat(bigL(tokens.slice(1), 
                                              stack.splice(-1,1)));
   } else {
     return bigL(tokens.slice(1), stack);
@@ -224,19 +230,24 @@ function bigLR3(tokens, stack){
  * @returns  
  */
 function bigLR2(tokens, stack){ 
-  let n = tokens[0].value.substring(1, tokens[0].value.length-1);
+  let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
+  if (n === NaN){
+    throw Error("Something other than an int ended up in indentation token : ", 
+                tokens[0]);
+  }
   if (stack.length > 0){
     let m = stack[stack.length-1];
     if (n > m){
       stack.push(n);
       return [newLayoutToken("{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      return [newLayoutToken("{"), newLayoutToken("}")].concat(
+      console.log("stack : ", stack);
+      return [newLayoutToken("{","6"), newLayoutToken("}","6")].concat(
         bigL([newLayoutToken("<" + n + ">", "R3")].concat(tokens.slice(1)),
                                                           stack));
     }
   } else if (n > 0){
-    return [newLayoutToken("{")].concat(bigL(tokens.slice(1), [n]));
+    return [newLayoutToken("{","7")].concat(bigL(tokens.slice(1), [n]));
   }
 }
 
