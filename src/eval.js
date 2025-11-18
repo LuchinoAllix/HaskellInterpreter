@@ -63,6 +63,10 @@ function evalLexp(node, env){
       return ;
     case "let" :
       // TODO
+      // copy env to make a local one
+      // add all delcs to local env
+      // evaluate exp with local env (print ?)
+      // "forget local env"
       return ;
     case "if" :
       // TODO
