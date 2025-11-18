@@ -1,0 +1,1 @@
+func a = if a == 0 then "zero" else "not zero"
