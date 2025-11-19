@@ -19,7 +19,7 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  console.log(program.tokens);
+  //console.log(program.tokens);
   program.tokens = bigL(program.tokens, []);
   return true;
 }
@@ -210,7 +210,7 @@ function bigLR3(tokens, stack){
   let m = stack[stack.length-1];
       
   if (m === n){ 
-    return [newLayoutToken(";")].concat(bigL(tokens.slice(1), stack));
+    return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
     return [newLayoutToken("}","5")].concat(bigL(tokens.slice(1), 
                                              stack.splice(-1,1)));
@@ -261,8 +261,8 @@ function bigLR2(tokens, stack){
 */
 function getNextNotIndentTokenIndex(tokens, i){
   if (i >= tokens.length){
-    throw new Error("No not indentation token found, index too high.");
-  } else if (tokens[i].type.startsWith("indentation")){
+    throw new Error("No indentation token found, index too high.");
+  } else if (tokens[i].type.startsWith("layout")){
     getNextNotIndentTokenIndex(tokens, i+1);
   } else {
     return i;
