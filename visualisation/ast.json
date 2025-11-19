@@ -11,69 +11,83 @@
       "column": null,
       "childs": [
         {
-          "type": "indentation bigL",
+          "type": "layout 7",
           "value": "{",
           "line": -1,
           "column": -1,
           "childs": null
         },
         {
-          "type": "lexp",
+          "type": "fexp",
           "value": null,
           "line": null,
           "column": null,
           "childs": [
             {
-              "type": "reservdid",
-              "value": "let",
-              "line": 0,
-              "column": 1,
-              "childs": null
-            },
-            {
-              "type": "decls",
+              "type": "aexp_",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
                 {
-                  "type": "indentation bigL",
-                  "value": "{",
-                  "line": -1,
-                  "column": -1,
+                  "type": "Special",
+                  "value": "(",
+                  "line": 0,
+                  "column": 1,
                   "childs": null
                 },
                 {
-                  "type": "decl",
+                  "type": "lexp",
                   "value": null,
                   "line": null,
                   "column": null,
                   "childs": [
                     {
+                      "type": "reservdop",
+                      "value": "\\",
+                      "line": 0,
+                      "column": 2,
+                      "childs": null
+                    },
+                    {
                       "type": "Qvarid",
                       "value": "x",
+                      "line": 0,
+                      "column": 3,
+                      "childs": null
+                    },
+                    {
+                      "type": "reservdop",
+                      "value": "->",
                       "line": 0,
                       "column": 5,
                       "childs": null
                     },
                     {
-                      "type": "rhs",
+                      "type": "infixexp",
                       "value": null,
                       "line": null,
                       "column": null,
                       "childs": [
                         {
-                          "type": "reservdop",
-                          "value": "=",
+                          "type": "Qvarid",
+                          "value": "x",
                           "line": 0,
-                          "column": 7,
+                          "column": 8,
+                          "childs": null
+                        },
+                        {
+                          "type": "Qvarsym",
+                          "value": "+",
+                          "line": 0,
+                          "column": 10,
                           "childs": null
                         },
                         {
                           "type": "integer",
-                          "value": "3",
+                          "value": "1",
                           "line": 0,
-                          "column": 9,
+                          "column": 12,
                           "childs": null
                         }
                       ]
@@ -81,54 +95,25 @@
                   ]
                 },
                 {
-                  "type": "indentation bigL",
-                  "value": "}",
-                  "line": -1,
-                  "column": -1,
-                  "childs": null
-                }
-              ]
-            },
-            {
-              "type": "reservdid",
-              "value": "in",
-              "line": 0,
-              "column": 11,
-              "childs": null
-            },
-            {
-              "type": "infixexp",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "x",
+                  "type": "Special",
+                  "value": ")",
                   "line": 0,
                   "column": 14,
                   "childs": null
-                },
-                {
-                  "type": "Qvarsym",
-                  "value": "+",
-                  "line": 0,
-                  "column": 16,
-                  "childs": null
-                },
-                {
-                  "type": "integer",
-                  "value": "3",
-                  "line": 0,
-                  "column": 18,
-                  "childs": null
                 }
               ]
+            },
+            {
+              "type": "integer",
+              "value": "2",
+              "line": 0,
+              "column": 16,
+              "childs": null
             }
           ]
         },
         {
-          "type": "indentation bigL",
+          "type": "layout 4",
           "value": "}",
           "line": -1,
           "column": -1,
