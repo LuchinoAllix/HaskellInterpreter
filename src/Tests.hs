@@ -4,105 +4,161 @@
 --------------------------------------------------------------------------------
 -- Test 0          : primitive
 -- Expected result : primitive
+
+--/
 +
+--/ 
 
 --------------------------------------------------------------------------------
 -- Test 1          : Integer
 -- Expected result : 42
+
+--/
 42
+--/
 
 --------------------------------------------------------------------------------
 -- Test 2          : String
 -- Expected result : "Hello World!"
+
+--/
 Hello World
+--/
 
 --------------------------------------------------------------------------------
 -- Test 3          : Boolean
 -- Expected result : False
+
+--/
 False
+--/
 
 --------------------------------------------------------------------------------
 -- Test 4          : Addition
 -- Expected result : 3
+
+--/
 1 + 2
+--/
 
 --------------------------------------------------------------------------------
 -- Test 5          : Substraction
 -- Expected result : -1
+
+--/
 1 - 2
+--/
 
 --------------------------------------------------------------------------------
 -- Test 6          : Multiplication
 -- Expected result : 42
+
+--/
 21 * 2
+--/
 
 --------------------------------------------------------------------------------
 -- Test 7          : Division
 -- Expected result : 21
+
+--/
 42 / 2
+--/
 
 --------------------------------------------------------------------------------
 -- Test 8          : Let
 -- Expected result : 1
+
+--/
 let x = 1 in x
+--/
 
 --------------------------------------------------------------------------------
 -- Test 9          : Let with addition
 -- Expected result : 6
+
+--/
 let x = 3 in x + 3
+--/
 
 --------------------------------------------------------------------------------
 -- Test 10         : Let with a string
 -- Expected result : 42
+
+--/
 let x = "hello world" in x
+--/
 
 --------------------------------------------------------------------------------
 -- Test 11         : function declaration
 -- Expected result : function
+
+--/
 add x y = x + y
+--/
 
 --------------------------------------------------------------------------------
 -- Test 12         : function declaration and call
 -- Expected result : 6
+
+--/
 mul a b = a * b
 mul mul 1 2 3
+--/
 
 --------------------------------------------------------------------------------
 -- Test 13         : Recursive function declaration
 -- Expected result : function
+
+--/
 fact 0 = 1 
 fact n = n * fact n - 1
+--/
 
 --------------------------------------------------------------------------------
--- Test 1          : Recursive function declaration and call
+-- Test 14         : Recursive function declaration and call
 -- Expected result : 3
+
+--/
 fib 0 = 0
 fib 1 = 1 
 fib a  = (fib a - 1) + (fib a - 2) 
 fib 3
+--/
 
 --------------------------------------------------------------------------------
--- Test 1          : Recursive function declaration on a list
+-- Test 15         : Recursive function declaration on a list
 -- Expected result : function
+
+--/
 reverse [] = [] 
 reverse (head, rest) = reverse rest ++ head
+--/
 
 --------------------------------------------------------------------------------
--- Test 1          : recursive function with type annotation
+-- Test 16         : recursive function with type annotation
 -- Expected result : function
+
+--/
 sum :: [Int] -> Int
-sum [] = 0
-sum (head, rest) = head + sum rest
+suma [] = 0
+sumb (head, rest) = head + sum rest
+--/
 
 --------------------------------------------------------------------------------
--- Test 1          : If statement
+-- Test 17         : If statement
 -- Expected result : "not zero"
+
+--/
 func a = if a == 0 then "zero" else "not zero"
 func 1
+--/
+
 --------------------------------------------------------------------------------
--- Test 1          : Case of
+-- Test 18         : Case of
 -- Expected result : function
 
+--/
 cardColour :: String -> String\ncardColour suit =
   case suit of
     "hearts" -> "red"
@@ -110,4 +166,6 @@ cardColour :: String -> String\ncardColour suit =
     "spades" -> "black"
     "clubs" -> "black"
     _ -> "I am not familiar with this card suit."",
+--/
+
 --------------------------------------------------------------------------------
