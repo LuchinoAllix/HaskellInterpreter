@@ -7,7 +7,7 @@ import { activateDebug } from './parser/Parser.js';
 
 
 import { readFile } from 'fs/promises';
-import {writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 
 
 /**
