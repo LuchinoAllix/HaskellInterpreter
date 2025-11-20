@@ -257,7 +257,7 @@ function isNextTokenIn(tokens){
 
 
 /**
- * Updates the stack according to the spec :
+ * Updates the stack according to the spec  :
  * A stack of “layout contexts”, in which each element is either :
  * 
  *  - Zero, indicating that the enclosing context is explicit (i.e. the 
