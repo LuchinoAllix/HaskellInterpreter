@@ -152,10 +152,9 @@ export class Rules {
     ];
 
     /** ------------------------- // added rule to be ghci-like
-     * interactive -> lexp | exp
+     * interactive -> exp
      * ------------------------- */
     this.rules.interactive.childs = [
-      branch([[ref("lexp"),1]]),
       branch([[ref("exp"),1]])
     ];
 
