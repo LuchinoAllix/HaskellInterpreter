@@ -95,6 +95,7 @@ export function getLiteral(program){
  */
 export function getSmall(program){
   if (program.getChar() === "_"){
+    program.addToken("small");
     program.incIndex();
     return true ;
   }

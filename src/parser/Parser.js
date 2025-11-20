@@ -108,7 +108,7 @@ function branchLoop(branch, program, currNode){
   space += 1;
   let cursorStart = program.cursor;     // need to rollback in case of failure
   let nbChilds = currNode.childs.length;//
-
+  
   let func = null;
   for (let i = 0; i < branch.childs.length; i++){
     let elem = branch.childs[i];
