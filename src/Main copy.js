@@ -24,9 +24,9 @@ async function main(){
   }
 
   const args = process.argv.slice(nbElemsToRemove); 
-  // removes "node", "Main.js" and "testNumber" (if given)
+  // removes "node", "Main.js" and "testNum" (if given)
 
-  if (args.length > 7) {
+  if (args.length > 8) {
     printOptions();
     return ;
   }
@@ -36,6 +36,7 @@ async function main(){
   let nosave = false;
   let printTokens = false;
   let derivative = false;
+  let verbatim = false;
 
   // Parcourt tous les arguments restants pour voir les options
   for (const arg of args) {
@@ -59,6 +60,10 @@ async function main(){
       case "--derivative" :
         derivative = true;
         break;
+      
+      case "--verbatim" :
+        verbatim = true;
+        break;
 
       default :
         console.log("\nArgument specified unrecognised : ", arg);
@@ -73,13 +78,18 @@ async function main(){
     var cnt = 0;
     nosave = true;
     for (let i=0; i < tests.length; i ++){
-      if (testAtest(i, printTokens, printAST, printDebug, nosave, derivative)){
+      if (testAtest(i, printTokens, printAST, printDebug, nosave, derivative, 
+                    verbatim)){
         cnt +=1;
+        console.log("Test passed ✅");
+      } else {
+        console.log("Test failed ❌");
       }
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
   } else {
-    testAtest(testNum, printTokens, printAST, printDebug, nosave, derivative);
+    testAtest(testNum, printTokens, printAST, printDebug, nosave, derivative, 
+              true);
   }
 }
 
@@ -91,38 +101,48 @@ function printOptions(){
   console.log(
       "\nUsage:\n" +
       "  node Main.js Id_Of_Test [options] (if no test id is given, " + 
-         "all tests are tested)\n\n" +
+         "all tests are run)\n\n" +
 
       "Options :\n" +
       "  --Tokens      shows the list of token after lexing\n" +
       "  --AST         shows the AST after parsing\n" +
       "  --Debug       shows the rules took whilst parsing\n" +
       "  --nosave      doesn't save the AST after parsing\n" +
-      "  --derivative  shows/saves the derivative tree instead of the AST\n" 
+      "  --derivative  shows/saves the derivative tree instead of the AST\n" +
+      "  --verbatim    shows error messages if all tests are run"
     );
 }
 
 /**
  * Tests a file according to the options specified
- * @param {Int} test_number the number of the test to test
+ * @param {Int} testNb the number of the test to test
  * @param {Boolean} printTokens to print the tokens to the console
  * @param {Boolean} printAST to print the AST to the console
  * @param {Boolean} debug to show the rules taken by the parser
  * @param {Boolean} nosave to not save the newly generated AST
  * @param {Boolean} der show derivative tree instead of AST
+ * @param {Boolean} verbatim wether to show errors or not
  */
-function testAtest(test_number, printTokens, printAST, debug, nosave, der){
+function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbatim){
   
-  var test = tests[test_number];
+  var test = tests[testNb];
   const program = new Program(test.input);
-  console.log("\nTest number : " + test_number);
-  console.log("Input : \n" + program.input);
+  console.log("\nTest " + testNb + " : testing " + test.info);
+
+  if (verbatim){
+    console.log("Input : \n" + program.input);
+  }
 
   try {
     if (tokenize(program)){
-      console.log("Successful tokenization :) ");
-    } else {
+      if (verbatim){
+        console.log("Successful tokenization :) ");
+      }
+    } else { 
+      // Tokensize never returns false, if it doesn't work it throws an error
+      // So this is never executed
       console.log("Unsuccessful tokenization :( ");
+      return false;
     }
 
     if(printTokens){
@@ -130,9 +150,11 @@ function testAtest(test_number, printTokens, printAST, debug, nosave, der){
     }
 
   } catch (error) {
-    console.log("Error while tokenization :");
-    showTokens(program.tokens);
-    console.log(error);
+    console.log("Error while tokenizating :");
+    if (verbatim){
+      showTokens(program.tokens);
+      console.log(error);
+    }
     return false;
   }
 
@@ -142,10 +164,15 @@ function testAtest(test_number, printTokens, printAST, debug, nosave, der){
     }
 
     if (parse(program)){
-      console.log("Successful parsing :) ");
+      if (verbatim){
+        console.log("Successful parsing :) ");
+      }
       
     } else {
+      // parse never returns false, if it doesn't work it throws an error
+      // So this is never executed
       console.log("Unsuccessful parsing :( ");
+      return false;
     }
 
     if (!der){
@@ -164,8 +191,10 @@ function testAtest(test_number, printTokens, printAST, debug, nosave, der){
 
   } catch (error) {
     console.log("Error while parsing :");
-    showAST(program.AST);
-    console.log(error);
+    if (verbatim){
+      showAST(program.AST);
+      console.log(error);
+    }
     return false;
   }
 
