@@ -167,7 +167,8 @@ export class Program {
 
   /**
    * Overwrites the type of the last token, if the token before that is of the
-   * same new type, merges the two tokens
+   * same new type, merges the two tokens except if it is an integer, perhaps
+   * this shoudl not be the only edge case (FIXME)
    * @param {String} type 
    * @returns {Boolean}
    */
@@ -176,7 +177,8 @@ export class Program {
     if (len > 0){
       this.tokens[len - 1].type = type;
       if (len > 1){
-        if (this.tokens[len - 1].type === this.tokens[len - 2].type){
+        if ((this.tokens[len - 1].type === this.tokens[len - 2].type) &&
+            this.tokens[len - 1].type !== 'integer'){
           this.tokens[len - 2].value += this.tokens[len - 1].value;
           this.tokens.pop();
         }
