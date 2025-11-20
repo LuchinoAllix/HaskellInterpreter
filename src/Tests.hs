@@ -158,13 +158,14 @@ func 1
 -- Expected result : function
 
 --/
-cardColour :: String -> String\ncardColour suit =
+cardColour :: String -> String
+cardColour suit =
   case suit of
     "hearts" -> "red"
     "diamonds" -> "red"
     "spades" -> "black"
     "clubs" -> "black"
-    _ -> "I am not familiar with this card suit."",
+    _ -> "I am not familiar with this card suit."
 --/
 
 --------------------------------------------------------------------------------
