@@ -36,7 +36,7 @@ async function main(){
   let nosave = false;
   let printTokens = false;
   let derivative = false;
-  let verbatim = false;
+  let verbose = false;
 
   // Parcourt tous les arguments restants pour voir les options
   for (const arg of args) {
@@ -61,8 +61,8 @@ async function main(){
         derivative = true;
         break;
       
-      case "--Verbatim" :
-        verbatim = true;
+      case "--Verbose" :
+        verbose = true;
         break;
 
       default :
@@ -79,7 +79,7 @@ async function main(){
     nosave = true;
     for (let i=0; i < tests.length; i ++){
       if (testAtest(i, printTokens, printAST, printDebug, nosave, derivative, 
-                    verbatim)){
+                    verbose)){
         cnt +=1;
         console.log("Test passed ✅");
       } else {
@@ -109,7 +109,7 @@ function printOptions(){
       "  --Debug       shows the rules took whilst parsing\n" +
       "  --Nosave      doesn't save the AST after parsing\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
-      "  --Verbatim    shows error messages if all tests are run"
+      "  --Verbose    shows error messages if all tests are run"
     );
 }
 
@@ -121,21 +121,21 @@ function printOptions(){
  * @param {Boolean} debug to show the rules taken by the parser
  * @param {Boolean} nosave to not save the newly generated AST
  * @param {Boolean} der show derivative tree instead of AST
- * @param {Boolean} verbatim wether to show errors or not
+ * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbatim){
+function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose){
   
   var test = tests[testNb];
   const program = new Program(test.input);
   console.log("\nTest " + testNb + " : testing " + test.info);
 
-  if (verbatim){
+  if (verbose){
     console.log("Input : \n" + program.input);
   }
 
   try {
     if (tokenize(program)){
-      if (verbatim){
+      if (verbose){
         console.log("Successful tokenization :) ");
       }
     } else { 
@@ -151,7 +151,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbatim){
 
   } catch (error) {
     console.log("Error while tokenizating :");
-    if (verbatim){
+    if (verbose){
       showTokens(program.tokens);
       console.log(error);
     }
@@ -164,7 +164,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbatim){
     }
 
     if (parse(program)){
-      if (verbatim){
+      if (verbose){
         console.log("Successful parsing :) ");
       }
       
@@ -191,7 +191,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbatim){
 
   } catch (error) {
     console.log("Error while parsing :");
-    if (verbatim){
+    if (verbose){
       showAST(program.AST);
       console.log(error);
     }
