@@ -216,14 +216,14 @@ function manageOption(elemOption, program, ruleFunc, currNode){
         let cursorEnd = cursorStart; // for rollforward in case of success
         program.cursor = cursorStart;
         let passNegateRule = false;
-        let mtNode = Node.mtNode("negate node");
+        var mptNode = mtNode("negate node");
         if (elem[2].type === "ref"){
           passNegateRule = ruleLoop(rulesObject.rules[elem[2].value], 
-                                    program, mtNode);
+                                    program, mptNode);
         } else if (elem[2].type === "rule"){
-          passNegateRule = ruleLoop(elem[2], program, mtNode);
+          passNegateRule = ruleLoop(elem[2], program, mptNode);
         } else if (elem[2].type === "data" || elem[2].type === "tokentype"){
-          passNegateRule = dataLoop(elem[2], program, mtNode);
+          passNegateRule = dataLoop(elem[2], program, mptNode);
         }
         if (passNegateRule){
             program.cursor = cursorStart;
