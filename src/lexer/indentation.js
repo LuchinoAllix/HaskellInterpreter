@@ -44,7 +44,7 @@ function ApplyRule1(program, index){
   if (r1_vars.includes(program.tokens[index].value)){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
-        var indent = program.tokens[index+1].column; // fixme should be line indentation not tokens
+        var indent = program.tokens[index+1].column;
         program.tokens.splice(index+1, 0, newLayoutToken("{" + indent + "}", 
                                                          "R1"));
         return 2 // (larger offset to avoid collision between R1 and R3)
@@ -115,16 +115,8 @@ function ApplyRule3(program, index){
  * @returns {Boolean}
  */
 function bigL(tokens, stack){
-  // console.log("BigL");
 
-  // Maj stack
-
-  // FIXME : not what the spec says
-  if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
-    stack.push(tokens[getNextNotIndentTokenIndex(tokens,0)].column);
-  } else if (tokens.length > 0 && tokens[0].value === '{'){
-    stack.push(0);
-  }
+  updateStack(tokens, stack);
 
   // | L (< n >: ts) (m : ms) 
   // | L (< n >: ts) ms 
@@ -146,7 +138,7 @@ function bigL(tokens, stack){
   // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
-    if (stack[0] === 0){
+    if (stack[0][0] === 0){
       return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
                                                stack.splice(-1,1)));
     } else {
@@ -157,7 +149,7 @@ function bigL(tokens, stack){
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
     return [newLayoutToken("}","2")].concat(bigL(tokens.slice(1),
-                                             [0].concat(stack)));
+                                             [[0, tokens[0]]].concat(stack)));
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
@@ -181,7 +173,7 @@ function bigL(tokens, stack){
   }
   
   // |  L [] (m : ms) = }  :  L [] ms if m≠0 (Note 6) 
-  else if (tokens.length === 0 && stack[0] !== 0){
+  else if (tokens.length === 0 && stack[0][0] !== 0){
     if (stack.length === 1){
       stack = [];
     }
@@ -202,12 +194,12 @@ function bigL(tokens, stack){
  *  L (< n >: ts) ms       = L ts ms 
  * 
  * @param {[Token]} tokens
- * @param {[Integer]} stack 
+ * @param {[Integer, Token]} stack 
  * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
-  let m = stack[stack.length-1];
+  let m = stack[stack.length-1][0];
   if (m === n){ 
     return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
@@ -225,19 +217,19 @@ function bigLR3(tokens, stack){
  *  L ({n} : ts) ms       = {  :  }  :  (L (< n >: ts) ms)           (Note 2)
  *  
  * @param {[Token]} tokens
- * @param {[Integer]} stack 
- * @returns  
+ * @param {[[Integer, Token]]} stack 
+ * @returns {[Token]}
  */
 function bigLR2(tokens, stack){ 
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   if (n === NaN){
-    throw Error("Something other than an int ended up in indentation token : ", 
+    throw Error("Something other than an int ended up in layout token : ", 
                 tokens[0]);
   }
   if (stack.length > 0){
-    let m = stack[stack.length-1];
+    let m = stack[stack.length-1][0];
     if (n > m){
-      stack.push(n);
+      stack.push([n, tokens[0]]);
       return [newLayoutToken("{")].concat(bigL(tokens.slice(1), stack));
     } else {
       console.log("stack : ", stack);
@@ -246,25 +238,8 @@ function bigLR2(tokens, stack){
                                                           stack));
     }
   } else if (n > 0){
-    return [newLayoutToken("{","7")].concat(bigL(tokens.slice(1), [n]));
-  }
-}
-
-/**
- * Return the index of the next token (starting at i) which is not an 
- * indentation token
- * 
- * @param {[Token]} tokens
- * @param {Integer} i starting index
- * @returns {Integer} index of next desired token
-*/
-function getNextNotIndentTokenIndex(tokens, i){
-  if (i >= tokens.length){
-    throw new Error("No indentation token found, index too high.");
-  } else if (tokens[i].type.startsWith("layout")){
-    getNextNotIndentTokenIndex(tokens, i+1);
-  } else {
-    return i;
+    return [newLayoutToken("{","7")].concat(bigL(tokens.slice(1), 
+                                                 [[n, tokens[0]]]));
   }
 }
 
@@ -280,3 +255,28 @@ function isNextTokenIn(tokens){
   return false;
 }
 
+
+/**
+ * Updates the stack according to the spec :
+ * A stack of “layout contexts”, in which each element is either :
+ * 
+ *  - Zero, indicating that the enclosing context is explicit (i.e. the 
+ *    programmer supplied the opening brace). If the innermost context is 0, 
+ *    then no layout tokens will be inserted until either the enclosing context 
+ *    ends or a new context is pushed.
+ * 
+ *  - A positive integer, which is the indentation column of the enclosing 
+ *    layout context.
+ * 
+ * @param {[Token]} tokens 
+ * @param {[[Integer, Token]]} stack 
+ */
+function updateStack(tokens, stack){
+  if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
+    stack.push([stack.slice(-1)[0][1].column ,tokens[0]]);
+  } else if (tokens.length > 0 && tokens[0].value === '{'){
+    if (stack.slice(-1)[0][0] !== 0){
+      stack.push([0, tokens[0]]);
+    }
+  }
+}
