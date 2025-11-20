@@ -1081,22 +1081,21 @@ export class Rules {
     ];
 
     /** -------------------------
-     * aexp -> aexp_ { <qcon> '{' fbind1 ',' … ',' fbindn '}'} 
+     * aexp -> aexp_ | aexp_ <qcon> '{' fbind1 ',' … ',' fbindn '}' 
      *                                                     (labeled update, n≥1) 
      * ------------------------- */
     this.rules.aexp.childs = [
+      branch([[ref("aexp_"), 1]]),
       branch([
         [ref("aexp_"), 1],
+        [ref("qcon"), 4], // FIXME : verify negation
+        [data("{"), 1], 
+        [ref("fbind"), 1], 
         [branch([
-          [ref("qcon"), 4], // FIXME : verify negation
-          [data("{"), 1], 
+          [data(","), 1],
           [ref("fbind"), 1], 
-          [branch([
-            [data(","), 1],
-            [ref("fbind"), 1], 
-          ]), 3],
-          [data("}"), 1] 
-        ]), 3]
+        ]), 3],
+        [data("}"), 1] 
       ])
     ];
 
