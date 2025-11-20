@@ -53,15 +53,15 @@ async function main(){
         printDebug = true;
         break;
 
-      case "--nosave" :
+      case "--Nosave" :
         nosave = true;
         break;
 
-      case "--derivative" :
+      case "--Derivative" :
         derivative = true;
         break;
       
-      case "--verbatim" :
+      case "--Verbatim" :
         verbatim = true;
         break;
 
@@ -107,9 +107,9 @@ function printOptions(){
       "  --Tokens      shows the list of token after lexing\n" +
       "  --AST         shows the AST after parsing\n" +
       "  --Debug       shows the rules took whilst parsing\n" +
-      "  --nosave      doesn't save the AST after parsing\n" +
-      "  --derivative  shows/saves the derivative tree instead of the AST\n" +
-      "  --verbatim    shows error messages if all tests are run"
+      "  --Nosave      doesn't save the AST after parsing\n" +
+      "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
+      "  --Verbatim    shows error messages if all tests are run"
     );
 }
 
