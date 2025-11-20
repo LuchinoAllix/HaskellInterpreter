@@ -115,7 +115,7 @@ export class Rules {
         [tokentype("Modid"), 1],
         [ref("exports"), 0],
         [data("where"), 1],
-        [ref("body"), 1],
+        [ref("body"), 1]
       ]),
       branch([[ref("body"), 1]])
     ];
@@ -183,7 +183,7 @@ export class Rules {
           [data(","), 1]
         ]), 3]
         [data(","), 0]
-        [data(")"), 1],
+        [data(")"), 1]
       ])
     ];
 
@@ -213,7 +213,7 @@ export class Rules {
       branch([
         [data("("), 1],
         [data(".."), 1],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
       branch([
         [data("("), 1],
@@ -233,7 +233,7 @@ export class Rules {
       branch([
         [data("("), 1],
         [data(".."), 1],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
       branch([
         [data("("), 1],
@@ -314,7 +314,7 @@ export class Rules {
       branch([
         [data("("), 1],
         [data(".."), 1],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
       branch([
         [data("("), 1],
@@ -342,7 +342,7 @@ export class Rules {
       branch([
         [branch([
           [ref("topdecl"), 1], 
-          [data(";"), 1], 
+          [data(";"), 1]
         ]), 3],
         [ref("topdecl"), 1]
       ])
@@ -357,6 +357,7 @@ export class Rules {
      *          | 'default' (type1 , … , typen)                          (n ≥ 0) 
      *          | 'foreign' fdecl
      *          | decl
+     *          | exp                               (added rule to be ghci like)
      * ------------------------- */
     this.rules.topdecl.childs = [
       branch([
@@ -376,7 +377,7 @@ export class Rules {
           [data("="), 1],
           [ref("constrs"), 1]
         ]), 0]
-        [ref("deriving"), 0],
+        [ref("deriving"), 0]
       ]),
       branch([
         [data("newtype"), 1],
@@ -389,7 +390,7 @@ export class Rules {
           [data("="), 1],
           [ref("newconstr"), 1]
         ]), 0]
-        [ref("deriving"), 0],
+        [ref("deriving"), 0]
       ]),
       branch([
         [data("class"), 1],
@@ -425,13 +426,14 @@ export class Rules {
           [data(","), 1]
         ]), 3]
         [ref("type"), 0],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
       branch([
         [data("foreign"), 1], 
         [ref("fdecl"), 1]
       ]),
-      branch([[ref("decl"), 1]])
+      branch([[ref("decl"), 1]]),
+      branch([[ref("exp"), 1]])
     ];
 
     /** -------------------------
@@ -470,7 +472,7 @@ export class Rules {
           [data(";"), 1],
         ]), 3],
         [ref("cdecl"), 1],
-        [data("}"), 1],
+        [data("}"), 1]
       ])
     ];
 
@@ -494,7 +496,7 @@ export class Rules {
           [data(";"), 1],
         ]), 3],
         [ref("idecl"), 0],
-        [data("}"), 1],
+        [data("}"), 1]
       ])
     ];
 
@@ -539,7 +541,7 @@ export class Rules {
         [branch([
           [data(","), 1], 
           [ref("op"), 1]
-        ]), 3],
+        ]), 3]
       ])
     ];        
 
@@ -662,7 +664,7 @@ export class Rules {
         [data("("), 1],
         [tokentype("Tyvar"), 1],
         [ref("atype"), 2],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
     ];
 
@@ -751,7 +753,7 @@ export class Rules {
           [data(","), 1],
         ]), 3] 
         [ref("fielddecl"), 0],
-        [data("}"), 1],
+        [data("}"), 1]
       ]),
     ];
 
@@ -767,7 +769,7 @@ export class Rules {
         [ref("var"), 1],
         [data("::"), 1],
         [ref("type"), 1],
-        [data("}"), 1],
+        [data("}"), 1]
       ]),
     ];
 
@@ -796,7 +798,7 @@ export class Rules {
           [data(","), 1],
         ]), 3]
         [ref("dclass"), 0],
-        [data(")"), 1],
+        [data(")"), 1]
       ]),
     ];
 
