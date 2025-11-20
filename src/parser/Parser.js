@@ -38,6 +38,7 @@ let space = 0;          // indentation used in debug print
  * @returns {Boolean} true if success, false otherwise 
  */
 export function parse(program){
+  fails = {}; // reset the fails dictionnary in case we already parsed something
   if (!program.isLexed){
     tokenize(program);
   }
