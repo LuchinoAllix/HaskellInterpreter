@@ -1,13 +1,12 @@
 --# Tests for the haskell interpreter in js
---# Each test must follow the same pattern 
 
---------------------------------------------------------------------------------
--- Test 0          : primitive
--- Expected result : primitive
+--# Each test must follow the same pattern :
+--# 2 dashes and a \  before and after the input and nowhere else.
+--# 'Test x : blabla' blabla will be the info of the test, must be on one line.
+--# 'Espected result : ?'  ? will be what the output will be compared to, 
+--#                        must be on one line.
 
---/
-+
---/ 
+--# Tests are processed by makeTests() in Main.js.
 
 --------------------------------------------------------------------------------
 -- Test 1          : Integer
