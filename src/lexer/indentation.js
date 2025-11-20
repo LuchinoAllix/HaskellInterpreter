@@ -206,9 +206,8 @@ function bigL(tokens, stack){
  * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
-  let n = tokens[0].value.substring(1, tokens[0].value.length-1);
+  let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   let m = stack[stack.length-1];
-      
   if (m === n){ 
     return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
