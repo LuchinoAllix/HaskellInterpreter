@@ -227,8 +227,12 @@ function showAST(ast){
 }
 
 /**
- * Todo
- * @returns 
+ * Creates the list of tests based on the Tests.hs file.
+ * Each input is in between '--/' (if there are no other '--/' before)
+ * information about the tests are given with :   
+ * -- Test : ...
+ * -- Expected result : ...
+ * @returns {Boolean}
  */
 async function makeTests(){
   try {
@@ -251,6 +255,7 @@ async function makeTests(){
       test.input = content[i+1];
       tests.push(test); 
     }
+    return true;
 
   } catch (error) {
     console.error("Error while reading test file:", error);
