@@ -1,1 +1,0 @@
-mul a b = a * b

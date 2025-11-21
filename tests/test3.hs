@@ -1,1 +1,0 @@
-let x = "hello \nworld" in x
