@@ -88,9 +88,15 @@ async function main(){
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
   } else {
-    testAtest(testNum, printTokens, printAST, printDebug, nosave, derivative, 
-              true);
+    if (testNum >= tests.length || testNum  < 0 ){
+      console.log("Test number out of range, tests go from 0 to : ", 
+                  tests.length-1);
+    } else {
+      testAtest(testNum, printTokens, printAST, printDebug, nosave, derivative, 
+                true);
+    }
   }
+  return ;
 }
 
 
