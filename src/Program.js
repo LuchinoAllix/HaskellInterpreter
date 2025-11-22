@@ -137,14 +137,19 @@ export class Program {
    * 
    * Adds the current char to list of tokens as type provided
    * Verifies if the last token is of the same type, if so, merges the tokens,
-   * except if it is a 'Special' (perhaps not the only exception FIXME)
+   * except if it is a 'Special' (all specials but '[]' and '()')
+   * (perhaps not the only exception FIXME)
    * @param {String} type 
    * @returns {Boolean}
    */
   addToken(type){
-    if (this.tokens.length > 0 && 
-        this.tokens[this.tokens.length - 1].type === type &&
-        this.tokens[this.tokens.length - 1].type !== 'Special'){
+    if ((this.tokens.length > 0 && 
+         this.tokens[this.tokens.length - 1].type === type) &&
+        ((this.tokens[this.tokens.length - 1].value === '[' && 
+          this.getChar() === ']') || 
+         (this.tokens[this.tokens.length - 1].value === '(' && 
+          this.getChar() === ')') || 
+         this.tokens[this.tokens.length - 1].type !== 'Special')){
       this.tokens[this.tokens.length - 1].value += this.getChar();
     } else {
       this.tokens.push(new Token(type, this.getChar(), this.lineCount,
