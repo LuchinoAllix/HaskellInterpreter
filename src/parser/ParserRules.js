@@ -146,16 +146,17 @@ export class Rules {
       ]),
       branch([
         [data("{"), 1], 
-        [ref("interactive"), 1],
+        [ref("interactive"), 2],
         [data("}"), 1]
       ])
     ];
 
     /** ------------------------- // added rule to be ghci-like
-     * interactive -> exp
+     * interactive -> exp | 'let' decls
      * ------------------------- */
     this.rules.interactive.childs = [
-      branch([[ref("exp"),1]])
+      branch([[ref("exp"),1]]),
+      branch([[data("let"), 1], [ref("decls"), 1]])
     ];
 
     /** -------------------------
@@ -446,7 +447,7 @@ export class Rules {
           [ref("decl"), 1],
           [data(";"), 1]
         ]), 3],
-        [ref("decl"), 1],
+        [ref("decl"), 0],
         [data("}"), 1]
       ])
     ];
