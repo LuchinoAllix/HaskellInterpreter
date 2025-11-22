@@ -1,4 +1,5 @@
-import { Exp } from "./normalizer";
+import { Exp } from "./Exp.js";
+
 
 //--                 File containing "type" Decl for normalize              --//
 
