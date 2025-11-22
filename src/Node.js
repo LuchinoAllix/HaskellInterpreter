@@ -1,4 +1,4 @@
-//--  File containing "type" token for lexer and parser  --//
+//--                 File containing "type" Node for parser                 --//
 
 export class Node {
 
