@@ -4,12 +4,12 @@ import { Exp } from "./Exp.js";
 //--                 File containing "type" Decl for normalize              --//
 
 /**
- * 
+ * todo
  */
 export class Decl {
 
   /**
-   * 
+   * todo
    * @param {DeclType} type 
    * @param {String} name 
    * @param {[Strings]} typeAnnotation 
@@ -23,7 +23,7 @@ export class Decl {
   }
 
   /**
-   * 
+   * todo
    * @param {*} type 
    */
   annotate(type){
@@ -31,7 +31,7 @@ export class Decl {
   }
 
   /**
-   * 
+   * todo
    * @param {*} branch 
    */
   addBranchDef(branch){
@@ -40,12 +40,12 @@ export class Decl {
 }
 
 /**
- * 
+ * todo
  */
 export class FunctionDecl extends Decl {
 
   /**
-   * 
+   * todo
    * @param {*} name 
    * @param {*} typeAnnotation 
    * @param {*} branches 
@@ -58,12 +58,12 @@ export class FunctionDecl extends Decl {
 }
 
 /**
- * 
+ * todo
  */
 export class VariableDecl extends Decl {
 
   /**
-   * 
+   * todo
    * @param {*} name 
    * @param {*} typeAnnotation 
    * @param {*} branches 
