@@ -186,7 +186,7 @@ cardColour suit =
 
 --------------------------------------------------------------------------------
 -- Test 20         : Lambda with multiple arguments
--- Expected result : function
+-- Expected result : 5
 
 --/
 (\x y -> x + y ) 2 3
@@ -194,10 +194,18 @@ cardColour suit =
 
 --------------------------------------------------------------------------------
 -- Test 21         : Embeded lambda
+-- Expected result : 11
+
+--/
+(\x y -> x + (\a -> a * a) y ) 2 3
+--/
+
+--------------------------------------------------------------------------------
+-- Test 22         : type annotation of list of list
 -- Expected result : function
 
 --/
-(\x y -> x + (\a -> a * a) 5) 2 3
+func :: [[Int]] -> Int
 --/
 
 --------------------------------------------------------------------------------
