@@ -90,7 +90,7 @@ let x = 3 in x + 3
 
 --------------------------------------------------------------------------------
 -- Test 10         : Let with a string
--- Expected result : 42
+-- Expected result : "hello world"
 
 --/
 let x = "hello world" in x
@@ -149,7 +149,7 @@ reverse (head, rest) = reverse rest ++ head
 --/
 sum :: [Int] -> Int
 sum [] = 0
-sum (head, rest) = head + sum rest
+sum (head: rest) = head + sum rest
 --/
 
 --------------------------------------------------------------------------------
@@ -178,10 +178,10 @@ cardColour suit =
 
 --------------------------------------------------------------------------------
 -- Test 19         : Lambda
--- Expected result : function
+-- Expected result : 2
 
 --/
-\x -> x + 1 
+(\x -> x + 1) 1 
 --/
 
 --------------------------------------------------------------------------------
@@ -206,6 +206,31 @@ cardColour suit =
 
 --/
 func :: [[Int]] -> Int
+func [] = 0
+func [[]] = 0
+func [(a: b)] = a
 --/
 
 --------------------------------------------------------------------------------
+-- Test 23         : Let without in
+-- Expected result : variable
+
+--/
+let x = "3"
+--/
+--------------------------------------------------------------------------------
+-- Test 24         : multiple inless lets
+-- Expected result : variable
+
+--/
+let x = "3"
+let y = 6
+--/
+--------------------------------------------------------------------------------
+-- Test 25         : multiple infull lets
+-- Expected result : 6
+
+--/
+let x = "3" in x
+let y = 6 in y
+--/
