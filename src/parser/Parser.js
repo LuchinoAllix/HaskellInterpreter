@@ -78,20 +78,21 @@ function mainLoop(program,){
  */
 function ruleLoop(rule, program, currNode){
   if (didItFail(rule.value, program.cursor)){
+    debug(4, 'ruleloop false (predicted)', rule.value + " " + program.cursor);  
     return false;
   }
-  debug(2,'ruleloop', rule.value);
+  debug(2,'ruleloop', rule.value + " " + program.cursor);
   for (let i = 0; i < rule.childs.length; i ++){
     let branch = rule.childs[i];
     let tmpNode = mtNode(rule.value);
     if (branchLoop(branch, program, tmpNode)){
       currNode.addChild(tmpNode);
-      debug(1, 'ruleloop true', rule.value);
+      debug(1, 'ruleloop true', rule.value + " " + program.cursor);
       return true;
     }
   }
   updateFails(rule.value, program.cursor);
-  debug(4, 'ruleloop false', rule.value);  
+  debug(4, 'ruleloop false', rule.value + " " + program.cursor);  
   return false;
 }
 
@@ -271,7 +272,7 @@ function dataLoop(elem, program, currNode){
     return true;
   }
   debug(5,'dataloop false', elem.value + " !== " + token.value 
-                                        + " (" + token.type+")");
+                                        + " (" + token.type + ")");
   return false;
 }
 
