@@ -9,7 +9,7 @@
 --# Tests are processed by makeTests() in Main.js.
 
 --------------------------------------------------------------------------------
--- Test 0          : Integer
+-- Test 0          : integer
 -- Expected result : 42
 
 --/
@@ -17,7 +17,7 @@
 --/
 
 --------------------------------------------------------------------------------
--- Test 1          : String
+-- Test 1          : string
 -- Expected result : "Hello World!"
 
 --/
@@ -25,7 +25,7 @@
 --/
 
 --------------------------------------------------------------------------------
--- Test 2          : Boolean
+-- Test 2          : boolean
 -- Expected result : False
 
 --/
@@ -33,7 +33,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 3          : Addition
+-- Test 3          : addition
 -- Expected result : 3
 
 --/
@@ -41,7 +41,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 4          : Substraction
+-- Test 4          : substraction
 -- Expected result : -1
 
 --/
@@ -49,7 +49,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 5          : Multiplication
+-- Test 5          : multiplication
 -- Expected result : 42
 
 --/
@@ -57,7 +57,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 6          : Division
+-- Test 6          : division
 -- Expected result : 21
 
 --/
@@ -65,7 +65,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 7          : Equality
+-- Test 7          : equality
 -- Expected result : True
 
 --/
@@ -73,7 +73,7 @@ False
 --/
 
 --------------------------------------------------------------------------------
--- Test 8          : Let
+-- Test 8          : let
 -- Expected result : 1
 
 --/
@@ -81,7 +81,7 @@ let x = 1 in x
 --/
 
 --------------------------------------------------------------------------------
--- Test 9          : Let with addition
+-- Test 9          : let with addition
 -- Expected result : 6
 
 --/
@@ -89,7 +89,7 @@ let x = 3 in x + 3
 --/
 
 --------------------------------------------------------------------------------
--- Test 10         : Let with a string
+-- Test 10         : let with a string
 -- Expected result : "hello world"
 
 --/
@@ -114,7 +114,7 @@ mul 1 2
 --/
 
 --------------------------------------------------------------------------------
--- Test 13         : Recursive function declaration
+-- Test 13         : recursive function declaration
 -- Expected result : function
 
 --/
@@ -123,7 +123,7 @@ fact n = n * fact n - 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 14         : Recursive function declaration and call
+-- Test 14         : recursive function declaration and call
 -- Expected result : 3
 
 --/
@@ -134,7 +134,7 @@ fib 3
 --/
 
 --------------------------------------------------------------------------------
--- Test 15         : Recursive function declaration on a list
+-- Test 15         : recursive function declaration on a list
 -- Expected result : function
 
 --/
@@ -153,7 +153,7 @@ sum (head: rest) = head + sum rest
 --/
 
 --------------------------------------------------------------------------------
--- Test 17         : If statement
+-- Test 17         : if statement
 -- Expected result : "not zero"
 
 --/
@@ -162,7 +162,7 @@ func 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 18         : Case of
+-- Test 18         : case of
 -- Expected result : function
 
 --/
@@ -177,7 +177,7 @@ cardColour suit =
 --/
 
 --------------------------------------------------------------------------------
--- Test 19         : Lambda
+-- Test 19         : lambda
 -- Expected result : 2
 
 --/
@@ -185,7 +185,7 @@ cardColour suit =
 --/
 
 --------------------------------------------------------------------------------
--- Test 20         : Lambda with multiple arguments
+-- Test 20         : lambda with multiple arguments
 -- Expected result : 5
 
 --/
@@ -193,7 +193,7 @@ cardColour suit =
 --/
 
 --------------------------------------------------------------------------------
--- Test 21         : Embeded lambda
+-- Test 21         : embeded lambda
 -- Expected result : 11
 
 --/
@@ -212,7 +212,7 @@ func [(a: b)] = a
 --/
 
 --------------------------------------------------------------------------------
--- Test 23         : Let without in
+-- Test 23         : let without in
 -- Expected result : variable
 
 --/
@@ -235,3 +235,11 @@ let y = 6
 let x = "3" in x
 let y = 6 in y
 --/
+--------------------------------------------------------------------------------
+-- Test 26         : logical operators
+-- Expected result : function
+
+--/
+f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
+--/
+
