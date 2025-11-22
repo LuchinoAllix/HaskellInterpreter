@@ -218,6 +218,7 @@ func [(a: b)] = a
 --/
 let x = "3"
 --/
+
 --------------------------------------------------------------------------------
 -- Test 24         : multiple inless lets
 -- Expected result : variable 
@@ -227,6 +228,7 @@ let x = "3"
 let x = "3"
 let y = 6
 --/
+
 --------------------------------------------------------------------------------
 -- Test 25         : multiple infull lets
 -- Expected result : 6
@@ -235,6 +237,7 @@ let y = 6
 let x = "3" in x
 let y = 6 in y
 --/
+
 --------------------------------------------------------------------------------
 -- Test 26         : logical operators
 -- Expected result : function
@@ -243,3 +246,16 @@ let y = 6 in y
 f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
+--------------------------------------------------------------------------------
+-- Test 27         : annotated variable declaration
+-- Expected result : function
+-- temporary decl to see the ast output
+
+--/
+x :: Int
+x :: [Int]
+x :: [Int] -> Int 
+x :: Int -> Int
+x = 5
+x y = y + 1
+--/
