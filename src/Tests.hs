@@ -220,7 +220,8 @@ let x = "3"
 --/
 --------------------------------------------------------------------------------
 -- Test 24         : multiple inless lets
--- Expected result : variable
+-- Expected result : variable 
+-- Do we actually want to accept this ? FIXME
 
 --/
 let x = "3"
