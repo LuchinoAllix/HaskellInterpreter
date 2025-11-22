@@ -181,9 +181,8 @@ function bigL(tokens, stack){
   }
   
   else {
-    throw new Error("Pattern matching not exhaustive in bigL", 
-                    "tokens : ", JSON.stringify(tokens), 
-                    "stack : ", stack);
+    throw new Error("Pattern matching not exhaustive in bigL, stack : " +  
+      stack);
   }
 }
 
@@ -275,7 +274,8 @@ function updateStack(tokens, stack){
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
     stack.push([stack.slice(-1)[0][1].column ,tokens[0]]);
   } else if (tokens.length > 0 && tokens[0].value === '{'){
-    if (stack.slice(-1)[0][0] !== 0){
+    if (stack.slice(-1)[0][0] !== 0){ // FIXME : what to do if stack empty ?
+                                      // (as in '{' was provided )
       stack.push([0, tokens[0]]);
     }
   }
