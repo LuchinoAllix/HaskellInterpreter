@@ -18,518 +18,65 @@
           "childs": null
         },
         {
-          "type": "topdecls",
+          "type": "decl",
           "value": null,
           "line": null,
           "column": null,
           "childs": [
             {
-              "type": "gendecl",
+              "type": "funlhs",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
                 {
                   "type": "Qvarid",
-                  "value": "x",
+                  "value": "f",
                   "line": 2,
                   "column": 1,
                   "childs": null
                 },
                 {
-                  "type": "reservdop",
-                  "value": "::",
+                  "type": "Qvarid",
+                  "value": "x",
                   "line": 2,
                   "column": 3,
                   "childs": null
                 },
                 {
-                  "type": "Qtycon",
-                  "value": "Int",
+                  "type": "Qvarid",
+                  "value": "y",
                   "line": 2,
-                  "column": 6,
+                  "column": 5,
+                  "childs": null
+                },
+                {
+                  "type": "Qvarid",
+                  "value": "z",
+                  "line": 2,
+                  "column": 7,
                   "childs": null
                 }
               ]
             },
             {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "gendecl",
+              "type": "rhs",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "x",
-                  "line": 4,
-                  "column": 1,
-                  "childs": null
-                },
                 {
                   "type": "reservdop",
-                  "value": "::",
-                  "line": 4,
-                  "column": 3,
+                  "value": "=",
+                  "line": 2,
+                  "column": 9,
                   "childs": null
-                },
-                {
-                  "type": "atype",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Special",
-                      "value": "[",
-                      "line": 4,
-                      "column": 6,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qtycon",
-                      "value": "Int",
-                      "line": 4,
-                      "column": 7,
-                      "childs": null
-                    },
-                    {
-                      "type": "Special",
-                      "value": "]",
-                      "line": 4,
-                      "column": 10,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "gendecl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "x",
-                  "line": 6,
-                  "column": 1,
-                  "childs": null
-                },
-                {
-                  "type": "reservdop",
-                  "value": "::",
-                  "line": 6,
-                  "column": 3,
-                  "childs": null
-                },
-                {
-                  "type": "type",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "atype",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "Special",
-                          "value": "[",
-                          "line": 6,
-                          "column": 6,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qtycon",
-                          "value": "Int",
-                          "line": 6,
-                          "column": 7,
-                          "childs": null
-                        },
-                        {
-                          "type": "Special",
-                          "value": "]",
-                          "line": 6,
-                          "column": 10,
-                          "childs": null
-                        }
-                      ]
-                    },
-                    {
-                      "type": "reservdop",
-                      "value": "->",
-                      "line": 6,
-                      "column": 12,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qtycon",
-                      "value": "Int",
-                      "line": 6,
-                      "column": 15,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "gendecl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "x",
-                  "line": 8,
-                  "column": 1,
-                  "childs": null
-                },
-                {
-                  "type": "reservdop",
-                  "value": "::",
-                  "line": 8,
-                  "column": 3,
-                  "childs": null
-                },
-                {
-                  "type": "type",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Qtycon",
-                      "value": "Int",
-                      "line": 8,
-                      "column": 6,
-                      "childs": null
-                    },
-                    {
-                      "type": "reservdop",
-                      "value": "->",
-                      "line": 8,
-                      "column": 10,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qtycon",
-                      "value": "Int",
-                      "line": 8,
-                      "column": 13,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "x",
-                  "line": 10,
-                  "column": 1,
-                  "childs": null
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 10,
-                      "column": 3,
-                      "childs": null
-                    },
-                    {
-                      "type": "integer",
-                      "value": "5",
-                      "line": 10,
-                      "column": 5,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "funlhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Qvarid",
-                      "value": "x",
-                      "line": 12,
-                      "column": 1,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qvarid",
-                      "value": "y",
-                      "line": 12,
-                      "column": 3,
-                      "childs": null
-                    }
-                  ]
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 12,
-                      "column": 5,
-                      "childs": null
-                    },
-                    {
-                      "type": "infixexp",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "Qvarid",
-                          "value": "y",
-                          "line": 12,
-                          "column": 7,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qvarsym",
-                          "value": "+",
-                          "line": 12,
-                          "column": 9,
-                          "childs": null
-                        },
-                        {
-                          "type": "integer",
-                          "value": "1",
-                          "line": 12,
-                          "column": 11,
-                          "childs": null
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "fexp",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "aexp_",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Special",
-                      "value": "(",
-                      "line": 14,
-                      "column": 1,
-                      "childs": null
-                    },
-                    {
-                      "type": "lexp",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "reservdop",
-                          "value": "\\",
-                          "line": 14,
-                          "column": 2,
-                          "childs": null
-                        },
-                        {
-                          "type": "Qvarid",
-                          "value": "x",
-                          "line": 14,
-                          "column": 3,
-                          "childs": null
-                        },
-                        {
-                          "type": "reservdop",
-                          "value": "->",
-                          "line": 14,
-                          "column": 5,
-                          "childs": null
-                        },
-                        {
-                          "type": "lexp",
-                          "value": null,
-                          "line": null,
-                          "column": null,
-                          "childs": [
-                            {
-                              "type": "reservdid",
-                              "value": "let",
-                              "line": 14,
-                              "column": 8,
-                              "childs": null
-                            },
-                            {
-                              "type": "decls",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "layout",
-                                  "value": "{",
-                                  "line": -1,
-                                  "column": -1,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "decl",
-                                  "value": null,
-                                  "line": null,
-                                  "column": null,
-                                  "childs": [
-                                    {
-                                      "type": "Qvarid",
-                                      "value": "x",
-                                      "line": 14,
-                                      "column": 12,
-                                      "childs": null
-                                    },
-                                    {
-                                      "type": "rhs",
-                                      "value": null,
-                                      "line": null,
-                                      "column": null,
-                                      "childs": [
-                                        {
-                                          "type": "reservdop",
-                                          "value": "=",
-                                          "line": 14,
-                                          "column": 14,
-                                          "childs": null
-                                        },
-                                        {
-                                          "type": "integer",
-                                          "value": "3",
-                                          "line": 14,
-                                          "column": 16,
-                                          "childs": null
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "layout 3",
-                                  "value": "}",
-                                  "line": -1,
-                                  "column": -1,
-                                  "childs": null
-                                }
-                              ]
-                            },
-                            {
-                              "type": "reservdid",
-                              "value": "in",
-                              "line": 14,
-                              "column": 18,
-                              "childs": null
-                            },
-                            {
-                              "type": "Qvarid",
-                              "value": "x",
-                              "line": 14,
-                              "column": 21,
-                              "childs": null
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "Special",
-                      "value": ")",
-                      "line": 14,
-                      "column": 22,
-                      "childs": null
-                    }
-                  ]
                 },
                 {
                   "type": "integer",
                   "value": "1",
-                  "line": 14,
-                  "column": 24,
+                  "line": 2,
+                  "column": 11,
                   "childs": null
                 }
               ]
