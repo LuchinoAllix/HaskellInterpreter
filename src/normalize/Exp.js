@@ -56,11 +56,11 @@ export class FunctionApp extends Term {
    * @param {String} name 
    * @param {[Exp]} args 
    */
-  constructor(name, args, annonymous = false){
+  constructor(name, args, anonymous = false){
     super("functionApp")
     this.name = name;
     this.args = args;
-    this.annonymous = annonymous;
+    this.anonymous = anonymous;
   }
 }
 
