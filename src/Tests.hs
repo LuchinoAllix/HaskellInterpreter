@@ -249,7 +249,7 @@ f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --------------------------------------------------------------------------------
 -- Test 27         : annotated variable declaration
 -- Expected result : function
--- temporary decl to see the ast output
+-- temporary decls to see the different ast output
 
 --/
 x :: Int
@@ -258,6 +258,7 @@ x :: [Int] -> Int
 x :: Int -> Int
 x = 5
 x y = y + 1
+(\x -> let x = 3 in x) 1
 
 --/
 
@@ -267,6 +268,14 @@ x y = y + 1
 
 --/
 (\x -> let x = 3 in x) 1
+--/
+
+--------------------------------------------------------------------------------
+-- Test 29         : function with 3 arguments
+-- Expected result : function
+
+--/
+f x y z = 1 
 --/
 
 --------------------------------------------------------------------------------
