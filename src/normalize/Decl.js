@@ -1,4 +1,4 @@
-import { Exp } from "./Exp.js";
+import { Exp, Term } from "./Exp.js";
 import { Node } from "../Node.js";
 
 
@@ -7,7 +7,7 @@ import { Node } from "../Node.js";
 /**
  * todo
  */
-export class Decl {
+export class Decl extends Term {
 
   /**
    * todo

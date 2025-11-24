@@ -19,7 +19,7 @@ export class Exp {
  * Abstract class 
  * todo
  */
-class Term {
+export class Term {
 
   /**
    * todo
