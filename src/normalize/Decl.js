@@ -1,4 +1,5 @@
 import { Exp } from "./Exp.js";
+import { Node } from "../Node.js";
 
 
 //--                 File containing "type" Decl for normalize              --//
@@ -12,27 +13,29 @@ export class Decl {
    * todo
    * @param {DeclType} type 
    * @param {String} name 
-   * @param {[Strings]} typeAnnotation 
+   * @param {Node} typeAnnotation 
    * @param {[Exp]} branches
+   * @param {[String]} args
    */
-  constructor(type, name, typeAnnotation, branches){
+  constructor(type, name, typeAnnotation, branches, args){
     this.type = type;
     this.name = name;
     this.typeAnnotation = typeAnnotation;
     this.branches = branches;
+    this.args = args
   }
 
   /**
    * todo
-   * @param {*} type 
+   * @param {Node} typeAnnotation 
    */
-  annotate(type){
-    this.type = type;
+  annotate(typeAnnotation){
+    this.typeAnnotation = typeAnnotation;
   }
 
   /**
    * todo
-   * @param {*} branch 
+   * @param {Exp} branch 
    */
   addBranchDef(branch){
     this.branches.push(branch);
@@ -41,38 +44,44 @@ export class Decl {
 
 /**
  * todo
+ * @param {String} name 
+ * @param {Node} node 
+ * @returns 
  */
-export class FunctionDecl extends Decl {
-
-  /**
-   * todo
-   * @param {*} name 
-   * @param {*} typeAnnotation 
-   * @param {*} branches 
-   * @param {*} args 
-   */
-  constructor(name, typeAnnotation, branches, args){
-    super("function", name, typeAnnotation, branches);
-    this.arguments = args;
-  }
+export function typeFuncDecl(name, node){
+  return Decl("function", name, node, null, null);
 }
 
 /**
  * todo
+ * @param {String} name 
+ * @param {Exp} branch 
+ * @param {[String]} args 
+ * @returns 
  */
-export class VariableDecl extends Decl {
-
-  /**
-   * todo
-   * @param {*} name 
-   * @param {*} typeAnnotation 
-   * @param {*} branches 
-   */
-  constructor(name,typeAnnotation, branches){
-    super("variable", name, typeAnnotation, branches);
-  }
+export function branchFuncDecl(name, branch, args){
+  return Decl("function", name, null, [branch], args);
 }
 
+/**
+ * todo
+ * @param {String} name 
+ * @param {Node} node 
+ * @returns 
+ */
+export function typeVarDecl(name, node){
+  return Decl("variable", name, node, null, null);
+}
+
+/**
+ * todo
+ * @param {String} name 
+ * @param {Exp} branch
+ * @returns 
+ */
+export function branchVarDecl(name, branch){
+  return Decl("variable", name, null, [branch], null);
+}
 
 
 const DeclType = {
