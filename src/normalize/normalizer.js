@@ -44,9 +44,6 @@ export function normalize(astRoot){
  * @param {*} node 
  */
 function normalizeDecl(node){
-
-  // todo 
-  // make the declaration object
   let name = "";
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
@@ -61,9 +58,9 @@ function normalizeDecl(node){
   } else if (node.type === "decl"){ // We know it's a branch declaration
     name = node.childs[0].childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return branchFuncDecl(name, normalize(???), node.childs[2]);
+      return branchFuncDecl(name, normalize(node.childs[1]), getArgs(node));
     } else if (isDeclFunc(node)) { // We know it's a variable declaration
-      return typeVarDecl(name, node.childs[2]);
+      return branchVarDecl(name, normalize(node.childs[1]));
     } else {
       throw Error(node + " neither isGendecl or isDecl worked, probably" +
                   "unsupported expression");
@@ -104,4 +101,8 @@ function addDecl(explist, decl){
   // merge the ones based on the same name, 
   // check if number of arguments is the same blablabla
   // throw error if a variable is declared multiple times
+}
+
+function getArgs(node){
+  // todo
 }
