@@ -42,26 +42,32 @@ async function main(){
   for (const arg of args) {
     switch (arg){
       case "--Tokens" :
+      case "--tokens" :
         printTokens = true;
         break;
 
       case "--AST" :
+      case "--ast" :
         printAST = true;
         break;
 
       case "--Debug" :
+      case "--debug" :
         printDebug = true;
         break;
 
       case "--Nosave" :
+      case "--nosave" :
         nosave = true;
         break;
 
       case "--Derivative" :
+      case "--derivative" :
         derivative = true;
         break;
       
       case "--Verbose" :
+      case "--verbose" :
         verbose = true;
         break;
 
