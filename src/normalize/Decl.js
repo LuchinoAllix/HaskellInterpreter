@@ -1,5 +1,6 @@
 import { Exp } from "./Exp.js";
 import { Node } from "../Node.js";
+import { Term } from "./Term.js";
 
 
 //--                 File containing "type" Decl for normalize              --//
@@ -7,7 +8,7 @@ import { Node } from "../Node.js";
 /**
  * todo
  */
-export class Decl extends Exp {
+export class Decl extends Term {
 
   /**
    * todo
@@ -18,6 +19,7 @@ export class Decl extends Exp {
    * @param {[String]} args
    */
   constructor(type, name, typeAnnotation, branches, args){
+    super("DECL");
     this.type = type;
     this.name = name;
     this.typeAnnotation = typeAnnotation;
@@ -49,7 +51,7 @@ export class Decl extends Exp {
  * @returns 
  */
 export function typeFuncDecl(name, node){
-  return Decl("functionDecl", name, node, null, null);
+  return Decl("function", name, node, null, null);
 }
 
 /**
@@ -60,7 +62,7 @@ export function typeFuncDecl(name, node){
  * @returns 
  */
 export function branchFuncDecl(name, branch, args){
-  return Decl("functionDecl", name, null, [branch], args);
+  return Decl("function", name, null, [branch], args);
 }
 
 /**
@@ -70,7 +72,7 @@ export function branchFuncDecl(name, branch, args){
  * @returns 
  */
 export function typeVarDecl(name, node){
-  return Decl("variableDecl", name, node, null, null);
+  return Decl("variable", name, node, null, null);
 }
 
 /**
@@ -80,7 +82,7 @@ export function typeVarDecl(name, node){
  * @returns 
  */
 export function branchVarDecl(name, branch){
-  return Decl("variableDecl", name, null, [branch], null);
+  return Decl("variable", name, null, [branch], null);
 }
 
 // Doesn't serve any real function, only to show the type options
