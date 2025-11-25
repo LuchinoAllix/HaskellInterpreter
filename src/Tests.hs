@@ -223,6 +223,9 @@ let x = "3"
 -- Test 24         : multiple inless lets
 -- Expected result : variable 
 -- Do we actually want to accept this ? FIXME
+-- no because inless let's are for let statements (inside do) 
+-- and list comprehensions
+-- https://stackoverflow.com/questions/8274650/in-haskell-when-do-we-use-in-with-let
 
 --/
 let x = "3"
@@ -275,6 +278,17 @@ x y = y + 1
 
 --/
 f x y z = 1 
+--/
+
+--------------------------------------------------------------------------------
+-- Test 30         : function declaration with main
+-- Expected result : 1
+
+--/
+f :: Int -> Int
+f x = x
+
+main = do print (f 1)
 --/
 
 --------------------------------------------------------------------------------
