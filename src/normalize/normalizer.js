@@ -118,29 +118,41 @@ function addDecl(declList, decl){
       if (declList[i].isDecl()){ // We know we have a declaration
         if (declList[i].name === decl.name){ // If declaration already exists
 
-          if ()
-
-          if (i + 1 < declList.length && declList[i+1].name !== decl.name){
-            throw Error("Declarations on multiple lines should follow one " + 
-              "another");
-          }
-
           if (declList[i].typeAnnotation !== null && 
               decl.typeAnnotation !== null){
             throw Error("Type for "+  declList[i].name + " is already defined");
+          }
 
-          } else if (declList[i].typeAnnotation === null && 
+          if (declList[i].typeAnnotation === null && 
                      decl.typeAnnotation !== null){
             throw Error("Type annotation should come before " + 
                         "definition" + decl);
-
-          } else if (declList[i].type === "variable" &&
-                     decl.typeAnnotation !== null){
-            throw Error("Variable " + declList[i].name + " is already defined");
           }
 
+          if (i !== declList.length - 1){
+            // We suppose that the declaration should be the last one
+            throw Error("Declarations on multiple lines should follow one " + 
+              "another");
+          } 
 
-          break;
+          if(decl.isVar()){
+            if (declList[i].isAnnotated() && !decl.isAnnotated()){
+              declList[i].addBranch(decl.branches[0]);
+              break;
+            } else {
+              throw Error("Cannot redefine variable : " + decl.name);
+            }
+          
+          
+          } else if (decl.isFunc()){
+            declList[i].addBranch(decl.branches[0]);
+            break;
+          
+          } else {
+            throw Error("A declaration other than a function or variable was " +
+              "given to addDecl " + decl.type);
+          }
+
         } else {
           declList.push(decl);
         }
@@ -149,10 +161,6 @@ function addDecl(declList, decl){
       }
     }
   }
-  // todo : given a list of expressions, for each declarations, 
-  // merge the ones based on the same name, 
-  // check if number of arguments is the same blablabla
-  // throw error if a variable is declared multiple times
 }
 
 /**
