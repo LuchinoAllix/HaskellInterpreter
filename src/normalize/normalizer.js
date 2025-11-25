@@ -39,7 +39,7 @@ export function normalize(astRoot){
       return normalizeDecl(astRoot);
     
     default :
-      throw Error("This type of node is not yet managed by normalise : ", node);
+      throw Error("This type of node is not yet managed by normalise : "+ node);
     
 
   }
@@ -104,7 +104,29 @@ function isDeclFunc(node){
  * @param {Decl} decl 
  */
 function addDecl(explist, decl){
+  if (explist.length === 0){
+    explist.push(decl);
+  } else {
+    for (let i = 0; i < explist.length; i ++){
+      if (explist[i].isDecl()){ // We know we have a declaration
+        if (explist[i].name === decl.name){ // If the declaration already exists
+          if (explist[i].typeAnnotation !== null && 
+              decl.typeAnnotation !== null){
+            throw Error("Type for "+  explist[i].name + " is already defined");
+          } else if (explist[i].typeAnnotation === null && 
+                     decl.typeAnnotation !== null){
+            throw Error("Type annotation should come before " + 
+                        "definition" + decl);
+          } else if (explist[i].type === "variableDecl" &&
+                     decl.typeAnnotation !== null){
+            throw Error("Variable " + explist[i].name + " is already defined");
+          }
 
+          break;
+        }
+      }
+    }
+  }
   // todo : given a list of expressions, for each declarations, 
   // merge the ones based on the same name, 
   // check if number of arguments is the same blablabla
@@ -136,6 +158,6 @@ function countTypeArgs(node){
   } else if (node.type === "type"){
     return 1 + countTypeArgs(node.childs[2]);
   } else {
-    throw Error("Unsupported node in counting args : ", node.type);
+    throw Error("Unsupported node in counting args : " + node.type);
   }
 }
