@@ -24,22 +24,29 @@ export function normalize(astRoot){
       }
       throw Error("Malformed AST, body should have one non layout node.");
 
-    case "topdecls" : 
-    case "interactive" :
-      let explist = []
+      //case "interactive" : 
+      // TODO : Must do something different for interactive, 
+      // because it takes only one exp or decl at a time
+
+      case "topdecls" : 
+      let declList = []
       for (let node in astRoot.childs){
-        if (!node.type.startswith(("layout"))){
-          addDecl(explist, normalize(node));
+        if (node.type === "decl" || node.type === "gendecl"){
+          addDecl(declList, normalizeDecl(node));
+        } else if (!node.type.startswith(("layout"))){
+          throw Error("Only declarations are allowed in program mode, not" + 
+            node.type);
         }
       }
-      return explist;
+      return declList;
 
     case "decl" :
     case "gendecl" :
       return normalizeDecl(astRoot);
     
     default :
-      throw Error("This type of node is not yet managed by normalise : "+ node);
+      throw Error("This type of node is not yet managed by normalise : " 
+        + node.type);
     
 
   }
@@ -100,30 +107,45 @@ function isDeclFunc(node){
 
 /**
  * todo
- * @param {[Exp]} explist 
+ * @param {[Exp]} declList 
  * @param {Decl} decl 
  */
-function addDecl(explist, decl){
-  if (explist.length === 0){
-    explist.push(decl);
+function addDecl(declList, decl){
+  if (declList.length === 0){
+    declList.push(decl);
   } else {
-    for (let i = 0; i < explist.length; i ++){
-      if (explist[i].isDecl()){ // We know we have a declaration
-        if (explist[i].name === decl.name){ // If the declaration already exists
-          if (explist[i].typeAnnotation !== null && 
+    for (let i = 0; i < declList.length; i ++){
+      if (declList[i].isDecl()){ // We know we have a declaration
+        if (declList[i].name === decl.name){ // If declaration already exists
+
+          if ()
+
+          if (i + 1 < declList.length && declList[i+1].name !== decl.name){
+            throw Error("Declarations on multiple lines should follow one " + 
+              "another");
+          }
+
+          if (declList[i].typeAnnotation !== null && 
               decl.typeAnnotation !== null){
-            throw Error("Type for "+  explist[i].name + " is already defined");
-          } else if (explist[i].typeAnnotation === null && 
+            throw Error("Type for "+  declList[i].name + " is already defined");
+
+          } else if (declList[i].typeAnnotation === null && 
                      decl.typeAnnotation !== null){
             throw Error("Type annotation should come before " + 
                         "definition" + decl);
-          } else if (explist[i].type === "variableDecl" &&
+
+          } else if (declList[i].type === "variable" &&
                      decl.typeAnnotation !== null){
-            throw Error("Variable " + explist[i].name + " is already defined");
+            throw Error("Variable " + declList[i].name + " is already defined");
           }
 
+
           break;
+        } else {
+          declList.push(decl);
         }
+      } else {
+        throw Error("Only delcarations are allowed in addDecl " + decl);
       }
     }
   }
