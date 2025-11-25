@@ -42,6 +42,30 @@ export class Decl extends Term {
   addBranchDef(branch){
     this.branches.push(branch);
   }
+
+  /**
+   * todo
+   * @returns 
+   */
+  isFunc(){
+    return this.type === "function";
+  }
+
+  /**
+   * todo
+   * @returns 
+   */
+  isVar(){
+    return this.type === "variable";
+  }
+
+  /**
+   * todo
+   * @returns 
+   */
+  isAnnotated(){
+    return this.typeAnnotation !== null;
+  }
 }
 
 /**
