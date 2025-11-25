@@ -1,16 +1,13 @@
 import { Decl } from "./Decl";
+import { Term } from "./Term";
 
 /**
  * todo
  */
-export class Exp {
+export class Exp extends Term {
 
-  isExp(){
-    return this.type.endsWith("Exp");
-  }
-
-  isDecl(){
-    return this.type.endsWith("Decl");
+  constructor(){
+    super("EXP");
   }
 
 }
@@ -25,6 +22,7 @@ export class VarExp extends Exp{
    * @param {String} name 
    */
   constructor(name){
+    super();
     this.type = "varExp";
     this.name = name;
   }
@@ -42,7 +40,8 @@ export class FunctionApp extends Exp {
    * @param {[Exp]} args 
    */
   constructor(name, args, anonymous = false){
-    this.type = "functionAppExp";
+    super();
+    this.type = "functionApp";
     this.name = name;
     this.args = args;
     this.anonymous = anonymous;
@@ -58,7 +57,8 @@ export class IfTerm extends Exp {
    * @param {Exp} fail 
    */
   constructor(condition, sucess, fail){
-    this.type = "ifExp";
+    super();
+    this.type = "if";
     this.condition = condition;
     this.sucess = sucess;
     this.fail = fail;
@@ -72,7 +72,8 @@ export class LetTerm extends Exp {
    * @param {[Decl]} decls 
    */
   constructor(decls){
-    this.type = "letExp";
+    super();
+    this.type = "let";
     this.decls = decls
   }
 
