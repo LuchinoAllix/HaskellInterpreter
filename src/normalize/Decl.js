@@ -1,4 +1,4 @@
-import { Exp, Term } from "./Exp.js";
+import { Exp } from "./Exp.js";
 import { Node } from "../Node.js";
 
 
@@ -7,7 +7,7 @@ import { Node } from "../Node.js";
 /**
  * todo
  */
-export class Decl extends Term {
+export class Decl extends Exp {
 
   /**
    * todo
@@ -49,7 +49,7 @@ export class Decl extends Term {
  * @returns 
  */
 export function typeFuncDecl(name, node){
-  return Decl("function", name, node, null, null);
+  return Decl("functionDecl", name, node, null, null);
 }
 
 /**
@@ -60,7 +60,7 @@ export function typeFuncDecl(name, node){
  * @returns 
  */
 export function branchFuncDecl(name, branch, args){
-  return Decl("function", name, null, [branch], args);
+  return Decl("functionDecl", name, null, [branch], args);
 }
 
 /**
@@ -70,7 +70,7 @@ export function branchFuncDecl(name, branch, args){
  * @returns 
  */
 export function typeVarDecl(name, node){
-  return Decl("variable", name, node, null, null);
+  return Decl("variableDecl", name, node, null, null);
 }
 
 /**
@@ -80,11 +80,11 @@ export function typeVarDecl(name, node){
  * @returns 
  */
 export function branchVarDecl(name, branch){
-  return Decl("variable", name, null, [branch], null);
+  return Decl("variableDecl", name, null, [branch], null);
 }
 
-
+// Doesn't serve any real function, only to show the type options
 const DeclType = {
-  function : "function",
-  variable : "variable"
+  functionDecl : "functionDecl",
+  variableDecl : "variableDecl"
 }
