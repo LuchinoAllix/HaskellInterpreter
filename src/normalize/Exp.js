@@ -5,42 +5,27 @@ import { Decl } from "./Decl";
  */
 export class Exp {
 
-  /**
-   * todo
-   * @param {[Term]} termes 
-   */
-  constructor(termes){
-    this.temres = termes;  
+  isExp(){
+    return this.type.endsWith("Exp");
+  }
+
+  isDecl(){
+    return this.type.endsWith("Decl");
   }
 
 }
 
 /**
- * Abstract class 
  * todo
  */
-export class Term {
-
-  /**
-   * todo
-   * @param {*} type 
-   */
-  constructor(type){
-    this.type = type;
-  }
-}
-
-/**
- * todo
- */
-export class VarExp extends Term {
+export class VarExp extends Exp{
   
   /**
    * todo
    * @param {String} name 
    */
   constructor(name){
-    super("var")
+    this.type = "varExp";
     this.name = name;
   }
 }
@@ -49,7 +34,7 @@ export class VarExp extends Term {
 /**
  * Function application
  */
-export class FunctionApp extends Term {
+export class FunctionApp extends Exp {
     
   /**
    * todo
@@ -57,14 +42,14 @@ export class FunctionApp extends Term {
    * @param {[Exp]} args 
    */
   constructor(name, args, anonymous = false){
-    super("functionApp")
+    this.type = "functionAppExp";
     this.name = name;
     this.args = args;
     this.anonymous = anonymous;
   }
 }
 
-export class IfTerm extends Term {
+export class IfTerm extends Exp {
   
   /**
    * todo
@@ -73,27 +58,27 @@ export class IfTerm extends Term {
    * @param {Exp} fail 
    */
   constructor(condition, sucess, fail){
-    super("if")
+    this.type = "ifExp";
     this.condition = condition;
     this.sucess = sucess;
     this.fail = fail;
   }
 }
 
-export class LetTerm extends Term {
+export class LetTerm extends Exp {
 
   /**
    * // What to do about the in part ?
    * @param {[Decl]} decls 
    */
   constructor(decls){
-    super("let")
+    this.type = "letExp";
     this.decls = decls
   }
 
 }
 
-export class CaseTerm extends Term {
+export class CaseTerm extends Exp {
 
   /**
    * TODO
