@@ -39,11 +39,7 @@ let space = 0;          // indentation used in debug print
  */
 export function parse(program){
   fails = {}; // reset the fails dictionnary in case we already parsed something
-  if (!program.isLexed){
-    tokenize(program);
-  }
   mainLoop(program);
-  program.isParsed = true;
   return true;
 }
 
