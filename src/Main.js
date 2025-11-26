@@ -1,9 +1,10 @@
 import { Program } from './Program.js'
 import { tokenize }from './lexer/Lexer.js'
-import { parse } from './parser/Parser.js'
+import { parse, activateDebug } from './parser/Parser.js'
 import { Token } from "./Token.js";
 import { Node, compressTree } from './Node.js';
-import { activateDebug } from './parser/Parser.js';
+import { normalizeStart } from './normalize/normalizer.js';
+import { Term } from './normalize/Term.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -98,8 +99,12 @@ async function main(){
       console.log("Test number out of range, tests go from 0 to : ", 
                   tests.length-1);
     } else {
-      testAtest(testNum, printTokens, printAST, printDebug, nosave, derivative, 
-                true);
+      if (testAtest(testNum, printTokens, printAST, printDebug, nosave, 
+                    derivative, true)){
+        console.log("Test passed ✅");
+      } else {
+        console.log("Test failed ❌");
+      }
     }
   }
   return ;
@@ -211,6 +216,33 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose){
   }
 
   try{ // todo evaluation
+  
+    if (normalizeStart(program)){
+      if (verbose){
+        console.log("Successful normalisation :) ");
+      }
+      
+    } else {
+      // normalizer never returns false, if it doesn't work it throws an error
+      // So this is never executed
+      console.log("Unsuccessful normalisation :( ");
+      return false;
+    }
+
+     if (printAST){
+      showNormalForm(program.normalizedForm);
+
+    }
+
+  } catch (error) {
+    console.log("Error while normalizing :");
+    if (verbose){
+      showNormalForm(program.normalizedForm);
+      console.log(error);
+    }
+  }
+
+  try{ // todo evaluation
 
   } catch (error) {
 
@@ -236,6 +268,18 @@ function showTokens(tokens){
 function showAST(ast){
   console.log("AST :");
   console.log(JSON.stringify(ast , null, 1));
+}
+
+/**
+ * Prints to the console the normalized form with stringify
+ * @param {[Term]} terms 
+ */
+function showNormalForm(terms){
+  console.log("Normalized form :");
+    console.log("\t" + JSON.stringify(terms, null, 1));
+  //for (let term of terms){
+    //console.log("\t" + JSON.stringify(term, null, 1));
+  //}
 }
 
 /**
