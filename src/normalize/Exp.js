@@ -1,5 +1,5 @@
-import { Decl } from "./Decl";
-import { Term } from "./Term";
+import { Decl } from "./Decl.js";
+import { Term } from "./Term.js";
 
 /**
  * todo
