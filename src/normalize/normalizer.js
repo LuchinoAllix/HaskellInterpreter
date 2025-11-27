@@ -61,6 +61,13 @@ function normalize(astRoot){
     case "rhs" :
       // This is not the only rhs outcome, just the only one yet managed
       return normalizeExp(astRoot.childs[1]);
+
+    case "integer":
+    case "String" :
+    case "Qconid" :
+    case "infixexp" :
+      return normalizeExp(astRoot);
+       
     
     default :
       throw Error("This type of node is not yet managed by normalise : " 
@@ -170,7 +177,6 @@ function addDecl(declList, decl){
               throw Error("Mismatch between number of arguments in different " +
                  "parts of the function declaration : " + decl.name);
             }
-            console.log(decl)
             declList[i].addBranchDef(decl.branches[0]);
             break;
           
@@ -223,6 +229,9 @@ function normalizeExp(node){
     case "String" :
       return new ValExp(node.value, node.type);
 
+    case "Qconid" :
+      return normaliseQconid(node);
+
     default :
       throw Error("This expression type is not yet supported : " + node.type);
   }
@@ -257,5 +266,16 @@ function countTypeArgs(node){
     return 1 + countTypeArgs(node.childs[2]);
   } else {
     throw Error("Unsupported node in counting args : " + node.type);
+  }
+}
+
+function normaliseQconid(node){
+  switch (node.value){
+    case "False" :
+    case "True" :
+      return new ValExp(node.value, "Boolean");
+    
+    default :
+      throw Error("Qconid not yet managed : " + node.value);
   }
 }
