@@ -37,6 +37,7 @@ async function main(){
   let nosave = false;
   let printTokens = false;
   let derivative = false;
+  let printNF = false;
   let verbose = false;
 
   // Parcourt tous les arguments restants pour voir les options
@@ -65,6 +66,12 @@ async function main(){
       case "--Derivative" :
       case "--derivative" :
         derivative = true;
+        break;      
+        
+      case "--NF" :
+      case "--Nf" :
+      case "--nf" :
+        printNF = true;
         break;
       
       case "--Verbose" :
@@ -86,7 +93,7 @@ async function main(){
     nosave = true;
     for (let i=0; i < tests.length; i ++){
       if (testAtest(i, printTokens, printAST, printDebug, nosave, derivative, 
-                    verbose)){
+                    verbose, printNF)){
         cnt +=1;
         console.log("Test passed ✅");
       } else {
@@ -100,7 +107,7 @@ async function main(){
                   tests.length-1);
     } else {
       if (testAtest(testNum, printTokens, printAST, printDebug, nosave, 
-                    derivative, true)){
+                    derivative, true, printNF)){
         console.log("Test passed ✅");
       } else {
         console.log("Test failed ❌");
@@ -126,7 +133,8 @@ function printOptions(){
       "  --Debug       shows the rules took whilst parsing\n" +
       "  --Nosave      doesn't save the AST after parsing\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
-      "  --Verbose    shows error messages if all tests are run"
+      "  --NF          shows the normal form after normalizing\n" +
+      "  --Verbose     shows error messages if all tests are run"
     );
 }
 
@@ -140,7 +148,8 @@ function printOptions(){
  * @param {Boolean} der show derivative tree instead of AST
  * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose){
+function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose, 
+                   printNF){
   
   var test = tests[testNb];
   const program = new Program(test.input);
@@ -229,9 +238,8 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose){
       return false;
     }
 
-     if (printAST){
+     if (printNF){
       showNormalForm(program.normalizedForm);
-
     }
 
   } catch (error) {
@@ -276,7 +284,7 @@ function showAST(ast){
  */
 function showNormalForm(terms){
   console.log("Normalized form :");
-    console.log("\t" + JSON.stringify(terms, null, 1));
+    console.log(JSON.stringify(terms, null, 4));
   //for (let term of terms){
     //console.log("\t" + JSON.stringify(term, null, 1));
   //}
