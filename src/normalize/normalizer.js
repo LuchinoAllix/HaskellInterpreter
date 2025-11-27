@@ -1,8 +1,21 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
-         branchVarDecl } from "./Decl";
-import { Exp, VarExp, FunctionApp, IfTerm, LetTerm, CaseTerm } from "./Exp";
+         branchVarDecl } from "./Decl.js";
+import { Exp, VarExp, ValExp, FunctionApp, IfTerm, LetTerm, CaseTerm } 
+       from "./Exp.js";
+import { Program } from "../Program.js";
 
 //--     File containing functions for intermediary form transformation     --//
+
+
+/**
+ * 
+ * @param {Program} program 
+ * @returns {Boolean}
+ */
+export function normalizeStart(program){
+  program.normalizedForm = normalize(program.AST);
+  return true;
+}
 
 
 /**
@@ -10,15 +23,15 @@ import { Exp, VarExp, FunctionApp, IfTerm, LetTerm, CaseTerm } from "./Exp";
  * @param {*} astRoot 
  * @returns 
  */
-export function normalize(astRoot){
+function normalize(astRoot){
   switch (astRoot.type){
 
     case "root" :
       return normalize(astRoot.childs[0]);
 
     case "body" :
-      for (let node in astRoot.childs){
-        if (!node.type.startswith(("layout"))){
+      for (let node of astRoot.childs){
+        if (! node.type.startsWith("layout")){
           return normalize(node);
         }
       }
@@ -30,10 +43,10 @@ export function normalize(astRoot){
 
       case "topdecls" : 
       let declList = []
-      for (let node in astRoot.childs){
+      for (let node of astRoot.childs){
         if (node.type === "decl" || node.type === "gendecl"){
           addDecl(declList, normalizeDecl(node));
-        } else if (!node.type.startswith(("layout"))){
+        } else if (!node.type.startsWith(("layout"))){
           throw Error("Only declarations are allowed in program mode, not" + 
             node.type);
         }
@@ -43,10 +56,14 @@ export function normalize(astRoot){
     case "decl" :
     case "gendecl" :
       return normalizeDecl(astRoot);
+
+    case "rhs" :
+      // This is not the only rhs outcome, just the only one yet managed
+      return normalizeExp(astRoot.childs[1]);
     
     default :
       throw Error("This type of node is not yet managed by normalise : " 
-        + node.type);
+        + astRoot.type);
     
 
   }
@@ -137,7 +154,7 @@ function addDecl(declList, decl){
 
           if(decl.isVar()){
             if (declList[i].isAnnotated() && !decl.isAnnotated()){
-              declList[i].addBranch(decl.branches[0]);
+              declList[i].addBranchDef(decl.branches[0]);
               break;
             } else {
               throw Error("Cannot redefine variable : " + decl.name);
@@ -145,7 +162,7 @@ function addDecl(declList, decl){
           
           
           } else if (decl.isFunc()){
-            declList[i].addBranch(decl.branches[0]);
+            declList[i].addBranchDef(decl.branches[0]);
             break;
           
           } else {
@@ -164,12 +181,49 @@ function addDecl(declList, decl){
 }
 
 /**
+ * 
+ * @param {*} node 
+ * @returns 
+ */
+function normalizeExp(node){
+  console.log(node.type);
+  switch (node.type){
+    
+    case "infixexp" :
+      console.log("1", node.childs[1].value);
+      // based on the fact that the second element of an infixexp is the 
+      // function 
+      return new FunctionApp(node.childs[1].value, 
+                             [normalizeExp(node.childs[0]),
+                              normalizeExp(node.childs[2])]);
+
+    case "fexp" :
+      console.log("2", node.childs[0].value);
+      return new FunctionApp(node.childs[0].value, 
+                             [normalizeExp(node.childs[1])]);
+    
+    case "Qvarid" :
+      console.log("3", node.value);
+      return new VarExp(node.value);
+
+    case "integer" :
+    case "String" :
+      console.log("4", node.value);
+      return new ValExp(node.value, node.type);
+
+    default :
+      throw Error("This expression type is not yet supported : " + node.type);
+  }
+}
+
+
+/**
  * Given a "funlhs" node, returns the name of each variables a list of strings
  * @param {Node} node 
  * @returns {[String]}
  */
 function getArgs(node){
-  output = [];
+  let output = [];
   // we skip first element because it's the name of the function
   for (let i = 1; i < node.childs.length; i ++){
     output.push(node.childs[i].value);
