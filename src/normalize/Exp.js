@@ -2,10 +2,14 @@ import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
 
 /**
- * todo
+ * parent class for expressions
  */
 export class Exp extends Term {
 
+  /**
+   * Constructor for expressions
+   * (sets the metatype attribute)
+   */
   constructor(){
     super("EXP");
   }
@@ -13,12 +17,12 @@ export class Exp extends Term {
 }
 
 /**
- * todo
+ * Variable expressions object
  */
 export class VarExp extends Exp{
   
   /**
-   * todo
+   * Constuctor for variables expressions
    * @param {String} name 
    */
   constructor(name){
@@ -28,8 +32,18 @@ export class VarExp extends Exp{
   }
 }
 
+/**
+ * Values expressions object
+ */
 export class ValExp extends Exp {
   
+    /**
+   * Constuctor for variables expressions
+   * @param {valueType} value  // valueType is not defined as a type, but the 
+   *                           // value inside valueType is the type of the 
+   *                           // value 
+   * @param {String} valueType
+   */
   constructor(value, valueType){
     super();
     this.type = "value";
@@ -41,12 +55,14 @@ export class ValExp extends Exp {
 
 
 /**
- * Function application
+ * Function application expression
  */
 export class FunctionApp extends Exp {
     
   /**
-   * todo
+   * creates an application function expression
+   * perhaps the anonymous attribute can be omitted and the anonimity of the 
+   * function can be deduced by the nullness fo the name attribute...
    * @param {String} name 
    * @param {[Exp]} args 
    */
@@ -59,11 +75,14 @@ export class FunctionApp extends Exp {
   }
 }
 
+/**
+ * If term expression
+ */
 export class IfTerm extends Exp {
   
   /**
-   * todo
-   * @param {Term} condition 
+   * Creates an if expression
+   * @param {Exp} condition 
    * @param {Exp} sucess 
    * @param {Exp} fail 
    */
@@ -76,6 +95,9 @@ export class IfTerm extends Exp {
   }
 }
 
+/**
+ * Creates a let Term expression
+ */
 export class LetTerm extends Exp {
 
   /**
@@ -90,6 +112,9 @@ export class LetTerm extends Exp {
 
 }
 
+/**
+ * Creates a case of Term expression
+ */
 export class CaseTerm extends Exp {
 
   /**

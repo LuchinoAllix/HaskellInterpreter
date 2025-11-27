@@ -8,7 +8,8 @@ import { Program } from "../Program.js";
 
 
 /**
- * 
+ * Start function to make the ast of a program into a intermediary form
+ * for evaluation
  * @param {Program} program 
  * @returns {Boolean}
  */
@@ -19,9 +20,9 @@ export function normalizeStart(program){
 
 
 /**
- * todo
- * @param {*} astRoot 
- * @returns 
+ * Turn a node into a term
+ * @param {Node} astRoot 
+ * @returns {Term}
  */
 function normalize(astRoot){
   switch (astRoot.type){
@@ -71,8 +72,9 @@ function normalize(astRoot){
 
 
 /**
- * todo
- * @param {*} node 
+ * turn a decl or gendecl node into a Decl object
+ * @param {Node} node 
+ * @returns {Decl}
  */
 function normalizeDecl(node){
   let name = "";
@@ -123,7 +125,9 @@ function isDeclFunc(node){
 }
 
 /**
- * todo
+ * Unifies function and variable declaration (as in if declared on multiple 
+ * lines, it will join de definitions (type and expression))
+ * (variables are listed because they can have a type annotation)
  * @param {[Exp]} declList 
  * @param {Decl} decl 
  */
@@ -186,9 +190,9 @@ function addDecl(declList, decl){
 }
 
 /**
- * 
- * @param {*} node 
- * @returns 
+ * Turns an expression node into a Exp type object
+ * @param {Node} node 
+ * @returns {Exp}
  */
 function normalizeExp(node){
   switch (node.type){

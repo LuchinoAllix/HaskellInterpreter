@@ -7,13 +7,16 @@ import { Branch } from "./Branch.js";
 //--                 File containing "type" Decl for normalize              --//
 
 /**
- * todo
+ * Decl type object used as an intermediary form for evaluation
+ * Decls can either be a function or a variable, they could be definied as
+ * subclasses (especially since variable need only one branch definition) but
+ * it works for the moment to have them both as the same "parent" type
  */
 export class Decl extends Term {
 
   /**
-   * todo
-   * @param {DeclType} type 
+   * Constructor for Decl
+   * @param {DeclType} type Type of declaration (function or variable)
    * @param {String} name 
    * @param {Node} typeAnnotation 
    * @param {[Branch]} branches
@@ -29,15 +32,7 @@ export class Decl extends Term {
   }
 
   /**
-   * todo
-   * @param {Node} typeAnnotation 
-   */
-  annotate(typeAnnotation){
-    this.typeAnnotation = typeAnnotation;
-  }
-
-  /**
-   * todo
+   * allows to add a branch definition to a declaration
    * @param {[String]} args 
    * @param {Exp} brachBody 
    */
@@ -46,7 +41,7 @@ export class Decl extends Term {
   }
 
   /**
-   * todo
+   * Determines if type of declaration is function
    * @returns 
    */
   isFunc(){
@@ -54,7 +49,7 @@ export class Decl extends Term {
   }
 
   /**
-   * todo
+   * Determines if type of declaration is variable
    * @returns 
    */
   isVar(){
@@ -62,7 +57,7 @@ export class Decl extends Term {
   }
 
   /**
-   * todo
+   * Determines if a declaration has a type annotation or not
    * @returns 
    */
   isAnnotated(){
@@ -71,7 +66,7 @@ export class Decl extends Term {
 }
 
 /**
- * todo
+ * Construct a function declaration but with only the type annoatation
  * @param {String} name 
  * @param {Node} node 
  * @returns {Decl}
@@ -81,7 +76,7 @@ export function typeFuncDecl(name, node){
 }
 
 /**
- * todo
+ * Construct a function declaration but with only the branch definition
  * @param {String} name 
  * @param {Exp} branch 
  * @param {[String]} args 
@@ -93,7 +88,7 @@ export function branchFuncDecl(name, branch, args){
 }
 
 /**
- * todo
+ * Construct a variable declaration but with only the type annoatation
  * @param {String} name 
  * @param {Node} node 
  * @returns {Decl}
@@ -103,7 +98,7 @@ export function typeVarDecl(name, node){
 }
 
 /**
- * todo
+ * Construct a variable declaration but with only the branch definition
  * @param {String} name 
  * @param {Exp} branch
  * @returns {Decl}

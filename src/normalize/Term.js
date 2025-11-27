@@ -1,29 +1,29 @@
 //--                 File containing "type" Decl for normalize              --//
 
 /**
- * 
+ * A term is the parent class of Exp and Decl
  */
 export class Term {
   
   /**
-   * 
-   * @param {*} metatype 
+   * Constructor for term
+   * @param {String} metatype 
    */
   constructor(metatype){
     this.metatype = metatype;
   }
 
   /**
-   * 
-   * @returns 
+   * Determines if a term is an expression
+   * @returns {Boolean}
    */
   isExp(){
     return this.metatype === "EXP";
   }
 
   /**
-   * 
-   * @returns 
+   * Determines if a term is a declaration
+   * @returns {Boolean}
    */
   isDecl(){
     return this.metatype === "DECL";
