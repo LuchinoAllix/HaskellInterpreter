@@ -285,9 +285,7 @@ function showAST(ast){
  */
 function showNormalForm(terms){
   console.log("Normalized form :");
-  for (let term of terms){
-    console.log("term : " + JSON.stringify(term, null, 2));
-  }
+  console.log(JSON.stringify(terms, null, 2));
 }
 
 /**
