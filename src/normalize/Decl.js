@@ -40,7 +40,7 @@ export class Decl extends Term {
    * @param {Exp} branch 
    */
   addBranchDef(branch){
-    this.branches.push(branch);
+    this.branches.push(branch); // todo : error here fix me, with the arg
   }
 
   /**
@@ -75,7 +75,7 @@ export class Decl extends Term {
  * @returns 
  */
 export function typeFuncDecl(name, node){
-  return Decl("function", name, node, null, null);
+  return new Decl("function", name, node, null, null);
 }
 
 /**
@@ -86,7 +86,7 @@ export function typeFuncDecl(name, node){
  * @returns 
  */
 export function branchFuncDecl(name, branch, args){
-  return Decl("function", name, null, [branch], args);
+  return new Decl("function", name, null, [branch], args);
 }
 
 /**
@@ -96,7 +96,7 @@ export function branchFuncDecl(name, branch, args){
  * @returns 
  */
 export function typeVarDecl(name, node){
-  return Decl("variable", name, node, null, null);
+  return new Decl("variable", name, node, null, null);
 }
 
 /**
@@ -106,7 +106,7 @@ export function typeVarDecl(name, node){
  * @returns 
  */
 export function branchVarDecl(name, branch){
-  return Decl("variable", name, null, [branch], null);
+  return new Decl("variable", name, null, [branch], null);
 }
 
 // Doesn't serve any real function, only to show the type options
