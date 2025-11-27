@@ -162,6 +162,11 @@ function addDecl(declList, decl){
           
           
           } else if (decl.isFunc()){
+            if (declList[i].nbArgs !== decl.nbArgs){
+              throw Error("Mismatch between number of arguments in different " +
+                 "parts of the function declaration : " + decl.name);
+            }
+            console.log(decl)
             declList[i].addBranchDef(decl.branches[0]);
             break;
           
@@ -186,11 +191,9 @@ function addDecl(declList, decl){
  * @returns 
  */
 function normalizeExp(node){
-  console.log(node.type);
   switch (node.type){
     
     case "infixexp" :
-      console.log("1", node.childs[1].value);
       // based on the fact that the second element of an infixexp is the 
       // function 
       return new FunctionApp(node.childs[1].value, 
@@ -198,17 +201,22 @@ function normalizeExp(node){
                               normalizeExp(node.childs[2])]);
 
     case "fexp" :
-      console.log("2", node.childs[0].value);
       return new FunctionApp(node.childs[0].value, 
                              [normalizeExp(node.childs[1])]);
+
+    case "aexp_" :
+      if (node.childs.length === 3){
+        return normalizeExp(node.childs[1]);
+      } else {
+        throw Error("Aexp_ expression that is not ( 1elem ) is not yet " + 
+          "supported : " + node);
+      }
     
     case "Qvarid" :
-      console.log("3", node.value);
       return new VarExp(node.value);
 
     case "integer" :
     case "String" :
-      console.log("4", node.value);
       return new ValExp(node.value, node.type);
 
     default :
@@ -226,7 +234,9 @@ function getArgs(node){
   let output = [];
   // we skip first element because it's the name of the function
   for (let i = 1; i < node.childs.length; i ++){
-    output.push(node.childs[i].value);
+    let tmp = normalizeExp(node.childs[i]);
+    tmp.metatype = "PATTERN";
+    output.push(tmp);
   }
   return output;
 }
