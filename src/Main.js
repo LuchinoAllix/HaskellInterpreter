@@ -248,6 +248,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
       showNormalForm(program.normalizedForm);
       console.log(error);
     }
+    return false;
   }
 
   try{ // todo evaluation
@@ -284,10 +285,9 @@ function showAST(ast){
  */
 function showNormalForm(terms){
   console.log("Normalized form :");
-    console.log(JSON.stringify(terms, null, 4));
-  //for (let term of terms){
-    //console.log("\t" + JSON.stringify(term, null, 1));
-  //}
+  for (let term of terms){
+    console.log("term : " + JSON.stringify(term, null, 2));
+  }
 }
 
 /**
