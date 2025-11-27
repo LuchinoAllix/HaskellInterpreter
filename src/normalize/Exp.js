@@ -23,9 +23,20 @@ export class VarExp extends Exp{
    */
   constructor(name){
     super();
-    this.type = "varExp";
+    this.type = "var";
     this.name = name;
   }
+}
+
+export class ValExp extends Exp {
+  
+  constructor(value, valueType){
+    super();
+    this.type = "value";
+    this.value = value;
+    this.valueType = valueType;
+  }
+
 }
 
 
