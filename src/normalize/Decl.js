@@ -32,11 +32,22 @@ export class Decl extends Term {
   }
 
   /**
-   * allows to add a branch definition to a declaration
-   * @param {[String]} args 
-   * @param {Exp} brachBody 
+   * Allows to add a branch definition to a declaration
+   * If it's a function declaration, checks if the number of arguments in the
+   * different branches is the same (type annotation is not considered)
+   * @param {Branch} branch 
    */
   addBranchDef(branch){
+    if (branch.args === null){ 
+      // variable branch : do nothing
+    } else if (this.nbArgs === null){ // number of arguments not yet initialized
+      this.nbArgs = branch.args.length;
+    } else if(this.nbArgs !== branch.args.length){
+      throw Error("Mismatch between number of arguments in different " +
+                 "parts of the function declaration, branch already processed :" 
+                 + this.nbArgs + " !== processed branch :" + branch.args.length
+                 + " in function " + this.name);
+    }
     this.branches.push(branch);
   }
 
@@ -72,7 +83,7 @@ export class Decl extends Term {
  * @returns {Decl}
  */
 export function typeFuncDecl(name, node){
-  return new Decl("function", name, node, null, null);
+  return new Decl("function", name, node, [], null);
 }
 
 /**
@@ -94,13 +105,13 @@ export function branchFuncDecl(name, branch, args){
  * @returns {Decl}
  */
 export function typeVarDecl(name, node){
-  return new Decl("variable", name, node, null, null);
+  return new Decl("variable", name, node, [], null);
 }
 
 /**
  * Construct a variable declaration but with only the branch definition
  * @param {String} name 
- * @param {Exp} branch
+ * @param {Branch} branch
  * @returns {Decl}
  */
 export function branchVarDecl(name, branch){

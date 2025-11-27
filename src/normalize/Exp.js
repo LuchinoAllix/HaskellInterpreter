@@ -125,3 +125,20 @@ export class CaseTerm extends Exp {
   }
 
 }
+
+/**
+ * List pattern object, used for pattern matching
+ */
+export class ListPatternTerm extends Exp {
+
+  /**
+   * Creates a list pattern expressions, as in (a:b) will be an exp of the form
+   * ['(','a',':','b',')']
+   * @param {[Exp]} patterns 
+   */
+  constructor(patterns){
+    super();
+    this.type = "list pattern";
+    this.patterns = patterns
+  }
+}

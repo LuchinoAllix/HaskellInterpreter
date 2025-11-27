@@ -1,7 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
-import { Exp, VarExp, ValExp, FunctionApp, IfTerm, LetTerm, CaseTerm } 
-       from "./Exp.js";
+import { Exp, VarExp, ValExp, FunctionApp, IfTerm, LetTerm, CaseTerm,
+         ListPatternTerm } from "./Exp.js";
 import { Program } from "../Program.js";
 
 //--     File containing functions for intermediary form transformation     --//
@@ -171,12 +171,7 @@ function addDecl(declList, decl){
               throw Error("Cannot redefine variable : " + decl.name);
             }
           
-          
           } else if (decl.isFunc()){
-            if (declList[i].nbArgs !== decl.nbArgs){
-              throw Error("Mismatch between number of arguments in different " +
-                 "parts of the function declaration : " + decl.name);
-            }
             declList[i].addBranchDef(decl.branches[0]);
             break;
           
@@ -227,7 +222,17 @@ function normalizeExp(node){
 
     case "integer" :
     case "String" :
+    case "Special" :
+    case "reservdop" :
       return new ValExp(node.value, node.type);
+
+    case "apat" :
+    case "pat" :
+      let apat = [];
+      for (let child of node.childs){
+        apat.push(normalizeExp(child));
+      }
+      return new ListPatternTerm(apat);
 
     case "Qconid" :
       return normaliseQconid(node);
@@ -269,6 +274,13 @@ function countTypeArgs(node){
   }
 }
 
+/**
+ * Transformes a Qconid node into a valExp
+ * for the moment only manages False and True because I don't know what
+ * are the other Qconid values (will be changed when we meet them)
+ * @param {Node} node 
+ * @returns {ValExp}
+ */
 function normaliseQconid(node){
   switch (node.value){
     case "False" :
