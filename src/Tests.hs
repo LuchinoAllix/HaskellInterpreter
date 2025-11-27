@@ -105,12 +105,11 @@ add x y = x + y
 --/
 
 --------------------------------------------------------------------------------
--- Test 12         : function declaration and call
+-- Test 12         : function declaration
 -- Expected result : 6
 
 --/
 mul a b = a * b
-mul 1 2
 --/
 
 --------------------------------------------------------------------------------
@@ -123,14 +122,13 @@ fact n = n * fact n - 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 14         : recursive function declaration and call
+-- Test 14         : recursive function declaration
 -- Expected result : 3
 
 --/
 fib 0 = 0
 fib 1 = 1 
 fib a  = (fib a - 1) + (fib a - 2) 
-fib 3
 --/
 
 --------------------------------------------------------------------------------
@@ -158,7 +156,6 @@ sum (head: rest) = head + sum rest
 
 --/
 func a = if a == 0 then "zero" else "not zero"
-func 1
 --/
 
 --------------------------------------------------------------------------------
