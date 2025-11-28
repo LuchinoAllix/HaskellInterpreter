@@ -1,6 +1,6 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
-import { Exp, VarExp, ValExp, FunctionApp, IfTerm, LetTerm, CaseTerm,
+import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          ListPatternTerm } from "./Exp.js";
 import { Program } from "../Program.js";
 
@@ -70,7 +70,7 @@ function normalize(astRoot){
        
     
     default :
-      throw Error("This type of node is not yet managed by normalise : " 
+      throw Error("This type of node is not yet managed by normalize : " 
         + astRoot.type);
     
 
@@ -93,14 +93,20 @@ function normalizeDecl(node){
       return typeVarDecl(name, node.childs[2]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
-    name = node.childs[0].childs[0].value;
-    if (isDeclFunc(node)){ // We know it's a function declaration
-      return branchFuncDecl(name, normalize(node.childs[1]), 
-                                  getArgs(node.childs[0]));
-    } else  { // We know it's a variable declaration
+    if (node.childs[0].type === "funlhs"){
+      name = node.childs[0].childs[0].value;
+      if (isDeclFunc(node)){ // We know it's a function declaration
+        return branchFuncDecl(name, normalize(node.childs[1]), 
+        getArgs(node.childs[0]));
+      } else {
+        throw Error("Malformed AST");
+      }
+    } else if (node.childs[0].childs === null){ 
+      // We know it's a variable declaration
+      name = node.childs[0].value;
       return branchVarDecl(name, normalize(node.childs[1]));
     }
-  } else {
+    } else {
     throw Error(node.type + " was given when expected gendecl or decl.");
   }
 }
@@ -128,7 +134,7 @@ function isGendeclFunc(node){
  * @returns {Boolean}
  */
 function isDeclFunc(node){
-  return  (node.childs[0].type === "funlhs");
+  return (node.childs[0].type === "funlhs");
 }
 
 /**
@@ -182,6 +188,7 @@ function addDecl(declList, decl){
 
         } else {
           declList.push(decl);
+          break;
         }
       } else {
         throw Error("Only delcarations are allowed in addDecl " + decl);
@@ -235,7 +242,24 @@ function normalizeExp(node){
       return new ListPatternTerm(apat);
 
     case "Qconid" :
-      return normaliseQconid(node);
+      return normalizeQconid(node);
+
+    case "lexp" :
+      switch (node.childs[0].value) {
+        case "\\" :
+          return normalizeLambda(node);        
+        case "let" :
+          return normalizeLet(node);
+        case "if" :
+          return normalizeIf(node);
+        case "case" :
+          return normalizeCase(node);
+        case "do" :
+          return normalizeDo(node);
+        default :
+          throw Error("This kind of lexp is not yet supported :" +
+            node.childs[0].value);
+      }
 
     default :
       throw Error("This expression type is not yet supported : " + node.type);
@@ -281,7 +305,7 @@ function countTypeArgs(node){
  * @param {Node} node 
  * @returns {ValExp}
  */
-function normaliseQconid(node){
+function normalizeQconid(node){
   switch (node.value){
     case "False" :
     case "True" :
@@ -290,4 +314,56 @@ function normaliseQconid(node){
     default :
       throw Error("Qconid not yet managed : " + node.value);
   }
+}
+
+/**
+ * TODO
+ * @param {Node} node
+ * @returns {CaseExp} 
+ */
+function normalizeCase(node){
+  throw Error("Cases are not yet managed");
+}
+
+/**
+ * TODO
+ * @param {Node} node
+ * @returns {IfExp} 
+ */
+function normalizeIf(node){
+  throw Error("If are not yet managed");
+}
+
+/**
+ * TODO
+ * @param {Node} node
+ * @returns {Exp} 
+ */
+function normalizeLet(node){
+  throw Error("Let are not yet managed");
+}
+
+/**
+ * TODO
+ * @param {Node} node
+ * @returns {Exp} 
+ */
+function normalizeLambda(node){
+  throw Error("lambda are not yet managed");
+}
+
+/**
+ * Transforms the parent of a do node (presumably a lexp) into the intermidiary
+ * form
+ * @param {Node} node
+ * @returns {Exp} 
+ */
+function normalizeDo(node){
+  let exps = [];
+  for (let i = 1; i < node.childs.length; i++){
+    if (! node.childs[i].type.startsWith("layout")){
+      exps.push(normalizeExp(node.childs[2]));
+    }
+  }
+  return new DoExp(exps);
 }
