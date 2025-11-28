@@ -78,7 +78,7 @@ export class FunctionApp extends Exp {
 /**
  * If term expression
  */
-export class IfTerm extends Exp {
+export class IfExp extends Exp {
   
   /**
    * Creates an if expression
@@ -98,7 +98,7 @@ export class IfTerm extends Exp {
 /**
  * Creates a let Term expression
  */
-export class LetTerm extends Exp {
+export class LetExp extends Exp {
 
   /**
    * // What to do about the in part ?
@@ -115,13 +115,30 @@ export class LetTerm extends Exp {
 /**
  * Creates a case of Term expression
  */
-export class CaseTerm extends Exp {
+export class CaseExp extends Exp {
 
   /**
    * TODO
    */
   constructor(){
 
+  }
+
+}
+
+/**
+ * Creates a do Term expression
+ */
+export class DoExp extends Exp {
+
+  /**
+   * Creates a do term, which is comprised of the list of expressions to execute
+   * @param {[Exp]} exps
+   */
+  constructor(exps){
+    super();
+    this.type = "do";
+    this.exps = exps;
   }
 
 }
