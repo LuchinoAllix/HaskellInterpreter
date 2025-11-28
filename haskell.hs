@@ -11,6 +11,6 @@ suml [] = 0
 suml (head: rest) = head + suml rest
 
 main = do 
-    --print (fact 5)
+    print (fact 5)
     --print (factt 5) -- would never finish
     print (suml [1,2,3])
