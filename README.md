@@ -16,4 +16,5 @@ Options :<br>
   - `--Debug` shows the rules took whilst parsing
   - `--Nosave` doesn't save the AST after parsing
   - `--Derivative` shows/saves the derivative tree instead of the AST
+  - `--NF` shows the normal form after normalizing
   - `--Verbose` shows error messages if all tests are run
