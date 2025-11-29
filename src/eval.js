@@ -1,85 +1,90 @@
-import { Node } from "./Node";
+import { Term } from "./Term.js";
+import { ValExp } from "./normalize/Exp.js";
 
-//--           File for functions needed to evaluate an expression          --//
+//--               File for functions needed to evaluate a term             --//
+
+
+/**
+ * Entry point of evaluation
+ * @param {[Term]} terms 
+ * @returns {Boolean}
+ */
+export function initEval(terms){
+  if (terms.length === 1){
+    output(evaluate(terms[0], initGlobalEnv())); 
+    // todo manage env for interactive (need to save env somewhere, but for 
+    // that we need to know how interactiveness is managed)
+    return true;
+  }
+
+  let global_env = initGlobalEnv();
+  for (let term of terms){
+    if (term.metatype === "EXP"){
+      throw Error("In succesion of terms, only declarations are allowed.");
+    }
+    output(evaluate(term, global_env));
+  }
+  return true;
+
+}
+
 
 /**
  * Main function to evaluate an expression
  * TODO determine what is returned
- * @param {Node} node 
+ * @param {Term} term 
  * @param {?} env 
+ * @returns {IO ?}   where should we ensure that we encounter the main ?
+ *                   should which functions should we expect for output ?
+ *                   putChar  :: Char -> IO ()  
+ *                   putStr   :: String -> IO ()  
+ *                   putStrLn :: String -> IO ()  -- adds a newline  
+ *                   print
+ * https://www.haskell.org/onlinereport/haskell2010/haskellch7.html
  */
-export function evaluate(node, env){
-  switch (node.value){
-    case "root" :
-      return evaluate(node.childs[0], env);
-    case "body" :
-      return evaluate(node.childs[1], env);
-    case "topdecls" :
-      for (let child in node.childs){
-        evaluate(child, env);
-      } // todo what to return here ?
-    case "layout" :
-      return ;
-    case "gendecl" : 
-      evalType(node, env);
-      return ; 
-    case "decl" :
-      evalDecl(node, env);
-      return ;
-    case "lexp" :
-      evalLexp(node, env);
-      return ;
+function evaluate(term, env){
+  switch (term.metatype){
+    case "EXP" :
+      return evaluaterExp(term, env);
+    case "DECL" :
+      return evaluateDecl(term, env);
     default :
-      throw Error("Unknown expression : ", node.type);
+      throw Error("Unknown term type : " + term.metatype);
   }
 }
 
 /**
- * Todo 
- * @param {Node} node 
- * @param {[?]} env 
+ * Output function, to chose what to do with the final output of each evaluation
+ * currently : just print it to the console
+ * @param {?} output 
  */
-function evalType(node, env){
+function output(output){
+  console.log(output);
+}
+
+/**
+ * 
+ * @returns 
+ */
+function initGlobalEnv(){
+  // todo
+  return []
+}
+
+/**
+ * 
+ * @param {*} decl 
+ * @param {*} env 
+ */
+function evaluateDecl(decl, env){
 
 }
 
 /**
- * Todo
- * @param {Node} node 
- * @param {[?]} env 
+ * 
+ * @param {*} decl 
+ * @param {*} env 
  */
-function evalDecl(node, env){
+function evaluaterExp(decl, env){
 
 }
-
-/**
- * Todo
- * @param {Node} node 
- * @param {[?]} env 
- */
-function evalLexp(node, env){
-  switch (node.childs[0].value){
-    case "\\" : // Todo see how does lambda abstraction appear in the ast
-      return ;
-    case "let" :
-      // TODO
-      // copy env to make a local one
-      // add all delcs to local env
-      // evaluate exp with local env (print ?)
-      // "forget local env"
-      return ;
-    case "if" :
-      // TODO
-      return ;
-    case "case" :
-      // TODO
-      return ;
-    case "do" :
-      // TODO
-      return ;
-    default :
-      throw Error("Unrecognised Lexp : ", node.childs[0].type);
-  }
-
-}
-
