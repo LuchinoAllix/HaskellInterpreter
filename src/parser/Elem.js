@@ -1,5 +1,5 @@
 //--  File containing "type" elem for parser  --//
-import { Node } from "../Node.js";
+import { Node } from "../objects/Node.js";
 
 export class Elem {
 

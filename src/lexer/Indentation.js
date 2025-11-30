@@ -1,4 +1,4 @@
-import { Token, newLayoutToken } from "../Token.js";
+import { Token, newLayoutToken } from "../objects/Token.js";
 
 //--    File containing functions to make the program layout insensitive    --//
 

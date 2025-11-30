@@ -1,8 +1,8 @@
-import { Program } from "../Program.js";
+import { Program } from "../objects/Program.js";
 import { tokenize } from "../lexer/Lexer.js";
-import { mtNode } from "../Node.js";
+import { mtNode } from "../objects/Node.js";
 import { Rules } from "./ParserRules.js";
-import { tokenToNode } from "../Token.js";
+import { tokenToNode } from "../objects/Token.js";
 import { Elem } from "./Elem.js";
 
 //--  File for parsing based on the Context-Free Syntax of Haskell doc   --//

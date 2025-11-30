@@ -1,5 +1,5 @@
 import { Exp } from "./Exp.js";
-import { Node } from "../Node.js";
+import { Node } from "../objects/Node.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
 

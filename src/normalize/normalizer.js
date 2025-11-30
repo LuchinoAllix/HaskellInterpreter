@@ -2,7 +2,7 @@ import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl,
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          ListPatternTerm } from "./Exp.js";
-import { Program } from "../Program.js";
+import { Program } from "../objects/Program.js";
 
 //--     File containing functions for intermediary form transformation     --//
 

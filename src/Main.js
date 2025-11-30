@@ -1,8 +1,8 @@
-import { Program } from './Program.js'
+import { Program } from './objects/Program.js'
 import { tokenize }from './lexer/Lexer.js'
 import { parse, activateDebug } from './parser/Parser.js'
-import { Token } from "./Token.js";
-import { Node, compressTree } from './Node.js';
+import { Token } from "./objects/Token.js";
+import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
 
