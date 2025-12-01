@@ -1,4 +1,4 @@
-import { Term } from "./Term.js";
+import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
 
@@ -7,10 +7,11 @@ import { Env } from "./Env.js";
 
 /**
  * Entry point of evaluation
- * @param {[Term]} terms 
+ * @param {Program} program
  * @returns {Boolean}
  */
-export function initEval(terms){
+export function initEval(program){
+  let terms = program.normalizedForm;
   if (terms.length === 1){
     // output(evaluate(terms[0], ??? )); 
     // todo manage env for interactive (need to save env somewhere, but for 
@@ -20,13 +21,16 @@ export function initEval(terms){
 
   let global_env = new Env();
   global_env.initGlobal();
+  console.log("env init " + JSON.stringify(global_env));
+
 
   for (let term of terms){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms, only declarations are allowed.");
     }
-    evaluate(term, global_env);
+    global_env = evaluate(term, global_env); // TODO .copy());
   }
+  console.log("env final " + JSON.stringify(global_env));
   return true;
 
 }
@@ -48,7 +52,8 @@ export function initEval(terms){
 function evaluate(term, env){
   switch (term.metatype){
     case "EXP" :
-      return evaluaterExp(term, env);
+      evaluateExp(term, env);
+      return env;
     case "DECL" :
       return evaluateDecl(term, env);
     default :
@@ -73,7 +78,15 @@ function output(output){
  * @param {Env} env 
  */
 function evaluateDecl(decl, env){
+  if (decl.name === "main"){
+    // can there be a decl in a main ? could main have more than one branch ?
+    // is there another way for a decl to execute an exp ?
+    evaluateExp(decl.branches[0], env);
+    return undefined;
+  }
 
+  env.add(decl.name, decl);
+  return  env;
 }
 
 /**
@@ -81,8 +94,58 @@ function evaluateDecl(decl, env){
  * @param {Exp} exp 
  * @param {Env} env 
  */
-function evaluaterExp(exp, env){
+function evaluateExp(exp, env){
+  switch (exp.type){
+    case "functionApp" :
+      let f = env.lookup(exp.name);
+      if (f !== undefined){
+        return evaluateFunc(f, exp.args, env);
+      } else {
+        throw Error("function " + exp.name + " is undefined in env : " + JSON.stringify(env));
+      }
+    
+    case "var" :
+      let variable = env.lookup(exp.name);
+      if (variable !== undefined){
+        return variable.branches[0].value;
+      } else {
+        throw Error("variable " + exp.name + " is undefined in env : " + JSON.stringify(env));
+      }
 
+    case "do" :
+      for (let e of exp.exps){
+        evaluateExp(e, env);
+      }
+      break;
+    
+    case "let" :
+      throw Error("let not yet managed in eval");
+      break;
+
+    case "if" :
+      throw Error("let not yet managed in eval");
+      break;
+
+    case "case" :
+      throw Error("let not yet managed in eval");
+      break;
+
+    default :
+      throw Error("exp not yet managed in eval : " + exp.type);
+    
+  }
+}
+
+function evaluateFunc(decl, args, env){
+  if (decl.isPrim()){
+    return decl.call(args.map(x => evaluateExp(x, env)[0]));
+  } else if (decl.isFunc()) {
+    // TODO evaluate input to know the branch
+  } else {
+    // TODO create function
+    return evaluateFunc(decl, args, env);
+  }
 }
 
 
+// TODO global env or return it
