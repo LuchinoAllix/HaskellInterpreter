@@ -278,8 +278,18 @@ f x y z = 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 30         : function declaration with main
--- Expected result : 1
+-- Test 30         : variable declaration with main print
+-- Expected result : 5
+
+--/
+a = 5
+
+main = do print (a)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 31         : function declaration with main
+-- Expected result : 5
 
 --/
 f :: Int -> Int
@@ -287,6 +297,16 @@ f x = x
 a = 5
 
 main = do print (f a)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 32         : TODO
+-- Expected result : 3
+
+--/
+a = (+ 1)
+
+main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
