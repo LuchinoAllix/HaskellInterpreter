@@ -5,6 +5,7 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
+import { initEval } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -153,6 +154,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   
   var test = tests[testNb];
   const program = new Program(test.input);
+  program.expected = test.expected;
   console.log("\nTest " + testNb + " : testing " + test.info);
 
   if (verbose){
@@ -238,7 +240,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
       return false;
     }
 
-     if (printNF){
+    if (printNF){
       showNormalForm(program.normalizedForm);
     }
 
@@ -251,9 +253,24 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
     return false;
   }
 
-  try{ // todo evaluation
+  try{
+    console.log(initEval(program));
+    /*if (initEval(program) === program.expected){
+      if (verbose){
+        console.log("Successful evaluation :) ");
+      }
+      
+    } else {
+      // evaluation never returns false, if it doesn't work it throws an error
+      // So this is never executed
+      console.log("Unsuccessful evaluation :( ");
+      return false;
+    }*/
 
   } catch (error) {
+    console.log("Error while evaluating :");
+    console.log(error);
+    return false;
 
   }
   return true;
