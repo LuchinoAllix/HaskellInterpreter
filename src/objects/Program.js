@@ -25,6 +25,10 @@ export class Program {
 
     // Normalizer stuff :
     this.normalizedForm = null;  // Root of the normalised form 
+                                 // Is this a list ?
+    
+    // Normalizer stuff :
+    this.expected = null;        // Expected value of evaluation
   }
 
   //                      ~ Lexer related methods ~                           //
