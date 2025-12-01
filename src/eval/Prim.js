@@ -1,4 +1,4 @@
-import { Term } from "../normalize/Term";
+import { Term } from "../normalize/Term.js";
 
 //--                   File for primitives object definition                --//
 
@@ -12,9 +12,22 @@ export class Prim extends Term {
    * Creates a primitive object
    * @param {function} func 
    */
-  constructor(func){
-    this.metatype = "PRIM";
+  constructor(func, nbArgs, args=[]){
+    super("PRIM");
     this.func = func ;
+    this.nbArgs = nbArgs;
+    this.args = args;
   }
 
+  call(args){
+    let complet_args = this.args.concat(args);
+
+    if (args.length === this.nbArgs){
+      return this.func(...complet_args);
+    } else if (args.length <= this.nbArgs){
+      return new Prim(this.func, this.nbArgs - args.length, complet_args);
+    } else {
+      throw Error("Too many arguments");
+    }
+  }
 }
