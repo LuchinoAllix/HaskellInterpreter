@@ -15,26 +15,26 @@ export class Env {
    * decls is a dictionnary String (name) -> Term
    */
   constructor(){
-    this.decls = {}
+    this.decls = {};
   }
 
   /**
    * Determines if a declaration exists in an environment
-   * @param {Decl} decl 
+   * @param {String} name 
    * @returns {Term} - Decl or Prim
    */
-  lookup(decl){
-    return this.decls[decl.name];
+  lookup(name){
+    return this.decls[name];
   }
 
 
   /**
    * Adds an element to an environment
-   * @param {Decl} decl 
+   * @param {String} name 
    * @param {Term} term - Decl or Prim
    */
-  add(decl, term){
-    this.decls[decl.name] = term;
+  add(name, term){
+    this.decls[name] = term;
   }
 
   /**
@@ -45,30 +45,41 @@ export class Env {
       function add(a, b){
         return a + b;
       }
-    ));
+    , 2));
 
     this.add('*', new Prim(
       function mul(a, b){
         return a * b;
       }
-    ));
+    , 2));
+    
 
     this.add('-', new Prim(
       function sub(a,b){
         return a - b;
       }
-    ));
+    , 2));
+    
 
     this.add('/', new Prim(
       function div(a, b){
         return a / b;
       }
-    ));
+    , 2));
+    
 
     this.add("print", new Prim(
       function print(a){
         console.log(a);
       }
-    ));
+    , 1));
+    
+
+    this.add("do", new Prim(
+      function doa(a){
+        return a;
+      }
+    , 1));
+
   }
 }
