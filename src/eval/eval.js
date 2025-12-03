@@ -123,11 +123,11 @@ function evaluateExp(exp, env){
       break;
 
     case "if" :
-      throw Error("let not yet managed in eval");
+      throw Error("if not yet managed in eval");
       break;
 
     case "case" :
-      throw Error("let not yet managed in eval");
+      throw Error("case not yet managed in eval");
       break;
 
     default :
