@@ -161,5 +161,10 @@ function lookupGlobalLocal(env, name){
   throw Error(name + " is undefined.")
 }
 
+function resetGlobalEnv(){
+  global_env = {};
+  global_env = global_env.initGlobal();
+}
+
 
 // TODO global env or return it
