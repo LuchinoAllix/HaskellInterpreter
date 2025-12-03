@@ -101,7 +101,7 @@ function evaluateExp(exp, env){
       if (f !== undefined){
         return evaluateFunc(f, exp.args, env);
       } else {
-        throw Error("function " + exp.name + " is undefined in env : " + JSON.stringify(env));
+        throw Error("function " + exp.name + " is undefined");
       }
     
     case "var" :
@@ -109,7 +109,7 @@ function evaluateExp(exp, env){
       if (variable !== undefined){
         return variable.branches[0].value;
       } else {
-        throw Error("variable " + exp.name + " is undefined in env : " + JSON.stringify(env));
+        throw Error("variable " + exp.name + " is undefined");
       }
 
     case "do" :
