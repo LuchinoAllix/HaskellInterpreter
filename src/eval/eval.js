@@ -4,6 +4,9 @@ import { Env } from "./Env.js";
 
 //--               File for functions needed to evaluate a term             --//
 
+// Init global env
+let global_env = new Env();
+global_env.initGlobal();
 
 /**
  * Entry point of evaluation
@@ -19,18 +22,17 @@ export function initEval(program){
     return true;
   }
 
-  let global_env = new Env();
-  global_env.initGlobal();
-  console.log("env init " + JSON.stringify(global_env));
+  
+  //console.log("env init " + JSON.stringify(global_env));
 
 
   for (let term of terms){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms, only declarations are allowed.");
     }
-    global_env = evaluate(term, global_env); // TODO .copy());
+    evaluate(term, global_env); // TODO .copy());
   }
-  console.log("env final " + JSON.stringify(global_env));
+  //console.log("env final " + JSON.stringify(global_env));
   return true;
 
 }
@@ -145,6 +147,18 @@ function evaluateFunc(decl, args, env){
     // TODO create function
     return evaluateFunc(decl, args, env);
   }
+}
+
+function lookupGlobalLocal(env, name){
+  let res = global_env.lookup(name);
+  if (res !== undefined){
+    return res;
+  } 
+  res = env.lookup(name);
+  if (res !== undefined){
+    return res;
+  }
+  throw Error(name + " is undefined.")
 }
 
 
