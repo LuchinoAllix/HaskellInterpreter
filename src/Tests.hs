@@ -13,7 +13,8 @@
 -- Expected result : 42
 
 --/
-42
+a = 42
+main = do print a
 --/
 
 --------------------------------------------------------------------------------
@@ -21,7 +22,8 @@
 -- Expected result : "Hello World!"
 
 --/
-"Hello World"
+b = "Hello World"
+main = do print b
 --/
 
 --------------------------------------------------------------------------------
@@ -29,7 +31,8 @@
 -- Expected result : False
 
 --/
-False
+c = False
+main = do print c
 --/
 
 --------------------------------------------------------------------------------
@@ -37,7 +40,7 @@ False
 -- Expected result : 3
 
 --/
-1 + 2
+main = do print (1 + 2)
 --/
 
 --------------------------------------------------------------------------------
@@ -45,7 +48,7 @@ False
 -- Expected result : -1
 
 --/
-1 - 2
+main = do print (1 - 2)
 --/
 
 --------------------------------------------------------------------------------
@@ -53,7 +56,7 @@ False
 -- Expected result : 42
 
 --/
-21 * 2
+main = do print (21 * 2)
 --/
 
 --------------------------------------------------------------------------------
@@ -61,7 +64,7 @@ False
 -- Expected result : 21
 
 --/
-42 / 2
+main = do print (42 / 2)
 --/
 
 --------------------------------------------------------------------------------
@@ -69,7 +72,7 @@ False
 -- Expected result : True
 
 --/
-(3 * 4) == 12
+main = do print ((3 * 4) == 12)
 --/
 
 --------------------------------------------------------------------------------
@@ -77,7 +80,7 @@ False
 -- Expected result : 1
 
 --/
-let x = 1 in x
+main = do print (let x = 1 in x)
 --/
 
 --------------------------------------------------------------------------------
@@ -85,7 +88,7 @@ let x = 1 in x
 -- Expected result : 6
 
 --/
-let x = 3 in x + 3
+main = do print (let x = 3 in x + 3)
 --/
 
 --------------------------------------------------------------------------------
@@ -93,15 +96,16 @@ let x = 3 in x + 3
 -- Expected result : "hello world"
 
 --/
-let x = "hello world" in x
+main = do print (let x = "hello world" in x)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 11         : function declaration
--- Expected result : function
+-- Expected result : 3
 
 --/
 add x y = x + y
+main = do print (add 1 2)
 --/
 
 --------------------------------------------------------------------------------
@@ -110,44 +114,49 @@ add x y = x + y
 
 --/
 mul a b = a * b
+main = do print (mul 2 3)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 13         : recursive function declaration
--- Expected result : function
+-- Expected result : 120
 
 --/
 fact 0 = 1 
 fact n = n * fact (n - 1)
+main = do print (fact 5)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 14         : recursive function declaration
--- Expected result : 3
+-- Expected result : 5
 
 --/
 fib 0 = 0
 fib 1 = 1 
 fib a  = (fib a - 1) + (fib a - 2) 
+main = do print (fib 5)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 15         : recursive function declaration on a list
--- Expected result : function
+-- Expected result : [3,2,1]
 
 --/
 reverse [] = [] 
 reverse (head, rest) = reverse rest ++ head
+main = do print (reverse [1,2,3])
 --/
 
 --------------------------------------------------------------------------------
 -- Test 16         : recursive function with type annotation
--- Expected result : function
+-- Expected result : 3
 
 --/
 sum :: [Int] -> Int
 sum [] = 0
 sum (head: rest) = head + sum rest
+main = do print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
@@ -156,11 +165,12 @@ sum (head: rest) = head + sum rest
 
 --/
 func a = if a == 0 then "zero" else "not zero"
+main = do print (func 1)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 18         : case of
--- Expected result : function
+-- Expected result : "black"
 
 --/
 cardColour :: String -> String
@@ -171,6 +181,8 @@ cardColour suit =
     "spades" -> "black"
     "clubs" -> "black"
     _ -> "I am not familiar with this card suit."
+
+main = do print (cardColour "clubs)
 --/
 
 --------------------------------------------------------------------------------
@@ -178,7 +190,7 @@ cardColour suit =
 -- Expected result : 2
 
 --/
-(\x -> x + 1) 1 
+main = do print ((\x -> x + 1) 1 )
 --/
 
 --------------------------------------------------------------------------------
@@ -186,7 +198,7 @@ cardColour suit =
 -- Expected result : 5
 
 --/
-(\x y -> x + y ) 2 3
+main = do print ((\x y -> x + y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
@@ -194,35 +206,34 @@ cardColour suit =
 -- Expected result : 11
 
 --/
-(\x y -> x + (\a -> a * a) y ) 2 3
+main = do print ((\x y -> x + (\a -> a * a) y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
 -- Test 22         : type annotation of list of list
--- Expected result : function
+-- Expected result : 1
 
 --/
 func :: [[Int]] -> Int
 func [] = 0
 func [[]] = 0
 func [(a: b)] = a
+main = do print (func [[1]])
 --/
 
 --------------------------------------------------------------------------------
--- Test 23         : let without in
--- Expected result : variable
+-- Test 23         : multiple ifs
+-- Expected result : "inner fail"
 
 --/
-let x = "3"
+main = do print (
+  if (True) then if (False) then "sucess" else "inner fail"else "outer fail")
 --/
 
 --------------------------------------------------------------------------------
 -- Test 24         : multiple inless lets
 -- Expected result : variable 
--- Do we actually want to accept this ? FIXME
--- no because inless let's are for let statements (inside do) 
--- and list comprehensions
--- https://stackoverflow.com/questions/8274650/in-haskell-when-do-we-use-in-with-let
+-- 
 
 --/
 let x = "3"
@@ -234,8 +245,7 @@ let y = 6
 -- Expected result : 6
 
 --/
-let x = "3" in x
-let y = 6 in y
+main = do print ( let x = "3" in let y = 6 in y )
 --/
 
 --------------------------------------------------------------------------------
@@ -300,7 +310,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 32         : TODO
+-- Test 32         : currying
 -- Expected result : 3
 
 --/
