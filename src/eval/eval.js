@@ -75,7 +75,7 @@ function output(output){
 
 
 /**
- * 
+ * Evaluates a declaration and adds it to the global environment
  * @param {Decl} decl 
  * @param {Env} env 
  */
@@ -92,7 +92,7 @@ function evaluateDecl(decl, env){
 }
 
 /**
- * 
+ * Evaluates an expression in a given environement
  * @param {Exp} exp 
  * @param {Env} env 
  */
@@ -138,6 +138,13 @@ function evaluateExp(exp, env){
   }
 }
 
+/**
+ * Executes a function 
+ * @param {Term} decl 
+ * @param {[Exp]} args 
+ * @param {Env} env 
+ * @returns ??
+ */
 function evaluateFunc(decl, args, env){
   if (decl.isPrim()){
     return decl.call(args.map(x => evaluateExp(x, env)[0]));
@@ -149,6 +156,13 @@ function evaluateFunc(decl, args, env){
   }
 }
 
+
+/**
+ * Lookup but inside the global environment and a local one given
+ * @param {Env} env 
+ * @param {String} name 
+ * @returns {Term}
+ */
 function lookupGlobalLocal(env, name){
   let res = global_env.lookup(name);
   if (res !== undefined){
@@ -161,10 +175,10 @@ function lookupGlobalLocal(env, name){
   throw Error(name + " is undefined.")
 }
 
+/**
+ * Allows to reset the global environment
+ */
 function resetGlobalEnv(){
   global_env = {};
   global_env = global_env.initGlobal();
 }
-
-
-// TODO global env or return it
