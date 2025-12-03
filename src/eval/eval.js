@@ -30,7 +30,7 @@ export function initEval(program){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms, only declarations are allowed.");
     }
-    evaluate(term, global_env); // TODO .copy());
+    evaluate(term, global_env); // TODO should not be global but empty env
   }
   //console.log("env final " + JSON.stringify(global_env));
   return true;
