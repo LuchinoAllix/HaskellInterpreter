@@ -1,3 +1,5 @@
-a = + 1
 
-main = do print (a 2)
+
+main = do 
+          let f x = x + 1
+          print(f 1)
