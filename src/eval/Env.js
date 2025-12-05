@@ -21,7 +21,7 @@ export class Env {
   /**
    * Determines if a declaration exists in an environment
    * @param {String} name 
-   * @returns {Term} - Decl or Prim
+   * @returns {Term} - Decl or Prim or undefined if declaration doesn't exists
    */
   lookup(name){
     return this.decls[name];
@@ -30,6 +30,7 @@ export class Env {
 
   /**
    * Adds an element to an environment
+   * Throws an error if the declaration already exists
    * @param {String} name 
    * @param {Term} term - Decl or Prim
    */
