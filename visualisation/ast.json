@@ -50,11 +50,40 @@
                       "childs": null
                     },
                     {
-                      "type": "integer",
-                      "value": "5",
-                      "line": 1,
-                      "column": 5,
-                      "childs": null
+                      "type": "aexp_",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "Special",
+                          "value": "(",
+                          "line": 1,
+                          "column": 5,
+                          "childs": null
+                        },
+                        {
+                          "type": "Qvarsym",
+                          "value": "+",
+                          "line": 1,
+                          "column": 6,
+                          "childs": null
+                        },
+                        {
+                          "type": "integer",
+                          "value": "1",
+                          "line": 1,
+                          "column": 8,
+                          "childs": null
+                        },
+                        {
+                          "type": "Special",
+                          "value": ")",
+                          "line": 1,
+                          "column": 9,
+                          "childs": null
+                        }
+                      ]
                     }
                   ]
                 }
@@ -114,44 +143,141 @@
                           "childs": null
                         },
                         {
-                          "type": "fexp",
+                          "type": "stmts",
                           "value": null,
                           "line": null,
                           "column": null,
                           "childs": [
                             {
-                              "type": "Qvarid",
-                              "value": "print",
-                              "line": 3,
-                              "column": 11,
-                              "childs": null
-                            },
-                            {
-                              "type": "aexp_",
+                              "type": "stmt",
                               "value": null,
                               "line": null,
                               "column": null,
                               "childs": [
                                 {
-                                  "type": "Special",
-                                  "value": "(",
-                                  "line": 3,
-                                  "column": 17,
-                                  "childs": null
+                                  "type": "fexp",
+                                  "value": null,
+                                  "line": null,
+                                  "column": null,
+                                  "childs": [
+                                    {
+                                      "type": "Qvarid",
+                                      "value": "print",
+                                      "line": 4,
+                                      "column": 11,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "aexp_",
+                                      "value": null,
+                                      "line": null,
+                                      "column": null,
+                                      "childs": [
+                                        {
+                                          "type": "Special",
+                                          "value": "(",
+                                          "line": 4,
+                                          "column": 17,
+                                          "childs": null
+                                        },
+                                        {
+                                          "type": "fexp",
+                                          "value": null,
+                                          "line": null,
+                                          "column": null,
+                                          "childs": [
+                                            {
+                                              "type": "Qvarid",
+                                              "value": "a",
+                                              "line": 4,
+                                              "column": 18,
+                                              "childs": null
+                                            },
+                                            {
+                                              "type": "integer",
+                                              "value": "2",
+                                              "line": 4,
+                                              "column": 20,
+                                              "childs": null
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "Special",
+                                          "value": ")",
+                                          "line": 4,
+                                          "column": 21,
+                                          "childs": null
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
+                                {
+                                  "type": "layout  f",
+                                  "value": ";",
+                                  "line": -1,
+                                  "column": -1,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "fexp",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
                                 {
                                   "type": "Qvarid",
-                                  "value": "a",
-                                  "line": 3,
-                                  "column": 18,
+                                  "value": "print",
+                                  "line": 5,
+                                  "column": 11,
                                   "childs": null
                                 },
                                 {
-                                  "type": "Special",
-                                  "value": ")",
-                                  "line": 3,
-                                  "column": 19,
-                                  "childs": null
+                                  "type": "aexp_",
+                                  "value": null,
+                                  "line": null,
+                                  "column": null,
+                                  "childs": [
+                                    {
+                                      "type": "Special",
+                                      "value": "(",
+                                      "line": 5,
+                                      "column": 17,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "fexp",
+                                      "value": null,
+                                      "line": null,
+                                      "column": null,
+                                      "childs": [
+                                        {
+                                          "type": "Qvarid",
+                                          "value": "a",
+                                          "line": 5,
+                                          "column": 18,
+                                          "childs": null
+                                        },
+                                        {
+                                          "type": "integer",
+                                          "value": "3",
+                                          "line": 5,
+                                          "column": 20,
+                                          "childs": null
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "Special",
+                                      "value": ")",
+                                      "line": 5,
+                                      "column": 21,
+                                      "childs": null
+                                    }
+                                  ]
                                 }
                               ]
                             }
