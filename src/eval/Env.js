@@ -34,11 +34,20 @@ export class Env {
    * @param {Term} term - Decl or Prim
    */
   add(name, term){
+    if (this.decls[name] !== undefined){
+      throw Error("This declaration already exists in the environment : " 
+        + name);
+    }
     this.decls[name] = term;
   }
 
   /**
    * Initialises the environment with all primitive functions
+   *  putChar  :: Char -> IO ()  
+   *  putStr   :: String -> IO ()  
+   *  putStrLn :: String -> IO ()  -- adds a newline  
+   *  print
+   * https://www.haskell.org/onlinereport/haskell2010/haskellch7.html
    */
   initGlobal(){
     this.add('+', new Prim(
