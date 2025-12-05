@@ -20,14 +20,15 @@ export function initEvalComp(program){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms, only declarations are allowed.");
     }
-    evaluate(term, local_env);
+    let decl = evaluateDecl(term, local_env);
+    global_env.add(decl);
   }
 
   return true;
 }
 
 /**
- * Entry point of evaluation for "compiled" programs
+ * Entry point of evaluation for "interactive" programs
  * @param {Program} program 
  */
 export function initEvalInter(program){
@@ -37,16 +38,11 @@ export function initEvalInter(program){
 
 /**
  * Main function to evaluate an expression
+ * Would be used in evalInitInter()
  * TODO determine what is returned
  * @param {Term} term 
  * @param {Env} env 
- * @returns {IO ?}   where should we ensure that we encounter the main ?
- *                   should which functions should we expect for output ?
- *                   putChar  :: Char -> IO ()  
- *                   putStr   :: String -> IO ()  
- *                   putStrLn :: String -> IO ()  -- adds a newline  
- *                   print
- * https://www.haskell.org/onlinereport/haskell2010/haskellch7.html
+ * @returns {IO ?}
  */
 function evaluate(term, env){
   switch (term.metatype){
@@ -72,24 +68,25 @@ function output(output){
 
 
 /**
- * Evaluates a declaration and adds it to the global environment
+ * Evaluates a declaration and adds it to the given (local) environment
+ * Notes :
+ *  - Technically a main function is not the only way to execute code in Haskell
+ *    but we assume it is for the sake of simplicity.
+ *  - We assume that there can be no declarations inside main, there can be 
+ *    'inless' let's but they are considered expressions.
  * @param {Decl} decl 
  * @param {Env} env 
  */
 function evaluateDecl(decl, env){
   if (decl.name === "main"){
-    // can there be a decl in a main ? could main have more than one branch ?
-    // is there another way for a decl to execute an exp ?
     evaluateExp(decl.branches[0], env);
-    return undefined;
   }
 
-  env.add(decl.name, decl);
-  return  env;
+  env.add(decl.name, decl); // Updates the environment
 }
 
 /**
- * Evaluates an expression in a given environement
+ * Evaluates an expression in a given (local) environement
  * @param {Exp} exp 
  * @param {Env} env 
  */
