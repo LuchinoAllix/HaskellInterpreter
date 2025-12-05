@@ -9,32 +9,29 @@ let global_env = new Env();
 global_env.initGlobal();
 
 /**
- * Entry point of evaluation
+ * Entry point of evaluation for "compiled" programs
  * @param {Program} program
  * @returns {Boolean}
  */
-export function initEval(program){
+export function initEvalComp(program){
   let terms = program.normalizedForm;
-  if (terms.length === 1){
-    // output(evaluate(terms[0], ??? )); 
-    // todo manage env for interactive (need to save env somewhere, but for 
-    // that we need to know how interactiveness is managed)
-    return true;
-  }
-
-  
-  //console.log("env init " + JSON.stringify(global_env));
-
-
+  let local_env = new Env();
   for (let term of terms){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms, only declarations are allowed.");
     }
-    evaluate(term, global_env); // TODO should not be global but empty env
+    evaluate(term, local_env);
   }
-  //console.log("env final " + JSON.stringify(global_env));
-  return true;
 
+  return true;
+}
+
+/**
+ * Entry point of evaluation for "compiled" programs
+ * @param {Program} program 
+ */
+export function initEvalInter(program){
+  // TODO
 }
 
 

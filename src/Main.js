@@ -5,7 +5,7 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEval } from './eval/eval.js';
+import { initEvalComp, initEvalInter } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -254,7 +254,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   }
 
   try{
-    console.log(initEval(program));
+    console.log(initEvalComp(program));
     /*if (initEval(program) === program.expected){
       if (verbose){
         console.log("Successful evaluation :) ");
@@ -273,6 +273,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
     return false;
 
   }
+  
   return true;
 }
 
