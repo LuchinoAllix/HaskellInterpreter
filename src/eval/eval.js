@@ -91,17 +91,44 @@ function evaluateDecl(decl, env){
     let body = evaluateExp(decl.branches[0].branchBody, env);
     return new Function(decl.branches[0].args[0], body);
   } else if (decl.isFunc()){
-      function func(){}
-
-    for (let branch of decl.branches){
-
+    let body = "";
+    for (let i = 0; i < decl.branches.length; i ++){
+      body = makeBranchString(decl.name, i, decl.branches[i].args) + 
+             evaluateExp(decl.branches[i].branchBody, env) + 
+             body;
+      if(i === 0){
+        body += "if(";
+      } else {
+        body += "else if(";
+      }
+      body += makePattern(decl.branches[i].args);
+      body += "){";
+      //body += "\nreturn " + decl.name + "branch" + i + "(" + ??? + ");";
+      body += "}";
     }
-
+    return new Function()
   } else {
     throw Error("Unknown form given to evaluateDecl : " + decl);
   }
+}
 
-
+/**
+ * todo
+ * @param {*} name 
+ * @param {*} number 
+ * @param {*} args 
+ * @returns 
+ */
+function makeBranchString(name, number, args){
+  let branch = "function " + name + "branch" + i + "(" ;
+  for (let i = 0; i < args.length; i ++){
+    if (i !== 0 ){
+      branch += ",";
+    }
+    branch += args[i];
+  }
+  branch += "){\nreturn ";
+  return branch;
 }
 
 /**
@@ -191,9 +218,17 @@ function lookupGlobalLocal(env, name){
 
 /**
  * Allows to reset the global environment
+ * To be used in interactive mode
  */
 function resetGlobalEnv(){
   global_env = {};
   global_env = global_env.initGlobal();
 }
 
+
+/**
+ * todo
+ */
+function execute(){
+
+}
