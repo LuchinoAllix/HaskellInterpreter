@@ -120,6 +120,6 @@ export function branchVarDecl(name, branch){
 
 // Doesn't serve any real function, only to show the type options
 const DeclType = {
-  functionDecl : "functionDecl",
-  variableDecl : "variableDecl"
+  functionDecl : "function",
+  variableDecl : "variable"
 }
