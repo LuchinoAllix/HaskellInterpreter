@@ -16,13 +16,17 @@ global_env.initGlobal();
 export function initEvalComp(program){
   let terms = program.normalizedForm;
   let local_env = new Env();
+
   for (let term of terms){
     if (term.metatype === "EXP"){
-      throw Error("In succesion of terms, only declarations are allowed.");
+      throw Error("In succesion of terms at toplevel, only declarations " + 
+        "are allowed.");
     }
     let decl = evaluateDecl(term, local_env);
     global_env.add(decl);
   }
+
+  execute(global_env.lookup("main"));
 
   return true;
 }
@@ -47,12 +51,11 @@ export function initEvalInter(program){
 function evaluate(term, env){
   switch (term.metatype){
     case "EXP" :
-      evaluateExp(term, env);
-      return env;
+      return evaluateExp(term, env);
     case "DECL" :
       return evaluateDecl(term, env);
     default :
-      throw Error("Unknown term type : " + term.metatype);
+      throw Error("Unknown term type in evaluation : " + term.metatype);
   }
 }
 
@@ -60,6 +63,7 @@ function evaluate(term, env){
  * Output function, to chose what to do with the final output of each evaluation
  * currently : just print it to the console
  * would be used in interactive mode
+ * would need to verify first that the type of the expression isn't IO
  * @param {?} output 
  */
 function output(output){
@@ -72,21 +76,37 @@ function output(output){
  * Notes :
  *  - Technically a main function is not the only way to execute code in Haskell
  *    but we assume it is for the sake of simplicity.
+ *  - We assume declaration can only be at the top level, let's or where are
+ *    considered expressions.
  *  - We assume that there can be no declarations inside main, there can be 
  *    'inless' let's but they are considered expressions.
  * @param {Decl} decl 
  * @param {Env} env 
  */
-function evaluateDecl(decl, env){
-  if (decl.name === "main"){
-    evaluateExp(decl.branches[0], env);
+function evaluateDecl(decl, env){ 
+  // doit retourner une fonction qui en fonction de l'argument donné prend la 
+  // bonne branche (indique si aucune branche peut être prise)
+  // et exécute le corps de la fonction
+  if (decl.isVar()){
+    let body = evaluateExp(decl.branches[0].branchBody, env);
+    return new Function(decl.branches[0].args[0], body);
+  } else if (decl.isFunc()){
+      function func(){}
+
+    for (let branch of decl.branches){
+
+    }
+
+  } else {
+    throw Error("Unknown form given to evaluateDecl : " + decl);
   }
 
-  env.add(decl.name, decl); // Updates the environment
+
 }
 
 /**
  * Evaluates an expression in a given (local) environement
+ * Returns a string of the expression to evaluate
  * @param {Exp} exp 
  * @param {Env} env 
  */
@@ -176,3 +196,4 @@ function resetGlobalEnv(){
   global_env = {};
   global_env = global_env.initGlobal();
 }
+
