@@ -1,8 +1,9 @@
 import { Decl } from "../normalize/Decl.js";
 import { Term } from "../normalize/Term.js";
-import { Prim } from "./Prim.js";
+import { Prim, PrimIO } from "./Prim.js";
+import { Value, Vint, Vbool, Vfunc, Vstring } from "./Value.js";
 
-//--                   File for environment object definition                --//
+//--                   File for environment object definition               --//
 
 
 /**
@@ -53,38 +54,39 @@ export class Env {
   initGlobal(){
     this.add('+', new Prim(
       function add(a, b){
-        return a + b;
+        return new Vint(a.value + b.value);
       }
     , 2));
 
     this.add('*', new Prim(
       function mul(a, b){
-        return a * b;
+        return new Vint(a.value * b.value);
       }
     , 2));
     
 
     this.add('-', new Prim(
       function sub(a,b){
-        return a - b;
+        return new Vint(a.value - b.value);
       }
     , 2));
     
 
     this.add('/', new Prim(
       function div(a, b){
-        return a / b;
+        return new Vint(a.value / b.value);
       }
     , 2));
     
 
-    this.add("print", new Prim( // modify to PrimIO
+    this.add("print", new PrimIO(
       function print(a){
-        console.log(a);
+        console.log(a.value);
       }
     , 1));
     
 
+    // why did i write this ?
     this.add("do", new Prim(
       function doa(a){
         return a;
