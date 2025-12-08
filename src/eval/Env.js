@@ -78,7 +78,7 @@ export class Env {
     , 2));
     
 
-    this.add("print", new Prim(
+    this.add("print", new Prim( // modify to PrimIO
       function print(a){
         console.log(a);
       }
