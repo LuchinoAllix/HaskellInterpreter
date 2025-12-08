@@ -1,6 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
+import { Value } from "./Value.js";
 
 //--               File for functions needed to evaluate a term             --//
 
@@ -22,11 +23,11 @@ export function initEvalComp(program){
       throw Error("In succesion of terms at toplevel, only declarations " + 
         "are allowed.");
     }
-    let decl = evaluateDecl(term, local_env);
-    global_env.add(decl);
+    evaluateDecl(term);
   }
 
-  execute(global_env.lookup("main"));
+  execute(global_env.lookup("main")); 
+  // should verify that there is at least one IO ?
 
   return true;
 }
@@ -72,7 +73,7 @@ function output(output){
 
 
 /**
- * Evaluates a declaration and adds it to the given (local) environment
+ * Adds a declaration to the global env
  * Notes :
  *  - Technically a main function is not the only way to execute code in Haskell
  *    but we assume it is for the sake of simplicity.
@@ -81,85 +82,42 @@ function output(output){
  *  - We assume that there can be no declarations inside main, there can be 
  *    'inless' let's but they are considered expressions.
  * @param {Decl} decl 
- * @param {Env} env 
  */
-function evaluateDecl(decl, env){ 
-  // doit retourner une fonction qui en fonction de l'argument donné prend la 
-  // bonne branche (indique si aucune branche peut être prise)
-  // et exécute le corps de la fonction
-  if (decl.isVar()){
-    let body = evaluateExp(decl.branches[0].branchBody, env);
-    return new Function(decl.branches[0].args[0], body);
-  } else if (decl.isFunc()){
-    let body = "";
-    for (let i = 0; i < decl.branches.length; i ++){
-      body = makeBranchString(decl.name, i, decl.branches[i].args) + 
-             evaluateExp(decl.branches[i].branchBody, env) + 
-             body;
-      if(i === 0){
-        body += "if(";
-      } else {
-        body += "else if(";
-      }
-      body += makePattern(decl.branches[i].args);
-      body += "){";
-      //body += "\nreturn " + decl.name + "branch" + i + "(" + ??? + ");";
-      body += "}";
-    }
-    return new Function()
-  } else {
-    throw Error("Unknown form given to evaluateDecl : " + decl);
-  }
-}
-
-/**
- * todo
- * @param {*} name 
- * @param {*} number 
- * @param {*} args 
- * @returns 
- */
-function makeBranchString(name, number, args){
-  let branch = "function " + name + "branch" + i + "(" ;
-  for (let i = 0; i < args.length; i ++){
-    if (i !== 0 ){
-      branch += ",";
-    }
-    branch += args[i];
-  }
-  branch += "){\nreturn ";
-  return branch;
+function evaluateDecl(decl){ 
+  global_env.add(decl);
 }
 
 /**
  * Evaluates an expression in a given (local) environement
- * Returns a string of the expression to evaluate
+ * Returns a list of the values evaluated (there can be nested lists)
  * @param {Exp} exp 
  * @param {Env} env 
+ * @returns {[Value]}
  */
 function evaluateExp(exp, env){
   switch (exp.type){
     case "functionApp" :
-      let f = env.lookup(exp.name);
+      let f = env.lookupGlobalLocal(exp.name);
       if (f !== undefined){
-        return evaluateFunc(f, exp.args, env);
+        return [evaluateFunc(f, exp.args, env)];
       } else {
         throw Error("function " + exp.name + " is undefined");
       }
     
     case "var" :
-      let variable = env.lookup(exp.name);
+      let variable = env.lookupGlobalLocal(exp.name);
       if (variable !== undefined){
-        return variable.branches[0].value;
+        return [new Value("?", variable.branches[0].value)];
       } else {
         throw Error("variable " + exp.name + " is undefined");
       }
 
     case "do" :
+      let res = []
       for (let e of exp.exps){
-        evaluateExp(e, env);
+        res.push(evaluateExp(e, env)); // can create nested lists
       }
-      break;
+      return res;
     
     case "let" :
       throw Error("let not yet managed in eval");
@@ -184,11 +142,13 @@ function evaluateExp(exp, env){
  * @param {Term} decl 
  * @param {[Exp]} args 
  * @param {Env} env 
- * @returns ??
+ * @returns {Value}
  */
 function evaluateFunc(decl, args, env){
   if (decl.isPrim()){
-    return decl.call(args.map(x => evaluateExp(x, env)[0]));
+    // We assume that evalExp returns a list of one element (no do in args)
+    
+    return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
   } else if (decl.isFunc()) {
     // TODO evaluate input to know the branch
   } else {
@@ -205,15 +165,15 @@ function evaluateFunc(decl, args, env){
  * @returns {Term}
  */
 function lookupGlobalLocal(env, name){
-  let res = global_env.lookup(name);
+  let res = env.lookup(name);
   if (res !== undefined){
     return res;
   } 
-  res = env.lookup(name);
+  res = global_env.lookup(name);  
   if (res !== undefined){
     return res;
   }
-  throw Error(name + " is undefined.")
+  throw Error(name + " is undefined.");
 }
 
 /**
