@@ -4,7 +4,7 @@ import { Term } from "../normalize/Term.js";
 
 /**
  * Prim object definition, extends Term so that the env is uniformed (only
- * composed of terms, even tough eval type cannot be in an env)
+ * composed of terms, even tough exp type cannot be in an env)
  */
 export class Prim extends Term {
 
