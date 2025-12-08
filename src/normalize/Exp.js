@@ -1,5 +1,7 @@
+
 import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
+import * as Value from "../eval/Value.js";
 
 /**
  * parent class for expressions
@@ -37,7 +39,7 @@ export class VarExp extends Exp{
  */
 export class ValExp extends Exp {
   
-    /**
+  /**
    * Constuctor for variables expressions
    * @param {valueType} value  // valueType is not defined as a type, but the 
    *                           // value inside valueType is the type of the 
@@ -49,6 +51,17 @@ export class ValExp extends Exp {
     this.type = "value";
     this.value = value;
     this.valueType = valueType;
+  }
+
+  /**
+   * unused
+   * @returns 
+   */
+  valExpToValue(){
+    switch (this.valueType){
+      case "String" :
+        return new Value.Vstring(this.value)
+    }
   }
 
 }
