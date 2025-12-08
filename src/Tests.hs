@@ -333,3 +333,28 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
+-- Test 34         : fonction funky pattern matching
+-- Expected result : "fail" 
+-- Todo gérer les fails 
+
+--/
+func a "str" 0 True [] (a:b) = 1 
+
+main = do 
+          print (func 1) 
+--/
+
+--------------------------------------------------------------------------------
+-- Test 35         : currying et pattern matching
+-- Expected result : "3/n4" 
+
+
+--/
+func a b = a + b
+foo = func 1
+a = 1
+main = do 
+          print (foo 2) 
+--/
+
+--------------------------------------------------------------------------------
