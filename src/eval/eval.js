@@ -1,7 +1,8 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
-import { Value } from "./Value.js";
+import * as Value from "../eval/Value.js";
+
 
 //--               File for functions needed to evaluate a term             --//
 
@@ -16,7 +17,6 @@ global_env.initGlobal();
  */
 export function initEvalComp(program){
   let terms = program.normalizedForm;
-  let local_env = new Env();
 
   for (let term of terms){
     if (term.metatype === "EXP"){
@@ -84,7 +84,7 @@ function output(output){
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){ 
-  global_env.add(decl);
+  global_env.add(decl.name, decl);
 }
 
 /**
@@ -92,7 +92,7 @@ function evaluateDecl(decl){
  * Returns a list of the values evaluated (there can be nested lists)
  * @param {Exp} exp 
  * @param {Env} env 
- * @returns {[Value]}
+ * @returns {[Value.Value]}
  */
 function evaluateExp(exp, env){
   switch (exp.type){
@@ -107,7 +107,7 @@ function evaluateExp(exp, env){
     case "var" :
       let variable = env.lookupGlobalLocal(exp.name);
       if (variable !== undefined){
-        return [new Value("?", variable.branches[0].value)];
+        return evaluateExp(variable.branches[0].value);
       } else {
         throw Error("variable " + exp.name + " is undefined");
       }
@@ -131,6 +131,15 @@ function evaluateExp(exp, env){
       throw Error("case not yet managed in eval");
       break;
 
+    case "integer" :
+      return new Value.Vint(exp.value);
+    
+    case "string" :
+      return new Value.Vstring(exp.value);
+
+    case "boolean" :
+      return new Value.Vbool(exp.value);
+
     default :
       throw Error("exp not yet managed in eval : " + exp.type);
     
@@ -147,14 +156,59 @@ function evaluateExp(exp, env){
 function evaluateFunc(decl, args, env){
   if (decl.isPrim()){
     // We assume that evalExp returns a list of one element (no do in args)
-    
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
-  } else if (decl.isFunc()) {
-    // TODO evaluate input to know the branch
-  } else {
-    // TODO create function
-    return evaluateFunc(decl, args, env);
   }
+
+  // We can assume we have a manually declared function call
+  // the call can have fewer arguments given that requested (cyrrying)
+  
+  args = args.map(x => evaluateExp(x, env)[0]); // evaluate the function args
+
+  let new_branches = [];
+  // how to keep the args
+  for (branch of decl.branches){
+    if (evaluateFuncArgs(branch.args, args )){ // todo
+      // delete args and type use
+      // add to new branches
+
+      // test if 0 args missing : evaluate the func
+    }
+    // do nothing
+  }
+  // create new function with the new ranches
+  // if 0 branches throw error
+}
+
+
+function evaluateFuncArgs(args_func, args_input, type_func){
+  if (args_input.length > args_func.length){
+    throw Error();
+  }
+  for (let i=0; i<args_input.length; i++){
+    switch (args_func[i].type){
+      case "value":
+        switch (args_func[i].valueType){
+          case "String":
+            if (args_func[i].value !== args_input[i]) {
+              return false;
+            }
+            break;
+          case "integer":
+            break;
+          case "Boolean":
+            break;
+          case "Special":
+            break;
+        }
+
+      // for the next 2 verify also the type if given
+      case "list pattern":
+        break;
+      case "var": // add to a new env : the name + the args input
+        break;
+    }
+  }
+  return true;
 }
 
 
@@ -189,6 +243,6 @@ function resetGlobalEnv(){
 /**
  * todo
  */
-function execute(){
-
+function execute(main_decl){
+  
 }
