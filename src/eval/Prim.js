@@ -63,6 +63,13 @@ export class PrimIO extends Prim {
   }
 }
 
+/**
+ * Currying of a function by applying only the first args
+ * (can be used for any number of args but is used only for one)
+ * @param {function} fn 
+ * @param  {...any} fixedArgs 
+ * @returns {function}
+ */
 function partial(fn, ...fixedArgs) {
   return function(...restArgs) {
     return fn(...fixedArgs, ...restArgs);
