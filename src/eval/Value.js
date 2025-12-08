@@ -34,8 +34,8 @@ export class Vstring extends Value {
 export class Vfunc extends Value {
 
   /**
-   * 
-   * @param {*} value 
+   * I don't think this will be used 
+   * @param {function} value 
    */
   constructor(value){
     super("func", value);
@@ -46,7 +46,7 @@ export class Vio extends Value {
 
   /**
    * 
-   * @param {*} value 
+   * @param {function} value 
    */
   constructor(value){
     super("IO", value);
