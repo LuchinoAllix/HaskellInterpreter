@@ -36,4 +36,12 @@ export class Term {
   isPrim(){
     return this,this.metatype === "PRIM";
   }
+
+  /**
+   * Determines if a term is a primitive IO function
+   * @returns {Boolean}
+   */
+  isPrimIO(){
+    return this,this.metatype === "PRIMIO";
+  }
 }
