@@ -1,4 +1,5 @@
 import { Term } from "../normalize/Term.js";
+import { Vio } from "./Value.js";
 
 //--                   File for primitives object definition                --//
 
@@ -11,35 +12,59 @@ export class Prim extends Term {
   /**
    * Creates a primitive object
    * @param {function} func 
+   * @param {Integer} nbArgs 
    */
-  constructor(func, nbArgs){
+  constructor(func, nbArgs) {
     super("PRIM");
-    this.func = func ;
+    this.func = func;
     this.nbArgs = nbArgs;
   }
 
   /**
-   * 
+   * Recursively calls the function with all the args one by one,
+   * if all the args are given, calls the function, except if it 
+   * an IO one, in this case, returns a Vio
    * @param {[]} args 
    * @returns {Value}
    */
-  lambdaCall(args){
-    // todo verify primIO
-    if (args.length > this.nbArgs){
-      throw Error("Too many arguments");
-    } else if (args.length === 0){
-      if (this.nbArgs === 0){
+  lambdaCall(args) {
+    if (args.length > this.nbArgs) {
+      throw Error("Too many arguments given to " + this.func);
+    } else if (args.length === 0) { // all the args have been given
+      if (this.nbArgs === 0) {
+        if (this.isPrimIO()) {
+          return new Vio(this.func);
+        }
         return this.func();
       }
-      // If we are still waiting for args
-      return this;
-      
-    } else if (args.length === 1){
-      return new Prim((arg)=>this.func(args[0]),this.args -1);
+      return this; // If we are still waiting for args
+
+    } else if (args.length === 1) {
+      return new Prim(partial(this.func, args[0]), this.args - 1);
     } else {
-      let temp = new Prim((arg)=>this.func(args[0]),this.args -1);
+      let temp = new Prim(partial(this.func, args[0]), this.args - 1);
       args.pop(0);
       return temp.lambdaCall(args);
     }
   }
+}
+
+
+export class PrimIO extends Prim {
+
+  /**
+   * todo
+   * @param {function} func 
+   * @param {Integer} nbArgs 
+   */
+  constructor(func, nbArgs) {
+    super(func, nbArgs);
+    this.metatype = "PRIMIO";
+  }
+}
+
+function partial(fn, ...fixedArgs) {
+  return function(...restArgs) {
+    return fn(...fixedArgs, ...restArgs);
+  };
 }
