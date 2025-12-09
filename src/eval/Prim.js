@@ -10,7 +10,7 @@ import { Vio } from "./Value.js";
 export class Prim extends Term {
 
   /**
-   * Creates a primitive object
+   * Creates a primitive function object
    * @param {function} func 
    * @param {Integer} nbArgs 
    */
@@ -52,11 +52,13 @@ export class Prim extends Term {
   }
 }
 
-
+/**
+ * Class for primitive IO functions
+ */
 export class PrimIO extends Prim {
 
   /**
-   * todo
+   * Creates a primitive IO function object
    * @param {function} func 
    * @param {Integer} nbArgs 
    */
