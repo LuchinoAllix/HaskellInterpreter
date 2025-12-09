@@ -46,7 +46,7 @@ export class Prim extends Term {
       } else {
         temp = new Prim(partial(this.func, args[0]), this.nbArgs - 1);
       }
-      args.pop(0);
+      args.shift();
       return temp.lambdaCall(args);
     }
   }
