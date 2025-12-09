@@ -21,6 +21,7 @@ export function normalizeStart(program){
 
 /**
  * Turn a node into a term
+ * // FIXME : can return a term OR a list of term
  * @param {Node} astRoot 
  * @returns {Term}
  */
@@ -228,7 +229,9 @@ function normalizeExp(node){
       return new VarExp(node.value);
 
     case "integer" :
-    case "String" :
+      return new ValExp(parseInt(node.value), node.type);
+
+    case "String" : // TODO should convert to list of chars
     case "Special" :
     case "reservdop" :
       return new ValExp(node.value, node.type);
@@ -308,9 +311,9 @@ function countTypeArgs(node){
 function normalizeQconid(node){
   switch (node.value){
     case "False" :
+      return new ValExp(false, "Boolean");
     case "True" :
-      return new ValExp(node.value, "Boolean");
-    
+      return new ValExp(true, "Boolean");
     default :
       throw Error("Qconid not yet managed : " + node.value);
   }
