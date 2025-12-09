@@ -68,15 +68,59 @@ main = do print (42 / 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 7          : equality
--- Expected result : True
+-- Test 7          : multiple addition
+-- Expected result : 5
 
 --/
-main = do print ((3 * 4) == 12)
+main = do print (1 + 1 + 1 + 1 + 1)
 --/
 
 --------------------------------------------------------------------------------
--- Test 8          : let
+-- Test 8          : priority of operations
+-- Expected result : 55
+
+--/
+main = do print (5 + 5 * 10)
+--/
+
+
+--------------------------------------------------------------------------------
+-- Test 9          : parenthesis operations
+-- Expected result : 100
+
+--/
+main = do print ((5 + 5) * 10)
+--/
+
+
+--------------------------------------------------------------------------------
+-- Test 10          : complex operations
+-- Expected result  : 25
+
+--/
+main = do print (5 + 3 * 8 - 12 / 3)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 11          : if statement
+-- Expected result : "not zero"
+
+--/
+a = 1
+main = do print (if a == 0 then "zero" else "not zero")
+--/
+
+--------------------------------------------------------------------------------
+-- Test 12          : multiple ifs
+-- Expected result : "inner fail"
+
+--/
+main = do print (
+  if (True) then if (False) then "sucess" else "inner fail"else "outer fail")
+--/
+
+--------------------------------------------------------------------------------
+-- Test 13          : let
 -- Expected result : 1
 
 --/
@@ -84,7 +128,7 @@ main = do print (let x = 1 in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 9          : let with addition
+-- Test 14          : let with addition
 -- Expected result : 6
 
 --/
@@ -92,7 +136,7 @@ main = do print (let x = 3 in x + 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 10         : let with a string
+-- Test 15          : let with a string
 -- Expected result : "hello world"
 
 --/
@@ -100,7 +144,7 @@ main = do print (let x = "hello world" in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 11         : function declaration
+-- Test 16          : function declaration
 -- Expected result : 3
 
 --/
@@ -109,7 +153,7 @@ main = do print (add 1 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 12         : function declaration
+-- Test 17          : function declaration
 -- Expected result : 6
 
 --/
@@ -118,7 +162,7 @@ main = do print (mul 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 13         : recursive function declaration
+-- Test 18          : recursive function declaration
 -- Expected result : 120
 
 --/
@@ -128,7 +172,7 @@ main = do print (fact 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 14         : recursive function declaration
+-- Test 19          : recursive function declaration
 -- Expected result : 5
 
 --/
@@ -139,7 +183,7 @@ main = do print (fib 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 15         : recursive function declaration on a list
+-- Test 20          : recursive function declaration on a list
 -- Expected result : [3,2,1]
 
 --/
@@ -149,7 +193,7 @@ main = do print (reverse [1,2,3])
 --/
 
 --------------------------------------------------------------------------------
--- Test 16         : recursive function with type annotation
+-- Test 21          : recursive function with type annotation
 -- Expected result : 3
 
 --/
@@ -160,16 +204,7 @@ main = do print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
--- Test 17         : if statement
--- Expected result : "not zero"
-
---/
-func a = if a == 0 then "zero" else "not zero"
-main = do print (func 1)
---/
-
---------------------------------------------------------------------------------
--- Test 18         : case of
+-- Test 22          : case of
 -- Expected result : "black"
 
 --/
@@ -186,7 +221,7 @@ main = do print (cardColour "clubs)
 --/
 
 --------------------------------------------------------------------------------
--- Test 19         : lambda
+-- Test 23          : lambda
 -- Expected result : 2
 
 --/
@@ -194,7 +229,7 @@ main = do print ((\x -> x + 1) 1 )
 --/
 
 --------------------------------------------------------------------------------
--- Test 20         : lambda with multiple arguments
+-- Test 24          : lambda with multiple arguments
 -- Expected result : 5
 
 --/
@@ -202,7 +237,7 @@ main = do print ((\x y -> x + y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 21         : embeded lambda
+-- Test 25          : embeded lambda
 -- Expected result : 11
 
 --/
@@ -210,7 +245,7 @@ main = do print ((\x y -> x + (\a -> a * a) y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 22         : type annotation of list of list
+-- Test 26          : type annotation of list of list
 -- Expected result : 1
 
 --/
@@ -222,16 +257,7 @@ main = do print (func [[1]])
 --/
 
 --------------------------------------------------------------------------------
--- Test 23         : multiple ifs
--- Expected result : "inner fail"
-
---/
-main = do print (
-  if (True) then if (False) then "sucess" else "inner fail"else "outer fail")
---/
-
---------------------------------------------------------------------------------
--- Test 24         : multiple inless lets
+-- Test 27          : multiple inless lets
 -- Expected result : variable 
 -- 
 
@@ -241,7 +267,7 @@ let y = 6
 --/
 
 --------------------------------------------------------------------------------
--- Test 25         : multiple infull lets
+-- Test 28          : multiple infull lets
 -- Expected result : 6
 
 --/
@@ -249,7 +275,7 @@ main = do print ( let x = "3" in let y = 6 in y )
 --/
 
 --------------------------------------------------------------------------------
--- Test 26         : logical operators
+-- Test 29          : logical operators
 -- Expected result : function
 
 --/
@@ -257,7 +283,7 @@ f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
 --------------------------------------------------------------------------------
--- Test 27         : annotated variable declaration
+-- Test 30          : annotated variable declaration
 -- Expected result : function
 -- temporary decls to see the different ast output
 
@@ -272,7 +298,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 28         : let inside an anonymous function
+-- Test 31          : let inside an anonymous function
 -- Expected result : 3
 
 --/
@@ -280,7 +306,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 29         : function with 3 arguments
+-- Test 32          : function with 3 arguments
 -- Expected result : function
 
 --/
@@ -288,7 +314,7 @@ f x y z = 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 30         : variable declaration with main print
+-- Test 33          : variable declaration with main print
 -- Expected result : 5
 
 --/
@@ -298,7 +324,7 @@ main = do print (a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 31         : function declaration with main
+-- Test 34          : function declaration with main
 -- Expected result : 5
 
 --/
@@ -310,7 +336,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 32         : currying
+-- Test 35          : currying
 -- Expected result : 3
 
 --/
@@ -320,7 +346,7 @@ main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 33         : multi-branch main
+-- Test 36          : multi-branch main
 -- Expected result : "3/n4" 
 -- TODO manage multiline results
 
@@ -333,7 +359,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 34         : fonction funky pattern matching
+-- Test 37          : fonction funky pattern matching
 -- Expected result : "fail" 
 -- Todo gérer les fails 
 
@@ -345,7 +371,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 35         : currying et pattern matching
+-- Test 38          : currying et pattern matching
 -- Expected result : "3/n4" 
 
 
