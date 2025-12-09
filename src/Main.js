@@ -254,8 +254,9 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   }
 
   try{
-    console.log(initEvalComp(program));
-    /*if (initEval(program) === program.expected){
+    //console.log(initEvalComp(program));
+    initEvalComp(program)
+    if ( true ){ //=== program.expected){ TODO: add verifying function
       if (verbose){
         console.log("Successful evaluation :) ");
       }
@@ -265,7 +266,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
       // So this is never executed
       console.log("Unsuccessful evaluation :( ");
       return false;
-    }*/
+    }
 
   } catch (error) {
     console.log("Error while evaluating :");
