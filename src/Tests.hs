@@ -83,18 +83,24 @@ main = do print (1 + 1 + 1 + 1 + 1)
 main = do print (5 + 5 * 10)
 --/
 
+--------------------------------------------------------------------------------
+-- Test 9          : priority of operations
+-- Expected result : 35
+
+--/
+main = do print (5 * 5 + 10)
+--/
 
 --------------------------------------------------------------------------------
--- Test 9          : parenthesis operations
+-- Test 10          : parenthesis operations
 -- Expected result : 100
 
 --/
 main = do print ((5 + 5) * 10)
 --/
 
-
 --------------------------------------------------------------------------------
--- Test 10          : complex operations
+-- Test 11          : complex operations
 -- Expected result  : 25
 
 --/
@@ -102,7 +108,7 @@ main = do print (5 + 3 * 8 - 12 / 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 11          : if statement
+-- Test 12          : if statement
 -- Expected result : "not zero"
 
 --/
@@ -111,7 +117,7 @@ main = do print (if a == 0 then "zero" else "not zero")
 --/
 
 --------------------------------------------------------------------------------
--- Test 12          : multiple ifs
+-- Test 13          : multiple ifs
 -- Expected result : "inner fail"
 
 --/
@@ -120,7 +126,7 @@ main = do print (
 --/
 
 --------------------------------------------------------------------------------
--- Test 13          : let
+-- Test 14          : let
 -- Expected result : 1
 
 --/
@@ -128,7 +134,7 @@ main = do print (let x = 1 in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 14          : let with addition
+-- Test 15          : let with addition
 -- Expected result : 6
 
 --/
@@ -136,7 +142,7 @@ main = do print (let x = 3 in x + 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 15          : let with a string
+-- Test 16          : let with a string
 -- Expected result : "hello world"
 
 --/
@@ -144,7 +150,7 @@ main = do print (let x = "hello world" in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 16          : function declaration
+-- Test 17          : function declaration
 -- Expected result : 3
 
 --/
@@ -153,7 +159,7 @@ main = do print (add 1 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 17          : function declaration
+-- Test 18          : function declaration
 -- Expected result : 6
 
 --/
@@ -162,7 +168,7 @@ main = do print (mul 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 18          : recursive function declaration
+-- Test 19          : recursive function declaration
 -- Expected result : 120
 
 --/
@@ -172,7 +178,7 @@ main = do print (fact 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 19          : recursive function declaration
+-- Test 20          : recursive function declaration
 -- Expected result : 5
 
 --/
@@ -183,7 +189,7 @@ main = do print (fib 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 20          : recursive function declaration on a list
+-- Test 21          : recursive function declaration on a list
 -- Expected result : [3,2,1]
 
 --/
@@ -193,7 +199,7 @@ main = do print (reverse [1,2,3])
 --/
 
 --------------------------------------------------------------------------------
--- Test 21          : recursive function with type annotation
+-- Test 22          : recursive function with type annotation
 -- Expected result : 3
 
 --/
@@ -204,7 +210,7 @@ main = do print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
--- Test 22          : case of
+-- Test 23          : case of
 -- Expected result : "black"
 
 --/
@@ -221,7 +227,7 @@ main = do print (cardColour "clubs)
 --/
 
 --------------------------------------------------------------------------------
--- Test 23          : lambda
+-- Test 24          : lambda
 -- Expected result : 2
 
 --/
@@ -229,7 +235,7 @@ main = do print ((\x -> x + 1) 1 )
 --/
 
 --------------------------------------------------------------------------------
--- Test 24          : lambda with multiple arguments
+-- Test 25          : lambda with multiple arguments
 -- Expected result : 5
 
 --/
@@ -237,7 +243,7 @@ main = do print ((\x y -> x + y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 25          : embeded lambda
+-- Test 26          : embeded lambda
 -- Expected result : 11
 
 --/
@@ -245,7 +251,7 @@ main = do print ((\x y -> x + (\a -> a * a) y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 26          : type annotation of list of list
+-- Test 27          : type annotation of list of list
 -- Expected result : 1
 
 --/
@@ -257,7 +263,7 @@ main = do print (func [[1]])
 --/
 
 --------------------------------------------------------------------------------
--- Test 27          : multiple inless lets
+-- Test 28          : multiple inless lets
 -- Expected result : variable 
 -- 
 
@@ -267,7 +273,7 @@ let y = 6
 --/
 
 --------------------------------------------------------------------------------
--- Test 28          : multiple infull lets
+-- Test 29          : multiple infull lets
 -- Expected result : 6
 
 --/
@@ -275,7 +281,7 @@ main = do print ( let x = "3" in let y = 6 in y )
 --/
 
 --------------------------------------------------------------------------------
--- Test 29          : logical operators
+-- Test 30          : logical operators
 -- Expected result : function
 
 --/
@@ -283,7 +289,7 @@ f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
 --------------------------------------------------------------------------------
--- Test 30          : annotated variable declaration
+-- Test 31          : annotated variable declaration
 -- Expected result : function
 -- temporary decls to see the different ast output
 
@@ -298,7 +304,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 31          : let inside an anonymous function
+-- Test 32          : let inside an anonymous function
 -- Expected result : 3
 
 --/
@@ -306,7 +312,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 32          : function with 3 arguments
+-- Test 33          : function with 3 arguments
 -- Expected result : function
 
 --/
@@ -314,7 +320,7 @@ f x y z = 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 33          : variable declaration with main print
+-- Test 34          : variable declaration with main print
 -- Expected result : 5
 
 --/
@@ -324,7 +330,7 @@ main = do print (a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 34          : function declaration with main
+-- Test 35          : function declaration with main
 -- Expected result : 5
 
 --/
@@ -336,7 +342,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 35          : currying
+-- Test 36          : currying
 -- Expected result : 3
 
 --/
@@ -346,7 +352,7 @@ main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 36          : multi-branch main
+-- Test 37          : multi-branch main
 -- Expected result : "3/n4" 
 -- TODO manage multiline results
 
@@ -359,7 +365,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 37          : fonction funky pattern matching
+-- Test 38          : fonction funky pattern matching
 -- Expected result : "fail" 
 -- Todo gérer les fails 
 
@@ -371,7 +377,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 38          : currying et pattern matching
+-- Test 39          : currying et pattern matching
 -- Expected result : "3/n4" 
 
 
