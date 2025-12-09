@@ -83,8 +83,12 @@ function output(output){
  *    'inless' let's but they are considered expressions.
  * @param {Decl} decl 
  */
-function evaluateDecl(decl){ 
-  global_env.add(decl.name, decl);
+function evaluateDecl(decl){
+  if (decl.name === "main"){
+    global_env.add(decl.name, evaluateExp(decl.branches[0], new Env()));
+  } else {
+    global_env.add(decl.name, decl);
+  }
 }
 
 /**
@@ -97,7 +101,7 @@ function evaluateDecl(decl){
 function evaluateExp(exp, env){
   switch (exp.type){
     case "functionApp" :
-      let f = env.lookupGlobalLocal(exp.name);
+      let f = lookupGlobalLocal(env, exp.name);
       if (f !== undefined){
         return [evaluateFunc(f, exp.args, env)];
       } else {
@@ -105,9 +109,9 @@ function evaluateExp(exp, env){
       }
     
     case "var" :
-      let variable = env.lookupGlobalLocal(exp.name);
+      let variable = lookupGlobalLocal(env, exp.name);
       if (variable !== undefined){
-        return evaluateExp(variable.branches[0].value);
+        return evaluateExp(variable.branches[0]);
       } else {
         throw Error("variable " + exp.name + " is undefined");
       }
@@ -118,6 +122,22 @@ function evaluateExp(exp, env){
         res.push(evaluateExp(e, env)); // can create nested lists
       }
       return res;
+    
+    case "value" :
+
+      switch (exp.valueType){
+        case "integer" :
+          return [new Value.Vint(exp.value)];
+    
+        case "string" :
+          return [new Value.Vstring(exp.value)];
+
+        case "boolean" :
+          return [new Value.Vbool(exp.value)];
+
+        default :
+          throw Error("value type not yet managed in eval : " + exp.valueType);
+      }
     
     case "let" :
       throw Error("let not yet managed in eval");
@@ -130,15 +150,6 @@ function evaluateExp(exp, env){
     case "case" :
       throw Error("case not yet managed in eval");
       break;
-
-    case "integer" :
-      return new Value.Vint(exp.value);
-    
-    case "string" :
-      return new Value.Vstring(exp.value);
-
-    case "boolean" :
-      return new Value.Vbool(exp.value);
 
     default :
       throw Error("exp not yet managed in eval : " + exp.type);
@@ -154,7 +165,7 @@ function evaluateExp(exp, env){
  * @returns {Value}
  */
 function evaluateFunc(decl, args, env){
-  if (decl.isPrim()){
+  if (decl.isPrim() || decl.isPrimIO()){
     // We assume that evalExp returns a list of one element (no do in args)
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
   }
@@ -244,5 +255,7 @@ function resetGlobalEnv(){
  * todo
  */
 function execute(main_decl){
-  
+  for (let exp of main_decl){
+    exp[0].value.call();
+  }
 }
