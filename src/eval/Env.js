@@ -77,14 +77,24 @@ export class Env {
         return new Vint(a.value / b.value);
       }
     , 2));
-    
 
     this.add("print", new PrimIO(
       function print(a){
         console.log(a.value);
       }
     , 1));
-    
+
+    this.add("==", new Prim(
+      function equals(a,b){
+        return new Vbool(a.value === b.value);
+      }
+    , 2));
+
+    this.add("!=", new Prim(
+      function diff(a,b){
+        return new Vbool(a.value !== b.value);
+      }
+    , 2));
 
     // why did i write this ?
     this.add("do", new Prim(
