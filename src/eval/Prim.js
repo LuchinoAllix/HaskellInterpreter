@@ -39,10 +39,13 @@ export class Prim extends Term {
       }
       return this; // If we are still waiting for args
 
-    } else if (args.length === 1) {
-      return new Prim(partial(this.func, args[0]), this.args - 1);
     } else {
-      let temp = new Prim(partial(this.func, args[0]), this.args - 1);
+      let temp;
+      if (this.isPrimIO()){
+        temp = new PrimIO(partial(this.func, args[0]), this.nbArgs - 1);
+      } else {
+        temp = new Prim(partial(this.func, args[0]), this.nbArgs - 1);
+      }
       args.pop(0);
       return temp.lambdaCall(args);
     }
