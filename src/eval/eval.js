@@ -124,13 +124,13 @@ function evaluateExp(exp, env){
 
       switch (exp.valueType){
         case "integer" :
-          return [new Value.Vint(exp.value)];
+          return [new V.Vint(exp.value)];
     
-        case "string" :
-          return [new Value.Vstring(exp.value)];
+        case "String" :
+          return [new V.Vstring(exp.value)];
 
         case "boolean" :
-          return [new Value.Vbool(exp.value)];
+          return [new V.Vbool(exp.value)];
 
         default :
           throw Error("value type not yet managed in eval : " + exp.valueType);
@@ -213,7 +213,7 @@ function execute(main_decl){
   main_decl = main_decl.flat(); // required because evalExp can return nested 
                                 // lists
   for (let exp of main_decl){
-    if (exp.value.type !== "IO"){
+    if (exp.type !== "IO"){
       throw Error("Only IO functions can be given to main");
     }
     exp.value.call();
