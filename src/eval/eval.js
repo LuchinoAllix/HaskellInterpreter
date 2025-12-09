@@ -17,7 +17,9 @@ global_env.initGlobal();
  */
 export function initEvalComp(program){
   let terms = program.normalizedForm;
-
+  if (terms.constructor !== Array){ // because if there is only main
+    terms = [terms];
+  }
   for (let term of terms){
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms at toplevel, only declarations " + 
@@ -129,7 +131,7 @@ function evaluateExp(exp, env){
         case "String" :
           return [new V.Vstring(exp.value)];
 
-        case "boolean" :
+        case "Boolean" :
           return [new V.Vbool(exp.value)];
 
         default :
