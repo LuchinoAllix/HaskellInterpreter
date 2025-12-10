@@ -62,8 +62,8 @@ export class FunctionApp extends Exp {
     
   /**
    * creates an application function expression for function that are named
-   * @param {String} name 
-   * @param {[Exp]} args 
+   * @param {String} name Name of the function to call
+   * @param {[Exp]} args Arguments given to the function 
    */
   constructor(name, args){
     super();
@@ -80,15 +80,13 @@ export class AFunctionApp extends FunctionApp {
 
   /**
    * creates an application function expression for function that are named
-   * @param {[Exp]} args // name of the args
-   * @param {Exp} func
-   * @param {[Exp]} givenArgs // args to give to the lambda function 
+   * @param {[Exp]} args // args to give to the lambda function 
+   * @param {LambdaExp} func // lambda function 
    */
-  constructor(args, func, givenArgs){
+  constructor(args, func){
     super("", args);
     this.type = "aFunctionApp";
     this.func = func;
-    this.givenArgs = givenArgs;
   }
 }
 
@@ -174,5 +172,18 @@ export class ListPatternTerm extends Exp {
     super();
     this.type = "list pattern";
     this.patterns = patterns
+  }
+}
+
+/**
+ * 
+ */
+export class LambdaExp extends Exp {
+  
+  constructor(args, body){
+    super();
+    this.type = "LambdaExp";
+    this.args = args;
+    this.body = body;
   }
 }

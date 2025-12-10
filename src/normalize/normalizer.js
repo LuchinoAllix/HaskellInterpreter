@@ -1,7 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         ListPatternTerm, AFunctionApp} from "./Exp.js";
+         ListPatternTerm, AFunctionApp, LambdaExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 
 //--     File containing functions for intermediary form transformation     --//
@@ -257,7 +257,7 @@ function normalizeExp(node){
     case "lexp" :
       switch (node.childs[0].value) {
         case "\\" :
-          return normalizeLambda(node); // Will never happen I think    
+          return normalizeLambda(node); 
         case "let" :
           return normalizeLet(node);
         case "if" :
@@ -368,7 +368,20 @@ function normalizeLet(node){
  * @returns {Exp} 
  */
 function normalizeLambda(node){
-  throw Error("lambda are not yet managed");
+  let args = [];
+  let func, reserdopCnt = 0 ;
+  for (let child of node.childs){
+    if (child.type === "reservdop"){
+      reserdopCnt += 1;
+    } else if (reserdopCnt === 1){
+      args.push(normalizeExp(child))
+    } else if (reserdopCnt === 2){
+      func = (normalizeExp(child));
+    } else {
+      throw Error("Mismanagement of anonymous function");
+    }
+  }
+  return new LambdaExp(args, func);
 }
 
 /**
@@ -398,18 +411,5 @@ function normalizeDo(node){
  * @returns {AFunctionApp}
  */
 function normalizeAfuncApp(node, givenArgs){
-  let args = [];
-  let func, reserdopCnt = 0 ;
-  for (let child of node.childs){
-    if (child.type === "reservdop"){
-      reserdopCnt += 1;
-    } else if (reserdopCnt === 1){
-      args.push(normalizeExp(child))
-    } else if (reserdopCnt === 2){
-      func = (normalizeExp(child));
-    } else {
-      throw Error("Mismanagement of anonymous functions");
-    }
-  }
-  return new AFunctionApp(args, func, givenArgs);
+  return new AFunctionApp(givenArgs, normalizeLambda(node));
 }
