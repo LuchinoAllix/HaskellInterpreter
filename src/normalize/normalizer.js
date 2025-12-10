@@ -334,7 +334,16 @@ function normalizeCase(node){
  * @returns {IfExp} 
  */
 function normalizeIf(node){
-  throw Error("If are not yet managed");
+  let cnt = 0;
+  let elems = [null, null, null];
+  for (let child of node.childs){
+    if (child.type !== "reservdid" && !(child.type.startsWith("layout"))){
+      elems[cnt] = normalizeExp(child);
+      cnt += 1;
+      if (cnt === 3){ break; }
+    }
+  }
+  return new IfExp(elems[0], elems[1], elems[2]);
 }
 
 /**
