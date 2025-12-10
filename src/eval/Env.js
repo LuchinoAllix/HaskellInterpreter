@@ -102,9 +102,33 @@ export class Env {
       }
     , 2));
 
-        this.add("||", new Prim(
+    this.add("||", new Prim(
       function or(a,b){
         return new Vbool(a.value || b.value);
+      }
+    , 2));
+
+    this.add("<", new Prim(
+      function lt(a,b){
+        return new Vbool(a.value < b.value);
+      }
+    , 2));
+
+    this.add("<=", new Prim(
+      function le(a,b){
+        return new Vbool(a.value <= b.value);
+      }
+    , 2));
+
+    this.add(">=", new Prim(
+      function ge(a,b){
+        return new Vbool(a.value >= b.value);
+      }
+    , 2));
+
+    this.add(">", new Prim(
+      function gt(a,b){
+        return new Vbool(a.value > b.value);
       }
     , 2));
 
