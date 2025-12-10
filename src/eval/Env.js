@@ -96,12 +96,5 @@ export class Env {
       }
     , 2));
 
-    // why did i write this ?
-    this.add("do", new Prim(
-      function doa(a){
-        return a;
-      }
-    , 1));
-
   }
 }
