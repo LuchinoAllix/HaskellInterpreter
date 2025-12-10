@@ -96,14 +96,14 @@ export class IfExp extends Exp {
   /**
    * Creates an if expression
    * @param {Exp} condition 
-   * @param {Exp} sucess 
+   * @param {Exp} success 
    * @param {Exp} fail 
    */
-  constructor(condition, sucess, fail){
+  constructor(condition, success, fail){
     super();
     this.type = "if";
     this.condition = condition;
-    this.sucess = sucess;
+    this.success = success;
     this.fail = fail;
   }
 }
