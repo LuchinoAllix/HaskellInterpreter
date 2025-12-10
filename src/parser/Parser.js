@@ -44,6 +44,8 @@ export function parse(program){
 }
 
 // TODO : priority of operations is not respected
+//        it's because of the fixity resolution in the doc (not implemented)
+//        has got to do with infiexp and qop in parserRules
 
 /**
  * Tries all the rules until it finds one applicable and adds the resulting AST
