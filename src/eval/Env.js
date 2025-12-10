@@ -96,5 +96,17 @@ export class Env {
       }
     , 2));
 
+    this.add("&&", new Prim(
+      function and(a,b){
+        return new Vbool(a.value && b.value);
+      }
+    , 2));
+
+        this.add("||", new Prim(
+      function or(a,b){
+        return new Vbool(a.value || b.value);
+      }
+    , 2));
+
   }
 }
