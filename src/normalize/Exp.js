@@ -80,13 +80,15 @@ export class AFunctionApp extends FunctionApp {
 
   /**
    * creates an application function expression for function that are named
-   * @param {[Exp]} args
+   * @param {[Exp]} args // name of the args
    * @param {Exp} func
+   * @param {[Exp]} givenArgs // args to give to the lambda function 
    */
-  constructor(args, func){
+  constructor(args, func, givenArgs){
     super("", args);
     this.type = "aFunctionApp";
     this.func = func;
+    this.givenArgs = givenArgs;
   }
 }
 

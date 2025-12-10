@@ -215,7 +215,11 @@ function normalizeExp(node){
 
     case "fexp" :
       if (node.childs[0].childs !== null){
-        return normalizeAfuncApp(node.childs[0].childs[1]);
+        let givenArgs = []
+        for (let i = 1; i < node.childs.length; i ++){
+          givenArgs.push(normalizeExp(node.childs[i]));
+        }
+        return normalizeAfuncApp(node.childs[0].childs[1], givenArgs);
       }
       return new FunctionApp(node.childs[0].value, 
                              [normalizeExp(node.childs[1])]);
@@ -393,7 +397,7 @@ function normalizeDo(node){
  * @param {Node} node 
  * @returns {AFunctionApp}
  */
-function normalizeAfuncApp(node){
+function normalizeAfuncApp(node, givenArgs){
   let args = [];
   let func, reserdopCnt = 0 ;
   for (let child of node.childs){
@@ -407,5 +411,5 @@ function normalizeAfuncApp(node){
       throw Error("Mismanagement of anonymous functions");
     }
   }
-  return new AFunctionApp(args, func);
+  return new AFunctionApp(args, func, givenArgs);
 }
