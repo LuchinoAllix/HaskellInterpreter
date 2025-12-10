@@ -74,6 +74,8 @@ function output(output){
 
 /**
  * Adds a declaration to the global env
+ * Declarations are just added as is to the global env, no transformation occur,
+ * except for the main
  * Notes :
  *  - We assume main is the only entry point of the program.
  *  - We assume declaration can only be at the top level, let's or where are
@@ -92,7 +94,7 @@ function evaluateDecl(decl){
 
 /**
  * Evaluates an expression in a given (local) environement
- * Returns a list of the values evaluated (there can be nested lists)
+ * Returns a list of the values evaluated
  * @param {Exp} exp 
  * @param {Env} env 
  * @returns {[V.Value]}
@@ -118,7 +120,7 @@ function evaluateExp(exp, env){
     case "do" :
       let res = []
       for (let e of exp.exps){
-        res.push(evaluateExp(e, env)); // can create nested lists
+        res = res.concat(evaluateExp(e, env));
       }
       return res;
     
@@ -212,8 +214,6 @@ function resetGlobalEnv(){
  * @param {[V.Vio]} main_decl 
  */
 function execute(main_decl){
-  main_decl = main_decl.flat(); // required because evalExp can return nested 
-                                // lists
   for (let exp of main_decl){
     if (exp.type !== "IO"){
       throw Error("Only IO functions can be given to main");
