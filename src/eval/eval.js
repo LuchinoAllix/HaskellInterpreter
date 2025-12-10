@@ -112,7 +112,7 @@ function evaluateExp(exp, env){
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
       if (variable !== undefined){
-        return evaluateExp(variable.branches[0]);
+        return evaluateExp(variable.branches[0], env);
       } else {
         throw Error("variable " + exp.name + " is undefined");
       }
