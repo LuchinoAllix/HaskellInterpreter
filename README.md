@@ -8,7 +8,9 @@
 
 
 Usage:
-  `node Main.js Id_Of_Test [options]` (if no test id is given, all tests are run)
+  + `node Main.js Id_Of_Test [options]` (if no test id is given, all tests are run)
+
+  + `node renumberTests.js` to a make sure all the tests are well numbered
 
 Options :<br>
   - `--Tokens` shows the list of token after lexing
