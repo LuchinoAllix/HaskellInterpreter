@@ -386,13 +386,11 @@ main = do
 
 --------------------------------------------------------------------------------
 -- Test 40          : currying et pattern matching
--- Expected result : "3/n4" 
-
+-- Expected result : "3" 
 
 --/
 func a b = a + b
 foo = func 1
-a = 1
 main = do 
           print (foo 2) 
 --/
