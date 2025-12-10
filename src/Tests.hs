@@ -121,8 +121,7 @@ main = do print (if a == 0 then "zero" else "not zero")
 -- Expected result : "inner fail"
 
 --/
-main = do print (
-  if (True) then if (False) then "sucess" else "inner fail"else "outer fail")
+main = do print (if (True) then if (False) then "sucess" else "inner fail" else "outer fail")
 --/
 
 --------------------------------------------------------------------------------
