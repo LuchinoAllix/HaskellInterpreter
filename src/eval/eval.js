@@ -109,6 +109,11 @@ function evaluateExp(exp, env){
         throw Error("function " + exp.name + " is undefined");
       }
     
+    case "afunctionApp" :
+      // todo
+      throw Error("exp not yet managed in eval : " + exp.type);
+      
+
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
       if (variable !== undefined){
