@@ -1,7 +1,6 @@
 
 import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
-import * as Value from "../eval/Value.js";
 
 /**
  * parent class for expressions
@@ -53,38 +52,41 @@ export class ValExp extends Exp {
     this.valueType = valueType;
   }
 
-  /**
-   * unused
-   * @returns 
-   */
-  valExpToValue(){
-    switch (this.valueType){
-      case "String" :
-        return new Value.Vstring(this.value)
-    }
-  }
-
 }
 
 
 /**
- * Function application expression
+ * Named function application expression
  */
 export class FunctionApp extends Exp {
     
   /**
-   * creates an application function expression
-   * perhaps the anonymous attribute can be omitted and the anonimity of the 
-   * function can be deduced by the nullness fo the name attribute...
+   * creates an application function expression for function that are named
    * @param {String} name 
    * @param {[Exp]} args 
    */
-  constructor(name, args, anonymous = false){
+  constructor(name, args){
     super();
     this.type = "functionApp";
     this.name = name;
     this.args = args;
-    this.anonymous = anonymous;
+  }
+}
+
+/**
+ * Anonymous function application expression
+ */
+export class AFunctionApp extends FunctionApp {
+
+  /**
+   * creates an application function expression for function that are named
+   * @param {[Exp]} args
+   * @param {Exp} func
+   */
+  constructor(args, func){
+    super("", args);
+    this.type = "aFunctionApp";
+    this.func = func;
   }
 }
 

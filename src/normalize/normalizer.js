@@ -1,7 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         ListPatternTerm } from "./Exp.js";
+         ListPatternTerm, AFunctionApp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 
 //--     File containing functions for intermediary form transformation     --//
@@ -214,6 +214,9 @@ function normalizeExp(node){
                               normalizeExp(node.childs[2])]);
 
     case "fexp" :
+      if (node.childs[0].childs !== null){
+        return normalizeAfuncApp(node.childs[0].childs[1]);
+      }
       return new FunctionApp(node.childs[0].value, 
                              [normalizeExp(node.childs[1])]);
 
@@ -250,7 +253,7 @@ function normalizeExp(node){
     case "lexp" :
       switch (node.childs[0].value) {
         case "\\" :
-          return normalizeLambda(node);        
+          return normalizeLambda(node); // Will never happen I think    
         case "let" :
           return normalizeLet(node);
         case "if" :
@@ -378,4 +381,31 @@ function normalizeDo(node){
     }
   }
   return new DoExp(exps);
+}
+
+/**
+ * Transforms a lexp node that represents an anonymous function into
+ * the corresponding exp form.
+ * We assume the lexp represents an anonymous function because it is 
+ * the child of an aexp_ that itself is the first child of an fexp,
+ * in other cases the first child of an fexp is the name of the function
+ * we assume that all other cases lead to anonymous functions
+ * @param {Node} node 
+ * @returns {AFunctionApp}
+ */
+function normalizeAfuncApp(node){
+  let args = [];
+  let func, reserdopCnt = 0 ;
+  for (let child of node.childs){
+    if (child.type === "reservdop"){
+      reserdopCnt += 1;
+    } else if (reserdopCnt === 1){
+      args.push(normalizeExp(child))
+    } else if (reserdopCnt === 2){
+      func = (normalizeExp(child));
+    } else {
+      throw Error("Mismanagement of anonymous functions");
+    }
+  }
+  return new AFunctionApp(args, func);
 }
