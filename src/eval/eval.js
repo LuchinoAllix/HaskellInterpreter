@@ -145,8 +145,15 @@ function evaluateExp(exp, env){
       break;
 
     case "if" :
-      throw Error("if not yet managed in eval");
-      break;
+      // we suppose evaluateExp return a list of one element
+      let cond = evaluateExp(exp.condition, env)[0];
+      if (cond.type !== "bool"){
+        throw Error("Expression in if condition did not evaluate to boolean.");
+      } else if (cond.value){
+        return evaluateExp(exp.success, env);
+      } else {
+        return evaluateExp(exp.fail, env);
+      }
 
     case "case" :
       throw Error("case not yet managed in eval");
