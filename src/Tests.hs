@@ -280,7 +280,16 @@ main = do print ( let x = "3" in let y = 6 in y )
 --/
 
 --------------------------------------------------------------------------------
--- Test 30          : logical operators
+-- Test 30          : lambda in a var
+-- Expected result : 2
+
+--/
+a = \x -> x + 1
+main = do print (a 1)
+--/
+
+-------------------------------------------------------------------------------
+-- Test 31          : logical operators
 -- Expected result : function
 
 --/
@@ -288,7 +297,7 @@ f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
 --------------------------------------------------------------------------------
--- Test 31          : annotated variable declaration
+-- Test 32          : annotated variable declaration
 -- Expected result : function
 -- temporary decls to see the different ast output
 
@@ -303,7 +312,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 32          : let inside an anonymous function
+-- Test 33          : let inside an anonymous function
 -- Expected result : 3
 
 --/
@@ -311,7 +320,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 33          : function with 3 arguments
+-- Test 34          : function with 3 arguments
 -- Expected result : function
 
 --/
@@ -319,7 +328,7 @@ f x y z = 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 34          : variable declaration with main print
+-- Test 35          : variable declaration with main print
 -- Expected result : 5
 
 --/
@@ -329,7 +338,7 @@ main = do print (a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 35          : function declaration with main
+-- Test 36          : function declaration with main
 -- Expected result : 5
 
 --/
@@ -341,7 +350,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 36          : currying
+-- Test 37          : currying
 -- Expected result : 3
 
 --/
@@ -351,7 +360,7 @@ main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 37          : multi-branch main
+-- Test 38          : multi-branch main
 -- Expected result : "3/n4" 
 -- TODO manage multiline results
 
@@ -364,7 +373,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 38          : fonction funky pattern matching
+-- Test 39          : fonction funky pattern matching
 -- Expected result : "fail" 
 -- Todo gérer les fails 
 
@@ -376,7 +385,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 39          : currying et pattern matching
+-- Test 40          : currying et pattern matching
 -- Expected result : "3/n4" 
 
 
