@@ -230,7 +230,7 @@ cardColour suit =
     "clubs" -> "black"
     _ -> "I am not familiar with this card suit."
 
-main = do print (cardColour "clubs)
+main = do print (cardColour "clubs")
 --/
 
 --------------------------------------------------------------------------------
