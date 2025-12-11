@@ -108,8 +108,6 @@ function ApplyRule3(program, index){
  * This function could be merged with addIndentation to be more efficent.
  * In following the rules, we assume :
  * - that if the parameter is not represented by [] then it cannot be empty
- * - we go through the list of tokens left to rght 
- * - we go through the stack from righ to left (because it's a stack)
  * 
  * @param {Program} program 
  * @returns {Boolean}
@@ -140,7 +138,7 @@ function bigL(tokens, stack){
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0][0] === 0){
       return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
-                                               stack.splice(-1,1)));
+                                               stack.slice(1)));
     } else {
       throw new Error("Parse error bigL (note 3");
     }
@@ -177,7 +175,7 @@ function bigL(tokens, stack){
     if (stack.length === 1){
       stack = [];
     }
-    return [newLayoutToken("}","4")].concat(bigL([], stack.splice(-1,1)));
+    return [newLayoutToken("}","4")].concat(bigL([], stack.slice(1)));
   }
   
   else {
@@ -197,13 +195,17 @@ function bigL(tokens, stack){
  * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
+  //console.log(tokens);
+  //console.log(stack);
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
-  let m = stack[stack.length-1][0];
+  let m = stack[0][0];
+  //console.log( 'n =' + n + " and m = " + m);
+  //console.log(stack)
   if (m === n){ 
+    console.log("here")
     return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
-    return [newLayoutToken("}","5")].concat(bigL(tokens.slice(1), 
-                                             stack.splice(-1,1)));
+    return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1)));
   } else {
     return bigL(tokens.slice(1), stack);
   } 
@@ -226,12 +228,12 @@ function bigLR2(tokens, stack){
                 tokens[0]);
   }
   if (stack.length > 0){
-    let m = stack[stack.length-1][0];
+    let m = stack[0][0];
     if (n > m){
-      stack.push([n, tokens[0]]);
+      stack  = [[n, tokens[0]]].concat(stack);
       return [newLayoutToken("{")].concat(bigL(tokens.slice(1), stack));
     } else {
-      console.log("stack : ", stack);
+      //console.log("stack : ", stack);
       return [newLayoutToken("{","6"), newLayoutToken("}","6")].concat(
         bigL([newLayoutToken("<" + n + ">", "R3")].concat(tokens.slice(1)),
                                                           stack));
@@ -271,12 +273,14 @@ function isNextTokenIn(tokens){
  * @param {[[Integer, Token]]} stack 
  */
 function updateStack(tokens, stack){
+  console.log(tokens[0])
+  console.log(stack);
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
-    stack.push([stack.slice(-1)[0][1].column ,tokens[0]]);
+    stack = [[stack[0][1].column ,tokens[0]]].concat(stack);
   } else if (tokens.length > 0 && tokens[0].value === '{'){
-    if (stack.slice(-1)[0][0] !== 0){ // FIXME : what to do if stack empty ?
+    if (stack[0][0] !== 0){ // FIXME : what to do if stack empty ?
                                       // (as in '{' was provided )
-      stack.push([0, tokens[0]]);
+      stack = [[0, tokens[0]]].concat(stack);
     }
   }
 }

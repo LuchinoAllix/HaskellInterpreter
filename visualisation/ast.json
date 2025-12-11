@@ -338,6 +338,131 @@
                           ]
                         },
                         {
+                          "type": "layout 5",
+                          "value": "}",
+                          "line": -1,
+                          "column": -1,
+                          "childs": null
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "layout  f",
+              "value": ";",
+              "line": -1,
+              "column": -1,
+              "childs": null
+            },
+            {
+              "type": "decl",
+              "value": null,
+              "line": null,
+              "column": null,
+              "childs": [
+                {
+                  "type": "Qvarid",
+                  "value": "main",
+                  "line": 10,
+                  "column": 1,
+                  "childs": null
+                },
+                {
+                  "type": "rhs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "reservdop",
+                      "value": "=",
+                      "line": 10,
+                      "column": 6,
+                      "childs": null
+                    },
+                    {
+                      "type": "lexp",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "reservdid",
+                          "value": "do",
+                          "line": 10,
+                          "column": 8,
+                          "childs": null
+                        },
+                        {
+                          "type": "layout",
+                          "value": "{",
+                          "line": -1,
+                          "column": -1,
+                          "childs": null
+                        },
+                        {
+                          "type": "fexp",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Qvarid",
+                              "value": "print",
+                              "line": 10,
+                              "column": 11,
+                              "childs": null
+                            },
+                            {
+                              "type": "aexp_",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "Special",
+                                  "value": "(",
+                                  "line": 10,
+                                  "column": 17,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "fexp",
+                                  "value": null,
+                                  "line": null,
+                                  "column": null,
+                                  "childs": [
+                                    {
+                                      "type": "Qvarid",
+                                      "value": "cardColour",
+                                      "line": 10,
+                                      "column": 18,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "String",
+                                      "value": "\"clubs\"",
+                                      "line": 10,
+                                      "column": 29,
+                                      "childs": null
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Special",
+                                  "value": ")",
+                                  "line": 10,
+                                  "column": 36,
+                                  "childs": null
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
                           "type": "layout 4",
                           "value": "}",
                           "line": -1,

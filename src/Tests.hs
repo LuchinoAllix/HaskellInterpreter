@@ -229,6 +229,7 @@ cardColour suit =
     "spades" -> "black"
     "clubs" -> "black"
     _ -> "I am not familiar with this card suit."
+
 main = do print (cardColour "clubs")
 -- FIXME : error in parsing with main, but not without
 --/
@@ -301,7 +302,7 @@ main = do print (a 1)
 -- Expected result : function
 
 --/
-f x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
+main = do  x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
 --------------------------------------------------------------------------------
