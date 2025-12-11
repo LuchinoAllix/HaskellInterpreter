@@ -133,27 +133,27 @@ main = do print (let x = 1 in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 15          : let with multiple vars 
+-- Test 15          : let with multiple vars
+-- Expected result : 3
+
+--/
+main = do print (let x = 1 ; y = 2 in x + y)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 16          : let with overriding a var
+-- Expected result : 2
+
+--/
+main = do print (let x = 1 in let x = 2 in x)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 17          : let with a lambda
 -- Expected result : 2
 
 --/
 main = do print (let x = 1 ; y = \z -> z + 1 in y x)
---/
-
---------------------------------------------------------------------------------
--- Test 16          : let with addition
--- Expected result : 6
-
---/
-main = do print (let x = 3 in x + 3)
---/
-
---------------------------------------------------------------------------------
--- Test 17          : let with a string
--- Expected result : "hello world"
-
---/
-main = do print (let x = "hello world" in x)
 --/
 
 --------------------------------------------------------------------------------
