@@ -1,5 +1,10 @@
+cardColour :: String -> String
+cardColour suit =
+  case suit of
+    "hearts" -> "red"
+    "diamonds" -> "red"
+    "spades" -> "black"
+    "clubs" -> "black"
+    _ -> "I am not familiar with this card suit."
 
-
-main = do 
-          let f x = x + 1
-          print(f 1)
+main = do print (cardColour "clubs")
