@@ -1,4 +1,5 @@
 
+import { Branch } from "./Branch.js";
 import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
 
@@ -134,10 +135,15 @@ export class LetExp extends Exp {
 export class CaseExp extends Exp {
 
   /**
-   * TODO
+   * Creates a case expression object
+   * @param {Exp} exp
+   * @param {[Branch]} branches  
    */
-  constructor(){
-
+  constructor(exp, branches){
+    super();
+    this.type = "case";
+    this.exp = exp;
+    this.branches = branches;
   }
 
 }
@@ -186,5 +192,21 @@ export class LambdaExp extends Exp {
     this.type = "LambdaExp";
     this.args = args;
     this.body = body;
+  }
+}
+
+/**
+ * Special expression object for '_' 
+ */
+export class SpecialExp extends Exp {
+
+  /**
+   * Creates a special exp object for reserved id
+   * @param {String} special 
+   */
+  constructor(special){
+    super();
+    this.type = "SpecialExp";
+    this.special = special;
   }
 }

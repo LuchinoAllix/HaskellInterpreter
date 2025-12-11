@@ -1,8 +1,10 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         ListPatternTerm, AFunctionApp, LambdaExp} from "./Exp.js";
+         ListPatternTerm, AFunctionApp, LambdaExp,
+         SpecialExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
+import { Branch } from "./Branch.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -270,6 +272,14 @@ function normalizeExp(node){
           throw Error("This kind of lexp is not yet supported :" +
             node.childs[0].value);
       }
+      case "reservdid" :
+        switch (node.value){
+          case "_" :
+            return new SpecialExp("_");
+          default :
+            throw Error("This kind of reservdid is not yet supported :" +
+              node.childs[0].value);
+        }
 
     default :
       throw Error("This expression type is not yet supported : " + node.type);
@@ -327,12 +337,21 @@ function normalizeQconid(node){
 }
 
 /**
- * TODO
+ * Normalises a case node parents (lexp) into the normal form (caseExp)
  * @param {Node} node
  * @returns {CaseExp} 
  */
 function normalizeCase(node){
-  throw Error("Cases are not yet managed");
+  let exp = normalizeExp(node.childs[1]);
+  let branches = [];
+  for (let child of node.childs[4].childs){
+    if (!child.type.startsWith("layout")){
+      // We suppose we only have alt nodes
+      branches.push(new Branch([normalizeExp(child.childs[0])],
+                               normalizeExp(child.childs[2])));
+    }
+  }
+  return new CaseExp(exp, branches);
 }
 
 /**
