@@ -529,7 +529,7 @@ export class Rules {
         [ref("fixity"), 1], 
         [tokentype("integer"), 0], 
         [ref("ops"), 1]
-      ]),
+      ])
       //branch([]) FIXME : normal que ceci soit commenté ?
     ];
     
@@ -739,12 +739,15 @@ export class Rules {
       branch([
         [ref("btype"), 1], 
         [ref("conop"), 1],
-        [data("!"), 1], [ref("atype"), 1]
+        [data("!"), 1], 
+        [ref("atype"), 1]
       ]),
       branch([
-        [data("!"), 1], [ref("atype"), 1], 
+        [data("!"), 1], 
+        [ref("atype"), 1], 
         [ref("conop"), 1],
-        [data("!"), 1], [ref("atype"), 1]
+        [data("!"), 1], 
+        [ref("atype"), 1]
       ]),
       branch([
         [ref("con"), 1],
@@ -752,7 +755,7 @@ export class Rules {
         [branch([
           [ref("fielddecl"), 1],
           [data(","), 1],
-        ]), 3] 
+        ]), 3],
         [ref("fielddecl"), 0],
         [data("}"), 1]
       ]),
@@ -1009,7 +1012,7 @@ export class Rules {
         [branch([
           [ref("context"), 1], 
           [data("=>"), 1]
-        ]), 0]
+        ]), 0],
         [ref("type"), 1]
       ]),
       branch([[ref("infixexp"), 1]])
@@ -1177,7 +1180,7 @@ export class Rules {
         ]), 3]
         [ref("fbind"), 0], 
         [data("}"), 1]
-      ]),
+      ])
     ];
 
     /** -------------------------
