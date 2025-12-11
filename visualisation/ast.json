@@ -24,36 +24,50 @@
           "column": null,
           "childs": [
             {
-              "type": "decl",
+              "type": "gendecl",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
                 {
                   "type": "Qvarid",
-                  "value": "a",
+                  "value": "cardColour",
                   "line": 1,
                   "column": 1,
                   "childs": null
                 },
                 {
-                  "type": "rhs",
+                  "type": "reservdop",
+                  "value": "::",
+                  "line": 1,
+                  "column": 12,
+                  "childs": null
+                },
+                {
+                  "type": "type",
                   "value": null,
                   "line": null,
                   "column": null,
                   "childs": [
                     {
-                      "type": "reservdop",
-                      "value": "=",
+                      "type": "Qtycon",
+                      "value": "String",
                       "line": 1,
-                      "column": 3,
+                      "column": 15,
                       "childs": null
                     },
                     {
-                      "type": "integer",
-                      "value": "42",
+                      "type": "reservdop",
+                      "value": "->",
                       "line": 1,
-                      "column": 5,
+                      "column": 22,
+                      "childs": null
+                    },
+                    {
+                      "type": "Qtycon",
+                      "value": "String",
+                      "line": 1,
+                      "column": 25,
                       "childs": null
                     }
                   ]
@@ -74,11 +88,26 @@
               "column": null,
               "childs": [
                 {
-                  "type": "Qvarid",
-                  "value": "main",
-                  "line": 2,
-                  "column": 1,
-                  "childs": null
+                  "type": "funlhs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Qvarid",
+                      "value": "cardColour",
+                      "line": 2,
+                      "column": 1,
+                      "childs": null
+                    },
+                    {
+                      "type": "Qvarid",
+                      "value": "suit",
+                      "line": 2,
+                      "column": 12,
+                      "childs": null
+                    }
+                  ]
                 },
                 {
                   "type": "rhs",
@@ -90,7 +119,7 @@
                       "type": "reservdop",
                       "value": "=",
                       "line": 2,
-                      "column": 6,
+                      "column": 17,
                       "childs": null
                     },
                     {
@@ -101,9 +130,23 @@
                       "childs": [
                         {
                           "type": "reservdid",
-                          "value": "do",
-                          "line": 2,
+                          "value": "case",
+                          "line": 3,
+                          "column": 3,
+                          "childs": null
+                        },
+                        {
+                          "type": "Qvarid",
+                          "value": "suit",
+                          "line": 3,
                           "column": 8,
+                          "childs": null
+                        },
+                        {
+                          "type": "reservdid",
+                          "value": "of",
+                          "line": 3,
+                          "column": 13,
                           "childs": null
                         },
                         {
@@ -114,24 +157,183 @@
                           "childs": null
                         },
                         {
-                          "type": "fexp",
+                          "type": "alts",
                           "value": null,
                           "line": null,
                           "column": null,
                           "childs": [
                             {
-                              "type": "Qvarid",
-                              "value": "print",
-                              "line": 2,
-                              "column": 11,
+                              "type": "alt",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "String",
+                                  "value": "\"hearts\"",
+                                  "line": 4,
+                                  "column": 5,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdop",
+                                  "value": "->",
+                                  "line": 4,
+                                  "column": 14,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"red\"",
+                                  "line": 4,
+                                  "column": 17,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "layout  f",
+                              "value": ";",
+                              "line": -1,
+                              "column": -1,
                               "childs": null
                             },
                             {
-                              "type": "Qvarid",
-                              "value": "a",
-                              "line": 2,
-                              "column": 17,
+                              "type": "alt",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "String",
+                                  "value": "\"diamonds\"",
+                                  "line": 5,
+                                  "column": 5,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdop",
+                                  "value": "->",
+                                  "line": 5,
+                                  "column": 16,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"red\"",
+                                  "line": 5,
+                                  "column": 19,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "layout  f",
+                              "value": ";",
+                              "line": -1,
+                              "column": -1,
                               "childs": null
+                            },
+                            {
+                              "type": "alt",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "String",
+                                  "value": "\"spades\"",
+                                  "line": 6,
+                                  "column": 5,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdop",
+                                  "value": "->",
+                                  "line": 6,
+                                  "column": 14,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"black\"",
+                                  "line": 6,
+                                  "column": 17,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "layout  f",
+                              "value": ";",
+                              "line": -1,
+                              "column": -1,
+                              "childs": null
+                            },
+                            {
+                              "type": "alt",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "String",
+                                  "value": "\"clubs\"",
+                                  "line": 7,
+                                  "column": 5,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdop",
+                                  "value": "->",
+                                  "line": 7,
+                                  "column": 13,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"black\"",
+                                  "line": 7,
+                                  "column": 16,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "layout  f",
+                              "value": ";",
+                              "line": -1,
+                              "column": -1,
+                              "childs": null
+                            },
+                            {
+                              "type": "alt",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "reservdid",
+                                  "value": "_",
+                                  "line": 8,
+                                  "column": 5,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdop",
+                                  "value": "->",
+                                  "line": 8,
+                                  "column": 7,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"I am not familiar with this card suit.\"",
+                                  "line": 8,
+                                  "column": 10,
+                                  "childs": null
+                                }
+                              ]
                             }
                           ]
                         },
