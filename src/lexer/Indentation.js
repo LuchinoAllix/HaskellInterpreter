@@ -195,14 +195,9 @@ function bigL(tokens, stack){
  * @returns {[Token]}
  */
 function bigLR3(tokens, stack){
-  //console.log(tokens);
-  //console.log(stack);
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   let m = stack[0][0];
-  //console.log( 'n =' + n + " and m = " + m);
-  //console.log(stack)
   if (m === n){ 
-    console.log("here")
     return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
   } else if (n < m){
     return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1)));
@@ -273,8 +268,6 @@ function isNextTokenIn(tokens){
  * @param {[[Integer, Token]]} stack 
  */
 function updateStack(tokens, stack){
-  console.log(tokens[0])
-  console.log(stack);
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
     stack = [[stack[0][1].column ,tokens[0]]].concat(stack);
   } else if (tokens.length > 0 && tokens[0].value === '{'){

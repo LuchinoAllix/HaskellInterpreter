@@ -231,7 +231,6 @@ cardColour suit =
     _ -> "I am not familiar with this card suit."
 
 main = do print (cardColour "clubs")
--- FIXME : error in parsing with main, but not without
 --/
 
 --------------------------------------------------------------------------------
