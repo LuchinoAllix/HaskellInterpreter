@@ -183,10 +183,15 @@ export class ListPatternTerm extends Exp {
 }
 
 /**
- * 
+ * Lambda expresions object
  */
 export class LambdaExp extends Exp {
   
+  /**
+   * Creates a lambda function object
+   * @param {[Exp]} args 
+   * @param {Exp} body 
+   */
   constructor(args, body){
     super();
     this.type = "LambdaExp";
