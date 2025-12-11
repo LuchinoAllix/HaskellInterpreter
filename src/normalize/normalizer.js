@@ -336,7 +336,7 @@ function normalizeCase(node){
 }
 
 /**
- * TODO
+ * Turns a lexp node of if into an IfExp object 
  * @param {Node} node
  * @returns {IfExp} 
  */
@@ -354,18 +354,33 @@ function normalizeIf(node){
 }
 
 /**
- * TODO
+ * Turns a lexp node of a let into an letExp object
+ * If the let is inless, the body element is null
+ * Works on the fact that the lexp childs have the structure :
+ * reservdid "let" | decls | reservdid "in" | exp
  * @param {Node} node
- * @returns {Exp} 
+ * @returns {LetExp} 
  */
 function normalizeLet(node){
-  throw Error("Let are not yet managed");
+  let decls = [];
+  for (let child of node.childs[1].childs){
+    if (! child.type.startsWith("layout") && child.type !== "Special"){
+      decls.push(normalizeDecl(child));
+    }
+  }
+  let inexp;
+  if (node.childs.length === 2){
+    inexp = null;
+  } else {
+    inexp = normalizeExp(node.childs[3]);
+  }
+  return new LetExp(decls, inexp);
 }
 
 /**
- * TODO
+ * Turns a lambda lexp into a LambdaExp object
  * @param {Node} node
- * @returns {Exp} 
+ * @returns {LambdaExp} 
  */
 function normalizeLambda(node){
   let args = [];
@@ -388,7 +403,7 @@ function normalizeLambda(node){
  * Transforms the parent of a do node (presumably a lexp) into the intermidiary
  * form
  * @param {Node} node
- * @returns {Exp} 
+ * @returns {DoExp} 
  */
 function normalizeDo(node){
   let exps = [];

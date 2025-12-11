@@ -116,13 +116,14 @@ export class IfExp extends Exp {
 export class LetExp extends Exp {
 
   /**
-   * // What to do about the in part ?
+   * Creates a let expression object
    * @param {[Decl]} decls 
    */
-  constructor(decls){
+  constructor(decls, body){
     super();
     this.type = "let";
     this.decls = decls
+    this.body = body;
   }
 
 }
