@@ -16,6 +16,7 @@ global_env.initGlobal();
  * @returns {Boolean}
  */
 export function initEvalComp(program){
+  resetGlobalEnv();
   let terms = program.normalizedForm;
   if (terms.constructor !== Array){ // because if there is only main
     terms = [terms];
@@ -217,8 +218,8 @@ function lookupGlobalLocal(env, name){
  * To be used in interactive mode
  */
 function resetGlobalEnv(){
-  global_env = {};
-  global_env = global_env.initGlobal();
+  global_env = new Env;
+  global_env.initGlobal();
 }
 
 /**
