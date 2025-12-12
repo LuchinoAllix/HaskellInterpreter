@@ -2,7 +2,7 @@ import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl,
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          ListPatternTerm, AFunctionApp, LambdaExp,
-         SpecialExp} from "./Exp.js";
+         SpecialExp, TupleExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -219,7 +219,14 @@ function normalizeExp(node){
       if (node.childs[0].childs !== null){
         let givenArgs = []
         for (let i = 1; i < node.childs.length; i ++){
-          givenArgs.push(normalizeExp(node.childs[i]));
+          if (node.childs[i].type === "aexp_" && 
+              node.childs[i].childs.length === 3){
+            // for function calls given in '(' elem ')' (an aexp_ with 3 childs)
+            // we assume we need to do this only in fexp
+            givenArgs.push(normalizeExp(node.childs[i].childs[1]))
+          } else {
+            givenArgs.push(normalizeExp(node.childs[i]));
+          }
         }
         return normalizeAfuncApp(node.childs[0].childs[1], givenArgs);
       }
@@ -227,12 +234,13 @@ function normalizeExp(node){
                              [normalizeExp(node.childs[1])]);
 
     case "aexp_" :
-      if (node.childs.length === 3){
-        return normalizeExp(node.childs[1]);
-      } else {
-        throw Error("Aexp_ expression that is not ( 1elem ) is not yet " + 
-          "supported : " + node);
+      let elems = []
+      for (let child of node.childs){
+        if (child.type !== "Special"){
+          elems.push(normalizeExp(child));
+        }
       }
+      return new TupleExp(elems);
     
     case "Qvarid" :
       return new VarExp(node.value);

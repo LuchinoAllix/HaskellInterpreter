@@ -215,3 +215,19 @@ export class SpecialExp extends Exp {
     this.special = special;
   }
 }
+
+/**
+ * Tuple object class 
+ */
+export class TupleExp extends Exp {
+
+  /**
+   * Creates a tuple object 
+   * @param {[Exp]} elems 
+   */
+  constructor(elems){
+    super();
+    this.type = "TupleExp";
+    this.elems = elems;
+  }
+}
