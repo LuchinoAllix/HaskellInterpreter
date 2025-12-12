@@ -19,7 +19,6 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  //console.log(program.tokens);
   program.tokens = bigL(program.tokens, []);
   return true;
 }
@@ -140,7 +139,7 @@ function bigL(tokens, stack){
       return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
                                                stack.slice(1)));
     } else {
-      throw new Error("Parse error bigL (note 3");
+      throw new Error("Parse error bigL (note 3)");
     }
   } 
   
@@ -154,12 +153,13 @@ function bigL(tokens, stack){
   //                                               (Note 5)
   // | L (t : ts) ms       = t  :  (L ts ms) 
   else if (tokens.length > 0 && stack.length > 0){
-    if (isNextTokenIn(tokens)){
-      // add } before an "in" because grammar requires it but perhaps it is not
-      // the only situation where this is required
-      return [newLayoutToken("}","3"), tokens[0]].concat(bigL(tokens.slice(1), 
-                                                          stack));
-      // # TODO figure out m ∕= 0 and parse-error(t)
+    if (isNextTokenIn(tokens)) { // AI generated if block
+      let m = stack[0][0];
+      if (m !== 0) {
+        // On ferme seulement si bloc layout réellement ouvert
+        return [newLayoutToken("}","3"), tokens[0]]
+          .concat(bigL(tokens.slice(1), stack.slice(1)));
+      }
     } else {
       return [tokens[0]].concat(bigL(tokens.slice(1), stack));
     }
@@ -226,7 +226,7 @@ function bigLR2(tokens, stack){
     let m = stack[0][0];
     if (n > m){
       stack  = [[n, tokens[0]]].concat(stack);
-      return [newLayoutToken("{")].concat(bigL(tokens.slice(1), stack));
+      return [newLayoutToken("{", "8")].concat(bigL(tokens.slice(1), stack));
     } else {
       //console.log("stack : ", stack);
       return [newLayoutToken("{","6"), newLayoutToken("}","6")].concat(
