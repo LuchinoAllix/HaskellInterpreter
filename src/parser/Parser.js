@@ -61,15 +61,7 @@ function mainLoop(program,){
     throw Error("First rule (module) did not yield any result");
   }
   if (program.peek()){
-    let cur = program.cursor; // we save the cursor because 
-                              // isRestofTokensLayout modifies it 
-    if (!isRestofTokensLayout(program)){
-      // Not the best solution but i can't look into lexer indentation rn
-      throw Error("Not all tokens were parsed, cursor at :  " + cur
-      );
-      // + " constructed tree :\n" + JSON.stringify(root));
-      // ^ uncomment ^ and manage the ); for easy console print of actual node 
-    }
+    throw Error("Not all tokens were parsed, cursor at :  " + program.cursor);
   }
 }
 
@@ -369,6 +361,7 @@ export function activateDebug(){
  * at the end of the list of tokens, were it not the case (probably in other
  * examples), this solution will not work because parsing will not find a
  * viable answer.
+ * Unused fot the moment, which is a good ting
  * @param {Program} program 
  * @returns {Boolean}
  */
