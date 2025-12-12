@@ -88,15 +88,18 @@ export class Env {
             bord = "()";
           } else if (val.type === "list"){ 
             bord = "[]";
+            if (val.value.length === 0){
+              return bord;
+            }
           }
 
           if (bord !== null){
-            let res = "(";
+            let res = bord[0];
             for (let t of val.value){
               res += makeStr(t);
               res += ", ";
             }
-            return res.slice(0,-2) + ")" ;
+            return res.slice(0,-2) + bord[1] ;
           } else {
             return val.value;
           }
