@@ -216,22 +216,22 @@ function normalizeExp(node){
                               normalizeExp(node.childs[2])]);
 
     case "fexp" :
-      if (node.childs[0].childs !== null){
-        let givenArgs = []
-        for (let i = 1; i < node.childs.length; i ++){
-          if (node.childs[i].type === "aexp_" && 
-              node.childs[i].childs.length === 3){
-            // for function calls given in '(' elem ')' (an aexp_ with 3 childs)
-            // we assume we need to do this only in fexp
-            givenArgs.push(normalizeExp(node.childs[i].childs[1]))
-          } else {
-            givenArgs.push(normalizeExp(node.childs[i]));
-          }
+      let givenArgs = []
+      for (let i = 1; i < node.childs.length; i ++){
+        if (node.childs[i].type === "aexp_" && 
+          node.childs[i].childs.length === 3){
+          // for function calls given in '(' elem ')' (an aexp_ with 3 childs)
+          // we assume we need to do this only in fexp
+          givenArgs.push(normalizeExp(node.childs[i].childs[1]))
+        } else {
+          givenArgs.push(normalizeExp(node.childs[i]));
         }
+      }
+      if (node.childs[0].childs !== null){ // Lambda function call
         return normalizeAfuncApp(node.childs[0].childs[1], givenArgs);
       }
-      return new FunctionApp(node.childs[0].value, 
-                             [normalizeExp(node.childs[1])]);
+      // named function call
+      return new FunctionApp(node.childs[0].value, givenArgs);
 
     case "aexp_" :
       let elems = []
