@@ -118,7 +118,7 @@ function evaluateExp(exp, env){
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
       if (variable !== undefined){
-        if (variable.metatype === "Decl"){
+        if (variable.metatype === "DECL"){
           return evaluateExp(variable.branches[0], env);
         }
         return evaluateExp(variable, env); // We assume it's an EXP metatype
