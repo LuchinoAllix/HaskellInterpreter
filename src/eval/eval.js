@@ -132,6 +132,7 @@ function evaluateExp(exp, env){
         res = res.concat(evaluateExp(e, env));
         env = {}; // Reseting the env because it is not kept in different 
                   // branches of a do expression
+                  // Is this true ? #HELP
       }
       return res;
     
@@ -250,6 +251,7 @@ function evaluateLet(exp, env){
     env.add(decl.name, decl.branches[0], true);
     // Over writing decls that already exits, i'm not sure it's the best idea
     // but i don't see where they could be used
+    // Is this a good idea ? #HELP
   }
   return evaluateExp(exp.body, env);
 }
