@@ -129,7 +129,7 @@ main = do print (if (True) then if (False) then "sucess" else "inner fail" else 
 -- Expected result : 1
 
 --/
-main = do print (let x = 1 in x)
+main = let x = 1 in print(x)
 --/
 
 --------------------------------------------------------------------------------
@@ -137,11 +137,20 @@ main = do print (let x = 1 in x)
 -- Expected result : 3
 
 --/
-main = do print (let x = 1 ; y = 2 in x + y)
+main = let x = 1 ; y = 2 in print(x + y)
 --/
 
 --------------------------------------------------------------------------------
--- Test 16          : let with overriding a var
+-- Test 16          : let in a var not in main
+-- Expected result : 2
+
+--/
+letx = let x = 1 in print(x)
+main = letx
+--/
+
+--------------------------------------------------------------------------------
+-- Test 17          : let with over-writing a var
 -- Expected result : 2
 
 --/
@@ -149,7 +158,7 @@ main = do print (let x = 1 in let x = 2 in x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 17          : let with overriding a var not in main
+-- Test 18          : let with overriding a var not in main
 -- Expected result : 2
 
 --/
@@ -158,7 +167,7 @@ main = do print (lets)
 --/
 
 --------------------------------------------------------------------------------
--- Test 18          : let with a lambda
+-- Test 19          : let with a lambda
 -- Expected result : 2
 
 --/
@@ -166,7 +175,7 @@ main = do print (let x = 1 ; y = \z -> z + 1 in y x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 19          : function declaration
+-- Test 20          : function declaration
 -- Expected result : 3
 
 --/
@@ -175,7 +184,7 @@ main = do print (add 1 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 20          : function declaration
+-- Test 21          : function declaration
 -- Expected result : 6
 
 --/
@@ -184,7 +193,7 @@ main = do print (mul 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 21          : recursive function declaration
+-- Test 22          : recursive function declaration
 -- Expected result : 120
 
 --/
@@ -194,7 +203,7 @@ main = do print (fact 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 22          : recursive function declaration
+-- Test 23          : recursive function declaration
 -- Expected result : 5
 
 --/
@@ -205,7 +214,7 @@ main = do print (fib 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 23          : recursive function declaration on a list
+-- Test 24          : recursive function declaration on a list
 -- Expected result : [3,2,1]
 
 --/
@@ -215,7 +224,7 @@ main = do print (reverse [1,2,3])
 --/
 
 --------------------------------------------------------------------------------
--- Test 24          : recursive function with type annotation
+-- Test 25          : recursive function with type annotation
 -- Expected result : 3
 
 --/
@@ -226,7 +235,7 @@ main = do print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
--- Test 25          : case of
+-- Test 26          : case of
 -- Expected result : "black"
 
 --/
@@ -243,7 +252,7 @@ main = do print (cardColour "clubs")
 --/
 
 --------------------------------------------------------------------------------
--- Test 26          : lambda
+-- Test 27          : lambda
 -- Expected result : 2
 
 --/
@@ -251,7 +260,7 @@ main = do print ((\x -> x + 1) 1 )
 --/
 
 --------------------------------------------------------------------------------
--- Test 27          : lambda with multiple arguments
+-- Test 28          : lambda with multiple arguments
 -- Expected result : 5
 
 --/
@@ -259,7 +268,7 @@ main = do print ((\x y -> x + y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 28          : embeded lambda
+-- Test 29          : embeded lambda
 -- Expected result : 11
 
 --/
@@ -267,7 +276,7 @@ main = do print ((\x y -> x + (\a -> a * a) y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 29          : type annotation of list of list
+-- Test 30          : type annotation of list of list
 -- Expected result : 1
 
 --/
@@ -279,7 +288,7 @@ main = do print (func [[1]])
 --/
 
 --------------------------------------------------------------------------------
--- Test 30          : multiple inless lets
+-- Test 31          : multiple inless lets
 -- Expected result : variable 
 -- 
 
@@ -289,7 +298,7 @@ let y = 6
 --/
 
 --------------------------------------------------------------------------------
--- Test 31          : multiple infull lets
+-- Test 32          : multiple infull lets
 -- Expected result : 6
 
 --/
@@ -297,7 +306,7 @@ main = do print ( let x = "3" in let y = 6 in y )
 --/
 
 --------------------------------------------------------------------------------
--- Test 32          : lambda in a var
+-- Test 33          : lambda in a var
 -- Expected result : 2
 
 --/
@@ -306,7 +315,7 @@ main = do print (a 1)
 --/
 
 -------------------------------------------------------------------------------
--- Test 33          : logical operators
+-- Test 34          : logical operators
 -- Expected result : function
 
 --/
@@ -314,7 +323,7 @@ main = do  x y = if (x==0) && (y==0) ||  (x + y) == 1 then "yes" else "no"
 --/
 
 --------------------------------------------------------------------------------
--- Test 34          : annotated variable declaration
+-- Test 35          : annotated variable declaration
 -- Expected result : function
 -- temporary decls to see the different ast output
 
@@ -329,7 +338,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 35          : let inside an anonymous function
+-- Test 36          : let inside an anonymous function
 -- Expected result : 3
 
 --/
@@ -337,7 +346,7 @@ x y = y + 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 36          : function with 3 arguments
+-- Test 37          : function with 3 arguments
 -- Expected result : function
 
 --/
@@ -345,7 +354,7 @@ f x y z = 1
 --/
 
 --------------------------------------------------------------------------------
--- Test 37          : variable declaration with main print
+-- Test 38          : variable declaration with main print
 -- Expected result : 5
 
 --/
@@ -355,7 +364,7 @@ main = do print (a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 38          : function declaration with main
+-- Test 39          : function declaration with main
 -- Expected result : 5
 
 --/
@@ -367,7 +376,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 39          : currying
+-- Test 40          : currying
 -- Expected result : 3
 
 --/
@@ -377,7 +386,7 @@ main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 40          : multi-branch main
+-- Test 41          : multi-branch main
 -- Expected result : "3/n4" 
 -- TODO manage multiline results
 
@@ -390,7 +399,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 41          : fonction funky pattern matching
+-- Test 42          : fonction funky pattern matching
 -- Expected result : "fail" 
 -- Todo gérer les fails 
 
@@ -402,7 +411,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 42          : currying et pattern matching
+-- Test 43          : currying et pattern matching
 -- Expected result : "3" 
 
 --/

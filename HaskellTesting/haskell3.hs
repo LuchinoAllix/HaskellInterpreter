@@ -1,3 +1,1 @@
-a = print "1"
-
-main = do a
+main = let x = 1 in let x = 2 in print(x)
