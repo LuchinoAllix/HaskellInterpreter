@@ -361,7 +361,7 @@ export function activateDebug(){
  * at the end of the list of tokens, were it not the case (probably in other
  * examples), this solution will not work because parsing will not find a
  * viable answer.
- * Unused fot the moment, which is a good ting
+ * Unused fot the moment, which is a good thing
  * @param {Program} program 
  * @returns {Boolean}
  */
