@@ -74,3 +74,22 @@ export class Vtuple extends Value {
     super("tuple", values)
   }
 }
+
+export class VList extends Value {
+  
+  /**
+   * 
+   * @param {[Value]} values 
+   */
+  constructor(values){
+    if (values.length > 1){
+      let t0 = values[0].type;
+      for (let i = 1; i < values.length; i ++){
+        if (values[i].type !== t0){
+          throw Error("Elements in list are not homogenous");
+        }
+      }
+    }
+    super("list", values)
+  }
+}

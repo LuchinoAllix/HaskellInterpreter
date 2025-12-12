@@ -148,6 +148,11 @@ function evaluateExp(exp, env){
         case "Boolean" :
           return [new V.Vbool(exp.value)];
 
+        case "Special" :
+          if (exp.value === "[]"){
+            return [new V.VList([])];
+          }
+
         default :
           throw Error("value type not yet managed in eval : " + exp.valueType);
       }
@@ -171,7 +176,12 @@ function evaluateExp(exp, env){
       break;
 
     case "TupleExp" :
-      return [new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)[0]))]
+      return [new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)[0]))];
+
+    case "ListExp" :
+      return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
+
+    
     default :
       throw Error("exp not yet managed in eval : " + exp.type);
     
