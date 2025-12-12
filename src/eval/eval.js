@@ -170,6 +170,8 @@ function evaluateExp(exp, env){
       throw Error("case not yet managed in eval");
       break;
 
+    case "TupleExp" :
+      return [new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)[0]))]
     default :
       throw Error("exp not yet managed in eval : " + exp.type);
     

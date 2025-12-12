@@ -63,3 +63,14 @@ export class Vbool extends Value {
     super("bool", value);
   }
 }
+
+export class Vtuple extends Value {
+  
+  /**
+   * 
+   * @param {[Value]} values 
+   */
+  constructor(values){
+    super("tuple", values)
+  }
+}
