@@ -153,5 +153,29 @@ export class Env {
       }
     , 2));
 
+    this.add("fst", new Prim(
+      function fst(a){
+        if (a.type !== "tuple"){
+          throw Error("fst can only be applied to tuple, not " + a.type);
+        } else if (a.value.length !== 2){
+          throw Error("fst can only be applied to tuples of 2 elements, not" + 
+            a.value.length);
+        }
+      return a.value[0];  
+      }
+    , 1));
+
+    this.add("snd", new Prim(
+      function snd(a){
+        if (a.type !== "tuple"){
+          throw Error("snd can only be applied to tuple, not " + a.type);
+        } else if (a.value.length !== 2){
+          throw Error("snd can only be applied to tuples of 2 elements, not" + 
+            a.value.length);
+        }
+      return a.value[1];  
+      }
+    , 1));
+
   }
 }
