@@ -2,7 +2,8 @@ import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl,
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          ListPatternTerm, AFunctionApp, LambdaExp,
-         SpecialExp, TupleExp} from "./Exp.js";
+         SpecialExp, TupleExp,
+         ListExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -222,7 +223,7 @@ function normalizeExp(node){
           node.childs[i].childs.length === 3){
           // for function calls given in '(' elem ')' (an aexp_ with 3 childs)
           // we assume we need to do this only in fexp
-          givenArgs.push(normalizeExp(node.childs[i].childs[1]))
+          givenArgs.push(normalizeExp(node.childs[i].childs[1]));
         } else {
           givenArgs.push(normalizeExp(node.childs[i]));
         }
@@ -232,16 +233,17 @@ function normalizeExp(node){
       }
       // named function call
       return new FunctionApp(node.childs[0].value, givenArgs);
-
-    case "aexp_" :
-      let elems = []
-      for (let child of node.childs){
-        if (child.type !== "Special"){
-          elems.push(normalizeExp(child));
-        }
-      }
-      return new TupleExp(elems);
     
+    case "aexp_" :
+      if (node.childs[0].value === "("){
+        return normalizeTuple(node);
+      } else if (node.childs[0].value === "["){
+        return normalizeList(node);
+      } else {
+        throw Error("Unknow node starting in aexp_ childs : " + 
+          node.childs[0].value);
+      }
+
     case "Qvarid" :
       return new VarExp(node.value);
 
@@ -454,4 +456,36 @@ function normalizeDo(node){
  */
 function normalizeAfuncApp(node, givenArgs){
   return new AFunctionApp(givenArgs, normalizeLambda(node));
+}
+
+/**
+ * Transforms an aexp_ node who's first child is "(" (presumably) into a tuple
+ * expression object
+ * @param {Node} node 
+ * @returns {TupleExp}
+ */
+function normalizeTuple(node){
+  let elems = [];
+  for (let child of node.childs){
+    if (child.type !== "Special"){
+      elems.push(normalizeExp(child));
+    }
+  }
+  return new TupleExp(elems);
+}
+
+/**
+ * Transforms an aexp_ node who's first child is "[" (presumably) into a list
+ * expression object 
+ * @param {Node} node 
+ * @returns {ListExp}
+ */
+function normalizeList(node){
+  let elems = [];
+  for (let child of node.childs){
+    if (child.type !== "Special"){
+      elems.push(normalizeExp(child));
+    }
+  }
+  return new ListExp(elems);
 }

@@ -231,3 +231,19 @@ export class TupleExp extends Exp {
     this.elems = elems;
   }
 }
+
+/**
+ * List object class 
+ */
+export class ListExp extends Exp {
+
+  /**
+   * Creates a List object 
+   * @param {[Exp]} elems 
+   */
+  constructor(elems){
+    super();
+    this.type = "ListExp";
+    this.elems = elems;
+  }
+}
