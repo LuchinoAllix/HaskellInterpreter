@@ -35,10 +35,12 @@ export class Env {
    * @param {String} name 
    * @param {Term} term - Decl or Prim
    */
-  add(name, term){
+  add(name, term, overide = false){
     if (this.decls[name] !== undefined){
-      throw Error("This declaration already exists in the environment : " 
-        + name);
+      if (!overide){
+        throw Error("This declaration already exists in the environment : " 
+          + name);
+      }
     }
     this.decls[name] = term;
   }
