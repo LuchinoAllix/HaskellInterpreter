@@ -71,6 +71,7 @@ export class PrimIO extends Prim {
 /**
  * Currying of a function by applying only the first args
  * (can be used for any number of args but is used only for one)
+ * AI generated function
  * @param {function} fn 
  * @param  {...any} fixedArgs 
  * @returns {function}

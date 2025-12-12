@@ -41,6 +41,7 @@ export function mtNode(type){
 /**
  * Permet de compresser un arbre, si un noeud ne possède qu'un seul enfant,
  * cet enfant le remplace.
+ * AI generated function
  * @param {Node} node 
  * @returns {Node} 
  */
