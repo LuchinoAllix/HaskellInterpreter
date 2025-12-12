@@ -82,7 +82,26 @@ export class Env {
 
     this.add("print", new PrimIO(
       function print(a){
-        console.log(a.value);
+        function makeStr(val){
+          let bord = null;
+          if (val.type === "tuple"){
+            bord = "()";
+          } else if (val.type === "list"){ 
+            bord = "[]";
+          }
+
+          if (bord !== null){
+            let res = "(";
+            for (let t of val.value){
+              res += makeStr(t);
+              res += ", ";
+            }
+            return res.slice(0,-2) + ")" ;
+          } else {
+            return val.value;
+          }
+        }
+        console.log(makeStr(a));
       }
     , 1));
 
