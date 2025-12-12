@@ -118,7 +118,10 @@ function evaluateExp(exp, env){
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
       if (variable !== undefined){
-        return evaluateExp(variable.branches[0], env);
+        if (variable.metatype === "Decl"){
+          return evaluateExp(variable.branches[0], env);
+        }
+        return evaluateExp(variable, env); // We assume it's an EXP metatype
       } else {
         throw Error("variable " + exp.name + " is undefined");
       }
@@ -127,6 +130,8 @@ function evaluateExp(exp, env){
       let res = []
       for (let e of exp.exps){
         res = res.concat(evaluateExp(e, env));
+        env = {}; // Reseting the env because it is not kept in different 
+                  // branches of a do expression
       }
       return res;
     
@@ -147,8 +152,7 @@ function evaluateExp(exp, env){
       }
     
     case "let" :
-      throw Error("let not yet managed in eval");
-      break;
+      return evaluateLet(exp, env);
 
     case "if" :
       // we suppose evaluateExp return a list of one element
@@ -235,4 +239,17 @@ function execute(main_decl){
   }
 }
 
-
+/**
+ * Evaluates an let exp (if is has an in part, if not breaks)
+ * @param {LetExp} exp 
+ * @param {Env} env 
+ * @returns {Value}
+ */
+function evaluateLet(exp, env){
+  for (let decl of exp.decls){
+    env.add(decl.name, decl.branches[0], true);
+    // Over writing decls that already exits, i'm not sure it's the best idea
+    // but i don't see where they could be used
+  }
+  return evaluateExp(exp.body, env);
+}
