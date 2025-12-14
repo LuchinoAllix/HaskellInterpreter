@@ -18,402 +18,68 @@
           "childs": null
         },
         {
-          "type": "topdecls",
+          "type": "decl",
           "value": null,
           "line": null,
           "column": null,
           "childs": [
             {
-              "type": "gendecl",
+              "type": "Qvarid",
+              "value": "main",
+              "line": 1,
+              "column": 1,
+              "childs": null
+            },
+            {
+              "type": "rhs",
               "value": null,
               "line": null,
               "column": null,
               "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "cardColour",
-                  "line": 1,
-                  "column": 1,
-                  "childs": null
-                },
                 {
                   "type": "reservdop",
-                  "value": "::",
+                  "value": "=",
                   "line": 1,
-                  "column": 12,
+                  "column": 6,
                   "childs": null
                 },
                 {
-                  "type": "type",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "Qtycon",
-                      "value": "String",
-                      "line": 1,
-                      "column": 15,
-                      "childs": null
-                    },
-                    {
-                      "type": "reservdop",
-                      "value": "->",
-                      "line": 1,
-                      "column": 22,
-                      "childs": null
-                    },
-                    {
-                      "type": "Qtycon",
-                      "value": "String",
-                      "line": 1,
-                      "column": 25,
-                      "childs": null
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "funlhs",
+                  "type": "fexp",
                   "value": null,
                   "line": null,
                   "column": null,
                   "childs": [
                     {
                       "type": "Qvarid",
-                      "value": "cardColour",
-                      "line": 2,
-                      "column": 1,
+                      "value": "print",
+                      "line": 1,
+                      "column": 8,
                       "childs": null
                     },
                     {
-                      "type": "Qvarid",
-                      "value": "suit",
-                      "line": 2,
-                      "column": 12,
-                      "childs": null
-                    }
-                  ]
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 2,
-                      "column": 17,
-                      "childs": null
-                    },
-                    {
-                      "type": "lexp",
+                      "type": "aexp_",
                       "value": null,
                       "line": null,
                       "column": null,
                       "childs": [
                         {
-                          "type": "reservdid",
-                          "value": "case",
-                          "line": 3,
-                          "column": 3,
+                          "type": "Special",
+                          "value": "(",
+                          "line": 1,
+                          "column": 14,
                           "childs": null
                         },
                         {
-                          "type": "Qvarid",
-                          "value": "suit",
-                          "line": 3,
-                          "column": 8,
-                          "childs": null
-                        },
-                        {
-                          "type": "reservdid",
-                          "value": "of",
-                          "line": 3,
-                          "column": 13,
-                          "childs": null
-                        },
-                        {
-                          "type": "layout",
-                          "value": "{",
-                          "line": -1,
-                          "column": -1,
-                          "childs": null
-                        },
-                        {
-                          "type": "alts",
+                          "type": "lexp",
                           "value": null,
                           "line": null,
                           "column": null,
                           "childs": [
                             {
-                              "type": "alt",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "String",
-                                  "value": "\"hearts\"",
-                                  "line": 4,
-                                  "column": 5,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdop",
-                                  "value": "->",
-                                  "line": 4,
-                                  "column": 14,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "String",
-                                  "value": "\"red\"",
-                                  "line": 4,
-                                  "column": 17,
-                                  "childs": null
-                                }
-                              ]
-                            },
-                            {
-                              "type": "layout  f",
-                              "value": ";",
-                              "line": -1,
-                              "column": -1,
-                              "childs": null
-                            },
-                            {
-                              "type": "alt",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "String",
-                                  "value": "\"diamonds\"",
-                                  "line": 5,
-                                  "column": 5,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdop",
-                                  "value": "->",
-                                  "line": 5,
-                                  "column": 16,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "String",
-                                  "value": "\"red\"",
-                                  "line": 5,
-                                  "column": 19,
-                                  "childs": null
-                                }
-                              ]
-                            },
-                            {
-                              "type": "layout  f",
-                              "value": ";",
-                              "line": -1,
-                              "column": -1,
-                              "childs": null
-                            },
-                            {
-                              "type": "alt",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "String",
-                                  "value": "\"spades\"",
-                                  "line": 6,
-                                  "column": 5,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdop",
-                                  "value": "->",
-                                  "line": 6,
-                                  "column": 14,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "String",
-                                  "value": "\"black\"",
-                                  "line": 6,
-                                  "column": 17,
-                                  "childs": null
-                                }
-                              ]
-                            },
-                            {
-                              "type": "layout  f",
-                              "value": ";",
-                              "line": -1,
-                              "column": -1,
-                              "childs": null
-                            },
-                            {
-                              "type": "alt",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "String",
-                                  "value": "\"clubs\"",
-                                  "line": 7,
-                                  "column": 5,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdop",
-                                  "value": "->",
-                                  "line": 7,
-                                  "column": 13,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "String",
-                                  "value": "\"black\"",
-                                  "line": 7,
-                                  "column": 16,
-                                  "childs": null
-                                }
-                              ]
-                            },
-                            {
-                              "type": "layout  f",
-                              "value": ";",
-                              "line": -1,
-                              "column": -1,
-                              "childs": null
-                            },
-                            {
-                              "type": "alt",
-                              "value": null,
-                              "line": null,
-                              "column": null,
-                              "childs": [
-                                {
-                                  "type": "reservdid",
-                                  "value": "_",
-                                  "line": 8,
-                                  "column": 5,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdop",
-                                  "value": "->",
-                                  "line": 8,
-                                  "column": 7,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "String",
-                                  "value": "\"I am not familiar with this card suit.\"",
-                                  "line": 8,
-                                  "column": 10,
-                                  "childs": null
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "layout 5",
-                          "value": "}",
-                          "line": -1,
-                          "column": -1,
-                          "childs": null
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "layout  f",
-              "value": ";",
-              "line": -1,
-              "column": -1,
-              "childs": null
-            },
-            {
-              "type": "decl",
-              "value": null,
-              "line": null,
-              "column": null,
-              "childs": [
-                {
-                  "type": "Qvarid",
-                  "value": "main",
-                  "line": 10,
-                  "column": 1,
-                  "childs": null
-                },
-                {
-                  "type": "rhs",
-                  "value": null,
-                  "line": null,
-                  "column": null,
-                  "childs": [
-                    {
-                      "type": "reservdop",
-                      "value": "=",
-                      "line": 10,
-                      "column": 6,
-                      "childs": null
-                    },
-                    {
-                      "type": "lexp",
-                      "value": null,
-                      "line": null,
-                      "column": null,
-                      "childs": [
-                        {
-                          "type": "reservdid",
-                          "value": "do",
-                          "line": 10,
-                          "column": 8,
-                          "childs": null
-                        },
-                        {
-                          "type": "layout",
-                          "value": "{",
-                          "line": -1,
-                          "column": -1,
-                          "childs": null
-                        },
-                        {
-                          "type": "fexp",
-                          "value": null,
-                          "line": null,
-                          "column": null,
-                          "childs": [
-                            {
-                              "type": "Qvarid",
-                              "value": "print",
-                              "line": 10,
-                              "column": 11,
+                              "type": "reservdid",
+                              "value": "if",
+                              "line": 1,
+                              "column": 15,
                               "childs": null
                             },
                             {
@@ -425,48 +91,126 @@
                                 {
                                   "type": "Special",
                                   "value": "(",
-                                  "line": 10,
-                                  "column": 17,
+                                  "line": 1,
+                                  "column": 18,
                                   "childs": null
                                 },
                                 {
-                                  "type": "fexp",
+                                  "type": "Qconid",
+                                  "value": "True",
+                                  "line": 1,
+                                  "column": 19,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "Special",
+                                  "value": ")",
+                                  "line": 1,
+                                  "column": 23,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "reservdid",
+                              "value": "then",
+                              "line": 2,
+                              "column": 15,
+                              "childs": null
+                            },
+                            {
+                              "type": "lexp",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "reservdid",
+                                  "value": "if",
+                                  "line": 2,
+                                  "column": 20,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "aexp_",
                                   "value": null,
                                   "line": null,
                                   "column": null,
                                   "childs": [
                                     {
-                                      "type": "Qvarid",
-                                      "value": "cardColour",
-                                      "line": 10,
-                                      "column": 18,
+                                      "type": "Special",
+                                      "value": "(",
+                                      "line": 2,
+                                      "column": 23,
                                       "childs": null
                                     },
                                     {
-                                      "type": "String",
-                                      "value": "\"clubs\"",
-                                      "line": 10,
+                                      "type": "Qconid",
+                                      "value": "False",
+                                      "line": 2,
+                                      "column": 24,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "Special",
+                                      "value": ")",
+                                      "line": 2,
                                       "column": 29,
                                       "childs": null
                                     }
                                   ]
                                 },
                                 {
-                                  "type": "Special",
-                                  "value": ")",
-                                  "line": 10,
-                                  "column": 36,
+                                  "type": "reservdid",
+                                  "value": "then",
+                                  "line": 3,
+                                  "column": 20,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"sucess\"",
+                                  "line": 3,
+                                  "column": 25,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "reservdid",
+                                  "value": "else",
+                                  "line": 4,
+                                  "column": 20,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "String",
+                                  "value": "\"inner fail\"",
+                                  "line": 4,
+                                  "column": 25,
                                   "childs": null
                                 }
                               ]
+                            },
+                            {
+                              "type": "reservdid",
+                              "value": "else",
+                              "line": 5,
+                              "column": 15,
+                              "childs": null
+                            },
+                            {
+                              "type": "String",
+                              "value": "\"outer fail\"",
+                              "line": 5,
+                              "column": 20,
+                              "childs": null
                             }
                           ]
                         },
                         {
-                          "type": "layout 4",
-                          "value": "}",
-                          "line": -1,
-                          "column": -1,
+                          "type": "Special",
+                          "value": ")",
+                          "line": 5,
+                          "column": 32,
                           "childs": null
                         }
                       ]

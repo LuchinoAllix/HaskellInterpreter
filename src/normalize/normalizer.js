@@ -234,7 +234,7 @@ function normalizeExp(node){
       // named function call
       return new FunctionApp(node.childs[0].value, givenArgs);
     
-    case "aexp_" :
+    case "aexp_" : // todo manage the difference for an if statement
       if (node.childs[0].value === "("){
         return normalizeTuple(node);
       } else if (node.childs[0].value === "["){
