@@ -100,7 +100,7 @@ main = print ((5 + 5) * 10)
 --/
 
 --------------------------------------------------------------------------------
--- Test 13          : complex operations
+-- Test 11          : complex operations
 -- Expected result  : 25
 
 --/
@@ -365,13 +365,38 @@ main = do print (f a)
 
 --/
 a = (+ 1)
-
 main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 39         : multi-branch main
--- Expected result : "3/n4" 
+-- Test 39         : currying
+-- Expected result : 3
+
+--/
+main = do print ((+ 1) 2)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 40         : currying
+-- Expected result : 3
+
+--/
+a = \x -> \y -> \z -> x + y + z
+main = do print ((a 1 2) 3)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 41         : currying
+-- Expected result : 3
+
+--/
+a = \x -> \y -> \z -> x + y + z
+main = do print (((a 1) 2) 3)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 42         : multi-branch main
+-- Expected result : "3\n4" 
 -- TODO manage multiline results
 
 --/
@@ -380,10 +405,11 @@ a = (+ 1)
 main = do 
           print (a 2)
           print (a 3)
+          print (a 4)
 --/
 
 --------------------------------------------------------------------------------
--- Test 40         : fonction funky pattern matching
+-- Test 43         : fonction funky pattern matching
 -- Expected result : "fail" 
 -- Todo gérer les fails 
 
@@ -395,7 +421,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 41         : currying et pattern matching
+-- Test 44         : currying et pattern matching
 -- Expected result : 3 
 
 --/
@@ -406,7 +432,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 42         : paire
+-- Test 45         : paire
 -- Expected result : (1,2) 
 
 --/
@@ -414,7 +440,7 @@ main = print (1,2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 43         : fst primitive
+-- Test 46         : fst primitive
 -- Expected result : 1
 
 --/
@@ -422,7 +448,7 @@ main = print ( fst (1, 2) )
 --/
 
 --------------------------------------------------------------------------------
--- Test 44         : embeded pairs
+-- Test 47         : embeded pairs
 -- Expected result : (1, (2,3))
 
 --/
@@ -430,7 +456,7 @@ main = print ((1, (2,3)))
 --/
 
 --------------------------------------------------------------------------------
--- Test 45         : pattern matching pair
+-- Test 48         : pattern matching pair
 -- Expected result : 3
 
 --/
@@ -438,7 +464,7 @@ main = print ((\(x,y) -> x + y) (1,2))
 --/
 
 --------------------------------------------------------------------------------
--- Test 46         : list
+-- Test 49         : list
 -- Expected result : [1,2] 
 
 --/
@@ -446,7 +472,7 @@ main = print [1,2]
 --/
 
 --------------------------------------------------------------------------------
--- Test 47         : list
+-- Test 50         : list
 -- Expected result : [1,[1,2,3]] 
 
 --/
@@ -454,7 +480,7 @@ main = print [[1,2],[1,2,3]]
 --/
 
 --------------------------------------------------------------------------------
--- Test 48         : empty list
+-- Test 51         : empty list
 -- Expected result : [] 
 
 --/
@@ -462,7 +488,7 @@ main = print []
 --/
 
 --------------------------------------------------------------------------------
--- Test 49         : list with one element
+-- Test 52         : list with one element
 -- Expected result : [1] 
 
 --/
