@@ -11,6 +11,7 @@ import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
 
 let tests = []
+let whereFail = [0,0,0,0];
 
 /**
  * Main function to test Parser
@@ -102,6 +103,7 @@ async function main(){
       }
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
+    console.log("Tests fails data : " + whereFail);
   } else {
     if (testNum >= tests.length || testNum  < 0 ){
       console.log("Test number out of range, tests go from 0 to : ", 
@@ -157,21 +159,19 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   program.expected = test.expected;
   console.log("\nTest " + testNb + " : testing " + test.info);
 
+
   if (verbose){
     console.log("Input : \n" + program.input);
   }
 
   try {
-    if (tokenize(program)){
-      if (verbose){
-        console.log("Successful tokenization :) ");
-      }
-    } else { 
-      // Tokensize never returns false, if it doesn't work it throws an error
-      // So this is never executed
-      console.log("Unsuccessful tokenization :( ");
-      return false;
+
+    tokenize(program)
+    
+    if (verbose){
+      console.log("Successful tokenization :) ");
     }
+    
 
     if(printTokens){
       showTokens(program.tokens);
@@ -179,6 +179,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while tokenizating :");
+    whereFail[0] += 1;
     if (verbose){
       showTokens(program.tokens);
       console.log(error);
@@ -191,17 +192,12 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
       activateDebug();
     }
 
-    if (parse(program)){
-      if (verbose){
-        console.log("Successful parsing :) ");
-      }
-      
-    } else {
-      // parse never returns false, if it doesn't work it throws an error
-      // So this is never executed
-      console.log("Unsuccessful parsing :( ");
-      return false;
+    parse(program)
+
+    if (verbose){
+      console.log("Successful parsing :) ");
     }
+      
 
     if (!der){
       compressTree(program.AST);
@@ -219,6 +215,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while parsing :");
+    whereFail[1] += 1;
     if (verbose){
       showAST(program.AST);
       console.log(error);
@@ -228,16 +225,10 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   try{ // todo evaluation
   
-    if (normalizeStart(program)){
-      if (verbose){
-        console.log("Successful normalisation :) ");
-      }
-      
-    } else {
-      // normalizer never returns false, if it doesn't work it throws an error
-      // So this is never executed
-      console.log("Unsuccessful normalisation :( ");
-      return false;
+    normalizeStart(program)
+    
+    if (verbose){
+      console.log("Successful normalisation :) ");
     }
 
     if (printNF){
@@ -246,6 +237,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while normalizing :");
+    whereFail[2] += 1;
     if (verbose){
       showNormalForm(program.normalizedForm);
       console.log(error);
@@ -254,8 +246,9 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   }
 
   try{
-    //console.log(initEvalComp(program));
+
     initEvalComp(program)
+
     if ( true ){ //=== program.expected){ TODO: add verifying function
       if (verbose){
         console.log("Successful evaluation :) ");
@@ -270,11 +263,11 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while evaluating :");
+    whereFail[3] += 1;
     console.log(error);
     return false;
 
   }
-  
   return true;
 }
 
