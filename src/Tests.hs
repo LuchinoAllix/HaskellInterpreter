@@ -92,7 +92,7 @@ main = print (5 * 5 + 10)
 --/
 
 --------------------------------------------------------------------------------
--- Test 10          : parenthesis operations
+-- Test 10         : parenthesis operations
 -- Expected result : 100
 
 --/
@@ -100,7 +100,7 @@ main = print ((5 + 5) * 10)
 --/
 
 --------------------------------------------------------------------------------
--- Test 11          : complex operations
+-- Test 13          : complex operations
 -- Expected result  : 25
 
 --/

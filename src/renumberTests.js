@@ -26,7 +26,13 @@ for (let i = 0; i < lines.length; i++) {
     if (match) {
         // réécrit la ligne avec le bon numéro
         const description = match[1];
-        line = `-- Test ${testIndex}          :${description}`;
+        if (testIndex < 10 ){
+            line = `-- Test ${testIndex}          :${description}`;
+        } else if (100 <= testIndex){
+            line = `-- Test ${testIndex}        :${description}`;
+        } else {
+            line = `-- Test ${testIndex}         :${description}`;
+        }
         testIndex++;
     }
 
