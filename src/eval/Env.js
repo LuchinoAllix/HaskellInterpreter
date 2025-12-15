@@ -31,9 +31,10 @@ export class Env {
 
   /**
    * Adds an element to an environment
-   * Throws an error if the declaration already exists
+   * Throws an error if the declaration already exists, unless overide is true
    * @param {String} name 
-   * @param {Term} term - Decl or Prim
+   * @param {Term} term - Decl, Exp  or Prim
+   * @param {Boolean}
    */
   add(name, term, overide = false){
     if (this.decls[name] !== undefined){
@@ -180,5 +181,17 @@ export class Env {
       }
     , 1));
 
+  }
+
+  /**
+   * Copy function to return a copy of an env, not a reference
+   * @returns {Env}
+   */
+  clone(){
+    let tmp = new Env();
+    for (let decl in this.decls){
+      tmp.decls.add(decl, this.decls[decl]); // decl is a ref
+    }
+    return tmp;
   }
 }
