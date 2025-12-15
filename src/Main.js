@@ -263,7 +263,9 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while evaluating :");
+    //if (!(("" + error).includes("Manualy defined functions are not yet implemented in eval"))){
     whereFail[3].push(testNb);
+    //}
     console.log(error);
     return false;
 
