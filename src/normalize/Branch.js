@@ -18,6 +18,7 @@ export class Branch {
    * @param {Exp} branchBody actual body of the branch
    */
   constructor(args, branchBody){
+    this.type = "branch"
     this.args = args;
     this.branchBody = branchBody;
   }

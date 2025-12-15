@@ -102,6 +102,10 @@ function evaluateDecl(decl){
  */
 function evaluateExp(exp, env){
   switch (exp.type){
+
+    case "branch" :
+      return evaluateExp(exp.branchBody, env);
+    
     case "functionApp" :
       let f = lookupGlobalLocal(env, exp.name);
       if (f !== undefined){
