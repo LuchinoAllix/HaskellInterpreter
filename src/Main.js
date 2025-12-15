@@ -11,7 +11,7 @@ import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
 
 let tests = []
-let whereFail = [0,0,0,0];
+let whereFail = [[],[],[],[]];
 
 /**
  * Main function to test Parser
@@ -103,7 +103,7 @@ async function main(){
       }
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
-    console.log("Tests fails data : " + whereFail);
+    console.log("Tests fails data : " + JSON.stringify(whereFail));
   } else {
     if (testNum >= tests.length || testNum  < 0 ){
       console.log("Test number out of range, tests go from 0 to : ", 
@@ -179,7 +179,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while tokenizating :");
-    whereFail[0] += 1;
+    whereFail[0].push(testNb);
     if (verbose){
       showTokens(program.tokens);
       console.log(error);
@@ -215,7 +215,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while parsing :");
-    whereFail[1] += 1;
+    whereFail[1].push(testNb);
     if (verbose){
       showAST(program.AST);
       console.log(error);
@@ -237,7 +237,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while normalizing :");
-    whereFail[2] += 1;
+    whereFail[2].push(testNb);
     if (verbose){
       showNormalForm(program.normalizedForm);
       console.log(error);
@@ -263,7 +263,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   } catch (error) {
     console.log("Error while evaluating :");
-    whereFail[3] += 1;
+    whereFail[3].push(testNb);
     console.log(error);
     return false;
 
