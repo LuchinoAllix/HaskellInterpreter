@@ -197,6 +197,9 @@ function evaluateExp(exp, env){
  * @returns {V.Value}
  */
 function evaluateFunc(decl, args, env){
+  if (decl.type === "branch"){
+    decl = decl.branchBody;
+  }
   if (decl.isPrim() || decl.isPrimIO()){
     // We assume that evalExp returns a list of one element (no do in args)
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
