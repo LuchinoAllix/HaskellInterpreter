@@ -115,7 +115,7 @@ export function typeVarDecl(name, node){
  * @returns {Decl}
  */
 export function branchVarDecl(name, branch){
-  return new Decl("variable", name, null, [branch], null);
+  return new Decl("variable", name, null, [new Branch([], branch)], null);
 }
 
 // Doesn't serve any real function, only to show the type options
