@@ -219,14 +219,7 @@ function normalizeExp(node){
     case "fexp" :
       let givenArgs = []
       for (let i = 1; i < node.childs.length; i ++){
-        if (node.childs[i].type === "aexp_" && 
-          node.childs[i].childs.length === 3){
-          // for function calls given in '(' elem ')' (an aexp_ with 3 childs)
-          // we assume we need to do this only in fexp
-          givenArgs.push(normalizeExp(node.childs[i].childs[1]));
-        } else {
-          givenArgs.push(normalizeExp(node.childs[i]));
-        }
+        givenArgs.push(normalizeExp(node.childs[i]));
       }
       if (node.childs[0].childs !== null){ // Lambda function call
         return normalizeAfuncApp(node.childs[0].childs[1], givenArgs);
@@ -234,7 +227,10 @@ function normalizeExp(node){
       // named function call
       return new FunctionApp(node.childs[0].value, givenArgs);
     
-    case "aexp_" : // todo manage the difference for an if statement
+    case "aexp_" :
+      if (node.childs.length === 3 && node.childs[0].value !== "["){
+        return normalizeExp(node.childs[1]);
+      }
       if (node.childs[0].value === "("){
         return normalizeTuple(node);
       } else if (node.childs[0].value === "["){
