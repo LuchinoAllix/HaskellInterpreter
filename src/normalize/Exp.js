@@ -62,7 +62,7 @@ export class ValExp extends Exp {
 export class FunctionApp extends Exp {
     
   /**
-   * creates an application function expression for function that are named
+   * Creates an application function expression for function that are named
    * @param {String} name Name of the function to call
    * @param {[Exp]} args Arguments given to the function 
    */
@@ -80,13 +80,31 @@ export class FunctionApp extends Exp {
 export class AFunctionApp extends FunctionApp {
 
   /**
-   * creates an application function expression for function that are named
+   * Creates an application function expression for function that are not named
    * @param {[Exp]} args // args to give to the lambda function 
    * @param {LambdaExp} func // lambda function 
    */
   constructor(args, func){
     super("", args);
     this.type = "aFunctionApp";
+    this.func = func;
+  }
+}
+
+/**
+ * Curryied function expressions
+ */
+export class CurFunctionApp extends FunctionApp {
+
+  /**
+   * Creates an application function expression for function that are not named
+   * and yield from curring (japanese curry not to mistake with haskell curry)
+   * @param {[Exp]} args 
+   * @param {FunctionApp} func 
+   */
+  constructor(args, func){
+    super("", args);
+    this.type = "curFunctionApp";
     this.func = func;
   }
 }
