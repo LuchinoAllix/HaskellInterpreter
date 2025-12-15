@@ -110,10 +110,8 @@ function evaluateExp(exp, env){
         throw Error("function " + exp.name + " is undefined");
       }
     
-    case "afunctionApp" :
-      // todo
-      throw Error("exp not yet managed in eval : " + exp.type);
-      
+    case "aFunctionApp" :
+      return evaluateLambda(exp, env);
 
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
@@ -161,7 +159,7 @@ function evaluateExp(exp, env){
       return evaluateLet(exp, env);
 
     case "if" :
-      // we suppose evaluateExp return a list of one element
+      // we suppose evaluateExp returns a list of one element
       let cond = evaluateExp(exp.condition, env)[0];
       if (cond.type !== "bool"){
         throw Error("Expression in if condition did not evaluate to boolean.");
@@ -180,8 +178,7 @@ function evaluateExp(exp, env){
 
     case "ListExp" :
       return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
-
-    
+ 
     default :
       throw Error("exp not yet managed in eval : " + exp.type);
     
@@ -266,4 +263,22 @@ function evaluateLet(exp, env){
     // Is this a good idea ? #HELP
   }
   return evaluateExp(exp.body, env);
+}
+
+/**
+ * 
+ * @param {Exp} exp 
+ * @param {Env} env 
+ * @returns {Value}
+ */
+function evaluateLambda(exp, env){
+  if (exp.args.length === 0){
+    return evaluateExp(exp.func.body, env);
+  } else {
+    let closure = env.clone();
+    closure.add(exp.func.args[0].name, exp.args[0], true);
+    exp.args.shift();
+    exp.func.args.shift();
+    return evaluateExp(exp, closure);
+  }
 }
