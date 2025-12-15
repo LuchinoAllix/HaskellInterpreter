@@ -2,8 +2,7 @@ import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl,
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          ListPatternTerm, AFunctionApp, LambdaExp,
-         SpecialExp, TupleExp,
-         ListExp} from "./Exp.js";
+         SpecialExp, TupleExp, ListExp, CurFunctionApp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -71,12 +70,10 @@ function normalize(astRoot){
     case "Qconid" :
     case "infixexp" :
       return normalizeExp(astRoot);
-       
     
     default :
       throw Error("This type of node is not yet managed by normalize : " 
         + astRoot.type);
-    
 
   }
 }
@@ -217,22 +214,18 @@ function normalizeExp(node){
                               normalizeExp(node.childs[2])]);
 
     case "fexp" :
-      let givenArgs = []
-      for (let i = 1; i < node.childs.length; i ++){
-        givenArgs.push(normalizeExp(node.childs[i]));
-      }
-      if (node.childs[0].childs !== null){ // Lambda function call
-        return normalizeAfuncApp(node.childs[0].childs[1], givenArgs);
-      }
-      // named function call
-      return new FunctionApp(node.childs[0].value, givenArgs);
+      return normalizeCurr(node);
     
-    case "aexp_" :
-      if (node.childs.length === 3 && node.childs[0].value !== "["){
+    case "aexp_" : // we assume aexp ( ? ) is not a tuple or list
+      if (node.childs.length === 3 && 
+          node.childs[0].value !== "["){
         return normalizeExp(node.childs[1]);
       }
       if (node.childs[0].value === "("){
-        return normalizeTuple(node);
+        if (node.childs[2].value === ","){
+          return normalizeTuple(node);
+        }
+        return normalizeCurr(node);
       } else if (node.childs[0].value === "["){
         return normalizeList(node);
       } else {
@@ -278,14 +271,15 @@ function normalizeExp(node){
           throw Error("This kind of lexp is not yet supported :" +
             node.childs[0].value);
       }
-      case "reservdid" :
-        switch (node.value){
-          case "_" :
-            return new SpecialExp("_");
-          default :
-            throw Error("This kind of reservdid is not yet supported :" +
-              node.childs[0].value);
-        }
+
+    case "reservdid" :
+      switch (node.value){
+        case "_" :
+          return new SpecialExp("_");
+        default :
+          throw Error("This kind of reservdid is not yet supported :" +
+            node.childs[0].value);
+      }
 
     default :
       throw Error("This expression type is not yet supported : " + node.type);
@@ -432,11 +426,18 @@ function normalizeLambda(node){
  */
 function normalizeDo(node){
   let exps = [];
-  for (let i = 1; i < node.childs.length; i++){
-    if (! node.childs[i].type.startsWith("layout")){
-      exps.push(normalizeExp(node.childs[2]));
+  if (node.childs[2].type === "stmts"){
+    for (let child of node.childs[2].childs){
+      if (child.type === "stmt"){
+        exps.push(normalizeExp(child.childs[0]));
+      } else {
+        exps.push(normalizeExp(child));
+      }
     }
+  } else {
+    exps.push(normalizeExp(node.childs[2]));
   }
+
   return new DoExp(exps);
 }
 
@@ -485,3 +486,37 @@ function normalizeList(node){
   }
   return new ListExp(elems);
 }
+
+/**
+ * Manages curry cases like :
+ * (+ 1)
+ * ((+ 1) 2)
+ * lambda expressions calls
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normalizeCurr(node){
+  let args = [];
+  let plus = 0;
+
+  if (node.childs[0].type === "Special"){
+    plus = 1;
+  }
+
+  for (let i = 1+plus; i < node.childs.length - plus; i++){
+    args.push(normalizeExp(node.childs[i]))
+  }
+
+  if(!(node.childs[plus].childs === null || 
+       node.childs[plus].childs.length === 0)){
+    if (node.childs[plus].childs[1].type === "lexp"){
+      return normalizeAfuncApp(node.childs[plus].childs[1], args);
+    } else {
+      return new CurFunctionApp(args, normalizeExp(node.childs[plus]));
+    }
+  }
+
+  return new FunctionApp(node.childs[plus].value, args);
+}
+
+
