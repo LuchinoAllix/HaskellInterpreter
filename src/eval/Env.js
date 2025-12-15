@@ -190,7 +190,7 @@ export class Env {
   clone(){
     let tmp = new Env();
     for (let decl in this.decls){
-      tmp.decls.add(decl, this.decls[decl]); // decl is a ref
+      tmp.add(decl, this.decls[decl]); // decl is a ref
     }
     return tmp;
   }
