@@ -25,7 +25,7 @@ export class Prim extends Term {
    * if all the args are given, calls the function, except if it 
    * an IO one, in this case, returns a Vio
    * @param {[]} args 
-   * @returns {Value}
+   * @returns {Value} // can return prim
    */
   lambdaCall(args) {
     if (args.length > this.nbArgs) {

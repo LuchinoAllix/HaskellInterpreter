@@ -182,8 +182,17 @@ function evaluateExp(exp, env){
 
     case "ListExp" :
       return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
+
+    case "curFunctionApp" :
+        return [evaluateFunc(
+          evaluateExp(exp.func, env)[0],
+          exp.args, //.map(x => evaluateExp(x, env)[0]),
+          env
+        )];
+
  
     default :
+    console.log(exp)
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
