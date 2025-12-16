@@ -134,7 +134,7 @@ function printOptions(){
       "  --Tokens      shows the list of token after lexing\n" +
       "  --AST         shows the AST after parsing\n" +
       "  --Debug       shows the rules took whilst parsing\n" +
-      "  --Nosave      doesn't save the AST after parsing\n" +
+      "  --Nosave      doesn't save the AST and NF after generating them\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
       "  --NF          shows the normal form after normalizing\n" +
       "  --Verbose     shows error messages if all tests are run"
@@ -223,7 +223,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
     return false;
   }
 
-  try{ // todo evaluation
+  try{
   
     normalizeStart(program)
     
@@ -233,6 +233,12 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
     if (printNF){
       showNormalForm(program.normalizedForm);
+    }
+
+    if (!nosave){
+      writeFileSync("../visualisation/nf.json", 
+                        JSON.stringify(program.normalizedForm, null, 2));
+      console.log("AST saved to ast.json");
     }
 
   } catch (error) {
