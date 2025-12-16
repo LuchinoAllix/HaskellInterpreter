@@ -19,7 +19,7 @@ export function addIndentation(program){
     i += ApplyRule1(program,i);
     i += ApplyRule3(program,i);
   }
-  program.tokens = bigL(program.tokens, []);
+  program.tokens = bigL(program.tokens, [], []);
   return true;
 }
 
@@ -108,10 +108,16 @@ function ApplyRule3(program, index){
  * In following the rules, we assume :
  * - that if the parameter is not represented by [] then it cannot be empty
  * 
+ * For each '{' counts the number of '(' opened, like [1,0,1] would mean
+ * {({{( were read
+ * Covers note 5 problem, there could be a way to manage it with the stack
+ * but it works
+ * 
  * @param {Program} program 
+ * @param {[Integer]} nbOpen counts the number of '('closed per '{'
  * @returns {Boolean}
  */
-function bigL(tokens, stack){
+function bigL(tokens, stack, nbOpen){
 
   updateStack(tokens, stack);
 
@@ -120,7 +126,7 @@ function bigL(tokens, stack){
   if (tokens.length > 0 && 
       tokens[0].type === "layout R3" && 
       stack.length > 0){
-    return bigLR3(tokens, stack);
+    return bigLR3(tokens, stack, nbOpen);
   } 
   
   // | L ({n} : ts) (m : ms)
@@ -129,15 +135,18 @@ function bigL(tokens, stack){
   else if (tokens.length > 0 && 
            (tokens[0].type === "layout R2" || 
             tokens[0].type === "layout R1")){
-    return bigLR2(tokens, stack);           
+    return bigLR2(tokens, stack, nbOpen);           
   }
   
   // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
   // | L (} : ts) ms        = parse-error     (Note 3) 
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0][0] === 0){
+      if (nbOpen.pop() !== 0) {
+        throw new Error("Cannot close '}' because '(' still open");
+      }
       return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
-                                               stack.slice(1)));
+                                               stack.slice(1), nbOpen));
     } else {
       throw new Error("Parse error bigL (note 3)");
     }
@@ -145,25 +154,47 @@ function bigL(tokens, stack){
   
   // | L ({ : ts) ms = {  :  (L ts (0 : ms)) (Note 4) 
   else if (tokens.length > 0 && tokens[0].value === "{" && stack.length > 0){
-    return [newLayoutToken("}","2")].concat(bigL(tokens.slice(1),
-                                             [[0, tokens[0]]].concat(stack)));
+    nbOpen.push(0);
+    return [newLayoutToken("{","2")].concat(bigL(tokens.slice(1),
+                                             [[0, tokens[0]]].concat(stack), 
+                                             nbOpen));
   }
   
-  // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m ∕= 0 and parse-error(t)
+  // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m∕ = 0 and parse-error(t)
   //                                               (Note 5)
   // | L (t : ts) ms       = t  :  (L ts ms) 
+  //
+  // Note 5 :
+  //   - The side condition parse-error(t) is to be interpreted as follows: if 
+  //     the tokens generated so far by L together with the next token t 
+  //     represent an invalid prefix of the Haskell grammar, and the tokens 
+  //     generated so far by L followed by the token “}” represent a valid 
+  //     prefix of the Haskell grammar, then parse-error(t) is true. 
+  //   - The test m∕ = 0 checks that an implicitly-added closing brace would 
+  //     match an implicit open brace. 
   else if (tokens.length > 0 && stack.length > 0){
-    if (isNextTokenIn(tokens)) { // AI generated if block
-      let m = stack[0][0];
-      if (m !== 0) {
-        // On ferme seulement si bloc layout réellement ouvert
-        return [newLayoutToken("}","3"), tokens[0]]
-          .concat(bigL(tokens.slice(1), stack.slice(1)));
+
+    if (tokens[0].value === "("){
+      nbOpen[nbOpen.length-1] ++;
+    } 
+    if (isPrefixInvalid(tokens, nbOpen)) {
+      if (nbOpen.pop() !== 0) {
+        throw new Error("Cannot close '}' because '(' still open");
       }
-    } else {
-      return [tokens[0]].concat(bigL(tokens.slice(1), stack));
+      if (tokens[0].value === ")"){
+        nbOpen[nbOpen.length-1] --;
+      }
+      return [newLayoutToken("}", "5"), tokens[0]].concat(bigL(tokens.slice(1),
+                                                               stack.slice(1), 
+                                                               nbOpen));
     }
-  } 
+    if (tokens[0].value === ")"){
+      nbOpen[nbOpen.length-1] --;
+    }
+
+    // Sinon, on continue normalement avec le token actuel
+    return [tokens[0]].concat(bigL(tokens.slice(1), stack, nbOpen));
+  }
   
   // |  L [] [] = [] 
   else if (tokens.length === 0 && stack.length === 0){
@@ -175,7 +206,10 @@ function bigL(tokens, stack){
     if (stack.length === 1){
       stack = [];
     }
-    return [newLayoutToken("}","4")].concat(bigL([], stack.slice(1)));
+    if (nbOpen.pop() !== 0) {
+      throw new Error("Cannot close '}' because '(' still open");
+    }
+    return [newLayoutToken("}","4")].concat(bigL([], stack.slice(1), nbOpen));
   }
   
   else {
@@ -192,17 +226,23 @@ function bigL(tokens, stack){
  * 
  * @param {[Token]} tokens
  * @param {[Integer, Token]} stack 
+ * @param {[Integer]} nbOpen
  * @returns {[Token]}
  */
-function bigLR3(tokens, stack){
+function bigLR3(tokens, stack, nbOpen){
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   let m = stack[0][0];
   if (m === n){ 
-    return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack));
+    return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack, 
+                                                   nbOpen));
   } else if (n < m){
-    return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1)));
+    if (nbOpen.pop() !== 0) {
+      throw new Error("Cannot close '}' because '(' still open");
+    }
+    return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1), 
+                                                 nbOpen));
   } else {
-    return bigL(tokens.slice(1), stack);
+    return bigL(tokens.slice(1), stack, nbOpen);
   } 
 }
 
@@ -214,9 +254,10 @@ function bigLR3(tokens, stack){
  *  
  * @param {[Token]} tokens
  * @param {[[Integer, Token]]} stack 
+ * @param {[Integer]} nbOpen
  * @returns {[Token]}
  */
-function bigLR2(tokens, stack){ 
+function bigLR2(tokens, stack, nbOpen){ 
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   if (n === NaN){
     throw Error("Something other than an int ended up in layout token : ", 
@@ -226,27 +267,39 @@ function bigLR2(tokens, stack){
     let m = stack[0][0];
     if (n > m){
       stack  = [[n, tokens[0]]].concat(stack);
-      return [newLayoutToken("{", "8")].concat(bigL(tokens.slice(1), stack));
+      nbOpen.push(0);
+      return [newLayoutToken("{", "8")].concat(bigL(tokens.slice(1), stack,
+                                                    nbOpen));
     } else {
-      //console.log("stack : ", stack);
       return [newLayoutToken("{","6"), newLayoutToken("}","6")].concat(
         bigL([newLayoutToken("<" + n + ">", "R3")].concat(tokens.slice(1)),
-                                                          stack));
+                                                          stack, nbOpen));
     }
   } else if (n > 0){
+    nbOpen.push(0);
     return [newLayoutToken("{","7")].concat(bigL(tokens.slice(1), 
-                                                 [[n, tokens[0]]]));
+                                                 [[n, tokens[0]]], nbOpen));
+  } else {
+    throw new Error("Pattern matching not exhaustive in bigLR2, stack : " +  
+      stack);
   }
 }
 
 /**
- * Returns true if the first element of the tokens list is "in"
- * @param {[Token]} tokens 
+ * Determines if a '}' need to be added
+ * @param {[Token]} tokens
+ * @param {[Integer]} nbOpen
  * @returns {Boolean}
  */
-function isNextTokenIn(tokens){
-  if (tokens.length >= 1){
-    return (tokens[0].value === "in");
+function isPrefixInvalid(tokens, nbOpen) {
+  if (tokens.length >= 1) {
+    let nextToken = tokens[0];
+    if (nextToken.value === "in"){
+      return true;
+    }
+    if (nbOpen[nbOpen.length-1] === 0 && nextToken.value === ")"){
+      return true;
+    }
   }
   return false;
 }
