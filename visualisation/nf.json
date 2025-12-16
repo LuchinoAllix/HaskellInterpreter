@@ -1,0 +1,193 @@
+[
+  {
+    "metatype": "DECL",
+    "type": "function",
+    "name": "sum",
+    "typeAnnotation": {
+      "type": "type",
+      "value": null,
+      "line": null,
+      "column": null,
+      "childs": [
+        {
+          "type": "atype",
+          "value": null,
+          "line": null,
+          "column": null,
+          "childs": [
+            {
+              "type": "Special",
+              "value": "[",
+              "line": 1,
+              "column": 8,
+              "childs": null
+            },
+            {
+              "type": "Qtycon",
+              "value": "Int",
+              "line": 1,
+              "column": 9,
+              "childs": null
+            },
+            {
+              "type": "Special",
+              "value": "]",
+              "line": 1,
+              "column": 12,
+              "childs": null
+            }
+          ]
+        },
+        {
+          "type": "reservdop",
+          "value": "->",
+          "line": 1,
+          "column": 14,
+          "childs": null
+        },
+        {
+          "type": "Qtycon",
+          "value": "Int",
+          "line": 1,
+          "column": 17,
+          "childs": null
+        }
+      ]
+    },
+    "branches": [
+      {
+        "type": "branch",
+        "args": [
+          {
+            "metatype": "PATTERN",
+            "type": "value",
+            "value": "[]",
+            "valueType": "Special"
+          }
+        ],
+        "branchBody": {
+          "metatype": "EXP",
+          "type": "value",
+          "value": 0,
+          "valueType": "integer"
+        }
+      },
+      {
+        "type": "branch",
+        "args": [
+          {
+            "metatype": "PATTERN",
+            "type": "list pattern",
+            "patterns": [
+              {
+                "metatype": "EXP",
+                "type": "value",
+                "value": "(",
+                "valueType": "Special"
+              },
+              {
+                "metatype": "EXP",
+                "type": "list pattern",
+                "patterns": [
+                  {
+                    "metatype": "EXP",
+                    "type": "var",
+                    "name": "head"
+                  },
+                  {
+                    "metatype": "EXP",
+                    "type": "value",
+                    "value": ":",
+                    "valueType": "reservdop"
+                  },
+                  {
+                    "metatype": "EXP",
+                    "type": "var",
+                    "name": "rest"
+                  }
+                ]
+              },
+              {
+                "metatype": "EXP",
+                "type": "value",
+                "value": ")",
+                "valueType": "Special"
+              }
+            ]
+          }
+        ],
+        "branchBody": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "name": "+",
+          "args": [
+            {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "head"
+            },
+            {
+              "metatype": "EXP",
+              "type": "functionApp",
+              "name": "sum",
+              "args": [
+                {
+                  "metatype": "EXP",
+                  "type": "var",
+                  "name": "rest"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "metatype": "DECL",
+    "type": "variable",
+    "name": "main",
+    "typeAnnotation": null,
+    "branches": [
+      {
+        "metatype": "EXP",
+        "type": "do",
+        "exps": [
+          {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "name": "print",
+            "args": [
+              {
+                "metatype": "EXP",
+                "type": "functionApp",
+                "name": "sum",
+                "args": [
+                  {
+                    "metatype": "EXP",
+                    "type": "ListExp",
+                    "elems": [
+                      {
+                        "metatype": "EXP",
+                        "type": "value",
+                        "value": 1,
+                        "valueType": "integer"
+                      },
+                      {
+                        "metatype": "EXP",
+                        "type": "value",
+                        "value": 2,
+                        "valueType": "integer"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "nbArgs": null
+  }
+]
