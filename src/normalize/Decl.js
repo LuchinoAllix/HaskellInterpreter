@@ -40,8 +40,9 @@ export class Decl extends Term {
   addBranchDef(branch){
     if (branch.args === null){ 
       // variable branch : do nothing
-    } else if (this.nbArgs === null){ // number of arguments not yet initialized
-      this.nbArgs = branch.args.length;
+    } else if (this.nbArgs === null || this.nbArgs === undefined){ 
+      // number of arguments not yet initialized
+      this.nbArgs = branch.length;
     } else if(this.nbArgs !== branch.args.length){
       throw Error("Mismatch between number of arguments in different " +
                  "parts of the function declaration, branch already processed :" 
@@ -115,7 +116,7 @@ export function typeVarDecl(name, node){
  * @returns {Decl}
  */
 export function branchVarDecl(name, branch){
-  return new Decl("variable", name, null, [new Branch([], branch)], null);
+  return new Decl("variable", name, null, [branch], null);
 }
 
 // Doesn't serve any real function, only to show the type options
