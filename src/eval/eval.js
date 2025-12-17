@@ -97,11 +97,18 @@ function evaluateDecl(decl){
 /**
  * Evaluates an expression in a given (local) environement
  * Returns a list of the values evaluated
- * @param {Exp} exp 
+ * can take as argument a value because in case, we need to evaluate before 
+ * giving it as an argument 
+ * @param {Exp} exp or V.Value, not ideal but not problematic
  * @param {Env} env 
  * @returns {[V.Value]}
  */
 function evaluateExp(exp, env){
+
+  if (exp.metatype === "VALUE"){
+    return [exp];
+  }
+
   switch (exp.type){
     
     case "functionApp" :
@@ -184,7 +191,7 @@ function evaluateExp(exp, env){
       return evaluateCase(exp, env);
  
     default :
-    console.log(exp)
+    //console.log(exp)
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
@@ -305,7 +312,6 @@ function evaluateCase(exp, env){
       let closure = env.clone();
       for (let match of matches){
         if (match.length >= 1){
-          //console.log(match)
           closure.add(match[0].name, match[1]);
         }
       }
@@ -323,32 +329,36 @@ function evaluateCase(exp, env){
  * @returns {[[Exp]]}
  */
 function match(value, exp){
+
   // we assume the pattern matching can only be on one element
   switch (exp.type){
     case "TupleExp" :
       if (value.type !== "tuple"){
         throw new Error("Pattern matching in case not of same type, tuple" +
           "!== : " + value.type);
-      } else if (value.values.length !== exp.elems.length){
+      } else if (value.value.length !== exp.elems.length){
         throw new Error("Pattern matching between different tuples should have"
           + " the same amount of elements");
       } else {
         let res = [];
-        for (let i = 0; i < value.values.length; i++){
-          let recursive = match(value.values[i], exp.elems[i]);
+        for (let i = 0; i < value.value.length; i++){
+          let recursive = match(value.value[i], exp.elems[i]);
           for (let rec of recursive){
+            if (rec === -1){
+              return [-1];
+            }
             res.push(rec);
           }
         }
+        return res;
       }
-      return res;
     case "ListExp" :
       throw new Error("ListExp not yet managed in case evaluation");
     case "SpecialExp" :
       return [[]];
     case "ListPatternExp" :
       throw new Error("ListPatternExp not yet managed in case evaluation");
-    case "varExp" :
+    case "var" :
       return [[exp, value]];
     case "value" :
       if (exp.value === value.value){
