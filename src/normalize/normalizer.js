@@ -207,6 +207,12 @@ function normalizeExp(node){
   switch (node.type){
     
     case "infixexp" :
+      if (node.childs.length >= 3){
+        if (node.childs[1].value === ":"){
+          return new ListPatternTerm(normalizeExp(node.childs[0]),
+                                     normalizeExp(node.childs[2]));
+        }
+      }
       // based on the fact that the second element of an infixexp is the 
       // function 
       return new FunctionApp(node.childs[1].value, 
@@ -347,15 +353,54 @@ function normalizeQconid(node){
 function normalizeCase(node){
   let exp = normalizeExp(node.childs[1]);
   let branches = [];
-  for (let child of node.childs[4].childs){
-    if (!child.type.startsWith("layout")){
-      // We suppose we only have alt nodes
-      branches.push(new Branch([normalizeExp(child.childs[0])],
-                               normalizeExp(child.childs[2])));
+  if (node.childs[4].type === "alts"){
+    for (let child of node.childs[4].childs){
+      if (!child.type.startsWith("layout")){
+        // We suppose we only have alt nodes
+        let branch = new Branch([normalizeExp(child.childs[0])], 
+        normalizeExp(child.childs[2]));
+        //verifyNoRedef(branch, []);
+        branches.push(branch);
+      }
     }
+  } else if (node.childs[4].type === "alt"){ // not pretty but it works
+    let child = node.childs[4];
+    let branch = new Branch([normalizeExp(child.childs[0])], 
+                             normalizeExp(child.childs[2]));
+    //verifyNoRedef(branch, []);
+    branches.push(branch);
+  } else {
+    throw new Error("Unhandeled node in case : " + node.childs[4].type);
   }
   return new CaseExp(exp, branches);
 }
+
+/**
+ * Verifies that a pattern doesn't define a variable multiple times
+ * @param {Branch} branch 
+ * @param {[String]} listOfVars 
+ */
+function verifyNoRedef(branch, listOfVars){
+  switch (branch.args[0].type){
+    case "TupleExp" :
+    case "ListExp" :
+      for (elem of branch.args[0].elems){
+        verifyNoRedef(elem, dico);
+      }
+    case "var" :
+      if (listOfVars.includes(branch.args[0].name)){
+        throw new Error("pattern of branch has conflicting definition");    
+      }
+      listOfVars.push(branch.args[0].name);
+    case "value":
+    case "SpecialExp":
+      break;
+    // todo
+
+  }
+}
+
+
 
 /**
  * Turns a lexp node of if into an IfExp object 
