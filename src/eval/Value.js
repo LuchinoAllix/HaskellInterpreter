@@ -86,7 +86,7 @@ export class VList extends Value {
       let t0 = values[0].type;
       for (let i = 1; i < values.length; i ++){
         if (values[i].type !== t0){
-          throw Error("Elements in list are not homogenous");
+          throw Error("Elements in list are not homogenous (run-time error)");
           // This test is not recursive, so #FIXME
         }
       }
