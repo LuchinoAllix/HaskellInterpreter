@@ -1,6 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
+import { Exp } from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 
 
@@ -170,10 +171,6 @@ function evaluateExp(exp, env){
         return evaluateExp(exp.fail, env);
       }
 
-    case "case" :
-      throw Error("case not yet managed in eval");
-      break;
-
     case "TupleExp" :
       return [new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)[0]))];
 
@@ -181,12 +178,10 @@ function evaluateExp(exp, env){
       return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
 
     case "curFunctionApp" :
-        return [evaluateFunc(
-          evaluateExp(exp.func, env)[0],
-          exp.args, //.map(x => evaluateExp(x, env)[0]),
-          env
-        )];
+        return [evaluateFunc(evaluateExp(exp.func, env)[0], exp.args, env)];
 
+    case "case" :
+      return evaluateCase(exp, env);
  
     default :
     console.log(exp)
@@ -256,7 +251,7 @@ function resetGlobalEnv(){
 function execute(main_decl){
   for (let exp of main_decl){
     if (exp.type !== "IO"){
-      throw Error("Only IO functions can be given to main");
+      throw new Error("Only IO functions can be given to main");
     }
     exp.value.call();
   }
@@ -266,7 +261,7 @@ function execute(main_decl){
  * Evaluates an let exp (if is has an in part, if not breaks)
  * @param {LetExp} exp 
  * @param {Env} env 
- * @returns {Value}
+ * @returns {[V.Value]}
  */
 function evaluateLet(exp, env){
   for (let decl of exp.decls){
@@ -279,10 +274,10 @@ function evaluateLet(exp, env){
 }
 
 /**
- * 
+ * todo
  * @param {Exp} exp 
- * @param {Env} env 
- * @returns {Value}
+ * @param {Env} env
+ * @returns {[V.Value]}
  */
 function evaluateLambda(exp, env){
   if (exp.args.length === 0){
@@ -295,3 +290,77 @@ function evaluateLambda(exp, env){
     return evaluateExp(exp, closure);
   }
 }
+
+/**
+ * todo
+ * @param {Exp} exp 
+ * @param {Env} env
+ * @returns {[V.Value]}
+ */
+function evaluateCase(exp, env){
+  let val = evaluateExp(exp.exp, env)[0];
+  for (let branch of exp.branches){
+    let matches = match(val, branch.args[0]); 
+    if (matches.length >= 1 && matches[0] !== -1){
+      let closure = env.clone();
+      for (let match of matches){
+        if (match.length >= 1){
+          //console.log(match)
+          closure.add(match[0].name, match[1]);
+        }
+      }
+      return evaluateExp(branch.branchBody, closure);
+    }
+  }
+  throw new Error("No pattern was found to match in case with " + exp.exp);
+      
+}
+
+/**
+ * todo
+ * @param {V.Value} value 
+ * @param {Exp} exp 
+ * @returns {[[Exp]]}
+ */
+function match(value, exp){
+  // we assume the pattern matching can only be on one element
+  switch (exp.type){
+    case "TupleExp" :
+      if (value.type !== "tuple"){
+        throw new Error("Pattern matching in case not of same type, tuple" +
+          "!== : " + value.type);
+      } else if (value.values.length !== exp.elems.length){
+        throw new Error("Pattern matching between different tuples should have"
+          + " the same amount of elements");
+      } else {
+        let res = [];
+        for (let i = 0; i < value.values.length; i++){
+          let recursive = match(value.values[i], exp.elems[i]);
+          for (let rec of recursive){
+            res.push(rec);
+          }
+        }
+      }
+      return res;
+    case "ListExp" :
+      throw new Error("ListExp not yet managed in case evaluation");
+    case "SpecialExp" :
+      return [[]];
+    case "ListPatternExp" :
+      throw new Error("ListPatternExp not yet managed in case evaluation");
+    case "varExp" :
+      return [[exp, value]];
+    case "value" :
+      if (exp.value === value.value){
+        // Might not work on strings because of "\" stuff, #FIXME
+        return [[]];
+      }
+      return [-1];
+      
+    default :
+      throw new Error("Exp not yet managed in pattern matching of eval : " + 
+        exp.type);
+  }
+}
+
+
