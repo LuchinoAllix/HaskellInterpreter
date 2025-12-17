@@ -238,7 +238,7 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
     if (!nosave){
       writeFileSync("../visualisation/nf.json", 
                         JSON.stringify(program.normalizedForm, null, 2));
-      console.log("AST saved to ast.json");
+      console.log("NF saved to nf.json");
     }
 
   } catch (error) {
