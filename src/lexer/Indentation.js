@@ -286,7 +286,10 @@ function bigLR2(tokens, stack, nbOpen){
 }
 
 /**
- * Determines if a '}' need to be added
+ * Determines if a '}' needs to be added
+ * This function is the note 5 (from the specification, see bigL) condition
+ * Could there be other cases than "in" and ")" where a "}" needs to be added ?
+ * #HELP
  * @param {[Token]} tokens
  * @param {[Integer]} nbOpen
  * @returns {Boolean}
