@@ -246,6 +246,9 @@ function normalizeExp(node){
 
     case "apat" :
     case "pat" :
+      if (node.childs[2].value === ","){
+        return normalizeTuple(node);
+      }
       let apat = [];
       for (let child of node.childs){
         apat.push(normalizeExp(child));
