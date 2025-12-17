@@ -195,7 +195,7 @@ export class ListPatternTerm extends Exp {
    */
   constructor(patterns){
     super();
-    this.type = "list pattern";
+    this.type = "ListPatternExp";
     this.patterns = patterns
   }
 }
