@@ -189,14 +189,15 @@ export class DoExp extends Exp {
 export class ListPatternTerm extends Exp {
 
   /**
-   * Creates a list pattern expressions, as in (a:b) will be an exp of the form
-   * ['(','a',':','b',')']
+   * todo
+   * // Todo verify that the rest is a list.
    * @param {[Exp]} patterns 
    */
-  constructor(patterns){
+  constructor(head, rest){
     super();
     this.type = "ListPatternExp";
-    this.patterns = patterns
+    this.head = head;
+    this.rest = rest;
   }
 }
 
