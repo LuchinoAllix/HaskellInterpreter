@@ -4,6 +4,7 @@
  */
 export class Value {
   constructor(type, value){
+    this.metatype = "VALUE";
     this.type = type;
     this.value = value;
   }
