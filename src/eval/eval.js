@@ -353,7 +353,24 @@ function match(value, exp){
         return res;
       }
     case "ListExp" :
-      throw new Error("ListExp not yet managed in case evaluation");
+      if (value.type !== "list"){
+        throw new Error("Pattern matching in case not of same type, list" +
+          "!== : " + value.type);
+      } else if (value.value.length !== exp.elems.length){
+        throw new Error("Pattern matching between different lists should have"
+          + " the same amount of elements");
+      }
+      let res = [];
+      for (let i = 0; i < exp.elems.length; i ++){
+        let recursive = match(value.value[i], exp.elems[i]);
+        for (let rec of recursive){
+          if (rec === -1){
+            return [-1];
+          }
+          res.push(rec);
+        }
+      }
+      return res;
     case "SpecialExp" :
       return [[]];
     case "ListPatternExp" :
