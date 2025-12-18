@@ -189,11 +189,17 @@ export class DoExp extends Exp {
 export class ListPatternTerm extends Exp {
 
   /**
-   * todo
-   * // Todo verify that the rest is a list.
-   * @param {[Exp]} patterns 
+   * Pattern matching of a list as in : (a : b) a is head b is rest
+   * @param {Exp} head 
+   * @param {Exp} rest 
    */
   constructor(head, rest){
+    if (rest.type !== "ListExp" && rest.type !== "var"){
+      if (rest.type === "value" && rest.value !== "[]"){
+        throw new Error("In pattern of list, rest must be a list not : " + 
+          rest);
+      }
+    }
     super();
     this.type = "ListPatternExp";
     this.head = head;
