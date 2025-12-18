@@ -253,13 +253,19 @@ function normalizeExp(node){
     case "apat" :
     case "pat" :
       if (node.childs[2].value === ","){
-        return normalizeTuple(node);
+        if (node.childs[0].value === "("){
+          return normalizeTuple(node);
+        } else if (node.childs[0].value === "["){
+          return normalizeList(node);
+        } 
+      } else if (node.childs[0].value === "(" && node.childs.length === 3){
+        return normalizeExp(node.childs[1]);      
+      } else if (node.childs[1].value === ":" && node.childs.length === 3){
+        return new ListPatternTerm(normalizeExp(node.childs[0]),
+                                   normalizeExp(node.childs[2]));
+      } else {
+        throw new Error("unhandelded case in pat : " + node);
       }
-      let apat = [];
-      for (let child of node.childs){
-        apat.push(normalizeExp(child));
-      }
-      return new ListPatternTerm(apat);
 
     case "Qconid" :
       return normalizeQconid(node);
