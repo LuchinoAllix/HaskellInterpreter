@@ -538,25 +538,65 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 56         : case of in main with o
--- Expected result : error 
+-- Test 56         : case of in main with one line
+-- Expected result : 3 
 
 --/
 a = (2, 1)
 main = print (
           case a of 
-                  (a, b) -> 0
+                  (a, b) -> a + b 
               )
 --/
 --------------------------------------------------------------------------------
--- Test 57         : case of in main with o
--- Expected result : error 
+-- Test 57         : case of in main with a list on branch and exp
+-- Expected result : 3 
 
 --/
-a = (2, 1)
+a = [1, 2, 3]
 main = print (
-          case (a , (1 : 2 : 3 : []) ) of 
-                  (a, a) -> 0
+          case a of 
+                  [1, 3, 2] -> 1
+                  [a, b, 3] -> a + b
+              )
+--/
+--------------------------------------------------------------------------------
+-- Test 58         : case of with a list as exp and list patterns on branch
+-- Expected result : 2 
+
+--/
+a = [1, 2, 3]
+main = print (
+          case a of 
+                  (0 : [1, 2]) -> 0
+                  [1, 3, 2] -> 1
+                  (1 : 2 : 3 : []) -> 2
+              )
+--/
+--------------------------------------------------------------------------------
+-- Test 59         : case of in main with only list patterns as branch and exp
+-- Expected result : 2 
+
+--/
+a = (1 : [2])
+main = print (
+          case a of 
+                  (0 : b) -> b
+                  (1 : [b]) -> b
+                  (2 : b) -> 0
+              )
+--/
+--------------------------------------------------------------------------------
+-- Test 60         : case of with a list as branch and list patterns as exp
+-- Expected result : 2 
+
+--/
+a = (1 : [2])
+main = print (
+          case a of 
+                  [1, 3, 2] -> 1
+                  [1, 2, 3] -> 2
+                  [2, 3, 1] -> 3
               )
 --/
 --------------------------------------------------------------------------------
