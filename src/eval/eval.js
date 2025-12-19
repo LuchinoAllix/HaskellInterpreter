@@ -189,6 +189,9 @@ function evaluateExp(exp, env){
 
     case "case" :
       return evaluateCase(exp, env);
+
+    case "ListPatternExp" :
+      return evaluateListPatternExp(exp, env);
  
     default :
     //console.log(exp)
@@ -391,3 +394,20 @@ function match(value, exp){
 }
 
 
+
+/**
+ * TODO
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns 
+ */
+function evaluateListPatternExp(exp, env){
+  let newList = [];
+  newList.push(evaluateExp(exp.head, env)[0]); 
+  if (exp.rest.type === "ListExp"){
+    newList = newList.concat(evaluate(exp.rest, env)[0].value);
+  } else if (exp.rest.value !== "[]"){
+    newList = newList.concat(evaluateExp(exp.rest, env));
+  }
+  return [new V.VList(newList)];
+}
