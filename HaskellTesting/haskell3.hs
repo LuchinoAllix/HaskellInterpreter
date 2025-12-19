@@ -5,8 +5,10 @@
 --                  (a : b : c) -> c
 --              )
 
-a = (2, 1)
+a = [1, 2, 4]
 main = print (
-          case (a , 1 : [] ) of 
-                  (c, b) -> b  
+          case a of 
+                  [1, 3, 2] -> [1]
+                  [a, b, 3] -> [a + b]
+                  a -> a
               )
