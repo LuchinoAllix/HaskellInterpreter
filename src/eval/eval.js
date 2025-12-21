@@ -404,11 +404,15 @@ function match(value, exp){
  */
 function evaluateListPatternExp(exp, env){
   let newList = [];
-  newList.push(evaluateExp(exp.head, env)[0]); 
+  newList.push(evaluateExp(exp.head, env)[0]);
   if (exp.rest.type === "ListExp"){
     newList = newList.concat(evaluateExp(exp.rest, env)[0].value);
   } else if (exp.rest.value !== "[]"){
-    newList = newList.concat(evaluateExp(exp.rest, env));
+    let tmp = evaluateExp(exp.rest, env);
+    if (tmp[0].type === "list"){
+      tmp = tmp[0].value;
+    }
+    newList = newList.concat(tmp);
   }
   return [new V.VList(newList)];
 }
