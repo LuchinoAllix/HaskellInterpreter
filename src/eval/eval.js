@@ -137,7 +137,8 @@ function evaluateExp(exp, env){
       let res = []
       for (let e of exp.exps){
         res = res.concat(evaluateExp(e, env));
-        env = {}; // Reseting the env because it is not kept in different 
+        env = new Env(); 
+                  // Reseting the env because it is not kept in different 
                   // branches of a do expression
                   // Is this true ? #HELP
       }
@@ -405,7 +406,7 @@ function evaluateListPatternExp(exp, env){
   let newList = [];
   newList.push(evaluateExp(exp.head, env)[0]); 
   if (exp.rest.type === "ListExp"){
-    newList = newList.concat(evaluate(exp.rest, env)[0].value);
+    newList = newList.concat(evaluateExp(exp.rest, env)[0].value);
   } else if (exp.rest.value !== "[]"){
     newList = newList.concat(evaluateExp(exp.rest, env));
   }
