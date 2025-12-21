@@ -295,9 +295,24 @@ function evaluateLambda(exp, env){
     return evaluateExp(exp.func.body, env);
   } else {
     let closure = env.clone();
-    closure.add(exp.func.args[0].name, exp.args[0], true);
-    exp.args.shift();
-    exp.func.args.shift();
+    if (exp.args[0].type === "TupleExp"){
+      if (exp.args[0].elems.length !== exp.func.args[0].elems.length){
+        throw new Error("Mismatch between number of arguments given and " + 
+          "expected in tuple of anonymous function");
+      }
+      closure.add(exp.func.args[0].elems[0].name, exp.args[0].elems[0], true);
+      exp.args[0].elems.shift();
+      exp.func.args[0].elems.shift();
+
+      if (exp.args[0].elems.length === 0){
+        exp.args.shift();
+        exp.func.args.shift();
+      }
+    } else {
+      closure.add(exp.func.args[0].name, exp.args[0], true);
+      exp.args.shift();
+      exp.func.args.shift();
+    }
     return evaluateExp(exp, closure);
   }
 }
