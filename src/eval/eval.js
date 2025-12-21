@@ -348,9 +348,9 @@ function evaluateCase(exp, env){
  * @returns {[[Exp]]}
  */
 function match(value, exp){
-
   // we assume the pattern matching can only be on one element
   switch (exp.type){
+
     case "TupleExp" :
       if (value.type !== "tuple"){
         throw new Error("Pattern matching in case not of same type, tuple" +
@@ -371,6 +371,7 @@ function match(value, exp){
         }
         return res;
       }
+
     case "ListExp" :
       if (value.type !== "list"){
         throw new Error("Pattern matching in case not of same type, list" +
@@ -378,24 +379,47 @@ function match(value, exp){
       } else if (value.value.length !== exp.elems.length){
         throw new Error("Pattern matching between different lists should have"
           + " the same amount of elements");
-      }
-      let res = [];
-      for (let i = 0; i < exp.elems.length; i ++){
-        let recursive = match(value.value[i], exp.elems[i]);
-        for (let rec of recursive){
-          if (rec === -1){
-            return [-1];
+      } else {
+        let res = [];
+        for (let i = 0; i < exp.elems.length; i ++){
+          let recursive = match(value.value[i], exp.elems[i]);
+          for (let rec of recursive){
+            if (rec === -1){
+              return [-1];
+            }
+            res.push(rec);
           }
-          res.push(rec);
         }
+        return res;
       }
-      return res;
+
     case "SpecialExp" :
       return [[]];
+
     case "ListPatternExp" :
-      throw new Error("ListPatternExp not yet managed in case evaluation");
+      if (value.type !== "list" || value.value.length <= 0){
+        throw new Error("A list pattern in a case requires a list with at " + 
+          "least one element :" + value.value );
+      } else {
+        let match_head = match(value.value[0], exp.head);
+        if(match_head.length > 0 && match_head[0] === -1){
+          return [-1]
+        }
+        let match_rest;
+        if (value.value.length === 1){
+          match_rest = match(new V.VList([]), exp.rest);
+        } else {
+          match_rest = match(new V.VList(value.value.slice(1)), exp.rest);
+        }
+        if(match_rest.length > 0 && match_rest[0] === -1){
+          return [-1]
+        }
+        return match_head.concat(match_rest);
+      }
+      
     case "var" :
       return [[exp, value]];
+
     case "value" :
       if (exp.value === value.value){
         // Might not work on strings because of "\" stuff, #FIXME
