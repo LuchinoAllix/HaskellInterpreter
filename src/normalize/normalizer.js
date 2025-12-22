@@ -147,54 +147,48 @@ function isDeclFunc(node){
  */
 function addDecl(declList, decl){
   if (declList.length === 0){
+
     declList.push(decl);
+  
   } else {
-    for (let i = 0; i < declList.length; i ++){
-      if (declList[i].isDecl()){ // We know we have a declaration
-        if (declList[i].name === decl.name){ // If declaration already exists
+    let i = declList.length - 1;
 
-          if (declList[i].typeAnnotation !== null && 
-              decl.typeAnnotation !== null){
-            throw Error("Type for "+  declList[i].name + " is already defined");
-          }
+    if (declList[i].name === decl.name){ // If declaration already exists
 
-          if (declList[i].typeAnnotation === null && 
-                     decl.typeAnnotation !== null){
-            throw Error("Type annotation should come before " + 
-                        "definition" + decl);
-          }
+      if (declList[i].typeAnnotation !== null && decl.typeAnnotation !== null){
+        throw Error("Type for "+  declList[i].name + " is already defined");
+      }
 
-          if (i !== declList.length - 1){
-            // We suppose that the declaration should be the last one
-            throw Error("Declarations on multiple lines should follow one " + 
-              "another");
-          } 
+      if (declList[i].typeAnnotation === null && decl.typeAnnotation !== null){
+        throw Error("Type annotation should come before " + 
+                    "definition" + decl);
+      }
 
-          if(decl.isVar()){
-            if (declList[i].isAnnotated() && !decl.isAnnotated()){
-              declList[i].addBranchDef(decl.branches[0]);
-              break;
-            } else {
-              throw Error("Cannot redefine variable : " + decl.name);
-            }
-          
-          } else if (decl.isFunc()){
-            declList[i].addBranchDef(decl.branches[0]);
-            break;
-          
-          } else {
-            throw Error("A declaration other than a function or variable was " +
-              "given to addDecl " + decl.type);
-          }
+      if (i !== declList.length - 1){
+        // We suppose that the declaration should be the last one
+        throw Error("Declarations on multiple lines should follow one " + 
+          "another");
+      } 
 
+      if(decl.isVar()){
+        if (declList[i].isAnnotated() && !decl.isAnnotated()){
+          declList[i].addBranchDef(decl.branches[0]);
+          return ;
         } else {
-          declList.push(decl);
-          break;
+          throw Error("Cannot redefine variable : " + decl.name);
         }
+      
+      } else if (decl.isFunc()){
+        declList[i].addBranchDef(decl.branches[0]);
+        return ;
+
+      
       } else {
-        throw Error("Only delcarations are allowed in addDecl " + decl);
+        throw Error("A declaration other than a function or variable was " +
+          "given to addDecl " + decl.type);
       }
     }
+    declList.push(decl);
   }
 }
 
