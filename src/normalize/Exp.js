@@ -200,6 +200,9 @@ export class ListPatternTerm extends Exp {
           rest);
       }
     }
+    if (rest.value === "[]"){
+      rest.value = [];
+    }
     super();
     this.type = "ListPatternExp";
     this.head = head;
