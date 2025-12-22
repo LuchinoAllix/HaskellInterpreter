@@ -157,7 +157,7 @@ function evaluateExp(exp, env){
           return [new V.Vbool(exp.value)];
 
         case "Special" :
-          if (exp.value === "[]"){
+          if (isMTArray(exp.value)){
             return [new V.VList([])];
           }
 
@@ -354,7 +354,7 @@ function match(value, exp){
     case "TupleExp" :
       if (value.type !== "tuple"){
         throw new Error("Pattern matching in case not of same type, tuple" +
-          "!== : " + value.type);
+          " !== " + value.type);
       } else if (value.value.length !== exp.elems.length){
         throw new Error("Pattern matching between different tuples should have"
           + " the same amount of elements");
@@ -373,12 +373,8 @@ function match(value, exp){
       }
 
     case "ListExp" :
-      if (value.type !== "list"){
-        throw new Error("Pattern matching in case not of same type, list" +
-          "!== : " + value.type);
-      } else if (value.value.length !== exp.elems.length){
-        throw new Error("Pattern matching between different lists should have"
-          + " the same amount of elements");
+      if (value.type !== "list" || value.value.length !== exp.elems.length){
+        return [-1];
       } else {
         let res = [];
         for (let i = 0; i < exp.elems.length; i ++){
@@ -421,8 +417,10 @@ function match(value, exp){
       return [[exp, value]];
 
     case "value" :
-      if (exp.value === value.value){
-        // Might not work on strings because of "\" stuff, #FIXME
+      // Might not work on strings because of "\" stuff, #FIXME
+      if (exp.value === value.value || 
+          (isMTArray(exp.value) && isMTArray(value.value))){
+            // second condition of if is to verify [] =? []
         return [[]];
       }
       return [-1];
@@ -446,7 +444,7 @@ function evaluateListPatternExp(exp, env){
   newList.push(evaluateExp(exp.head, env)[0]);
   if (exp.rest.type === "ListExp"){
     newList = newList.concat(evaluateExp(exp.rest, env)[0].value);
-  } else if (exp.rest.value !== "[]"){
+  } else if (!isMTArray(exp.rest.value)){
     let tmp = evaluateExp(exp.rest, env);
     if (tmp[0].type === "list"){
       tmp = tmp[0].value;
@@ -454,4 +452,15 @@ function evaluateListPatternExp(exp, env){
     newList = newList.concat(tmp);
   }
   return [new V.VList(newList)];
+}
+
+
+/**
+ * Determines if a given variable is the empty array
+ * Required because js compares by reference, so array === [] is always false
+ * @param {[]} array 
+ * @returns {Boolean}
+ */
+function isMTArray(array){
+  return Array.isArray(array) && array.length === 0
 }
