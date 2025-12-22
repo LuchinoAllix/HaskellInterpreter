@@ -220,11 +220,46 @@ function evaluateFunc(decl, args, env){
   // We can assume we have a manually declared function call
   // the call can have fewer arguments given than requested (currying)
   
-  args = args.map(x => evaluateExp(x, env)[0]); // evaluate the function args
+  //args = args.map(x => evaluateExp(x, env)[0]); // evaluate the function args
+  let func = lookupGlobalLocal(env, decl.name);
+  if (func === undefined){
+    throw new Error(decl.name + " is undefined.");
+  }
 
-  // TODO : manualy defined functions
-  throw Error("Manualy defined functions are not yet implemented in eval : "
-              + decl.name);
+  if (func.nbArgs === null){
+    if (args.length === 0){
+      return evaluateExp(func.branches[0], env);
+    } else { // We assume func.branches[0] is a function waiting for arguments
+      // could this loop indefinetly ? because if we have a recursive func that
+      // doesn't require args so nbargs is null but some arguments are given
+      // Yes but it's not our job to identify such cases (if it even is 
+      // possible)
+      return evaluateFunc(func.branches[0], args, env);
+    }
+  } else {
+    args = func.args.concat(args);
+
+    if (args.length < func.nbArgs){
+      throw new Error("Not enough arguments given to function : " + func.name);
+    } else {
+      return evaluateFuncPM(func, args, env);
+    }
+  }
+}
+
+
+/**
+ * Executes a function that requites pattern matching
+ * We assume all the args are in args
+ * There can be more args than required for currying
+ * @param {Term} func 
+ * @param {[Exp]} args 
+ * @param {Env} env 
+ * @returns {V.Value}
+ */
+function evaluateFuncPM(func, args, env){
+  // TODO
+  // need to eval args
 }
 
 
