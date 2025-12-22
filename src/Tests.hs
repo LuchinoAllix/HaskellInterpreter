@@ -575,15 +575,14 @@ main = print (
 --/
 --------------------------------------------------------------------------------
 -- Test 59         : case of in main with only list patterns as branch and exp
--- Expected result : 2 
+-- Expected result : [2] 
 
 --/
 a = (1 : [2])
 main = print (
           case a of 
-                  (0 : b) -> b
-                  (1 : [b]) -> b
-                  (2 : b) -> 0
+                  (0 : b) -> b + 1
+                  (1 : b) -> b
                   ([2] : ([1] : b) : c) -> 0
               )
 --/
