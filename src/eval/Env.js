@@ -1,7 +1,7 @@
 import { Decl } from "../normalize/Decl.js";
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Value, Vint, Vbool, Vfunc, Vstring } from "./Value.js";
+import { Value, Vint, Vbool, Vfunc, Vstring, VList } from "./Value.js";
 
 //--                   File for environment object definition               --//
 
@@ -180,6 +180,16 @@ export class Env {
       return a.value[1];  
       }
     , 1));
+
+    this.add("++", new Prim(
+      function concat(a, b){
+        if (a.type !== "list" || b.type !== "list"){
+          throw new Error("++ can only be applied between lists, not " + a.type  
+            + " and " + b.type);
+        }
+      return new VList(a.value.concat(b.value));  
+      }
+    , 2));
 
   }
 
