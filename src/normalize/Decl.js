@@ -116,7 +116,11 @@ export function typeVarDecl(name, node){
  * @returns {Decl}
  */
 export function branchVarDecl(name, branch){
-  return new Decl("variable", name, null, [branch], null);
+  let nbArgs = null;
+  if (branch.type === "LambdaExp"){
+    nbArgs = branch.args.length;
+  }
+  return new Decl("variable", name, null, [branch], nbArgs);
 }
 
 // Doesn't serve any real function, only to show the type options
