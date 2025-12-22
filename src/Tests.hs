@@ -213,7 +213,7 @@ main = print (fact 5)
 --/
 fib 0 = 0
 fib 1 = 1 
-fib a  = (fib a - 1) + (fib a - 2) 
+fib a  = (fib (a - 1)) + (fib (a - 2)) 
 main = do print (fib 5)
 --/
 
@@ -223,7 +223,7 @@ main = do print (fib 5)
 
 --/
 reverse [] = [] 
-reverse (head, rest) = reverse rest ++ head
+reverse (head : rest) = (reverse rest) ++ [head]
 main = do print (reverse [1,2,3])
 --/
 
@@ -235,7 +235,7 @@ main = do print (reverse [1,2,3])
 sum :: [Int] -> Int
 sum [] = 0
 sum (head: rest) = head + sum rest
-main = do print (sum [1,2])
+main = print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
@@ -634,7 +634,7 @@ func a b = 1
 
 tmp = func 0
 
-main = print (tmp 0)
+main = print (tmp 2)
 --/
 --------------------------------------------------------------------------------
 -- Test 64         : currying and pattern matching in function 
