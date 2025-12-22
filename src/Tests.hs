@@ -625,3 +625,31 @@ main = do
           print (1 : 2 : 3 : [4])
 --/
 --------------------------------------------------------------------------------
+-- Test 63         : currying and pattern matching in function 
+-- Expected result : 1
+
+--/
+func 0 1 = 0
+func a b = 1
+
+tmp = func 0
+
+main = print (tmp 0)
+--/
+--------------------------------------------------------------------------------
+-- Test 64         : currying and pattern matching in function 
+-- Expected result : 2
+
+--/
+func 0 1 = 0
+func 1 1 = 1
+func a b = 2
+
+tmp1 2 3 = func 0
+tmp1 c d = func 1
+
+tmp2 = tmp1 2
+
+main = print (tmp2 4 2)
+--/
+--------------------------------------------------------------------------------
