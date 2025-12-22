@@ -266,8 +266,6 @@ function normalizeExp(node){
       } else if (node.childs[0].value === "[" && node.childs.length === 3){
         return normalizeList(node);
       } else {
-        console.log("a")
-        console.log(node)
         throw new Error("unhandelded case in pat : " + node);
       }
 
