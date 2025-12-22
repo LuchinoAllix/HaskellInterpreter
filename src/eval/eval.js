@@ -1,7 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
-import { Exp } from "../normalize/Exp.js";
+import { AFunctionApp, Exp, TupleExp } from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 
 
@@ -84,6 +84,7 @@ function output(output){
  *    considered expressions.
  *  - We assume that there can be no declarations inside main, there can be 
  *    'inless' let's but they are considered expressions.
+ * FIXME : if main is declared before other functions, this will not work
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){
@@ -104,7 +105,6 @@ function evaluateDecl(decl){
  * @returns {[V.Value]}
  */
 function evaluateExp(exp, env){
-
   if (exp.metatype === "VALUE"){
     return [exp];
   }
@@ -195,7 +195,6 @@ function evaluateExp(exp, env){
       return evaluateListPatternExp(exp, env);
  
     default :
-    //console.log(exp)
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
@@ -217,10 +216,12 @@ function evaluateFunc(decl, args, env){
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
   }
 
+  if (decl.type === "LambdaExp"){
+    return evaluateExp(new AFunctionApp(args, decl), env)[0];
+  }
+
   // We can assume we have a manually declared function call
-  // the call can have fewer arguments given than requested (currying)
-  
-  //args = args.map(x => evaluateExp(x, env)[0]); // evaluate the function args
+
   let func = lookupGlobalLocal(env, decl.name);
   if (func === undefined){
     throw new Error(decl.name + " is undefined.");
@@ -228,17 +229,19 @@ function evaluateFunc(decl, args, env){
 
   if (func.nbArgs === null){
     if (args.length === 0){
-      return evaluateExp(func.branches[0], env);
+      return evaluateExp(func.branches[0], env)[0];
     } else { // We assume func.branches[0] is a function waiting for arguments
       // could this loop indefinetly ? because if we have a recursive func that
       // doesn't require args so nbargs is null but some arguments are given
       // Yes but it's not our job to identify such cases (if it even is 
       // possible)
+
       return evaluateFunc(func.branches[0], args, env);
     }
   } else {
-    args = func.args.concat(args);
-
+    if (decl.type === "functionApp"){
+      args = decl.args.concat(args);
+    }
     if (args.length < func.nbArgs){
       throw new Error("Not enough arguments given to function : " + func.name);
     } else {
@@ -249,17 +252,42 @@ function evaluateFunc(decl, args, env){
 
 
 /**
- * Executes a function that requites pattern matching
+ * Executes a function that requires pattern matching
  * We assume all the args are in args
  * There can be more args than required for currying
+ * Implicitly converts args as a tuple to use the same pattern matching as cases
  * @param {Term} func 
  * @param {[Exp]} args 
  * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, args, env){
-  // TODO
-  // need to eval args
+  let evalArgs = new V.Vtuple(args.slice(0, func.nbArgs).map(x => 
+    evaluateExp(x, env)[0]));
+  for (let branch of func.branches){
+    let patterns = new TupleExp(branch.args);
+    let matches = match(evalArgs, patterns);
+    if (matches.length > 0 && matches[0] !== -1){
+      let closure = env.clone();
+      for (let match of matches){
+        if (match.length >= 1){
+          closure.add(match[0].name, match[1], true);
+        }
+      }
+      if (args.length > func.nbArgs){ // If we still have arguments left
+        return evaluateFunc(branch.branchBody, 
+                            args.slice(func.nbArgs), closure);
+      }
+
+      if (branch.type === "LambdaExp"){
+        return evaluateExp(branch.body, closure)[0];
+      }
+      
+      return evaluateExp(branch.branchBody, closure)[0];
+    }
+
+  }
+  throw new Error("No match found for pattern matching in func : " + func.name);
 }
 
 
@@ -388,7 +416,7 @@ function match(value, exp){
 
     case "TupleExp" :
       if (value.type !== "tuple"){
-        throw new Error("Pattern matching in case not of same type, tuple" +
+        throw new Error("Pattern matching in case not of the same type, tuple" +
           " !== " + value.type);
       } else if (value.value.length !== exp.elems.length){
         throw new Error("Pattern matching between different tuples should have"
@@ -428,6 +456,8 @@ function match(value, exp){
       return [[]];
 
     case "ListPatternExp" :
+      //console.log(value);
+      //console.log(exp)
       if (value.type !== "list" || value.value.length <= 0){
         throw new Error("A list pattern in a case requires a list with at " + 
           "least one element :" + value.value );
@@ -496,6 +526,6 @@ function evaluateListPatternExp(exp, env){
  * @param {[]} array 
  * @returns {Boolean}
  */
-function isMTArray(array){
+export function isMTArray(array){
   return Array.isArray(array) && array.length === 0
 }
