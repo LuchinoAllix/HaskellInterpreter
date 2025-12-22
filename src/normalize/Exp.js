@@ -2,6 +2,7 @@
 import { Branch } from "./Branch.js";
 import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
+import { isMTArray } from "../eval/eval.js";
 
 /**
  * parent class for expressions
@@ -48,6 +49,9 @@ export class ValExp extends Exp {
    */
   constructor(value, valueType){
     super();
+    if(value === "[]"){
+      value = [];
+    }
     this.type = "value";
     this.value = value;
     this.valueType = valueType;
@@ -195,9 +199,9 @@ export class ListPatternTerm extends Exp {
    */
   constructor(head, rest){
     if (rest.type !== "ListExp" && rest.type !== "var"){
-      if (rest.type === "value" && rest.value !== "[]"){
+      if (rest.type === "value" && ! isMTArray(rest.value)){
         throw new Error("In pattern of list, rest must be a list not : " + 
-          rest);
+          JSON.stringify(rest, null, 2));
       }
     }
     if (rest.value === "[]"){
