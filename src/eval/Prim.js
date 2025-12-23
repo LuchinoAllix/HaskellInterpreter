@@ -22,7 +22,7 @@ export class Prim extends Term {
 
   /**
    * Recursively calls the function with all the args one by one,
-   * if all the args are given, calls the function, except if it 
+   * if all the args are given, calls the function, except if it is
    * an IO one, in this case, returns a Vio
    * @param {[]} args 
    * @returns {Value} // can return prim
