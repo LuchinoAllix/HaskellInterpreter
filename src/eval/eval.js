@@ -242,6 +242,15 @@ function evaluateFunc(decl, args, env){
     if (decl.type === "functionApp"){
       args = decl.args.concat(args);
     }
+    
+    if (func.metatype === "PRIM" || func.type === "LambdaExp"){
+      return evaluateFunc(func, args, env);
+    }
+    
+    if (func.type === "variable"){      
+      return evaluateFunc(func.branches[0], args, env);
+    }
+    
     if (args.length < func.nbArgs){
       throw new Error("Not enough arguments given to function : " + func.name);
     } else {
@@ -262,6 +271,7 @@ function evaluateFunc(decl, args, env){
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, args, env){
+  console.log(func)
   let evalArgs = new V.Vtuple(args.slice(0, func.nbArgs).map(x => 
     evaluateExp(x, env)[0]));
   for (let branch of func.branches){
