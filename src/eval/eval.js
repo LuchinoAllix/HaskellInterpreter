@@ -11,6 +11,39 @@ import * as V from "../eval/Value.js";
 let global_env = new Env();
 global_env.initGlobal();
 
+let printDebug = false; // for debug, edited in activateDebugEval
+
+/** 
+ * Function to print in a certain color, indented according to the space
+ * variable. Used in rules, branch and data functions to print the path took
+ * by the parser.
+ * @param {Integer} col color in which to print 
+ * @param {String} text text to print 
+ * @param {Boolean} val additional result to print
+ */
+function debug(col, text, val){
+  if(printDebug){
+    let name = val;
+    try {
+      let a = val.name;
+      if (a !== undefined){
+        name = a;
+      }
+    } catch(error){
+
+    }
+    console.log('%s\x1b[3' + col + 'm%s\x1b[0m', text, 
+      " " + JSON.stringify(name));
+  }
+}
+
+/**
+ * Sets printDebug to true, used in TestFile.
+ */
+export function activateDebugEval(){
+  printDebug = true;
+}
+
 /**
  * Entry point of evaluation for "compiled" programs
  * @param {Program} program
@@ -88,6 +121,7 @@ function output(output){
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){
+  debug(1, "evaluateDecl", decl);
   if (decl.name === "main"){
     global_env.add(decl.name, evaluateExp(decl.branches[0], new Env()));
   } else {
@@ -105,6 +139,7 @@ function evaluateDecl(decl){
  * @returns {[V.Value]}
  */
 function evaluateExp(exp, env){
+  debug(1, "evaluateExp", exp);
   if (exp.metatype === "VALUE"){
     return [exp];
   }
@@ -208,6 +243,7 @@ function evaluateExp(exp, env){
  * @returns {V.Value}
  */
 function evaluateFunc(decl, args, env){
+  debug(1, "evaluateFunc", decl);
   if (decl.type === "branch"){
     decl = decl.branchBody;
   }
@@ -271,6 +307,7 @@ function evaluateFunc(decl, args, env){
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, args, env){
+  debug(1, "evaluateFuncPM", func);
   console.log(func)
   let evalArgs = new V.Vtuple(args.slice(0, func.nbArgs).map(x => 
     evaluateExp(x, env)[0]));
@@ -348,6 +385,7 @@ function execute(main_decl){
  * @returns {[V.Value]}
  */
 function evaluateLet(exp, env){
+  debug(1, "evaluateLet", exp);
   for (let decl of exp.decls){
     env.add(decl.name, decl.branches[0], true);
     // Over writing decls that already exits, i'm not sure it's the best idea
@@ -364,6 +402,7 @@ function evaluateLet(exp, env){
  * @returns {[V.Value]}
  */
 function evaluateLambda(exp, env){
+  debug(1, "evaluateLambda", exp);
   if (exp.args.length === 0){
     return evaluateExp(exp.func.body, env);
   } else {
@@ -397,6 +436,7 @@ function evaluateLambda(exp, env){
  * @returns {[V.Value]}
  */
 function evaluateCase(exp, env){
+  debug(1, "evaluateCase", exp);
   let val = evaluateExp(exp.exp, env)[0];
   for (let branch of exp.branches){
     let matches = match(val, branch.args[0]); 
@@ -515,6 +555,7 @@ function match(value, exp){
  * @returns 
  */
 function evaluateListPatternExp(exp, env){
+  debug(1, "evaluateListPatternExp", exp);
   let newList = [];
   newList.push(evaluateExp(exp.head, env)[0]);
   if (exp.rest.type === "ListExp"){

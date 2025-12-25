@@ -348,7 +348,7 @@ function didItFail(ruleName, index){
 /**
  * Sets printDebug to true, used in TestFile.
  */
-export function activateDebug(){
+export function activateDebugParse(){
   printDebug = true;
 }
 

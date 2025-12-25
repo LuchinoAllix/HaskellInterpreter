@@ -1,11 +1,11 @@
 import { Program } from './objects/Program.js'
 import { tokenize }from './lexer/Lexer.js'
-import { parse, activateDebug } from './parser/Parser.js'
+import { parse, activateDebugParse } from './parser/Parser.js'
 import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEvalComp, initEvalInter } from './eval/eval.js';
+import { initEvalComp, initEvalInter, activateDebugEval } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -35,7 +35,8 @@ async function main(){
   }
 
   let printAST = false;
-  let printDebug = false;
+  let printDebugParse = false;
+  let printDebugEval = false;
   let nosave = false;
   let printTokens = false;
   let derivative = false;
@@ -55,9 +56,14 @@ async function main(){
         printAST = true;
         break;
 
-      case "--Debug" :
-      case "--debug" :
-        printDebug = true;
+      case "--DebugParse" :
+      case "--debugparse" :
+        printDebugParse = true;
+        break;
+
+      case "--DebugEval" :
+      case "--debugeval" :
+        printDebugEval = true;
         break;
 
       case "--Nosave" :
@@ -94,8 +100,8 @@ async function main(){
     var cnt = 0;
     nosave = true;
     for (let i=0; i < tests.length; i ++){
-      if (testAtest(i, printTokens, printAST, printDebug, nosave, derivative, 
-                    verbose, printNF)){
+      if (testAtest(i, printTokens, printAST, printDebugParse, printDebugEval, 
+        nosave, derivative, verbose, printNF)){
         cnt +=1;
         console.log("Test passed ✅");
       } else {
@@ -109,8 +115,8 @@ async function main(){
       console.log("Test number out of range, tests go from 0 to : ", 
                   tests.length-1);
     } else {
-      if (testAtest(testNum, printTokens, printAST, printDebug, nosave, 
-                    derivative, true, printNF)){
+      if (testAtest(testNum, printTokens, printAST, printDebugParse, 
+        printDebugEval, nosave, derivative, true, printNF)){
         console.log("Test passed ✅");
       } else {
         console.log("Test failed ❌");
@@ -133,7 +139,8 @@ function printOptions(){
       "Options :\n" +
       "  --Tokens      shows the list of token after lexing\n" +
       "  --AST         shows the AST after parsing\n" +
-      "  --Debug       shows the rules took whilst parsing\n" +
+      "  --DebugParse  shows the rules took whilst parsing\n" +
+      "  --DebugEval   shows the functions took whilst evaluating\n" +
       "  --Nosave      doesn't save the AST and NF after generating them\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
       "  --NF          shows the normal form after normalizing\n" +
@@ -151,8 +158,8 @@ function printOptions(){
  * @param {Boolean} der show derivative tree instead of AST
  * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose, 
-                   printNF){
+function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
+                    der, verbose, printNF){
   
   var test = tests[testNb];
   const program = new Program(test.input);
@@ -188,8 +195,8 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
   }
 
   try {
-    if (debug){
-      activateDebug();
+    if (DebugParse){
+      activateDebugParse();
     }
 
     parse(program)
@@ -253,25 +260,21 @@ function testAtest(testNb, printTokens, printAST, debug, nosave, der, verbose,
 
   try{
 
+    if (DebugEval){
+      activateDebugEval();
+    }
+
     initEvalComp(program)
 
     if ( true ){ //=== program.expected){ TODO: add verifying function
       if (verbose){
         console.log("Successful evaluation :) ");
-      }
-      
-    } else {
-      // evaluation never returns false, if it doesn't work it throws an error
-      // So this is never executed
-      console.log("Unsuccessful evaluation :( ");
-      return false;
+      } 
     }
 
   } catch (error) {
     console.log("Error while evaluating :");
-    //if (!(("" + error).includes("Manualy defined functions are not yet implemented in eval"))){
     whereFail[3].push(testNb);
-    //}
     console.log(error);
     return false;
 
