@@ -24,16 +24,20 @@ let printDebug = false; // for debug, edited in activateDebugEval
 function debug(col, text, val){
   if(printDebug){
     let name = val;
+    let type;
     try {
       let a = val.name;
+      let b = val.type;
       if (a !== undefined){
         name = a;
+      } 
+      if (b !== undefined){
+        name += " of type " + b;
       }
     } catch(error){
 
     }
-    console.log('%s\x1b[3' + col + 'm%s\x1b[0m', text, 
-      " " + JSON.stringify(name));
+    console.log('%s\x1b[3' + col + 'm%s\x1b[0m', text, " " + name);
   }
 }
 
