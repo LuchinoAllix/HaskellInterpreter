@@ -153,15 +153,12 @@ function evaluateDecl(decl){
  * Returns a list of the values evaluated
  * can take as argument a value because in case, we need to evaluate before 
  * giving it as an argument 
- * @param {Exp} exp or V.Value, not ideal but not problematic
+ * @param {Exp} exp
  * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateExp(exp, env){
   debug(1, "evaluateExp", exp);
-  if (exp.metatype === "VALUE"){
-    return exp;
-  }
 
   switch (exp.type){
     
@@ -181,10 +178,16 @@ function evaluateExp(exp, env){
       if (variable !== undefined){
         if (variable.metatype === "DECL"){
           return evaluateExp(variable.branches[0], env);
+        } else if (variable.metatype === "EXP"){
+          return evaluateExp(variable, env);
+        } else if (variable.metatype === "VALUE"){
+          return variable;
+        } else {
+          throw new Error("variable " + exp.name + " of metatype " + 
+            variable.metatype + "is not handeled");
         }
-        return evaluateExp(variable, env); // We assume it's an EXP metatype
       } else {
-        throw Error("variable " + exp.name + " is undefined");
+        throw new Error("variable " + exp.name + " is undefined");
       }
 
     case "do" :
