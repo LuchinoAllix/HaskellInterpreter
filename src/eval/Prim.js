@@ -1,5 +1,6 @@
 import { Term } from "../normalize/Term.js";
 import { Vfunc, Vio } from "./Value.js";
+import { Env } from "./Env.js";
 
 //--                   File for primitives object definition                --//
 
@@ -37,7 +38,7 @@ export class Prim extends Term {
         }
         return this.func();
       }
-      return new Vfunc(this); // If we are still waiting for args
+      return new Vfunc(this, new Env(), []); // If we are still waiting for args
 
     } else {
       let temp;

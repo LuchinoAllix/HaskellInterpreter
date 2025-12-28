@@ -1,3 +1,4 @@
+import { Env } from "./Env.js";
 
 /**
  * Abstract class
@@ -38,9 +39,13 @@ export class Vfunc extends Value {
    * Used in Curryfied function calls where we need to return a function that
    * still waits for arguments
    * @param {function} value 
+   * @param {Env} closure
+   * @param {[Exp]} extraArgs
    */
-  constructor(value){
+  constructor(value, closure, extraArgs){
     super("func", value);
+    this.closure = closure;
+    this.extraArgs = extraArgs;
   }
 }
 

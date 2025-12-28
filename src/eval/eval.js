@@ -199,7 +199,7 @@ function evaluateExp(exp, env){
       return evaluateListPatternExp(exp, env);
  
     default :
-      onsole.log(JSON.stringify(exp, null, 2))
+      console.log(JSON.stringify(exp, null, 2))
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
@@ -297,7 +297,11 @@ function evaluateValue(exp){
 function evaluateCurFunctionApp(exp, env){
   let vfunc = evaluateExp(exp.func, env);
   if (vfunc.type === "func"){
-    return evaluateFunc(vfunc.value, exp.args, env);
+    let closure = env.clone();
+    for (let variable in vfunc.closure.decls){
+      closure.add(variable, vfunc.closure.lookup(variable), true);
+    }
+    return evaluateFunc(vfunc.value, exp.args.concat(vfunc.extraArgs), closure);
   }
   else {
     throw new Error("Unhandeled case in curified function app : " + vfunc);
@@ -334,13 +338,19 @@ function evaluateFunc(decl, args, env){
   if (decl.type === "branch"){
     decl = decl.branchBody;
   }
+
   if (decl.isPrim() || decl.isPrimIO()){
     // We assume that evalExp returns a list of one element (no do in args)
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)));
   }
 
   if (decl.type === "LambdaExp"){
-    return evaluateExp(new AFunctionApp(args, decl), env);
+    if (args.length > 0){
+      return evaluateAFunctionApp(new AFunctionApp(args, decl), env);
+    }
+    else {
+      return new V.Vfunc(decl, env, args);
+    }
   }
 
   // We can assume we have a manually declared function call
@@ -374,8 +384,10 @@ function evaluateFunc(decl, args, env){
       return evaluateFunc(func.branches[0], args, env);
     }
     
-    if (args.length < func.nbArgs){
-      throw new Error("Not enough arguments given to function : " + func.name);
+    if (args.length < func.nbArgs){ 
+      // If we are still waiting for arguments, we delay the evaluation for the
+      // currying
+      return new V.Vfunc(func, env, args);
     } else {
       return evaluateFuncPM(func, args, env);
     }
@@ -494,8 +506,8 @@ function evaluateLet(exp, env){
 function evaluateAFunctionApp(exp, env){
   debug(1, "evaluateAFunctionApp", exp);
   if (exp.args.length === 0){
-    if (exp.type === "LambdaExp"){
-      throw new Error("todo")
+    if (exp.func.type === "LambdaExp"){
+      return evaluateFunc(exp.func, [], env);
     }
     return evaluateExp(exp.func, env);
   } else {
