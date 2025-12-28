@@ -652,3 +652,15 @@ tmp2 = tmp1 2
 main = print (tmp2 4 2)
 --/
 --------------------------------------------------------------------------------
+-- Test 65         : recursive call with prints
+-- Expected result : 2\n1\n0\n"finished"
+
+--/
+func a = if (a >= 0) then do
+                            print (a)
+                            func (a - 1)
+                     else print ("finished")
+
+main = func 2
+--/
+--------------------------------------------------------------------------------

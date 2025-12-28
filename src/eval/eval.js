@@ -245,19 +245,18 @@ function evaluateVar(exp, env){
 /**
  * Evaluates a do expression by evaluating every statement individually and
  * adding them to a Do value
+ * For each statement, we do not propagate the effects on the env, reseting it
+ * everytime // Is this true ? #HELP
  * @param {E.DoExp} exp 
- * @param {Env} env 
+ * @param {Env} env
  * @returns {V.Value}
  */
 function evaluateDo(exp, env){
   debug("Do", exp);
   let res = []
   for (let e of exp.exps){
-    res = res.concat(evaluateExp(e, env));
-    env = new Env(); 
-              // Reseting the env because it is not kept in different 
-              // branches of a do expression
-              // Is this true ? #HELP
+    let clone = env.clone()
+    res = res.concat(evaluateExp(e, clone));
   }
   return new V.Vdo(res);
 }
