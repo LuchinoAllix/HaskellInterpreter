@@ -9,6 +9,7 @@ import { initEvalComp, initEvalInter, activateDebugEval } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
+import { verify } from 'crypto';
 
 let tests = []
 let whereFail = [[],[],[],[]];
@@ -109,7 +110,7 @@ async function main(){
       }
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
-    console.log("Tests fails data : " + JSON.stringify(whereFail));
+    printDataFails();
   } else {
     if (testNum >= tests.length || testNum  < 0 ){
       console.log("Test number out of range, tests go from 0 to : ", 
@@ -124,6 +125,16 @@ async function main(){
     }
   }
   return ;
+}
+
+function printDataFails(){
+  let where = ["lexing", "parsing", "normalising", "evaluating"];
+  for (let i = 0; i < whereFail.length; i++){
+    if (whereFail[i].length > 0){
+      console.log("An error occured whilst " + where[i] + " for tests : " + 
+        whereFail[i]);
+    }
+  }
 }
 
 
@@ -153,7 +164,8 @@ function printOptions(){
  * @param {Int} testNb the number of the test to test
  * @param {Boolean} printTokens to print the tokens to the console
  * @param {Boolean} printAST to print the AST to the console
- * @param {Boolean} debug to show the rules taken by the parser
+ * @param {Boolean} DebugParse to show the rules taken by the parser
+ * @param {Boolean} DebugEval to show the functions taken by the evaluation
  * @param {Boolean} nosave to not save the newly generated AST
  * @param {Boolean} der show derivative tree instead of AST
  * @param {Boolean} verbose wether to show errors or not
@@ -264,12 +276,13 @@ function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
       activateDebugEval();
     }
 
-    initEvalComp(program)
-
-    if ( true ){ //=== program.expected){ TODO: add verifying function
+    let res = initEvalComp(program);
+    if (isGoodResult(program.expected, res, verbose)){
       if (verbose){
         console.log("Successful evaluation :) ");
       } 
+    } else {
+      throw new Error("Expected result is different than the one evaluated");
     }
 
   } catch (error) {
@@ -278,6 +291,40 @@ function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
     console.log(error);
     return false;
 
+  }
+  return true;
+}
+
+/**
+ * Determines if the result of evaluation is the same as the expected one
+ * @param {String} expected 
+ * @param {[String]} actual not really strings but whatever 
+ * @param {Boolean} verbose to print what failed
+ * @returns {Boolean}
+ */
+function isGoodResult(expected, actual, verbose){
+  expected = expected.split("\\n");
+
+  for (let i = 0; i < expected.length; i++ ){
+    expected[i] === expected[i].trimEnd();
+    if (expected[i] != actual[i]){
+      if ((expected[i] != actual[i].toString())){
+        if (verbose){
+          console.log(expected[i] + " != " + actual[i]);
+        }
+        return false;
+      }
+    }
+  }
+
+  if(expected.length !==  actual.length){
+    if (verbose){
+      console.log("expected result is of size " + expected.length + " and "
+        + " actual result is of size " + actual.length);
+      console.log("expected : " + expected);
+      console.log("actual result : " + actual);
+    }
+    return false;
   }
   return true;
 }

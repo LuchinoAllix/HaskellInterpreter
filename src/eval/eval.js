@@ -79,9 +79,8 @@ export function initEvalComp(program){
   evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
                            // other decl is added in the global env
 
-  execute(global_env.lookup("main")); 
+  return execute(global_env.lookup("main")); 
 
-  return true;
 }
 
 /**
@@ -484,16 +483,19 @@ function resetGlobalEnv(){
  */
 function execute(main_decl){
   debug("execution");
+  let res = []
   if (main_decl.type === "IO"){
-    main_decl.value.call();
+    let a = main_decl.value.call();
+    res.push(a);
   } else if (main_decl.type === "do"){
     for (let exp of main_decl.value){
-      execute(exp);
+      res = res.concat(execute(exp));
     }
   } else {
     throw new Error(
       "Only IO functions and 'do' statements can be given to main");
   }
+  return res;
 }
 
 /**

@@ -98,14 +98,16 @@ export class Env {
             let res = bord[0];
             for (let t of val.value){
               res += makeStr(t);
-              res += ", ";
+              res += ",";
             }
-            return res.slice(0,-2) + bord[1] ;
+            return res.slice(0,-1) + bord[1] ;
           } else {
             return val.value;
           }
         }
-        console.log(makeStr(a));
+        let str = makeStr(a);
+        console.log(str);
+        return str; // for verification pupuses
       }
     , 1));
 
