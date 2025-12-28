@@ -21,22 +21,19 @@ let printDebug = false; // for debug, edited in activateDebugEval
  * @param {String} text text to print 
  * @param {Boolean} val additional result to print
  */
-function debug(col, text, val){
+function debug(text, val){
   if(printDebug){
-    let name = val;
+    let name = JSON.stringify(val);
     try {
       let a = val.name;
-      let b = val.type;
       if (a !== undefined){
         name = a;
-      } 
-      if (b !== undefined){
-        name += " of type " + b;
+      } else {
+        let b = val.type
+        name = b;
       }
-    } catch(error){
-
-    }
-    console.log('%s\x1b[3' + col + 'm%s\x1b[0m', text, " " + name);
+    } catch(error){}
+    console.log(text, " " + name);
   }
 }
 
@@ -139,7 +136,7 @@ function output(output){
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){
-  debug(1, "evaluateDecl", decl);
+  debug("Decl", decl);
   if (decl.name === "main"){
     global_env.add(decl.name, evaluateExp(decl.branches[0], new Env()));
   } else {
@@ -157,7 +154,7 @@ function evaluateDecl(decl){
  * @returns {V.Value} or Prim in case of Curryfied function call
  */
 function evaluateExp(exp, env){
-  debug(1, "evaluateExp", exp);
+  debug("Exp", exp);
 
   switch (exp.type){
     
@@ -228,6 +225,7 @@ function evaluateFuncApp(exp, env){
  * @returns {V.Value}
  */
 function evaluateVar(exp, env){
+  debug("Var ", exp);
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable !== undefined){
     if (variable.metatype === "DECL"){
@@ -253,6 +251,7 @@ function evaluateVar(exp, env){
  * @returns {V.Value}
  */
 function evaluateDo(exp, env){
+  debug("Do", exp);
   let res = []
   for (let e of exp.exps){
     res = res.concat(evaluateExp(e, env));
@@ -270,6 +269,7 @@ function evaluateDo(exp, env){
  * @returns {V.Value}
  */
 function evaluateValue(exp){
+  debug("Value", exp);
   switch (exp.valueType){
     case "integer" :
       return new V.Vint(exp.value);
@@ -300,6 +300,7 @@ function evaluateValue(exp){
  * @returns {V.Value}
  */
 function evaluateCurFunctionApp(exp, env){
+  debug("Cur Function App", exp);
   let vfunc = evaluateExp(exp.func, env);
   if (vfunc.type === "func"){
     let closure = env.clone();
@@ -321,6 +322,7 @@ function evaluateCurFunctionApp(exp, env){
  * @returns {V.Value}
  */
 function evaluateIf(exp, env){
+  debug("If", exp);
   let cond = evaluateExp(exp.condition, env);
   if (cond.type !== "bool"){
     throw Error("Expression in if condition did not evaluate to boolean.");
@@ -344,10 +346,7 @@ function evaluateIf(exp, env){
  * @returns {V.Value}
  */
 function evaluateFunc(decl, args, env){
-  debug(1, "evaluateFunc", decl);
-  if (decl.type === "branch"){
-    decl = decl.branchBody;
-  }
+  debug("Func", decl);
 
   if (decl.isPrim() || decl.isPrimIO()){
     // For primitives, we can recursivly call with the given arguments, if 
@@ -421,7 +420,7 @@ function evaluateFunc(decl, args, env){
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, args, env){
-  debug(1, "evaluateFuncPM", func);
+  debug("Func PM", func);
   let evalArgs = new V.Vtuple(
     args.slice(0, func.nbArgs).map(x => evaluateExp(x, env)));
 
@@ -484,6 +483,7 @@ function resetGlobalEnv(){
  * @param {V.Vio} main_decl 
  */
 function execute(main_decl){
+  debug("execution");
   if (main_decl.type === "IO"){
     main_decl.value.call();
   } else if (main_decl.type === "do"){
@@ -503,7 +503,7 @@ function execute(main_decl){
  * @returns {V.Value}
  */
 function evaluateLet(exp, env){
-  debug(1, "evaluateLet", exp);
+  debug("Let", exp);
   for (let decl of exp.decls){
     env.add(decl.name, decl.branches[0], true);
     // Over writing decls that already exits, i'm not sure it's the best idea
@@ -522,7 +522,7 @@ function evaluateLet(exp, env){
  * @returns {V.Value}
  */
 function evaluateAFunctionApp(exp, env){
-  debug(1, "evaluateAFunctionApp", exp);
+  debug("A Function App", exp);
   if (exp.args.length === 0){
     if (exp.func.type === "LambdaExp"){
       return evaluateFunc(exp.func, [], env);
@@ -569,7 +569,7 @@ function evaluateAFunctionApp(exp, env){
  * @returns {V.Value}
  */
 function evaluateCase(exp, env){
-  debug(1, "evaluateCase", exp);
+  debug("Case", exp);
   let val = evaluateExp(exp.exp, env);
   for (let branch of exp.branches){
     let matches = match(val, branch.args[0]); 
@@ -598,6 +598,7 @@ function evaluateCase(exp, env){
  *                    # FIXME
  */
 function match(value, exp){
+  debug("match", exp);
   // we assume the pattern matching can only be on one element
   switch (exp.type){
 
@@ -690,7 +691,7 @@ function match(value, exp){
  * @returns {V.VList}
  */
 function evaluateListPatternExp(exp, env){
-  debug(1, "evaluateListPatternExp", exp);
+  debug("List Pattern Exp", exp);
   let newList = [];
   newList.push(evaluateExp(exp.head, env));
   if (exp.rest.type === "ListExp"){
