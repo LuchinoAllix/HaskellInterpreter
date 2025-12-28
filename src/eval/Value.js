@@ -35,7 +35,8 @@ export class Vstring extends Value {
 export class Vfunc extends Value {
 
   /**
-   * I don't think this will be used 
+   * Used in Curryfied function calls where we need to return a function that
+   * still waits for arguments
    * @param {function} value 
    */
   constructor(value){
@@ -73,6 +74,17 @@ export class Vtuple extends Value {
    */
   constructor(values){
     super("tuple", values)
+  }
+}
+
+export class Vdo extends Value {
+  
+  /**
+   * 
+   * @param {[Value]} values 
+   */
+  constructor(values){
+    super("do", values)
   }
 }
 

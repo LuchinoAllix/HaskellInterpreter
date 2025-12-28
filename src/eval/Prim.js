@@ -1,5 +1,5 @@
 import { Term } from "../normalize/Term.js";
-import { Vio } from "./Value.js";
+import { Vfunc, Vio } from "./Value.js";
 
 //--                   File for primitives object definition                --//
 
@@ -25,7 +25,7 @@ export class Prim extends Term {
    * if all the args are given, calls the function, except if it is
    * an IO one, in this case, returns a Vio
    * @param {[]} args 
-   * @returns {Value} // can return prim
+   * @returns {Value}
    */
   lambdaCall(args) {
     if (args.length > this.nbArgs) {
@@ -37,7 +37,7 @@ export class Prim extends Term {
         }
         return this.func();
       }
-      return this; // If we are still waiting for args
+      return new Vfunc(this); // If we are still waiting for args
 
     } else {
       let temp;
