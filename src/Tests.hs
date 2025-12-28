@@ -387,7 +387,7 @@ main = do print ((a 1 2) 3)
 
 --------------------------------------------------------------------------------
 -- Test 41         : currying
--- Expected result : 3
+-- Expected result : 6
 
 --/
 a = \x -> \y -> \z -> x + y + z
@@ -409,16 +409,22 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 43         : fonction funky pattern matching
--- Expected result : "fail" 
--- Todo gérer les fails 
+-- Test 43         : currying
+-- Expected result : 6
 
 --/
-func a "str" 0 True [] (a:b) = 1 
-
-main = do 
-          print (func 1) 
+main = do print (((\x -> \y -> \z -> x + y + z) 1 2) 3)
 --/
+
+--------------------------------------------------------------------------------
+-- Test 44         : currying
+-- Expected result : 6
+
+--/
+f a b = ((+ b) a)
+main = do print ((f 1) 3)
+--/
+
 
 --------------------------------------------------------------------------------
 -- Test 44         : currying et pattern matching
