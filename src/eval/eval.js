@@ -24,7 +24,6 @@ let printDebug = false; // for debug, edited in activateDebugEval
 function debug(col, text, val){
   if(printDebug){
     let name = val;
-    let type;
     try {
       let a = val.name;
       let b = val.type;
@@ -206,9 +205,10 @@ function evaluateExp(exp, env){
 }
 
 /**
- * todo
- * @param {*} exp 
- * @param {*} env 
+ * Evaluates a function application by looking up it's definition in the env and
+ * giving it it's arguments.
+ * @param {Exp} exp 
+ * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateFuncApp(exp, env){
@@ -221,9 +221,10 @@ function evaluateFuncApp(exp, env){
 }
 
 /**
- * todo
- * @param {*} exp 
- * @param {*} env 
+ * Evaluate a var by looking in the environment the value of the var, if it is
+ * not yet evaluated, the result will be
+ * @param {Exp} exp 
+ * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateVar(exp, env){
@@ -245,9 +246,10 @@ function evaluateVar(exp, env){
 }
 
 /**
- * todo
- * @param {*} exp 
- * @param {*} env 
+ * Evaluates a do expression by evaluating every statement individually and
+ * adding them to a Do value
+ * @param {Exp} exp 
+ * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateDo(exp, env){
@@ -263,8 +265,8 @@ function evaluateDo(exp, env){
 }
 
 /**
- * todo
- * @param {*} exp 
+ * Evaluate an expression that is only a value
+ * @param {Exp} exp 
  * @returns {V.Value}
  */
 function evaluateValue(exp){
@@ -289,9 +291,12 @@ function evaluateValue(exp){
 }
 
 /**
- * todo
- * @param {*} exp 
- * @param {*} env 
+ * Evaluates a curryfied expression
+ * A curryfied expression has an expression and some arguments, so it first
+ * evaluates the expression waiting for arguments and then evaluates the whole
+ * with the "extra" arguments
+ * @param {Exp} exp 
+ * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateCurFunctionApp(exp, env){
@@ -309,9 +314,10 @@ function evaluateCurFunctionApp(exp, env){
 }
 
 /**
- * todo
- * @param {*} exp 
- * @param {*} env 
+ * Evaluate an if expression by first testing the condition, if it is a boolean
+ * then it returns the evaluation of the corresponding branch
+ * @param {Exp} exp an if expression
+ * @param {Env} env the environement 
  * @returns {V.Value}
  */
 function evaluateIf(exp, env){
@@ -340,10 +346,16 @@ function evaluateFunc(decl, args, env){
   }
 
   if (decl.isPrim() || decl.isPrimIO()){
-    // We assume that evalExp returns a list of one element (no do in args)
+    // For primitives, we can recursivly call with the given arguments, if 
+    // enough are given we have an actual value / IO, if not we have a Vfunc 
+    // value, which are required by currified calls
     return decl.lambdaCall(args.map(x => evaluateExp(x, env)));
   }
 
+  // In case of a LambdaExp, if we have arguments we can simply evaluate it 
+  // through anonymous function evaluation with the arguments, if not we add the
+  // args to the Vfunc which the curryfication will handle (we should not be in
+  // else statement if the call doesn't originate from the curr func eval)
   if (decl.type === "LambdaExp"){
     if (args.length > 0){
       return evaluateAFunctionApp(new AFunctionApp(args, decl), env);
