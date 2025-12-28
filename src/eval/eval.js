@@ -54,18 +54,34 @@ export function activateDebugEval(){
  * @returns {Boolean}
  */
 export function initEvalComp(program){
+  
   resetGlobalEnv();
+  
   let terms = program.normalizedForm;
+  let main_decl;
+  
   if (terms.constructor !== Array){ // because if there is only main
     terms = [terms];
   }
+
   for (let term of terms){
+    
     if (term.metatype === "EXP"){
       throw Error("In succesion of terms at toplevel, only declarations " + 
         "are allowed.");
+    } 
+    
+    else if (term.name === "main"){
+      main_decl = term;
+    } 
+
+    else {
+      evaluateDecl(term);
     }
-    evaluateDecl(term);
   }
+
+  evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
+                           // other decl is added in the global env
 
   execute(global_env.lookup("main")); 
 
@@ -121,7 +137,6 @@ function output(output){
  *    considered expressions.
  *  - We assume that there can be no declarations inside main, there can be 
  *    'inless' let's but they are considered expressions.
- * FIXME : if main is declared before other functions, this will not work
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){
