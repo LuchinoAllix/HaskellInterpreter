@@ -1,7 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
-import { AFunctionApp, Exp, FunctionApp, TupleExp } from "../normalize/Exp.js";
+import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 
 
@@ -152,7 +152,7 @@ function evaluateDecl(decl){
  * Returns a list of the values evaluated
  * can take as argument a value because in case, we need to evaluate before 
  * giving it as an argument 
- * @param {Exp} exp
+ * @param {E.Exp} exp
  * @param {Env} env 
  * @returns {V.Value} or Prim in case of Curryfied function call
  */
@@ -207,7 +207,7 @@ function evaluateExp(exp, env){
 /**
  * Evaluates a function application by looking up it's definition in the env and
  * giving it it's arguments.
- * @param {Exp} exp 
+ * @param {Decl} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -223,7 +223,7 @@ function evaluateFuncApp(exp, env){
 /**
  * Evaluate a var by looking in the environment the value of the var, if it is
  * not yet evaluated, the result will be
- * @param {Exp} exp 
+ * @param {E.VarExp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -248,7 +248,7 @@ function evaluateVar(exp, env){
 /**
  * Evaluates a do expression by evaluating every statement individually and
  * adding them to a Do value
- * @param {Exp} exp 
+ * @param {E.DoExp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -266,7 +266,7 @@ function evaluateDo(exp, env){
 
 /**
  * Evaluate an expression that is only a value
- * @param {Exp} exp 
+ * @param {E.ValExp} exp 
  * @returns {V.Value}
  */
 function evaluateValue(exp){
@@ -295,7 +295,7 @@ function evaluateValue(exp){
  * A curryfied expression has an expression and some arguments, so it first
  * evaluates the expression waiting for arguments and then evaluates the whole
  * with the "extra" arguments
- * @param {Exp} exp 
+ * @param {E.CurFunctionApp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -316,7 +316,7 @@ function evaluateCurFunctionApp(exp, env){
 /**
  * Evaluate an if expression by first testing the condition, if it is a boolean
  * then it returns the evaluation of the corresponding branch
- * @param {Exp} exp an if expression
+ * @param {E.IfExp} exp an if expression
  * @param {Env} env the environement 
  * @returns {V.Value}
  */
@@ -332,10 +332,14 @@ function evaluateIf(exp, env){
 }
 
 /**
- * Executes a function that is defined
- * If it's a primitive function (+, print, ... ) recursively curryfies it 
+ * Executes a function that is given (not the name, the actual body) 
+ * with it's arguments
+ * If it's a primitive function (+, print, ... ) recursively curryfies it
+ * If it's a manually defined function, if it has pattern matching, 
+ * evaluateFuncPM manages it. If not, depending on if arguments are still 
+ * needed or not, is curryfied / evaluated
  * @param {Term} decl 
- * @param {[Exp]} args 
+ * @param {[E.Exp]} args 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -358,7 +362,7 @@ function evaluateFunc(decl, args, env){
   // else statement if the call doesn't originate from the curr func eval)
   if (decl.type === "LambdaExp"){
     if (args.length > 0){
-      return evaluateAFunctionApp(new AFunctionApp(args, decl), env);
+      return evaluateAFunctionApp(new E.AFunctionApp(args, decl), env);
     }
     else {
       return new V.Vfunc(decl, env, args);
@@ -412,7 +416,7 @@ function evaluateFunc(decl, args, env){
  * There can be more args than required for currying
  * Implicitly converts args as a tuple to use the same pattern matching as cases
  * @param {Term} func 
- * @param {[Exp]} args 
+ * @param {[E.Exp]} args 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -422,7 +426,7 @@ function evaluateFuncPM(func, args, env){
     args.slice(0, func.nbArgs).map(x => evaluateExp(x, env)));
 
   for (let branch of func.branches){
-    let patterns = new TupleExp(branch.args);
+    let patterns = new E.TupleExp(branch.args);
     let matches = match(evalArgs, patterns);
     if (matches.length > 0 && matches[0] !== -1){
       let closure = env.clone();
@@ -493,8 +497,8 @@ function execute(main_decl){
 }
 
 /**
- * Evaluates an let exp (if is has an in part, if not breaks)
- * @param {LetExp} exp 
+ * Evaluates a let exp (if is has an in part, if not it won't work)
+ * @param {E.LetExp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
@@ -510,8 +514,10 @@ function evaluateLet(exp, env){
 }
 
 /**
- * todo
- * @param {Exp} exp 
+ * Evaluates an anonymous function by recursion until no more arguments needs
+ * to be added to the closure, then it is evaluated by eval exp or func 
+ * depending on the type of the function
+ * @param {E.AFunctionApp} exp 
  * @param {Env} env
  * @returns {V.Value}
  */
@@ -555,8 +561,10 @@ function evaluateAFunctionApp(exp, env){
 }
 
 /**
- * todo
- * @param {Exp} exp 
+ * Evaluates a case by determining which case needs to be chosen (with match)
+ * and returning the evaluation of the correspong branch with the updated 
+ * closure
+ * @param {E.CaseExp} exp 
  * @param {Env} env
  * @returns {V.Value}
  */
@@ -580,10 +588,14 @@ function evaluateCase(exp, env){
 }
 
 /**
- * todo
+ * Determines if a given value matches a given pattern, if so returns a list 
+ * (that can be empty) of pairs variable to values, if not, returns the list
+ * [-1]
  * @param {V.Value} value 
- * @param {Exp} exp 
- * @returns {[[Exp]]}
+ * @param {E.Exp} exp 
+ * @returns {[[E.Exp]]} # the return type is more [(VarExp, Value)] but since 
+ *                    # pairs don't exists in js, perhaps converting to a dict ?
+ *                    # FIXME
  */
 function match(value, exp){
   // we assume the pattern matching can only be on one element
@@ -672,10 +684,10 @@ function match(value, exp){
 
 
 /**
- * TODO
- * @param {*} exp 
- * @param {*} env 
- * @returns 
+ * Evalues a list pattern like (1 : 2 : [3,4]) to [1,2,3,4]
+ * @param {E.ListPatternTerm} exp 
+ * @param {Env} env 
+ * @returns {V.VList}
  */
 function evaluateListPatternExp(exp, env){
   debug(1, "evaluateListPatternExp", exp);
