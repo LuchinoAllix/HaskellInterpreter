@@ -140,12 +140,12 @@ function evaluateDecl(decl){
  * giving it as an argument 
  * @param {Exp} exp or V.Value, not ideal but not problematic
  * @param {Env} env 
- * @returns {[V.Value]}
+ * @returns {V.Value}
  */
 function evaluateExp(exp, env){
   debug(1, "evaluateExp", exp);
   if (exp.metatype === "VALUE"){
-    return [exp];
+    return exp;
   }
 
   switch (exp.type){
@@ -153,7 +153,7 @@ function evaluateExp(exp, env){
     case "functionApp" :
       let f = lookupGlobalLocal(env, exp.name);
       if (f !== undefined){
-        return [evaluateFunc(f, exp.args, env)];
+        return evaluateFunc(f, exp.args, env);
       } else {
         throw Error("function " + exp.name + " is undefined");
       }
@@ -181,23 +181,23 @@ function evaluateExp(exp, env){
                   // branches of a do expression
                   // Is this true ? #HELP
       }
-      return res;
+      return new V.Vdo(res);
     
     case "value" :
 
       switch (exp.valueType){
         case "integer" :
-          return [new V.Vint(exp.value)];
+          return new V.Vint(exp.value);
     
         case "String" :
-          return [new V.Vstring(exp.value)];
+          return new V.Vstring(exp.value);
 
         case "Boolean" :
-          return [new V.Vbool(exp.value)];
+          return new V.Vbool(exp.value);
 
         case "Special" :
           if (isMTArray(exp.value)){
-            return [new V.VList([])];
+            return new V.VList([]);
           }
 
         default :
@@ -209,7 +209,7 @@ function evaluateExp(exp, env){
 
     case "if" :
       // we suppose evaluateExp returns a list of one element
-      let cond = evaluateExp(exp.condition, env)[0];
+      let cond = evaluateExp(exp.condition, env);
       if (cond.type !== "bool"){
         throw Error("Expression in if condition did not evaluate to boolean.");
       } else if (cond.value){
@@ -219,14 +219,14 @@ function evaluateExp(exp, env){
       }
 
     case "TupleExp" :
-      return [new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)[0]))];
+      return new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)));
 
     case "ListExp" :
-      return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
+      return new V.VList(exp.elems.map(x => evaluateExp(x,env)));
 
     case "curFunctionApp" :
-      let a = evaluateExp(exp.func, env)[0]
-      return [evaluateFunc(a, exp.args, env)];
+      let a = evaluateExp(exp.func, env)
+      return evaluateFunc(a, exp.args, env);
 
     case "case" :
       return evaluateCase(exp, env);
@@ -255,11 +255,11 @@ function evaluateFunc(decl, args, env){
   }
   if (decl.isPrim() || decl.isPrimIO()){
     // We assume that evalExp returns a list of one element (no do in args)
-    return decl.lambdaCall(args.map(x => evaluateExp(x, env)[0]));
+    return decl.lambdaCall(args.map(x => evaluateExp(x, env)));
   }
 
   if (decl.type === "LambdaExp"){
-    return evaluateExp(new AFunctionApp(args, decl), env)[0];
+    return evaluateExp(new AFunctionApp(args, decl), env);
   }
 
   // We can assume we have a manually declared function call
@@ -271,7 +271,7 @@ function evaluateFunc(decl, args, env){
 
   if (func.nbArgs === null){
     if (args.length === 0){
-      return evaluateExp(func.branches[0], env)[0];
+      return evaluateExp(func.branches[0], env);
     } else { // We assume func.branches[0] is a function waiting for arguments
       // could this loop indefinetly ? because if we have a recursive func that
       // doesn't require args so nbargs is null but some arguments are given
@@ -314,9 +314,9 @@ function evaluateFunc(decl, args, env){
  */
 function evaluateFuncPM(func, args, env){
   debug(1, "evaluateFuncPM", func);
-  console.log(func)
-  let evalArgs = new V.Vtuple(args.slice(0, func.nbArgs).map(x => 
-    evaluateExp(x, env)[0]));
+  let evalArgs = new V.Vtuple(
+    args.slice(0, func.nbArgs).map(x => evaluateExp(x, env)));
+
   for (let branch of func.branches){
     let patterns = new TupleExp(branch.args);
     let matches = match(evalArgs, patterns);
@@ -333,10 +333,10 @@ function evaluateFuncPM(func, args, env){
       }
 
       if (branch.type === "LambdaExp"){
-        return evaluateExp(branch.body, closure)[0];
+        return evaluateExp(branch.body, closure);
       }
       
-      return evaluateExp(branch.branchBody, closure)[0];
+      return evaluateExp(branch.branchBody, closure);
     }
 
   }
@@ -373,14 +373,18 @@ function resetGlobalEnv(){
 
 /**
  * Function to actually run the program, with all IO functions
- * @param {[V.Vio]} main_decl 
+ * @param {V.Vio} main_decl 
  */
 function execute(main_decl){
-  for (let exp of main_decl){
-    if (exp.type !== "IO"){
-      throw new Error("Only IO functions can be given to main");
+  if (main_decl.type === "IO"){
+    main_decl.value.call();
+  } else if (main_decl.type === "do"){
+    for (let exp of main_decl.value){
+      execute(exp);
     }
-    exp.value.call();
+  } else {
+    throw new Error(
+      "Only IO functions and 'do' statements can be given to main");
   }
 }
 
@@ -388,7 +392,7 @@ function execute(main_decl){
  * Evaluates an let exp (if is has an in part, if not breaks)
  * @param {LetExp} exp 
  * @param {Env} env 
- * @returns {[V.Value]}
+ * @returns {V.Value}
  */
 function evaluateLet(exp, env){
   debug(1, "evaluateLet", exp);
@@ -405,7 +409,7 @@ function evaluateLet(exp, env){
  * todo
  * @param {Exp} exp 
  * @param {Env} env
- * @returns {[V.Value]}
+ * @returns {V.Value}
  */
 function evaluateAFunctionApp(exp, env){
   debug(1, "evaluateAFunctionApp", exp);
@@ -450,11 +454,11 @@ function evaluateAFunctionApp(exp, env){
  * todo
  * @param {Exp} exp 
  * @param {Env} env
- * @returns {[V.Value]}
+ * @returns {V.Value}
  */
 function evaluateCase(exp, env){
   debug(1, "evaluateCase", exp);
-  let val = evaluateExp(exp.exp, env)[0];
+  let val = evaluateExp(exp.exp, env);
   for (let branch of exp.branches){
     let matches = match(val, branch.args[0]); 
     if (matches.length >= 1 && matches[0] !== -1){
@@ -523,8 +527,6 @@ function match(value, exp){
       return [[]];
 
     case "ListPatternExp" :
-      //console.log(value);
-      //console.log(exp)
       if (value.type !== "list" || value.value.length <= 0){
         throw new Error("A list pattern in a case requires a list with at " + 
           "least one element :" + value.value );
@@ -574,17 +576,17 @@ function match(value, exp){
 function evaluateListPatternExp(exp, env){
   debug(1, "evaluateListPatternExp", exp);
   let newList = [];
-  newList.push(evaluateExp(exp.head, env)[0]);
+  newList.push(evaluateExp(exp.head, env));
   if (exp.rest.type === "ListExp"){
-    newList = newList.concat(evaluateExp(exp.rest, env)[0].value);
+    newList = newList.concat(evaluateExp(exp.rest, env).value);
   } else if (!isMTArray(exp.rest.value)){
     let tmp = evaluateExp(exp.rest, env);
-    if (tmp[0].type === "list"){
-      tmp = tmp[0].value;
+    if (tmp.type === "list"){
+      tmp = tmp.value;
     }
     newList = newList.concat(tmp);
   }
-  return [new V.VList(newList)];
+  return new V.VList(newList);
 }
 
 

@@ -30,11 +30,26 @@
               "column": null,
               "childs": [
                 {
-                  "type": "Qvarid",
-                  "value": "a",
-                  "line": 1,
-                  "column": 1,
-                  "childs": null
+                  "type": "funlhs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Qvarid",
+                      "value": "reverse",
+                      "line": 1,
+                      "column": 1,
+                      "childs": null
+                    },
+                    {
+                      "type": "Special",
+                      "value": "[]",
+                      "line": 1,
+                      "column": 9,
+                      "childs": null
+                    }
+                  ]
                 },
                 {
                   "type": "rhs",
@@ -46,15 +61,199 @@
                       "type": "reservdop",
                       "value": "=",
                       "line": 1,
-                      "column": 3,
+                      "column": 12,
                       "childs": null
                     },
                     {
-                      "type": "integer",
-                      "value": "1",
+                      "type": "Special",
+                      "value": "[]",
                       "line": 1,
-                      "column": 5,
+                      "column": 14,
                       "childs": null
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "layout  f",
+              "value": ";",
+              "line": -1,
+              "column": -1,
+              "childs": null
+            },
+            {
+              "type": "decl",
+              "value": null,
+              "line": null,
+              "column": null,
+              "childs": [
+                {
+                  "type": "funlhs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Qvarid",
+                      "value": "reverse",
+                      "line": 2,
+                      "column": 1,
+                      "childs": null
+                    },
+                    {
+                      "type": "apat",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "Special",
+                          "value": "(",
+                          "line": 2,
+                          "column": 9,
+                          "childs": null
+                        },
+                        {
+                          "type": "pat",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Qvarid",
+                              "value": "head",
+                              "line": 2,
+                              "column": 10,
+                              "childs": null
+                            },
+                            {
+                              "type": "reservdop",
+                              "value": ":",
+                              "line": 2,
+                              "column": 15,
+                              "childs": null
+                            },
+                            {
+                              "type": "Qvarid",
+                              "value": "rest",
+                              "line": 2,
+                              "column": 17,
+                              "childs": null
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Special",
+                          "value": ")",
+                          "line": 2,
+                          "column": 21,
+                          "childs": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "rhs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "reservdop",
+                      "value": "=",
+                      "line": 2,
+                      "column": 23,
+                      "childs": null
+                    },
+                    {
+                      "type": "infixexp",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "aexp_",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Special",
+                              "value": "(",
+                              "line": 2,
+                              "column": 25,
+                              "childs": null
+                            },
+                            {
+                              "type": "fexp",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "Qvarid",
+                                  "value": "reverse",
+                                  "line": 2,
+                                  "column": 26,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "Qvarid",
+                                  "value": "rest",
+                                  "line": 2,
+                                  "column": 34,
+                                  "childs": null
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Special",
+                              "value": ")",
+                              "line": 2,
+                              "column": 38,
+                              "childs": null
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Qvarsym",
+                          "value": "++",
+                          "line": 2,
+                          "column": 40,
+                          "childs": null
+                        },
+                        {
+                          "type": "aexp_",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Special",
+                              "value": "[",
+                              "line": 2,
+                              "column": 43,
+                              "childs": null
+                            },
+                            {
+                              "type": "Qvarid",
+                              "value": "head",
+                              "line": 2,
+                              "column": 44,
+                              "childs": null
+                            },
+                            {
+                              "type": "Special",
+                              "value": "]",
+                              "line": 2,
+                              "column": 48,
+                              "childs": null
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -76,7 +275,7 @@
                 {
                   "type": "Qvarid",
                   "value": "main",
-                  "line": 2,
+                  "line": 3,
                   "column": 1,
                   "childs": null
                 },
@@ -89,173 +288,122 @@
                     {
                       "type": "reservdop",
                       "value": "=",
-                      "line": 2,
+                      "line": 3,
                       "column": 6,
                       "childs": null
                     },
                     {
-                      "type": "fexp",
+                      "type": "lexp",
                       "value": null,
                       "line": null,
                       "column": null,
                       "childs": [
                         {
-                          "type": "Qvarid",
-                          "value": "print",
-                          "line": 2,
+                          "type": "reservdid",
+                          "value": "do",
+                          "line": 3,
                           "column": 8,
                           "childs": null
                         },
                         {
-                          "type": "aexp_",
+                          "type": "layout 8",
+                          "value": "{",
+                          "line": -1,
+                          "column": -1,
+                          "childs": null
+                        },
+                        {
+                          "type": "fexp",
                           "value": null,
                           "line": null,
                           "column": null,
                           "childs": [
                             {
-                              "type": "Special",
-                              "value": "(",
-                              "line": 2,
-                              "column": 14,
+                              "type": "Qvarid",
+                              "value": "print",
+                              "line": 3,
+                              "column": 11,
                               "childs": null
                             },
                             {
-                              "type": "lexp",
+                              "type": "aexp_",
                               "value": null,
                               "line": null,
                               "column": null,
                               "childs": [
                                 {
-                                  "type": "reservdid",
-                                  "value": "case",
+                                  "type": "Special",
+                                  "value": "(",
                                   "line": 3,
-                                  "column": 11,
+                                  "column": 17,
                                   "childs": null
                                 },
                                 {
-                                  "type": "Qvarid",
-                                  "value": "a",
-                                  "line": 3,
-                                  "column": 16,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "reservdid",
-                                  "value": "of",
-                                  "line": 3,
-                                  "column": 18,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "layout 8",
-                                  "value": "{",
-                                  "line": -1,
-                                  "column": -1,
-                                  "childs": null
-                                },
-                                {
-                                  "type": "alts",
+                                  "type": "fexp",
                                   "value": null,
                                   "line": null,
                                   "column": null,
                                   "childs": [
                                     {
-                                      "type": "alt",
-                                      "value": null,
-                                      "line": null,
-                                      "column": null,
-                                      "childs": [
-                                        {
-                                          "type": "integer",
-                                          "value": "0",
-                                          "line": 4,
-                                          "column": 19,
-                                          "childs": null
-                                        },
-                                        {
-                                          "type": "reservdop",
-                                          "value": "->",
-                                          "line": 4,
-                                          "column": 21,
-                                          "childs": null
-                                        },
-                                        {
-                                          "type": "String",
-                                          "value": "\"zero\"",
-                                          "line": 4,
-                                          "column": 24,
-                                          "childs": null
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "layout  f",
-                                      "value": ";",
-                                      "line": -1,
-                                      "column": -1,
+                                      "type": "Qvarid",
+                                      "value": "reverse",
+                                      "line": 3,
+                                      "column": 18,
                                       "childs": null
                                     },
                                     {
-                                      "type": "alt",
+                                      "type": "aexp_",
                                       "value": null,
                                       "line": null,
                                       "column": null,
                                       "childs": [
+                                        {
+                                          "type": "Special",
+                                          "value": "[",
+                                          "line": 3,
+                                          "column": 26,
+                                          "childs": null
+                                        },
                                         {
                                           "type": "integer",
                                           "value": "1",
-                                          "line": 5,
-                                          "column": 19,
+                                          "line": 3,
+                                          "column": 27,
                                           "childs": null
                                         },
                                         {
-                                          "type": "reservdop",
-                                          "value": "->",
-                                          "line": 5,
-                                          "column": 21,
+                                          "type": "Special",
+                                          "value": ",",
+                                          "line": 3,
+                                          "column": 28,
                                           "childs": null
                                         },
                                         {
-                                          "type": "String",
-                                          "value": "\"one\"",
-                                          "line": 5,
-                                          "column": 24,
-                                          "childs": null
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "layout  f",
-                                      "value": ";",
-                                      "line": -1,
-                                      "column": -1,
-                                      "childs": null
-                                    },
-                                    {
-                                      "type": "alt",
-                                      "value": null,
-                                      "line": null,
-                                      "column": null,
-                                      "childs": [
-                                        {
-                                          "type": "reservdid",
-                                          "value": "_",
-                                          "line": 6,
-                                          "column": 19,
+                                          "type": "integer",
+                                          "value": "2",
+                                          "line": 3,
+                                          "column": 29,
                                           "childs": null
                                         },
                                         {
-                                          "type": "reservdop",
-                                          "value": "->",
-                                          "line": 6,
-                                          "column": 21,
+                                          "type": "Special",
+                                          "value": ",",
+                                          "line": 3,
+                                          "column": 30,
                                           "childs": null
                                         },
                                         {
-                                          "type": "String",
-                                          "value": "\"number higher than 1\"",
-                                          "line": 6,
-                                          "column": 24,
+                                          "type": "integer",
+                                          "value": "3",
+                                          "line": 3,
+                                          "column": 31,
+                                          "childs": null
+                                        },
+                                        {
+                                          "type": "Special",
+                                          "value": "]",
+                                          "line": 3,
+                                          "column": 32,
                                           "childs": null
                                         }
                                       ]
@@ -263,22 +411,22 @@
                                   ]
                                 },
                                 {
-                                  "type": "layout 5",
-                                  "value": "}",
-                                  "line": -1,
-                                  "column": -1,
+                                  "type": "Special",
+                                  "value": ")",
+                                  "line": 3,
+                                  "column": 33,
                                   "childs": null
                                 }
                               ]
-                            },
-                            {
-                              "type": "Special",
-                              "value": ")",
-                              "line": 7,
-                              "column": 15,
-                              "childs": null
                             }
                           ]
+                        },
+                        {
+                          "type": "layout 4",
+                          "value": "}",
+                          "line": -1,
+                          "column": -1,
+                          "childs": null
                         }
                       ]
                     }
