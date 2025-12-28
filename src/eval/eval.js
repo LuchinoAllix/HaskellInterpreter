@@ -1,7 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
-import { AFunctionApp, Exp, TupleExp } from "../normalize/Exp.js";
+import { AFunctionApp, Exp, FunctionApp, TupleExp } from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 
 
@@ -159,7 +159,7 @@ function evaluateExp(exp, env){
       }
     
     case "aFunctionApp" :
-      return evaluateLambda(exp, env);
+      return evaluateAFunctionApp(exp, env);
 
     case "var" :
       let variable = lookupGlobalLocal(env, exp.name);
@@ -225,7 +225,8 @@ function evaluateExp(exp, env){
       return [new V.VList(exp.elems.map(x => evaluateExp(x,env)[0]))];
 
     case "curFunctionApp" :
-        return [evaluateFunc(evaluateExp(exp.func, env)[0], exp.args, env)];
+      let a = evaluateExp(exp.func, env)[0]
+      return [evaluateFunc(a, exp.args, env)];
 
     case "case" :
       return evaluateCase(exp, env);
@@ -234,6 +235,7 @@ function evaluateExp(exp, env){
       return evaluateListPatternExp(exp, env);
  
     default :
+    console.log(JSON.stringify(exp, null, 2))
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
@@ -405,10 +407,13 @@ function evaluateLet(exp, env){
  * @param {Env} env
  * @returns {[V.Value]}
  */
-function evaluateLambda(exp, env){
-  debug(1, "evaluateLambda", exp);
+function evaluateAFunctionApp(exp, env){
+  debug(1, "evaluateAFunctionApp", exp);
   if (exp.args.length === 0){
-    return evaluateExp(exp.func.body, env);
+    if (exp.type === "LambdaExp"){
+      return 
+    }
+    return evaluateExp(exp.func, env);
   } else {
     let closure = env.clone();
     if (exp.args[0].type === "TupleExp"){
@@ -428,6 +433,14 @@ function evaluateLambda(exp, env){
       closure.add(exp.func.args[0].name, exp.args[0], true);
       exp.args.shift();
       exp.func.args.shift();
+    }
+    if (exp.func.args.length === 0){
+      if (exp.func.type === "LambdaExp"){
+        exp.func = exp.func.body;
+      }
+      else {
+        throw new Error("Unhandeled case in Lambda Exp evaluation");
+      }
     }
     return evaluateExp(exp, closure);
   }
