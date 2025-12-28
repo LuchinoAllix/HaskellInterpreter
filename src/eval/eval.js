@@ -155,7 +155,7 @@ function evaluateDecl(decl){
  * giving it as an argument 
  * @param {Exp} exp
  * @param {Env} env 
- * @returns {V.Value}
+ * @returns {V.Value} or Prim in case of Curryfied function call
  */
 function evaluateExp(exp, env){
   debug(1, "evaluateExp", exp);
@@ -163,78 +163,25 @@ function evaluateExp(exp, env){
   switch (exp.type){
     
     case "functionApp" :
-      let f = lookupGlobalLocal(env, exp.name);
-      if (f !== undefined){
-        return evaluateFunc(f, exp.args, env);
-      } else {
-        throw Error("function " + exp.name + " is undefined");
-      }
+      return evaluateFuncApp(exp, env);
     
     case "aFunctionApp" :
       return evaluateAFunctionApp(exp, env);
 
     case "var" :
-      let variable = lookupGlobalLocal(env, exp.name);
-      if (variable !== undefined){
-        if (variable.metatype === "DECL"){
-          return evaluateExp(variable.branches[0], env);
-        } else if (variable.metatype === "EXP"){
-          return evaluateExp(variable, env);
-        } else if (variable.metatype === "VALUE"){
-          return variable;
-        } else {
-          throw new Error("variable " + exp.name + " of metatype " + 
-            variable.metatype + "is not handeled");
-        }
-      } else {
-        throw new Error("variable " + exp.name + " is undefined");
-      }
+      return evaluateVar(exp, env);
 
     case "do" :
-      let res = []
-      for (let e of exp.exps){
-        res = res.concat(evaluateExp(e, env));
-        env = new Env(); 
-                  // Reseting the env because it is not kept in different 
-                  // branches of a do expression
-                  // Is this true ? #HELP
-      }
-      return new V.Vdo(res);
+      return evaluateDo(exp, env);
     
     case "value" :
-
-      switch (exp.valueType){
-        case "integer" :
-          return new V.Vint(exp.value);
-    
-        case "String" :
-          return new V.Vstring(exp.value);
-
-        case "Boolean" :
-          return new V.Vbool(exp.value);
-
-        case "Special" :
-          if (isMTArray(exp.value)){
-            return new V.VList([]);
-          }
-
-        default :
-          throw Error("value type not yet managed in eval : " + exp.valueType);
-      }
+      return evaluateValue(exp);
     
     case "let" :
       return evaluateLet(exp, env);
 
     case "if" :
-      // we suppose evaluateExp returns a list of one element
-      let cond = evaluateExp(exp.condition, env);
-      if (cond.type !== "bool"){
-        throw Error("Expression in if condition did not evaluate to boolean.");
-      } else if (cond.value){
-        return evaluateExp(exp.success, env);
-      } else {
-        return evaluateExp(exp.fail, env);
-      }
+      return evaluateIf(exp, env);
 
     case "TupleExp" :
       return new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)));
@@ -243,8 +190,7 @@ function evaluateExp(exp, env){
       return new V.VList(exp.elems.map(x => evaluateExp(x,env)));
 
     case "curFunctionApp" :
-      let a = evaluateExp(exp.func, env)
-      return evaluateFunc(a, exp.args, env);
+      return evaluateCurFunctionApp(exp, env);
 
     case "case" :
       return evaluateCase(exp, env);
@@ -253,14 +199,131 @@ function evaluateExp(exp, env){
       return evaluateListPatternExp(exp, env);
  
     default :
-    console.log(JSON.stringify(exp, null, 2))
+      onsole.log(JSON.stringify(exp, null, 2))
       throw Error("exp not yet managed in eval : " + exp.type);
     
   }
 }
 
 /**
- * Executes a function 
+ * todo
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns {V.Value}
+ */
+function evaluateFuncApp(exp, env){
+  let f = lookupGlobalLocal(env, exp.name);
+  if (f !== undefined){
+    return evaluateFunc(f, exp.args, env);
+  } else {
+    throw Error("function " + exp.name + " is undefined");
+  }
+}
+
+/**
+ * todo
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns {V.Value}
+ */
+function evaluateVar(exp, env){
+  let variable = lookupGlobalLocal(env, exp.name);
+  if (variable !== undefined){
+    if (variable.metatype === "DECL"){
+      return evaluateExp(variable.branches[0], env);
+    } else if (variable.metatype === "EXP"){
+      return evaluateExp(variable, env);
+    } else if (variable.metatype === "VALUE"){
+      return variable;
+    } else {
+      throw new Error("variable " + exp.name + " of metatype " + 
+        variable.metatype + "is not handeled");
+    }
+  } else {
+    throw new Error("variable " + exp.name + " is undefined");
+  }
+}
+
+/**
+ * todo
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns {V.Value}
+ */
+function evaluateDo(exp, env){
+  let res = []
+  for (let e of exp.exps){
+    res = res.concat(evaluateExp(e, env));
+    env = new Env(); 
+              // Reseting the env because it is not kept in different 
+              // branches of a do expression
+              // Is this true ? #HELP
+  }
+  return new V.Vdo(res);
+}
+
+/**
+ * todo
+ * @param {*} exp 
+ * @returns {V.Value}
+ */
+function evaluateValue(exp){
+  switch (exp.valueType){
+    case "integer" :
+      return new V.Vint(exp.value);
+
+    case "String" :
+      return new V.Vstring(exp.value);
+
+    case "Boolean" :
+      return new V.Vbool(exp.value);
+
+    case "Special" :
+      if (isMTArray(exp.value)){
+        return new V.VList([]);
+      }
+
+    default :
+      throw Error("value type not yet managed in eval : " + exp.valueType);
+  }
+}
+
+/**
+ * todo
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns {V.Value}
+ */
+function evaluateCurFunctionApp(exp, env){
+  let vfunc = evaluateExp(exp.func, env);
+  if (vfunc.type === "func"){
+    return evaluateFunc(vfunc.value, exp.args, env);
+  }
+  else {
+    throw new Error("Unhandeled case in curified function app : " + vfunc);
+  }
+}
+
+/**
+ * todo
+ * @param {*} exp 
+ * @param {*} env 
+ * @returns {V.Value}
+ */
+function evaluateIf(exp, env){
+  let cond = evaluateExp(exp.condition, env);
+  if (cond.type !== "bool"){
+    throw Error("Expression in if condition did not evaluate to boolean.");
+  } else if (cond.value){
+    return evaluateExp(exp.success, env);
+  } else {
+    return evaluateExp(exp.fail, env);
+  }
+}
+
+/**
+ * Executes a function that is defined
+ * If it's a primitive function (+, print, ... ) recursively curryfies it 
  * @param {Term} decl 
  * @param {[Exp]} args 
  * @param {Env} env 
@@ -318,7 +381,6 @@ function evaluateFunc(decl, args, env){
     }
   }
 }
-
 
 /**
  * Executes a function that requires pattern matching
@@ -433,7 +495,7 @@ function evaluateAFunctionApp(exp, env){
   debug(1, "evaluateAFunctionApp", exp);
   if (exp.args.length === 0){
     if (exp.type === "LambdaExp"){
-      return 
+      throw new Error("todo")
     }
     return evaluateExp(exp.func, env);
   } else {
