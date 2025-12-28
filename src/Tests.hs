@@ -427,7 +427,7 @@ main = do print ((f 1) 3)
 
 
 --------------------------------------------------------------------------------
--- Test 44         : currying et pattern matching
+-- Test 45         : currying et pattern matching
 -- Expected result : 3 
 
 --/
@@ -438,7 +438,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 45         : paire
+-- Test 46         : paire
 -- Expected result : (1,2) 
 
 --/
@@ -446,7 +446,7 @@ main = print (1,2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 46         : fst primitive
+-- Test 47         : fst primitive
 -- Expected result : 1
 
 --/
@@ -454,7 +454,7 @@ main = print ( fst (1, 2) )
 --/
 
 --------------------------------------------------------------------------------
--- Test 47         : embeded pairs
+-- Test 48         : embeded pairs
 -- Expected result : (1, (2,3))
 
 --/
@@ -462,7 +462,7 @@ main = print ((1, (2,3)))
 --/
 
 --------------------------------------------------------------------------------
--- Test 48         : pattern matching pair
+-- Test 49         : pattern matching pair
 -- Expected result : 3
 
 --/
@@ -470,7 +470,7 @@ main = print ((\(x,y) -> x + y) (1,2))
 --/
 
 --------------------------------------------------------------------------------
--- Test 49         : list
+-- Test 50         : list
 -- Expected result : [1,2] 
 
 --/
@@ -478,7 +478,7 @@ main = print [1,2]
 --/
 
 --------------------------------------------------------------------------------
--- Test 50         : list
+-- Test 51         : list
 -- Expected result : [1,[1,2,3]] 
 
 --/
@@ -486,7 +486,7 @@ main = print [[1,2],[1,2,3]]
 --/
 
 --------------------------------------------------------------------------------
--- Test 51         : empty list
+-- Test 52         : empty list
 -- Expected result : [] 
 
 --/
@@ -494,7 +494,7 @@ main = print []
 --/
 
 --------------------------------------------------------------------------------
--- Test 52         : list with one element
+-- Test 53         : list with one element
 -- Expected result : [1] 
 
 --/
@@ -502,7 +502,7 @@ main = print [1]
 --/
 
 --------------------------------------------------------------------------------
--- Test 53         : case of in main
+-- Test 54         : case of in main
 -- Expected result : "one" 
 
 --/
@@ -515,7 +515,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 54         : case of in main with tuple
+-- Test 55         : case of in main with tuple
 -- Expected result : "one zero left" 
 
 --/
@@ -529,7 +529,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 55         : case of in main with tuple of tuple
+-- Test 56         : case of in main with tuple of tuple
 -- Expected result : 4 
 
 --/
@@ -544,7 +544,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 56         : case of in main with one line
+-- Test 57         : case of in main with one line
 -- Expected result : 3 
 
 --/
@@ -555,7 +555,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 57         : case of in main with a list on branch and exp
+-- Test 58         : case of in main with a list on branch and exp
 -- Expected result : 3 
 
 --/
@@ -567,7 +567,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 58         : case of with a list as exp and list patterns on branch
+-- Test 59         : case of with a list as exp and list patterns on branch
 -- Expected result : 2 
 
 --/
@@ -580,7 +580,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 59         : case of in main with only list patterns as branch and exp
+-- Test 60         : case of in main with only list patterns as branch and exp
 -- Expected result : [2] 
 
 --/
@@ -593,7 +593,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 60         : case of with a list as branch and list patterns as exp
+-- Test 61         : case of with a list as branch and list patterns as exp
 -- Expected result : 2 
 
 --/
@@ -606,7 +606,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 61         : case of with a list matched fully
+-- Test 62         : case of with a list matched fully
 -- Expected result : [1,2,4] 
 
 --/
@@ -619,7 +619,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 62         : eval a list as a pattern
+-- Test 63         : eval a list as a pattern
 -- Expected result : [1, 2]\n[1]\n[[1, 2], [2]]\n[1, 2, 3]\n[1, 2, 3, 4]
 
 --/
@@ -631,7 +631,7 @@ main = do
           print (1 : 2 : 3 : [4])
 --/
 --------------------------------------------------------------------------------
--- Test 63         : currying and pattern matching in function 
+-- Test 64         : currying and pattern matching in function 
 -- Expected result : 1
 
 --/
@@ -643,7 +643,7 @@ tmp = func 0
 main = print (tmp 2)
 --/
 --------------------------------------------------------------------------------
--- Test 64         : currying and pattern matching in function 
+-- Test 65         : currying and pattern matching in function 
 -- Expected result : 2
 
 --/
