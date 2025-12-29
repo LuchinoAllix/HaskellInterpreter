@@ -272,11 +272,11 @@ function evaluateValue(exp){
     case "integer" :
       return new V.Vint(exp.value);
 
-    case "String" :
-      return new V.Vstring(exp.value);
-
     case "Boolean" :
       return new V.Vbool(exp.value);
+
+    case "Char" :
+      return new V.Vchar(exp.value);
 
     case "Special" :
       if (isMTArray(exp.value)){

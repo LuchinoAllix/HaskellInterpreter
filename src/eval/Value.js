@@ -22,14 +22,14 @@ export class Vint extends Value {
   }
 }
 
-export class Vstring extends Value {
+export class Vchar extends Value {
 
   /**
-   * String return type
+   * char return type
    * @param {String} value 
    */
   constructor(value){
-    super("string", value);
+    super("char", value);
   }
 }
 

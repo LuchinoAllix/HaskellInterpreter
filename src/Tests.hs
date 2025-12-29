@@ -22,7 +22,7 @@ main = print a
 
 --------------------------------------------------------------------------------
 -- Test 1          : string
--- Expected result : "Hello World!"
+-- Expected result : [H,e,l,l,o, ,W,o,r,l,d,!]
 
 --/
 b = "Hello World!"
@@ -112,7 +112,7 @@ main = print (5 + 3 * 8 - 12 / 3)
 
 --------------------------------------------------------------------------------
 -- Test 12         : if statement
--- Expected result : "not zero"
+-- Expected result : [n,o,t, ,z,e,r,o]
 
 --/
 a = 1
@@ -121,7 +121,7 @@ main = print (if a == 0 then "zero" else "not zero")
 
 --------------------------------------------------------------------------------
 -- Test 13         : multiple ifs
--- Expected result : "inner fail"
+-- Expected result : [i,n,n,e,r, ,f,a,i,l]
 
 --/
 main = print (if (True) 
@@ -243,7 +243,7 @@ main = print (sum [1,2])
 
 --------------------------------------------------------------------------------
 -- Test 26         : case of in func
--- Expected result : "black"
+-- Expected result : [b,l,a,c,k]
 
 --/
 cardColour :: String -> String
@@ -305,7 +305,7 @@ main = do print (a 1)
 
 -------------------------------------------------------------------------------
 -- Test 32         : logical operators
--- Expected result : "no"
+-- Expected result : [n,o]
 
 --/
 x = 1
@@ -496,7 +496,7 @@ main = print [1]
 
 --------------------------------------------------------------------------------
 -- Test 53         : case of in main
--- Expected result : "one"
+-- Expected result : [o,n,e]
 
 --/
 a = 1
@@ -509,7 +509,7 @@ main = print (
 --/
 --------------------------------------------------------------------------------
 -- Test 54         : case of in main with tuple
--- Expected result : "one zero left"
+-- Expected result : [o,n,e, ,z,e,r,o, ,l,e,f,t]
 
 --/
 a = (0, 2)
@@ -653,7 +653,7 @@ main = print (tmp2 4 2)
 --/
 --------------------------------------------------------------------------------
 -- Test 65         : recursive call with prints
--- Expected result : 2\n1\n0\n"finished"
+-- Expected result : 2\n1\n0\n[f,i,n,i,s,h,e,d]
 
 --/
 func a = if (a >= 0) then do

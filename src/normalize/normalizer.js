@@ -239,7 +239,16 @@ function normalizeExp(node){
     case "integer" :
       return new ValExp(parseInt(node.value), node.type);
 
-    case "String" : // TODO should convert to list of chars
+    case "String" :
+      let charlist = node.value.split("");
+      let expCharList = []
+      charlist.shift(); // remove " in first position
+      charlist.pop();  // remove " in last position
+      for (let char of charlist){
+        expCharList.push(new ValExp(char, "Char"));
+      }
+      return new ListExp(expCharList);
+
     case "Special" :
     case "reservdop" :
       return new ValExp(node.value, node.type);
