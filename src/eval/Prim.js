@@ -1,5 +1,5 @@
 import { Term } from "../normalize/Term.js";
-import { Vfunc, Vio } from "./Value.js";
+import { Value, Vfunc, Vio } from "./Value.js";
 import { Env } from "./Env.js";
 
 //--                   File for primitives object definition                --//
