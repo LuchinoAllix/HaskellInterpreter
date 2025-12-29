@@ -107,7 +107,7 @@ export class Env {
         }
         let str = makeStr(a);
         console.log(str);
-        return str; // for verification pupuses
+        return str; // for verification puposes
       }
     , 1));
 
