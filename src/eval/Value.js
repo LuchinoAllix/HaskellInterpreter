@@ -1,7 +1,7 @@
 import { Env } from "./Env.js";
 
 /**
- * Abstract class
+ * Abstract class for acutal value return type
  */
 export class Value {
   constructor(type, value){
@@ -14,7 +14,7 @@ export class Value {
 export class Vint extends Value {
 
   /**
-   * 
+   * Integer return type
    * @param {Integer} value 
    */
   constructor(value){
@@ -25,7 +25,7 @@ export class Vint extends Value {
 export class Vstring extends Value {
 
   /**
-   * 
+   * String return type
    * @param {String} value 
    */
   constructor(value){
@@ -52,7 +52,7 @@ export class Vfunc extends Value {
 export class Vio extends Value {
 
   /**
-   * 
+   * Primitive function return type
    * @param {function} value 
    */
   constructor(value){
@@ -63,7 +63,7 @@ export class Vio extends Value {
 export class Vbool extends Value {
 
   /**
-   * 
+   * Boolean return type
    * @param {Boolean} value 
    */
   constructor(value){
@@ -74,7 +74,7 @@ export class Vbool extends Value {
 export class Vtuple extends Value {
   
   /**
-   * 
+   * tuple return type
    * @param {[Value]} values 
    */
   constructor(values){
@@ -85,7 +85,7 @@ export class Vtuple extends Value {
 export class Vdo extends Value {
   
   /**
-   * 
+   * do statement return type (contains a list of return values)
    * @param {[Value]} values 
    */
   constructor(values){
@@ -96,7 +96,7 @@ export class Vdo extends Value {
 export class VList extends Value {
   
   /**
-   * 
+   * list return type
    * @param {[Value]} values 
    */
   constructor(values){
