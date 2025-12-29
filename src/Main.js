@@ -185,7 +185,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
 
   try {
 
-    tokenize(program)
+    tokenize(program);
     
     if (verbose){
       console.log("Successful tokenization :) ");
@@ -211,7 +211,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
       activateDebugParse();
     }
 
-    parse(program)
+    parse(program);
 
     if (verbose){
       console.log("Successful parsing :) ");
