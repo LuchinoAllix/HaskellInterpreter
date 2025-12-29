@@ -81,7 +81,8 @@ export class Env {
       }
     , 2));
 
-    this.add("print", new PrimIO(
+    this.add("print", new PrimIO( // should automatially convert list of chars 
+                                  // to sring ? #fixme
       function print(a){
         function makeStr(val){
           let bord = null;
