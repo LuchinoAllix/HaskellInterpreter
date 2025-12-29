@@ -1,7 +1,7 @@
 import { Decl } from "../normalize/Decl.js";
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Value, Vint, Vbool, Vfunc, Vstring, VList } from "./Value.js";
+import { Vint, Vbool, VList } from "./Value.js";
 
 //--                   File for environment object definition               --//
 
