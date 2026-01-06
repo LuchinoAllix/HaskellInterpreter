@@ -1,18 +1,40 @@
 [
   {
     "metatype": "DECL",
-    "type": "variable",
-    "name": "a",
+    "type": "function",
+    "name": "f",
     "typeAnnotation": null,
     "branches": [
       {
-        "metatype": "EXP",
-        "type": "value",
-        "value": 1,
-        "valueType": "integer"
+        "type": "branch",
+        "args": [
+          {
+            "metatype": "PATTERN",
+            "type": "var",
+            "name": "x"
+          }
+        ],
+        "branchBody": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "name": "+",
+          "args": [
+            {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "x"
+            },
+            {
+              "metatype": "EXP",
+              "type": "value",
+              "value": 1,
+              "valueType": "integer"
+            }
+          ]
+        }
       }
     ],
-    "nbArgs": null
+    "nbArgs": 1
   },
   {
     "metatype": "DECL",
@@ -22,20 +44,17 @@
     "branches": [
       {
         "metatype": "EXP",
-        "type": "functionApp",
-        "name": "print",
-        "args": [
+        "type": "do",
+        "exps": [
           {
             "metatype": "EXP",
-            "type": "case",
-            "exp": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": "a"
-            },
-            "branches": [
+            "type": "functionApp",
+            "name": "print",
+            "args": [
               {
-                "type": "branch",
+                "metatype": "EXP",
+                "type": "aFunctionApp",
+                "name": "",
                 "args": [
                   {
                     "metatype": "EXP",
@@ -44,44 +63,79 @@
                     "valueType": "integer"
                   }
                 ],
-                "branchBody": {
+                "func": {
                   "metatype": "EXP",
-                  "type": "value",
-                  "value": "\"zero\"",
-                  "valueType": "String"
+                  "type": "LambdaExp",
+                  "args": [
+                    {
+                      "metatype": "EXP",
+                      "type": "var",
+                      "name": "x"
+                    }
+                  ],
+                  "body": {
+                    "metatype": "EXP",
+                    "type": "functionApp",
+                    "name": "+",
+                    "args": [
+                      {
+                        "metatype": "EXP",
+                        "type": "var",
+                        "name": "x"
+                      },
+                      {
+                        "metatype": "EXP",
+                        "type": "value",
+                        "value": 1,
+                        "valueType": "integer"
+                      }
+                    ]
+                  }
                 }
-              },
+              }
+            ]
+          },
+          {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "name": "print",
+            "args": [
               {
-                "type": "branch",
+                "metatype": "EXP",
+                "type": "functionApp",
+                "name": "f",
                 "args": [
                   {
                     "metatype": "EXP",
                     "type": "value",
-                    "value": 1,
+                    "value": 0,
                     "valueType": "integer"
                   }
-                ],
-                "branchBody": {
-                  "metatype": "EXP",
-                  "type": "value",
-                  "value": "\"one\"",
-                  "valueType": "String"
-                }
-              },
+                ]
+              }
+            ]
+          },
+          {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "name": "print",
+            "args": [
               {
-                "type": "branch",
+                "metatype": "EXP",
+                "type": "curFunctionApp",
+                "name": "",
                 "args": [
                   {
                     "metatype": "EXP",
-                    "type": "SpecialExp",
-                    "special": "_"
+                    "type": "value",
+                    "value": 0,
+                    "valueType": "integer"
                   }
                 ],
-                "branchBody": {
+                "func": {
                   "metatype": "EXP",
-                  "type": "value",
-                  "value": "\"number higher than 1\"",
-                  "valueType": "String"
+                  "type": "var",
+                  "name": "f"
                 }
               }
             ]
