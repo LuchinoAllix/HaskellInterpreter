@@ -70,11 +70,17 @@ export class FunctionApp extends Exp {
    * @param {String} name Name of the function to call
    * @param {[Exp]} args Arguments given to the function 
    */
-  constructor(name, args){
+  constructor(name, args, body){
     super();
     this.type = "functionApp";
+    this.ano = false;
     this.name = name;
     this.args = args;
+    this.body = null;
+    if (name.length === 0){ // for anonymous functions
+      this.ano = true;
+      this.body = body
+    }
   }
 }
 
