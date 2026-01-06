@@ -174,7 +174,16 @@ main = print (lets)
 --/
 
 --------------------------------------------------------------------------------
--- Test 19         : let with a lambda
+-- Test 19         : let with overriding a var not in main
+-- Expected result : 3
+
+--/
+lets = let x = 1 in (let x = 2 in x ) + x
+main = print (lets)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 20         : let with a lambda
 -- Expected result : 2
 
 --/
@@ -182,7 +191,7 @@ main = print (let x = 1 ; y = \z -> z + 1 in y x)
 --/
 
 --------------------------------------------------------------------------------
--- Test 20         : function declaration
+-- Test 21         : function declaration
 -- Expected result : 3
 
 --/
@@ -191,7 +200,7 @@ main = print (add 1 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 21         : function declaration
+-- Test 22         : function declaration
 -- Expected result : 6
 
 --/
@@ -200,7 +209,7 @@ main = print (mul 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 22         : recursive function declaration
+-- Test 23         : recursive function declaration
 -- Expected result : 120
 
 --/
@@ -210,7 +219,7 @@ main = print (fact 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 23         : recursive function declaration
+-- Test 24         : recursive function declaration
 -- Expected result : 5
 
 --/
@@ -221,7 +230,7 @@ main = do print (fib 5)
 --/
 
 --------------------------------------------------------------------------------
--- Test 24         : recursive function declaration on a list
+-- Test 25         : recursive function declaration on a list
 -- Expected result : [3,2,1]
 
 --/
@@ -231,7 +240,7 @@ main = do print (reverse [1,2,3])
 --/
 
 --------------------------------------------------------------------------------
--- Test 25         : recursive function with type annotation
+-- Test 26         : recursive function with type annotation
 -- Expected result : 3
 
 --/
@@ -242,7 +251,7 @@ main = print (sum [1,2])
 --/
 
 --------------------------------------------------------------------------------
--- Test 26         : case of in func
+-- Test 27         : case of in func
 -- Expected result : [b,l,a,c,k]
 
 --/
@@ -259,7 +268,7 @@ main = print (cardColour "clubs")
 --/
 
 --------------------------------------------------------------------------------
--- Test 27         : lambda
+-- Test 28         : lambda
 -- Expected result : 2
 
 --/
@@ -267,7 +276,7 @@ main = print ((\x -> x + 1) 1 )
 --/
 
 --------------------------------------------------------------------------------
--- Test 28         : lambda with multiple arguments
+-- Test 29         : lambda with multiple arguments
 -- Expected result : 5
 
 --/
@@ -275,7 +284,7 @@ main = print ((\x y -> x + y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 29         : embeded lambda
+-- Test 30         : embeded lambda
 -- Expected result : 11
 
 --/
@@ -283,7 +292,7 @@ main = print ((\x y -> x + (\a -> a * a) y ) 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 30         : type annotation of list of list
+-- Test 31         : type annotation of list of list
 -- Expected result : 1
 
 --/
@@ -295,7 +304,7 @@ main = print (func [[1]])
 --/
 
 --------------------------------------------------------------------------------
--- Test 31         : lambda in a var
+-- Test 32         : lambda in a var
 -- Expected result : 2
 
 --/
@@ -304,7 +313,7 @@ main = do print (a 1)
 --/
 
 -------------------------------------------------------------------------------
--- Test 32         : logical operators
+-- Test 33         : logical operators
 -- Expected result : [n,o]
 
 --/
@@ -314,7 +323,7 @@ main =  if (x==0) && (y==0) || (x + y) == 1 then print ("yes") else print ("no")
 --/
 
 --------------------------------------------------------------------------------
--- Test 33         : annotated variable declaration
+-- Test 34         : annotated variable declaration
 -- Expected result : 3
 
 --/
@@ -324,7 +333,7 @@ main = print ((\x -> let x = 3 in x) 1)
 --/
 
 --------------------------------------------------------------------------------
--- Test 34         : let inside an anonymous function
+-- Test 35         : let inside an anonymous function
 -- Expected result : 3
 
 --/
@@ -332,7 +341,7 @@ main = print((\x -> let x = 3 in x) 1)
 --/
 
 --------------------------------------------------------------------------------
--- Test 35         : function with 3 arguments
+-- Test 36         : function with 3 arguments
 -- Expected result : 1
 
 --/
@@ -341,7 +350,7 @@ main = print ( f 1 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 36         : function declaration with main
+-- Test 37         : function declaration with main
 -- Expected result : 5
 
 --/
@@ -353,7 +362,7 @@ main = do print (f a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 37         : currying
+-- Test 38         : currying
 -- Expected result : 3
 
 --/
@@ -362,20 +371,11 @@ main = do print (a 2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 38         : currying
+-- Test 39         : currying
 -- Expected result : 3
 
 --/
 main = print ((+ 1) 2)
---/
-
---------------------------------------------------------------------------------
--- Test 39         : currying
--- Expected result : 6
-
---/
-a = \x -> \y -> \z -> x + y + z
-main = do print ((a 1 2) 3)
 --/
 
 --------------------------------------------------------------------------------
@@ -384,11 +384,20 @@ main = do print ((a 1 2) 3)
 
 --/
 a = \x -> \y -> \z -> x + y + z
+main = do print ((a 1 2) 3)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 41         : currying
+-- Expected result : 6
+
+--/
+a = \x -> \y -> \z -> x + y + z
 main = do print (((a 1) 2) 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 41         : multi-branch main
+-- Test 42         : multi-branch main
 -- Expected result : 3\n4\n5
 -- TODO manage multiline results
 
@@ -402,7 +411,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 42         : currying
+-- Test 43         : currying
 -- Expected result : 6
 
 --/
@@ -410,7 +419,7 @@ main = do print (((\x -> \y -> \z -> x + y + z) 1 2) 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 43         : currying
+-- Test 44         : currying
 -- Expected result : 4
 
 --/
@@ -420,7 +429,7 @@ main = do print ((f 1) 3)
 
 
 --------------------------------------------------------------------------------
--- Test 44         : currying et pattern matching
+-- Test 45         : currying et pattern matching
 -- Expected result : 3 
 
 --/
@@ -431,7 +440,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 45         : paire
+-- Test 46         : paire
 -- Expected result : (1,2)
 
 --/
@@ -439,7 +448,7 @@ main = print (1,2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 46         : fst primitive
+-- Test 47         : fst primitive
 -- Expected result : 1
 
 --/
@@ -447,7 +456,7 @@ main = print ( fst (1, 2) )
 --/
 
 --------------------------------------------------------------------------------
--- Test 47         : embeded pairs
+-- Test 48         : embeded pairs
 -- Expected result : (1,(2,3))
 
 --/
@@ -455,7 +464,7 @@ main = print ((1, (2,3)))
 --/
 
 --------------------------------------------------------------------------------
--- Test 48         : pattern matching pair
+-- Test 49         : pattern matching pair
 -- Expected result : 3
 
 --/
@@ -463,7 +472,7 @@ main = print ((\(x,y) -> x + y) (1,2))
 --/
 
 --------------------------------------------------------------------------------
--- Test 49         : list
+-- Test 50         : list
 -- Expected result : [1,2]
 
 --/
@@ -471,7 +480,7 @@ main = print [1,2]
 --/
 
 --------------------------------------------------------------------------------
--- Test 50         : list
+-- Test 51         : list
 -- Expected result : [[1,2],[1,2,3]]
 
 --/
@@ -479,7 +488,7 @@ main = print [[1,2],[1,2,3]]
 --/
 
 --------------------------------------------------------------------------------
--- Test 51         : empty list
+-- Test 52         : empty list
 -- Expected result : []
 
 --/
@@ -487,7 +496,7 @@ main = print []
 --/
 
 --------------------------------------------------------------------------------
--- Test 52         : list with one element
+-- Test 53         : list with one element
 -- Expected result : [1]
 
 --/
@@ -495,7 +504,7 @@ main = print [1]
 --/
 
 --------------------------------------------------------------------------------
--- Test 53         : case of in main
+-- Test 54         : case of in main
 -- Expected result : [o,n,e]
 
 --/
@@ -508,7 +517,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 54         : case of in main with tuple
+-- Test 55         : case of in main with tuple
 -- Expected result : [o,n,e, ,z,e,r,o, ,l,e,f,t]
 
 --/
@@ -522,7 +531,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 55         : case of in main with tuple of tuple
+-- Test 56         : case of in main with tuple of tuple
 -- Expected result : 4
 
 --/
@@ -537,7 +546,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 56         : case of in main with one line
+-- Test 57         : case of in main with one line
 -- Expected result : 3
 
 --/
@@ -548,7 +557,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 57         : case of in main with a list on branch and exp
+-- Test 58         : case of in main with a list on branch and exp
 -- Expected result : 3
 
 --/
@@ -560,7 +569,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 58         : case of with a list as exp and list patterns on branch
+-- Test 59         : case of with a list as exp and list patterns on branch
 -- Expected result : 2 
 
 --/
@@ -573,7 +582,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 59         : case of in main with only list patterns as branch and exp
+-- Test 60         : case of in main with only list patterns as branch and exp
 -- Expected result : [2]
 
 --/
@@ -586,7 +595,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 60         : case of with a list as branch and list patterns as exp
+-- Test 61         : case of with a list as branch and list patterns as exp
 -- Expected result : 2 
 
 --/
@@ -599,7 +608,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 61         : case of with a list matched fully
+-- Test 62         : case of with a list matched fully
 -- Expected result : [1,2,4]
 
 --/
@@ -612,7 +621,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 62         : eval a list as a pattern
+-- Test 63         : eval a list as a pattern
 -- Expected result : [1,2]\n[1]\n[[1,2],[2]]\n[1,2,3]\n[1,2,3,4]
 
 --/
@@ -624,7 +633,7 @@ main = do
           print (1 : 2 : 3 : [4])
 --/
 --------------------------------------------------------------------------------
--- Test 63         : currying and pattern matching in function 
+-- Test 64         : currying and pattern matching in function 
 -- Expected result : 1
 
 --/
@@ -636,7 +645,7 @@ tmp = func 0
 main = print (tmp 2)
 --/
 --------------------------------------------------------------------------------
--- Test 64         : currying and pattern matching in function 
+-- Test 65         : currying and pattern matching in function 
 -- Expected result : 2
 
 --/
@@ -652,7 +661,7 @@ tmp2 = tmp1 2
 main = print (tmp2 4 2)
 --/
 --------------------------------------------------------------------------------
--- Test 65         : recursive call with prints
+-- Test 66         : recursive call with prints
 -- Expected result : 2\n1\n0\n[f,i,n,i,s,h,e,d]
 
 --/
