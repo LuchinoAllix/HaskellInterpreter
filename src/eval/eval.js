@@ -91,7 +91,6 @@ export function initEvalInter(program){
   // TODO
 }
 
-
 /**
  * Main function to evaluate an expression
  * Would be used in evalInitInter()
@@ -120,7 +119,6 @@ function evaluate(term, env){
 function output(output){
   console.log(output);
 }
-
 
 /**
  * Adds a declaration to the global env
@@ -215,27 +213,6 @@ function evaluateExp(exp, env){
 }
 
 /**
- * Evaluates a function application by looking up it's definition in the env and
- * giving it it's arguments.
- * @param {Decl} exp 
- * @param {Env} env 
- * @returns {V.Value}
- */
-function evaluateFuncApp(exp, env){
-    // FIXME: I think this should be `evaluateExp (exp.name, env)`
-    // and naming that field "name" was a poor choice, it should be called
-    // "f/func/function" or something like that.
-    // ANS : ???? what should be evaluateExp ? 
-    //     : TODO change filed 'name' to 'function'
-  let f = lookupGlobalLocal(env, exp.name);
-  if (f !== undefined){
-    return evaluateFunc(f, exp.args, env);
-  } else {
-    throw Error("function " + exp.name + " is undefined");
-  }
-}
-
-/**
  * Evaluate a var by looking in the environment the value of the var, if it is
  * not yet evaluated, the result will be
  * @param {E.VarExp} exp 
@@ -316,6 +293,27 @@ function evaluateValue(exp){
 }
 
 /**
+ * Evaluates a function application by looking up it's definition in the env and
+ * giving it it's arguments.
+ * @param {Decl} exp 
+ * @param {Env} env 
+ * @returns {V.Value}
+ */
+function evaluateFuncApp(exp, env){
+    // FIXME: I think this should be `evaluateExp (exp.name, env)`
+    // and naming that field "name" was a poor choice, it should be called
+    // "f/func/function" or something like that.
+    // ANS : ???? what should be evaluateExp ? 
+    //     : TODO change filed 'name' to 'function'
+  let f = lookupGlobalLocal(env, exp.name);
+  if (f !== undefined){
+    return evaluateFunc(f, exp.args, env);
+  } else {
+    throw Error("function " + exp.name + " is undefined");
+  }
+}
+
+/**
  * Evaluates a curryfied expression
  * A curryfied expression has an expression and some arguments, so it first
  * evaluates the expression waiting for arguments and then evaluates the whole
@@ -340,21 +338,61 @@ function evaluateCurFunctionApp(exp, env){
 }
 
 /**
- * Evaluate an if expression by first testing the condition, if it is a boolean
- * then it returns the evaluation of the corresponding branch
- * @param {E.IfExp} exp an if expression
- * @param {Env} env the environement 
+ * Evaluates an anonymous function by recursion until no more arguments needs
+ * to be added to the closure, then it is evaluated by eval exp or func 
+ * depending on the type of the function
+ * @param {E.AFunctionApp} exp 
+ * @param {Env} env
  * @returns {V.Value}
  */
-function evaluateIf(exp, env){
-  debug("If", exp);
-  let cond = evaluateExp(exp.condition, env);
-  if (cond.type !== "bool"){
-    throw Error("Expression in if condition did not evaluate to boolean.");
-  } else if (cond.value){
-    return evaluateExp(exp.success, env);
+// FIXME: I don't understand what you mean by "evaluate" above.
+// Usually evaluating an anonymous function is trivial and just constructs
+// a closure object.  I don't know what you mean by "add[ing arguments]
+// to the closure".
+// ANS : What I mean is for (\x -> \y -> x + y) 1 2 we add the arg x = 1 to the
+//       closure then start again (by recursion) with the rest of the arguments 
+// I also don't understand what "App" means in the function name.
+// ANS : "App" means application in this case, admittedly we will always have a 
+//       application of function but it's to seperate from function like
+//       evaluateFunc where we have the body of the func (not the name) and the
+//       args as different arguments, which is the 'general' function evaluation
+//       function
+function evaluateAFunctionApp(exp, env){
+  debug("A Function App", exp);
+  if (exp.args.length === 0){
+    if (exp.func.type === "LambdaExp"){
+      return evaluateFunc(exp.func, [], env);
+    }
+    return evaluateExp(exp.func, env);
   } else {
-    return evaluateExp(exp.fail, env);
+    let closure = env.clone();
+    if (exp.args[0].type === "TupleExp"){
+      if (exp.args[0].elems.length !== exp.func.args[0].elems.length){
+        throw new Error("Mismatch between number of arguments given and " + 
+          "expected in tuple of anonymous function");
+      }
+      closure.add(exp.func.args[0].elems[0].name, exp.args[0].elems[0], true);
+      exp.args[0].elems.shift();
+      exp.func.args[0].elems.shift();
+
+      if (exp.args[0].elems.length === 0){
+        exp.args.shift();
+        exp.func.args.shift();
+      }
+    } else {
+      closure.add(exp.func.args[0].name, exp.args[0], true);
+      exp.args.shift();
+      exp.func.args.shift();
+    }
+    if (exp.func.args.length === 0){
+      if (exp.func.type === "LambdaExp"){
+        exp.func = exp.func.body;
+      }
+      else {
+        throw new Error("Unhandeled case in Lambda Exp evaluation");
+      }
+    }
+    return evaluateExp(exp, closure);
   }
 }
 
@@ -475,53 +513,23 @@ function evaluateFuncPM(func, args, env){
   throw new Error("No match found for pattern matching in func : " + func.name);
 }
 
-
 /**
- * Lookup but inside the global environment and a local one given
- * @param {Env} env 
- * @param {String} name 
- * @returns {Term}
+ * Evaluate an if expression by first testing the condition, if it is a boolean
+ * then it returns the evaluation of the corresponding branch
+ * @param {E.IfExp} exp an if expression
+ * @param {Env} env the environement 
+ * @returns {V.Value}
  */
-function lookupGlobalLocal(env, name){
-  let res = env.lookup(name);
-  if (res !== undefined){
-    return res;
-  } 
-  res = global_env.lookup(name);  
-  if (res !== undefined){
-    return res;
-  }
-  throw Error(name + " is undefined.");
-}
-
-/**
- * Allows to reset the global environment
- * To be used in interactive mode
- */
-function resetGlobalEnv(){
-  global_env = new Env;
-  global_env.initGlobal();
-}
-
-/**
- * Function to actually run the program, with all IO functions
- * @param {V.Vio} main_decl 
- */
-function execute(main_decl){
-  debug("execution");
-  let res = []
-  if (main_decl.type === "IO"){
-    let a = main_decl.value.call();
-    res.push(a);
-  } else if (main_decl.type === "do"){
-    for (let exp of main_decl.value){
-      res = res.concat(execute(exp));
-    }
+function evaluateIf(exp, env){
+  debug("If", exp);
+  let cond = evaluateExp(exp.condition, env);
+  if (cond.type !== "bool"){
+    throw Error("Expression in if condition did not evaluate to boolean.");
+  } else if (cond.value){
+    return evaluateExp(exp.success, env);
   } else {
-    throw new Error(
-      "Only IO functions and 'do' statements can be given to main");
+    return evaluateExp(exp.fail, env);
   }
-  return res;
 }
 
 /**
@@ -537,65 +545,6 @@ function evaluateLet(exp, env){
     clone.add(decl.name, decl.branches[0], true);
   }
   return evaluateExp(exp.body, clone);
-}
-
-/**
- * Evaluates an anonymous function by recursion until no more arguments needs
- * to be added to the closure, then it is evaluated by eval exp or func 
- * depending on the type of the function
- * @param {E.AFunctionApp} exp 
- * @param {Env} env
- * @returns {V.Value}
- */
-// FIXME: I don't understand what you mean by "evaluate" above.
-// Usually evaluating an anonymous function is trivial and just constructs
-// a closure object.  I don't know what you mean by "add[ing arguments]
-// to the closure".
-// ANS : What I mean is for (\x -> \y -> x + y) 1 2 we add the arg x = 1 to the
-//       closure then start again (by recursion) with the rest of the arguments 
-// I also don't understand what "App" means in the function name.
-// ANS : "App" means application in this case, admittedly we will always have a 
-//       application of function but it's to seperate from function like
-//       evaluateFunc where we have the body of the func (not the name) and the
-//       args as different arguments, which is the 'general' function evaluation
-//       function
-function evaluateAFunctionApp(exp, env){
-  debug("A Function App", exp);
-  if (exp.args.length === 0){
-    if (exp.func.type === "LambdaExp"){
-      return evaluateFunc(exp.func, [], env);
-    }
-    return evaluateExp(exp.func, env);
-  } else {
-    let closure = env.clone();
-    if (exp.args[0].type === "TupleExp"){
-      if (exp.args[0].elems.length !== exp.func.args[0].elems.length){
-        throw new Error("Mismatch between number of arguments given and " + 
-          "expected in tuple of anonymous function");
-      }
-      closure.add(exp.func.args[0].elems[0].name, exp.args[0].elems[0], true);
-      exp.args[0].elems.shift();
-      exp.func.args[0].elems.shift();
-
-      if (exp.args[0].elems.length === 0){
-        exp.args.shift();
-        exp.func.args.shift();
-      }
-    } else {
-      closure.add(exp.func.args[0].name, exp.args[0], true);
-      exp.args.shift();
-      exp.func.args.shift();
-    }
-    if (exp.func.args.length === 0){
-      if (exp.func.type === "LambdaExp"){
-        exp.func = exp.func.body;
-      }
-      else {
-        throw new Error("Unhandeled case in Lambda Exp evaluation");
-      }
-    }
-    return evaluateExp(exp, closure);
-  }
 }
 
 /**
@@ -720,8 +669,6 @@ function match(value, exp){
   }
 }
 
-
-
 /**
  * Evalues a list pattern like (1 : 2 : [3,4]) to [1,2,3,4]
  * @param {E.ListPatternTerm} exp 
@@ -744,7 +691,6 @@ function evaluateListPatternExp(exp, env){
   return new V.VList(newList);
 }
 
-
 /**
  * Determines if a given variable is the empty array
  * Required because js compares by reference, so array === [] is always false
@@ -753,4 +699,52 @@ function evaluateListPatternExp(exp, env){
  */
 export function isMTArray(array){
   return Array.isArray(array) && array.length === 0
+}
+
+/**
+ * Function to actually run the program, with all IO functions
+ * @param {V.Vio} main_decl 
+ */
+function execute(main_decl){
+  debug("execution");
+  let res = []
+  if (main_decl.type === "IO"){
+    let a = main_decl.value.call();
+    res.push(a);
+  } else if (main_decl.type === "do"){
+    for (let exp of main_decl.value){
+      res = res.concat(execute(exp));
+    }
+  } else {
+    throw new Error(
+      "Only IO functions and 'do' statements can be given to main");
+  }
+  return res;
+}
+
+/**
+ * Lookup but inside the global environment and a local one given
+ * @param {Env} env 
+ * @param {String} name 
+ * @returns {Term}
+ */
+function lookupGlobalLocal(env, name){
+  let res = env.lookup(name);
+  if (res !== undefined){
+    return res;
+  } 
+  res = global_env.lookup(name);  
+  if (res !== undefined){
+    return res;
+  }
+  throw Error(name + " is undefined.");
+}
+
+/**
+ * Allows to reset the global environment
+ * To be used in interactive mode
+ */
+function resetGlobalEnv(){
+  global_env = new Env;
+  global_env.initGlobal();
 }
