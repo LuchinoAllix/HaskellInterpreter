@@ -532,22 +532,11 @@ function execute(main_decl){
  */
 function evaluateLet(exp, env){
   debug("Let", exp);
+  let clone = env.clone();
   for (let decl of exp.decls){
-    env.add(decl.name, decl.branches[0], true);
-    // Over writing decls that already exits, i'm not sure it's the best idea
-    // but i don't see where they could be used
-    // Is this a good idea ? #HELP
-    // FIXME: This doesn't seem right.  We add bindings to `env` via mutation,
-    // so those new bindings will still be present in the `env` object
-    // when we leave the `let`.
-    // Instead we should either add bindings to `env` without mutating it,
-    // or we should remove them (and reinstate the old ones we may have
-    // overwritten) before returning.
-    // ANS : When 'going into' a new closure, I don't pass the closure aroud,
-    //       I pass a clone of it, so as soon as we exit the scope, no 
-    //       mutation is 'saved', it's not efficient but it i guess it works ?
+    clone.add(decl.name, decl.branches[0], true);
   }
-  return evaluateExp(exp.body, env);
+  return evaluateExp(exp.body, clone);
 }
 
 /**
