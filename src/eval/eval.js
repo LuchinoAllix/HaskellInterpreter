@@ -157,6 +157,12 @@ function evaluateExp(exp, env){
 
   switch (exp.type){
     // FIXME: Why do we have three kinds of "FuncApp"s?
+    // ANS : We have FUNCtion APPlication for : 
+    //        - regular functions (defined with a name)
+    //        - anonymous functions
+    //        - curryfied calls (we already know the function will wait for
+    //                           additional arguments)
+    // These yield from the normaliser 
     case "functionApp" :
       return evaluateFuncApp(exp, env);
     
@@ -180,6 +186,7 @@ function evaluateExp(exp, env){
 
     // FIXME: Like `do` you should convert "TupleExp" and "ListExp"
     // to calls to functions like (:) before evaluation/typecheck.
+    // ANS : TODO
     case "TupleExp" :
       return new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)));
 
@@ -194,6 +201,9 @@ function evaluateExp(exp, env){
 
     // FIXME: Not quite sure how this differs from "ListExp"
     // but I think the same comment applies.
+    // ANS : These different from ListExp because in functions and cases, for 
+    // pattern matching I can't just transform (0 : a) to [0] or [0,a] since we
+    // don't know what a is, (perhaps as a linked list perhaps ?)
     case "ListPatternExp" :
       return evaluateListPatternExp(exp, env);
  
@@ -215,6 +225,8 @@ function evaluateFuncApp(exp, env){
     // FIXME: I think this should be `evaluateExp (exp.name, env)`
     // and naming that field "name" was a poor choice, it should be called
     // "f/func/function" or something like that.
+    // ANS : ???? what should be evaluateExp ? 
+    //     : TODO change filed 'name' to 'function'
   let f = lookupGlobalLocal(env, exp.name);
   if (f !== undefined){
     return evaluateFunc(f, exp.args, env);
@@ -259,6 +271,7 @@ function evaluateVar(exp, env){
  * // support for things like `do { x <- A; let y = B; return (x, y) }`,
  * // it gets different.  I recommend you macro-expand `do` to
  * // a bunch of calls to `>>=` before evaluation (and before type-inference).
+ * // ANS : TODO
  * @param {E.DoExp} exp 
  * @param {Env} env
  * @returns {V.Value}
@@ -279,6 +292,7 @@ function evaluateDo(exp, env){
  * @returns {V.Value}
  */
 // Note: Often we call these "immediate"s rather than "value"s.
+// TODO : Change value to immediate
 function evaluateValue(exp){
   debug("Value", exp);
   switch (exp.valueType){
@@ -529,6 +543,9 @@ function evaluateLet(exp, env){
     // Instead we should either add bindings to `env` without mutating it,
     // or we should remove them (and reinstate the old ones we may have
     // overwritten) before returning.
+    // ANS : When 'going into' a new closure, I don't pass the closure aroud,
+    //       I pass a clone of it, so as soon as we exit the scope, no 
+    //       mutation is 'saved', it's not efficient but it i guess it works ?
   }
   return evaluateExp(exp.body, env);
 }
@@ -545,7 +562,14 @@ function evaluateLet(exp, env){
 // Usually evaluating an anonymous function is trivial and just constructs
 // a closure object.  I don't know what you mean by "add[ing arguments]
 // to the closure".
+// ANS : What I mean is for (\x -> \y -> x + y) 1 2 we add the arg x = 1 to the
+//       closure then start again (by recursion) with the rest of the arguments 
 // I also don't understand what "App" means in the function name.
+// ANS : "App" means application in this case, admittedly we will always have a 
+//       application of function but it's to seperate from function like
+//       evaluateFunc where we have the body of the func (not the name) and the
+//       args as different arguments, which is the 'general' function evaluation
+//       function
 function evaluateAFunctionApp(exp, env){
   debug("A Function App", exp);
   if (exp.args.length === 0){
