@@ -156,7 +156,7 @@ function evaluateExp(exp, env){
   debug("Exp", exp);
 
   switch (exp.type){
-    // FIXME: Why do we have three kinds of "FuncApp"s?
+    // FIXME: Why do we have three kinds of "FuncApp"s ?
     // ANS : We have FUNCtion APPlication for : 
     //        - regular functions (defined with a name)
     //        - anonymous functions
@@ -280,7 +280,7 @@ function evaluateDo(exp, env){
   debug("Do", exp);
   let res = []
   for (let e of exp.exps){
-    let clone = env.clone()
+    let clone = env.clone() // not needed if all adds are protected by clone()
     res = res.concat(evaluateExp(e, clone));
   }
   return new V.Vdo(res);
