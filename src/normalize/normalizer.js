@@ -20,7 +20,6 @@ export function normalizeStart(program){
   return true;
 }
 
-
 /**
  * Turn a node into a term
  * // FIXME : can return a term OR a list of term
@@ -77,7 +76,6 @@ function normalize(astRoot){
 
   }
 }
-
 
 /**
  * turn a decl or gendecl node into a Decl object
@@ -306,7 +304,6 @@ function normalizeExp(node){
   }
 }
 
-
 /**
  * Given a "funlhs" node, returns the name of each variables a list of strings
  * @param {Node} node 
@@ -410,8 +407,6 @@ function verifyNoRedef(branch, listOfVars){
 
   }
 }
-
-
 
 /**
  * Turns a lexp node of if into an IfExp object 
@@ -577,5 +572,3 @@ function normalizeCurr(node){
 
   return new FunctionApp(node.childs[plus].value, args);
 }
-
-
