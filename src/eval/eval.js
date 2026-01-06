@@ -156,7 +156,7 @@ function evaluateExp(exp, env){
   debug("Exp", exp);
 
   switch (exp.type){
-    
+    // FIXME: Why do we have three kinds of "FuncApp"s?
     case "functionApp" :
       return evaluateFuncApp(exp, env);
     
@@ -178,6 +178,8 @@ function evaluateExp(exp, env){
     case "if" :
       return evaluateIf(exp, env);
 
+    // FIXME: Like `do` you should convert "TupleExp" and "ListExp"
+    // to calls to functions like (:) before evaluation/typecheck.
     case "TupleExp" :
       return new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)));
 
@@ -190,6 +192,8 @@ function evaluateExp(exp, env){
     case "case" :
       return evaluateCase(exp, env);
 
+    // FIXME: Not quite sure how this differs from "ListExp"
+    // but I think the same comment applies.
     case "ListPatternExp" :
       return evaluateListPatternExp(exp, env);
  
@@ -208,6 +212,9 @@ function evaluateExp(exp, env){
  * @returns {V.Value}
  */
 function evaluateFuncApp(exp, env){
+    // FIXME: I think this should be `evaluateExp (exp.name, env)`
+    // and naming that field "name" was a poor choice, it should be called
+    // "f/func/function" or something like that.
   let f = lookupGlobalLocal(env, exp.name);
   if (f !== undefined){
     return evaluateFunc(f, exp.args, env);
@@ -247,6 +254,11 @@ function evaluateVar(exp, env){
  * adding them to a Do value
  * For each statement, we do not propagate the effects on the env, reseting it
  * everytime // Is this true ? #HELP
+ * // FIXME: Yes and no: AFAICT currently you only support
+ * // `do { A; B; C }` so there's no new binding, but once you add
+ * // support for things like `do { x <- A; let y = B; return (x, y) }`,
+ * // it gets different.  I recommend you macro-expand `do` to
+ * // a bunch of calls to `>>=` before evaluation (and before type-inference).
  * @param {E.DoExp} exp 
  * @param {Env} env
  * @returns {V.Value}
@@ -266,6 +278,7 @@ function evaluateDo(exp, env){
  * @param {E.ValExp} exp 
  * @returns {V.Value}
  */
+// Note: Often we call these "immediate"s rather than "value"s.
 function evaluateValue(exp){
   debug("Value", exp);
   switch (exp.valueType){
@@ -510,6 +523,12 @@ function evaluateLet(exp, env){
     // Over writing decls that already exits, i'm not sure it's the best idea
     // but i don't see where they could be used
     // Is this a good idea ? #HELP
+    // FIXME: This doesn't seem right.  We add bindings to `env` via mutation,
+    // so those new bindings will still be present in the `env` object
+    // when we leave the `let`.
+    // Instead we should either add bindings to `env` without mutating it,
+    // or we should remove them (and reinstate the old ones we may have
+    // overwritten) before returning.
   }
   return evaluateExp(exp.body, env);
 }
@@ -522,6 +541,11 @@ function evaluateLet(exp, env){
  * @param {Env} env
  * @returns {V.Value}
  */
+// FIXME: I don't understand what you mean by "evaluate" above.
+// Usually evaluating an anonymous function is trivial and just constructs
+// a closure object.  I don't know what you mean by "add[ing arguments]
+// to the closure".
+// I also don't understand what "App" means in the function name.
 function evaluateAFunctionApp(exp, env){
   debug("A Function App", exp);
   if (exp.args.length === 0){
