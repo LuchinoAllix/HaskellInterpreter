@@ -673,7 +673,7 @@ func a = if (a >= 0) then do
 main = func 2
 --/
 --------------------------------------------------------------------------------
--- Test 67         : todo
+-- Test 67         : different functions calls 
 -- Expected result : 1\n1
 
 --/
@@ -682,6 +682,17 @@ main = do
           print ((\x -> x + 1) 0)
           print (f 0)
           print ((f) 0)  
+--/
+
+--------------------------------------------------------------------------------
+-- Test 68         : calling the same function in different statements
+-- Expected result : 2\n4\n6
+
+--/
+main = do 
+          print (1 + 1)
+          print (2 + 2)
+          print (3 + 3)  
 --/
 
 --------------------------------------------------------------------------------
