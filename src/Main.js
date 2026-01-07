@@ -9,7 +9,6 @@ import { initEvalComp, initEvalInter, activateDebugEval } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
-import { verify } from 'crypto';
 
 let tests = []
 let whereFail = [[],[],[],[]];
@@ -310,6 +309,8 @@ function isGoodResult(expected, actual, verbose){
     if (expected[i] != actual[i]){
       if ((expected[i] != actual[i].toString())){
         if (verbose){
+          console.log("a")
+          console.log(actual[i])
           console.log(expected[i] + " != " + actual[i]);
         }
         return false;
