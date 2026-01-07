@@ -67,9 +67,8 @@ export class Env {
       }
     , 2));
     
-
     this.add('-', new Prim(
-      function sub(a,b){
+      function sub(a, b){
         return new Vint(a.value - b.value);
       }
     , 2));
@@ -88,7 +87,7 @@ export class Env {
           let bord = null;
           if (val.type === "tuple"){
             bord = "()";
-          } else if (val.type === "list"){ 
+          } else if (val.type === "list"){
             bord = "[]";
             if (val.value.length === 0){
               return bord;
