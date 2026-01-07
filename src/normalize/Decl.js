@@ -20,7 +20,7 @@ export class Decl extends Term {
    * @param {String} name 
    * @param {Node} typeAnnotation 
    * @param {[Branch]} branches
-   * @param {[String]} nbArgs
+   * @param {Integer} nbArgs
    */
   constructor(type, name, typeAnnotation, branches, nbArgs){
     super("DECL");
@@ -29,6 +29,12 @@ export class Decl extends Term {
     this.typeAnnotation = typeAnnotation;
     this.branches = branches;
     this.nbArgs = nbArgs
+    this.args = [];
+  }
+
+  clone(){
+    return new Decl(this.type, this.name, this.typeAnnotation, this.branches, 
+      this.nbArgs);
   }
 
   /**
@@ -42,7 +48,7 @@ export class Decl extends Term {
       // variable branch : do nothing
     } else if (this.nbArgs === null || this.nbArgs === undefined){ 
       // number of arguments not yet initialized
-      this.nbArgs = branch.length;
+      this.nbArgs = branch.args.length;
     } else if(this.nbArgs !== branch.args.length){
       throw Error("Mismatch between number of arguments in different " +
                  "parts of the function declaration, branch already processed :" 
