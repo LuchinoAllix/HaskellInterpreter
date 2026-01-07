@@ -61,7 +61,7 @@ export class ValExp extends Exp {
 
 
 /**
- * Named function application expression
+ * Function application expression
  */
 export class FunctionApp extends Exp {
     
