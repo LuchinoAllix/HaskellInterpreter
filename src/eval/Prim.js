@@ -1,6 +1,5 @@
 import { Term } from "../normalize/Term.js";
 import { Value, Vfunc, Vio } from "./Value.js";
-import { Env } from "./Env.js";
 
 //--                   File for primitives object definition                --//
 
@@ -13,44 +12,24 @@ export class Prim extends Term {
   /**
    * Creates a primitive function object
    * @param {function} func 
-   * @param {Integer} nbArgs 
+   * @param {Integer} nbArgs still required 
+   * @param {[Value]} args
    */
-  constructor(func, nbArgs) {
+  constructor(func, nbArgs, args = []) {
     super("PRIM");
     this.func = func;
     this.nbArgs = nbArgs;
+    this.args = args;
   }
 
-  /**
-   * Recursively calls the function with all the args one by one,
-   * if all the args are given, calls the function, except if it is
-   * an IO one, in this case, returns a Vio
-   * @param {[]} args 
-   * @returns {Value}
-   */
-  lambdaCall(args) {
-    if (args.length > this.nbArgs) {
-      throw Error("Too many arguments given to " + this.func);
-    } else if (args.length === 0) { // all the args have been given
-      if (this.nbArgs === 0) {
-        if (this.isPrimIO()) {
-          return new Vio(this.func);
-        }
-        return this.func();
-      }
-      return new Vfunc(this, new Env(), []); // If we are still waiting for args
-
-    } else {
-      let temp;
-      if (this.isPrimIO()){
-        temp = new PrimIO(partial(this.func, args[0]), this.nbArgs - 1);
-      } else {
-        temp = new Prim(partial(this.func, args[0]), this.nbArgs - 1);
-      }
-      args.shift();
-      return temp.lambdaCall(args);
-    }
+  run(){
+    return this.func(...this.args);
   }
+
+  clone(){
+    return new Prim(this.func, this.nbArgs);
+  }
+
 }
 
 /**
@@ -67,18 +46,8 @@ export class PrimIO extends Prim {
     super(func, nbArgs);
     this.metatype = "PRIMIO";
   }
-}
 
-/**
- * Currying of a function by applying only the first args
- * (can be used for any number of args but is used only for one)
- * AI generated function
- * @param {function} fn 
- * @param  {...any} fixedArgs 
- * @returns {function}
- */
-function partial(fn, ...fixedArgs) {
-  return function(...restArgs) {
-    return fn(...fixedArgs, ...restArgs);
-  };
+  clone(){
+    return new PrimIO(this.func, this.nbArgs);
+  }
 }
