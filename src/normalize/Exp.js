@@ -192,11 +192,17 @@ export class LambdaExp extends Exp {
    * @param {[Exp]} args 
    * @param {Exp} body 
    */
-  constructor(args, body){
+  constructor(namedArgs, body){
     super();
     this.type = "LambdaExp";
-    this.args = args;
+    this.namedArgs = namedArgs;
+    this.nbArgs = namedArgs.length; // to be uniform with prim and decl (functions)
     this.body = body;
+    this.args = []; // given args, will be added in eval
+  }
+
+  clone(){
+    return new LambdaExp(this.namedArgs, this.body);
   }
 }
 
