@@ -81,42 +81,6 @@ export class FunctionApp extends Exp {
   }
 }
 
-// /**
-//  * Anonymous function application expression
-//  */
-// export class AFunctionApp extends FunctionApp {
-
-//   /**
-//    * Creates an application function expression for function that are not named
-//    * @param {[Exp]} args // args to give to the lambda function 
-//    * @param {LambdaExp} func // lambda function 
-//    */
-//   constructor(args, func){
-//     super("", args);
-//     this.type = "aFunctionApp";
-//     this.func = func;
-//   }
-// }
-
-// /**
-//  * Curryied function expressions
-//  */
-// export class CurFunctionApp extends FunctionApp {
-
-//   /**
-//    * Creates an application function expression for function that are not named
-//    * and yield from curring (japanese curry not to mistake with haskell curry)
-//    * @param {[Exp]} args 
-//    * @param {FunctionApp} func 
-//    */
-//   constructor(args, func){
-//     super("", args);
-//     this.type = "curFunctionApp";
-//     this.func = func;
-//   }
-// }
-
-
 /**
  * If term expression
  */

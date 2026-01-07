@@ -384,31 +384,6 @@ function normalizeCase(node){
 }
 
 /**
- * Verifies that a pattern doesn't define a variable multiple times
- * @param {Branch} branch 
- * @param {[String]} listOfVars 
- */
-function verifyNoRedef(branch, listOfVars){
-  switch (branch.args[0].type){
-    case "TupleExp" :
-    case "ListExp" :
-      for (elem of branch.args[0].elems){
-        verifyNoRedef(elem, dico);
-      }
-    case "var" :
-      if (listOfVars.includes(branch.args[0].name)){
-        throw new Error("pattern of branch has conflicting definition");    
-      }
-      listOfVars.push(branch.args[0].name);
-    case "value":
-    case "SpecialExp":
-      break;
-    // todo
-
-  }
-}
-
-/**
  * Turns a lexp node of if into an IfExp object 
  * @param {Node} node
  * @returns {IfExp} 
