@@ -154,18 +154,9 @@ function evaluateExp(exp, env){
   debug("Exp", exp);
 
   switch (exp.type){
-    // FIXME: Why do we have three kinds of "FuncApp"s ?
-    // ANS : We have FUNCtion APPlication for : 
-    //        - regular functions (defined with a name)
-    //        - anonymous functions
-    //        - curryfied calls (we already know the function will wait for
-    //                           additional arguments)
-    // These yield from the normaliser 
+
     case "functionApp" :
       return evaluateFuncApp(exp, env);
-    
-    case "aFunctionApp" :
-      return evaluateAFunctionApp(exp, env);
 
     case "var" :
       return evaluateVar(exp, env);
@@ -190,9 +181,6 @@ function evaluateExp(exp, env){
 
     case "ListExp" :
       return new V.VList(exp.elems.map(x => evaluateExp(x,env)));
-
-    case "curFunctionApp" :
-      return evaluateCurFunctionApp(exp, env);
 
     case "case" :
       return evaluateCase(exp, env);
@@ -231,7 +219,7 @@ function evaluateVar(exp, env){
       return variable;
     } else {
       throw new Error("variable " + exp.name + " of metatype " + 
-        variable.metatype + "is not handeled");
+        variable.metatype + " is not handeled");
     }
   } else {
     throw new Error("variable " + exp.name + " is undefined");
@@ -295,17 +283,24 @@ function evaluateValue(exp){
 /**
  * Evaluates a function application by looking up it's definition in the env and
  * giving it it's arguments.
- * @param {Decl} exp 
+ * 
+ * This function is different from evaluateFunc because here we may only have a
+ * ref to the function, in evaluateFunc we suppose we always have the body of 
+ * the function we're evaluating
+ * 
+ * Note, this cannot be replaced by "evaluateExp (exp.body, env)" because then
+ * we lose the arguments
+ * @param {Exp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateFuncApp(exp, env){
-    // FIXME: I think this should be `evaluateExp (exp.name, env)`
-    // and naming that field "name" was a poor choice, it should be called
-    // "f/func/function" or something like that.
-    // ANS : ???? what should be evaluateExp ? 
-    //     : TODO change filed 'name' to 'function'
-  let f = lookupGlobalLocal(env, exp.name);
+  let f = undefined;
+  if (exp.body.type === 'var'){ // named functions
+    f = lookupGlobalLocal(env, exp.body.name); 
+  } else if (exp.body.type === 'LambdaExp'){ // anonymous functions
+    f = exp.body;
+  }
   if (f !== undefined){
     return evaluateFunc(f, exp.args, env);
   } else {
@@ -314,179 +309,71 @@ function evaluateFuncApp(exp, env){
 }
 
 /**
- * Evaluates a curryfied expression
- * A curryfied expression has an expression and some arguments, so it first
- * evaluates the expression waiting for arguments and then evaluates the whole
- * with the "extra" arguments
- * @param {E.CurFunctionApp} exp 
- * @param {Env} env 
- * @returns {V.Value}
- */
-function evaluateCurFunctionApp(exp, env){
-  debug("Cur Function App", exp);
-  let vfunc = evaluateExp(exp.func, env);
-  if (vfunc.type === "func"){
-    let closure = env.clone();
-    for (let variable in vfunc.closure.decls){
-      closure.add(variable, vfunc.closure.lookup(variable), true);
-    }
-    return evaluateFunc(vfunc.value, exp.args.concat(vfunc.extraArgs), closure);
-  }
-  else {
-    throw new Error("Unhandeled case in curified function app : " + vfunc);
-  }
-}
-
-/**
- * Evaluates an anonymous function by recursion until no more arguments needs
- * to be added to the closure, then it is evaluated by eval exp or func 
- * depending on the type of the function
- * @param {E.AFunctionApp} exp 
- * @param {Env} env
- * @returns {V.Value}
- */
-// FIXME: I don't understand what you mean by "evaluate" above.
-// Usually evaluating an anonymous function is trivial and just constructs
-// a closure object.  I don't know what you mean by "add[ing arguments]
-// to the closure".
-// ANS : What I mean is for (\x -> \y -> x + y) 1 2 we add the arg x = 1 to the
-//       closure then start again (by recursion) with the rest of the arguments 
-// I also don't understand what "App" means in the function name.
-// ANS : "App" means application in this case, admittedly we will always have a 
-//       application of function but it's to seperate from function like
-//       evaluateFunc where we have the body of the func (not the name) and the
-//       args as different arguments, which is the 'general' function evaluation
-//       function
-function evaluateAFunctionApp(exp, env){
-  debug("A Function App", exp);
-  if (exp.args.length === 0){
-    if (exp.func.type === "LambdaExp"){
-      return evaluateFunc(exp.func, [], env);
-    }
-    return evaluateExp(exp.func, env);
-  } else {
-    let closure = env.clone();
-    if (exp.args[0].type === "TupleExp"){
-      if (exp.args[0].elems.length !== exp.func.args[0].elems.length){
-        throw new Error("Mismatch between number of arguments given and " + 
-          "expected in tuple of anonymous function");
-      }
-      closure.add(exp.func.args[0].elems[0].name, exp.args[0].elems[0], true);
-      exp.args[0].elems.shift();
-      exp.func.args[0].elems.shift();
-
-      if (exp.args[0].elems.length === 0){
-        exp.args.shift();
-        exp.func.args.shift();
-      }
-    } else {
-      closure.add(exp.func.args[0].name, exp.args[0], true);
-      exp.args.shift();
-      exp.func.args.shift();
-    }
-    if (exp.func.args.length === 0){
-      if (exp.func.type === "LambdaExp"){
-        exp.func = exp.func.body;
-      }
-      else {
-        throw new Error("Unhandeled case in Lambda Exp evaluation");
-      }
-    }
-    return evaluateExp(exp, closure);
-  }
-}
-
-/**
  * Executes a function that is given (not the name, the actual body) 
  * with it's arguments
- * If it's a primitive function (+, print, ... ) recursively curryfies it
- * If it's a manually defined function, if it has pattern matching, 
- * evaluateFuncPM manages it. If not, depending on if arguments are still 
- * needed or not, is curryfied / evaluated
- * @param {Term} decl 
+ * @param {Term} func can be a Prim, Decl or lambdaExp
  * @param {[E.Exp]} args 
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateFunc(decl, args, env){
-  debug("Func", decl);
+function evaluateFunc(func, args, env){
+  debug("Func", func);
 
-  if (decl.isPrim() || decl.isPrimIO()){
-    // For primitives, we can recursivly call with the given arguments, if 
-    // enough are given we have an actual value / IO, if not we have a Vfunc 
-    // value, which are required by currified calls
-    return decl.lambdaCall(args.map(x => evaluateExp(x, env)));
-  }
-
-  // In case of a LambdaExp, if we have arguments we can simply evaluate it 
-  // through anonymous function evaluation with the arguments, if not we add the
-  // args to the Vfunc which the curryfication will handle (we should not be in
-  // else statement if the call doesn't originate from the curr func eval)
-  if (decl.type === "LambdaExp"){
-    if (args.length > 0){
-      return evaluateAFunctionApp(new E.AFunctionApp(args, decl), env);
-    }
-    else {
-      return new V.Vfunc(decl, env, args);
-    }
-  }
-
-  // We can assume we have a manually declared function call
-
-  let func = lookupGlobalLocal(env, decl.name);
-  if (func === undefined){
-    throw new Error(decl.name + " is undefined.");
-  }
-
-  if (func.nbArgs === null){
-    if (args.length === 0){
-      return evaluateExp(func.branches[0], env);
-    } else { // We assume func.branches[0] is a function waiting for arguments
-      // could this loop indefinetly ? because if we have a recursive func that
-      // doesn't require args so nbargs is null but some arguments are given
-      // Yes but it's not our job to identify such cases (if it even is 
-      // possible)
-
-      return evaluateFunc(func.branches[0], args, env);
-    }
-  } else {
-    if (decl.type === "functionApp"){
-      args = decl.args.concat(args);
-    }
+  if (args.length === 0){ // All the args have been given
     
-    if (func.metatype === "PRIM" || func.type === "LambdaExp"){
-      return evaluateFunc(func, args, env);
-    }
-    
-    if (func.type === "variable"){      
-      return evaluateFunc(func.branches[0], args, env);
-    }
-    
-    if (args.length < func.nbArgs){ 
-      // If we are still waiting for arguments, we delay the evaluation for the
-      // currying
-      return new V.Vfunc(func, env, args);
-    } else {
-      return evaluateFuncPM(func, args, env);
+    if (func.nbArgs === func.args.length){ // No longer waiting for args
+      
+      if (func.isPrimIO()){
+        return new V.Vio(
+          function f(){
+            return func.run()
+          }
+        ); // Return the IO to be called at exec
+      
+      } else if (func.isPrim()){
+        
+        return func.run(); // Call the primitive
+      
+      } else if (func.isDecl()){
+
+        return evaluateFuncPM(func, env); // call the func 
+
+      } else if (func.type === "LambdaExp"){ 
+        
+        let closure = env.clone();
+        for (let i = 0; i < func.args.length; i ++){
+          closure.add(func.namedArgs[i].name, func.args[i]);
+        }
+        return evaluateExp(func.body, closure);
+      
+      } else {
+        throw new Error("Func not managed in evalFunc : " + func);
+      }
+
+    } else { // We are still waiting for args
+      
+      return new V.Vfunc(func, new Env(), []); // todo 
+
     }
   }
+
+  let f = func.clone();
+  f.args = func.args.concat(args.map(x => evaluateExp(x, env)));
+  return evaluateFunc(f, [], env);
+    
+    
 }
 
 /**
  * Executes a function that requires pattern matching
- * We assume all the args are in args
- * There can be more args than required for currying
  * Implicitly converts args as a tuple to use the same pattern matching as cases
  * @param {Term} func 
- * @param {[E.Exp]} args 
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateFuncPM(func, args, env){
+function evaluateFuncPM(func, env){
   debug("Func PM", func);
-  let evalArgs = new V.Vtuple(
-    args.slice(0, func.nbArgs).map(x => evaluateExp(x, env)));
-
+  let evalArgs = new V.Vtuple(func.args);
   for (let branch of func.branches){
     let patterns = new E.TupleExp(branch.args);
     let matches = match(evalArgs, patterns);
@@ -497,18 +384,8 @@ function evaluateFuncPM(func, args, env){
           closure.add(match[0].name, match[1], true);
         }
       }
-      if (args.length > func.nbArgs){ // If we still have arguments left
-        return evaluateFunc(branch.branchBody, 
-                            args.slice(func.nbArgs), closure);
-      }
-
-      if (branch.type === "LambdaExp"){
-        return evaluateExp(branch.body, closure);
-      }
-      
       return evaluateExp(branch.branchBody, closure);
     }
-
   }
   throw new Error("No match found for pattern matching in func : " + func.name);
 }
@@ -707,7 +584,7 @@ export function isMTArray(array){
  */
 function execute(main_decl){
   debug("execution");
-  let res = []
+  let res = [];
   if (main_decl.type === "IO"){
     let a = main_decl.value.call();
     res.push(a);
