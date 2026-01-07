@@ -1,8 +1,8 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         ListPatternTerm, AFunctionApp, LambdaExp,
-         SpecialExp, TupleExp, ListExp, CurFunctionApp} from "./Exp.js";
+         ListPatternTerm, LambdaExp, SpecialExp, TupleExp, 
+         ListExp } from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -207,7 +207,7 @@ function normalizeExp(node){
       }
       // based on the fact that the second element of an infixexp is the 
       // function 
-      return new FunctionApp(node.childs[1].value, 
+      return new FunctionApp(new VarExp(node.childs[1].value), 
                              [normalizeExp(node.childs[0]),
                               normalizeExp(node.childs[2])]);
 
@@ -503,10 +503,10 @@ function normalizeDo(node){
  * in other cases the first child of an fexp is the name of the function
  * we assume that all other cases lead to anonymous functions
  * @param {Node} node 
- * @returns {AFunctionApp}
+ * @returns {FunctionApp}
  */
 function normalizeAfuncApp(node, givenArgs){
-  return new AFunctionApp(givenArgs, normalizeLambda(node));
+  return new FunctionApp(normalizeLambda(node), givenArgs)
 }
 
 /**
@@ -566,9 +566,9 @@ function normalizeCurr(node){
     if (node.childs[plus].childs[1].type === "lexp"){
       return normalizeAfuncApp(node.childs[plus].childs[1], args);
     } else {
-      return new CurFunctionApp(args, normalizeExp(node.childs[plus]));
+      return new FunctionApp(normalizeExp(node.childs[plus]), args);
     }
   }
 
-  return new FunctionApp(node.childs[plus].value, args);
+  return new FunctionApp(new VarExp(node.childs[plus].value), args);
 }
