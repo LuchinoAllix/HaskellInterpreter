@@ -306,7 +306,7 @@ function isGoodResult(expected, actual, verbose){
   expected = expected.split("\\n");
 
   for (let i = 0; i < expected.length; i++ ){
-    expected[i] === expected[i].trimEnd();
+    expected[i] = expected[i].trimEnd();
     if (expected[i] != actual[i]){
       if ((expected[i] != actual[i].toString())){
         if (verbose){
