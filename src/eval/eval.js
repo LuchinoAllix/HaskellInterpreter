@@ -340,7 +340,6 @@ function evaluateFunc(func, args, env){
     
     } else if (func.isPrim()){
       if (func.nbArgs < func.args.length){ 
-        console.log(func)
         throw new Error("Too many args");
       }
       return func.run(); // Call the primitive
@@ -400,7 +399,6 @@ function evaluateFunc(func, args, env){
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, env){
-  console.log(func)
   debug("Func PM", func);
   if (func.nbArgs === 0 || func.nbArgs === null){
     return evaluateFunc(func.branches[0], func.args, env);
