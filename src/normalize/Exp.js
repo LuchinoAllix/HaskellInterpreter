@@ -80,6 +80,10 @@ export class FunctionApp extends Exp {
     this.args = args;
   }
 
+  /**
+   * Duplicates a functionapp object, as to not have reference issues
+   * @returns {FunctionApp}
+   */
   clone(){
     return new FunctionApp(this.body, this.args);
   }
