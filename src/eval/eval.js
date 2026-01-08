@@ -153,13 +153,17 @@ function evaluateDecl(decl){
 function evaluateExp(exp, env){
   debug("Exp", exp);
 
+  // Not ideal, but the easiest solution
+  if (exp.metatype === "VALUE"){
+    return exp;
+  }
+
   switch (exp.type){
 
     case "functionApp" :
       return evaluateFuncApp(exp, env);
 
     case "var" :
-    case "variable" :
       return evaluateVar(exp, env);
 
     case "do" :
@@ -185,11 +189,6 @@ function evaluateExp(exp, env){
 
     case "case" :
       return evaluateCase(exp, env);
-
-    // Not ideal, return type different but required for thing like definig
-    // a lambda in a variable
-    case "LambdaExp":
-      return exp;
 
     // FIXME: Not quite sure how this differs from "ListExp"
     // but I think the same comment applies.
@@ -304,9 +303,10 @@ function evaluateFuncApp(exp, env){
   let f = undefined;
   if (exp.body.type === 'var'){ // named functions
     f = lookupGlobalLocal(env, exp.body.name); 
-  } else if (exp.body.type === 'LambdaExp'){ // anonymous functions
+  } else if (exp.body.type === 'LambdaExp' || exp.body.type === 'functionApp'){ 
+    // anonymous functions and currified calls
     f = exp.body;
-  }
+  } 
   if (f !== undefined){
     return evaluateFunc(f, exp.args, env);
   } else {
@@ -326,51 +326,69 @@ function evaluateFunc(func, args, env){
   debug("Func", func);
 
   if (args.length === 0){ // All the args have been given
-    
-    if (func.nbArgs === func.args.length){ // No longer waiting for args
       
-      if (func.isPrimIO()){
-        return new V.Vio(
-          function f(){
-            return func.run()
-          }
-        ); // Return the IO to be called at exec
+    if (func.isPrimIO()){
+      if (func.nbArgs < func.args.length){
+        throw new Error("Too many args");
+      }
       
-      } else if (func.isPrim()){
-        
-        return func.run(); // Call the primitive
-      
-      } else if (func.isDecl()){
-
-        return evaluateFuncPM(func, env); // call the func 
-
-      } else if (func.type === "LambdaExp"){ 
-        
-        let closure = env.clone();
-        for (let i = 0; i < func.args.length; i ++){
-          closure.add(func.namedArgs[i].name, func.args[i]);
+      return new V.Vio(
+        function f(){
+          return func.run()
         }
-        return evaluateExp(func.body, closure);
+      ); // Return the IO to be called at exec
+    
+    } else if (func.isPrim()){
+      if (func.nbArgs < func.args.length){ 
+        console.log(func)
+        throw new Error("Too many args");
+      }
+      return func.run(); // Call the primitive
+    
+    } else if (func.isDecl()){
+
+      return evaluateFuncPM(func, env); // call the func 
+
+    } else if (func.type === "LambdaExp"){ 
       
-      } else {
-        throw new Error("Func not managed in evalFunc : " + func);
+      let closure = env.clone();
+      for (let i = 0; i < func.nbArgs; i ++){
+        let matches = match(func.args[i], func.namedArgs[i]);
+        if (matches[0] === -1){
+          // should never happen
+          throw new Error("no match found in pattern matching in lambda");
+        }
+        for (let j = 0; j < matches.length; j ++){
+          closure.add(matches[j][0].name, matches[j][1]);
+        }
       }
 
-    } else { // We are still waiting for args
-      return func;
+      if (func.nbArgs < func.args.length){ // we have too many args
+        return evaluateFunc(func.body, func.args.slice(func.nbArgs), closure);
+      }
+
+      return evaluateExp(func.body, closure);
+    
+    } else {
+      throw new Error("Func not managed in evalFunc : " + func);
     }
+
   }
 
+  if (func.type === "functionApp"){
+    let f = func.clone();
+    f.args = func.args.concat(args);
+    return evaluateFuncApp(f, env);
+  }
+
+  if (func.nbArgs > func.args.length + args.length){
+    throw new Error("Not enough arguments were given to func " + func);
+  }
+  
   let f = func.clone();
-  let consumedArgs = func.nbArgs - func.args.length; 
-  f.args = func.args.concat(
-    args.slice(0, consumedArgs).map(x => evaluateExp(x, env)));
+  f.args = args.map(x => evaluateExp(x, env));
 
-  if (func.nbArgs < args.length){
-    return evaluateFunc(evaluateExp(f, env), args.slice(consumedArgs), env);
-  }
-
-  return evaluateFunc(f, [], env);  
+  return evaluateFunc(f, [], env);
     
 }
 
@@ -382,7 +400,16 @@ function evaluateFunc(func, args, env){
  * @returns {V.Value}
  */
 function evaluateFuncPM(func, env){
+  console.log(func)
   debug("Func PM", func);
+  if (func.nbArgs === 0 || func.nbArgs === null){
+    return evaluateFunc(func.branches[0], func.args, env);
+  }
+  let overflow = [];
+  if (func.nbArgs < func.args.length){
+    overflow = func.args.slice(func.nbArgs);
+    func.args = func.args.slice(0, func.nbArgs);
+  }
   let evalArgs = new V.Vtuple(func.args);
   for (let branch of func.branches){
     let patterns = new E.TupleExp(branch.args);
@@ -394,9 +421,13 @@ function evaluateFuncPM(func, env){
           closure.add(match[0].name, match[1], true);
         }
       }
+      if (overflow.length > 0){
+        return evaluateFunc(branch.branchBody, overflow, closure);
+      }
       return evaluateExp(branch.branchBody, closure);
     }
   }
+  console.log(func)
   throw new Error("No match found for pattern matching in func : " + func.name);
 }
 
