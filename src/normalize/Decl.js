@@ -32,6 +32,10 @@ export class Decl extends Term {
     this.args = [];
   }
 
+  /**
+   * Duplicates a Decl object, as to not have reference issues
+   * @returns {Decl}
+   */
   clone(){
     return new Decl(this.type, this.name, this.typeAnnotation, this.branches, 
       this.nbArgs);
