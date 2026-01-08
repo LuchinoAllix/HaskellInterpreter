@@ -1,5 +1,5 @@
 import { Term } from "../normalize/Term.js";
-import { Value, Vfunc, Vio } from "./Value.js";
+import { Value } from "./Value.js";
 
 //--                   File for primitives object definition                --//
 
@@ -22,10 +22,18 @@ export class Prim extends Term {
     this.args = args;
   }
 
+  /**
+   * Allows to execute the function in the func attribute with it's arguments
+   * @returns {Value}
+   */
   run(){
     return this.func(...this.args);
   }
 
+  /**
+   * Duplicates a prim object, as to not have reference issues
+   * @returns {Prim}
+   */
   clone(){
     return new Prim(this.func, this.nbArgs);
   }
@@ -47,6 +55,10 @@ export class PrimIO extends Prim {
     this.metatype = "PRIMIO";
   }
 
+  /**
+   * Duplicates a primIO object, as to not have reference issues
+   * @returns {PrimIO}
+   */
   clone(){
     return new PrimIO(this.func, this.nbArgs);
   }
