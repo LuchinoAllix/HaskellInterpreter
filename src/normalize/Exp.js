@@ -76,8 +76,12 @@ export class FunctionApp extends Exp {
   constructor(body, args){
     super();
     this.type = "functionApp";
-    this.args = args;
     this.body = body;
+    this.args = args;
+  }
+
+  clone(){
+    return new FunctionApp(this.body, this.args);
   }
 }
 
