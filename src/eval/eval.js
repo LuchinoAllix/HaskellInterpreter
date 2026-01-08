@@ -324,32 +324,23 @@ function evaluateFuncApp(exp, env){
  */
 function evaluateFunc(func, args, env){
   debug("Func", func);
-
   if (args.length === 0){ // All the args have been given
-      
-    if (func.isPrimIO()){
+    if (func.isPrimIO()){ // Return the IO to be called at exec
       if (func.nbArgs < func.args.length){
-        throw new Error("Too many args");
+        throw new Error("Too many args given to primIO :" + func);
       }
-      
-      return new V.Vio(
-        function f(){
-          return func.run()
-        }
-      ); // Return the IO to be called at exec
+      return new V.Vio( function f(){ return func.run(); }
+      ); 
     
-    } else if (func.isPrim()){
+    } else if (func.isPrim()){  // Call the primitive
       if (func.nbArgs < func.args.length){ 
-        throw new Error("Too many args");
+        throw new Error("Too many args given to primIO :" + func);
       }
-      return func.run(); // Call the primitive
+      return func.run();
     
-    } else if (func.isDecl()){
-
-      return evaluateFuncPM(func, env); // call the func 
-
+    } else if (func.isDecl()){ // call the func 
+      return evaluateFuncPM(func, env); 
     } else if (func.type === "LambdaExp"){ 
-      
       let closure = env.clone();
       for (let i = 0; i < func.nbArgs; i ++){
         let matches = match(func.args[i], func.namedArgs[i]);
@@ -361,11 +352,9 @@ function evaluateFunc(func, args, env){
           closure.add(matches[j][0].name, matches[j][1]);
         }
       }
-
       if (func.nbArgs < func.args.length){ // we have too many args
         return evaluateFunc(func.body, func.args.slice(func.nbArgs), closure);
       }
-
       return evaluateExp(func.body, closure);
     
     } else {
@@ -378,9 +367,7 @@ function evaluateFunc(func, args, env){
     let f = func.clone();
     f.args = func.args.concat(args);
     return evaluateFuncApp(f, env);
-  }
-
-  if (func.nbArgs > func.args.length + args.length){
+  } else if (func.nbArgs > func.args.length + args.length){
     throw new Error("Not enough arguments were given to func " + func);
   }
   
@@ -388,7 +375,6 @@ function evaluateFunc(func, args, env){
   f.args = args.map(x => evaluateExp(x, env));
 
   return evaluateFunc(f, [], env);
-    
 }
 
 /**
@@ -404,7 +390,7 @@ function evaluateFuncPM(func, env){
     return evaluateFunc(func.branches[0], func.args, env);
   }
   let overflow = [];
-  if (func.nbArgs < func.args.length){
+  if (func.nbArgs < func.args.length){ // If we have too many args
     overflow = func.args.slice(func.nbArgs);
     func.args = func.args.slice(0, func.nbArgs);
   }
@@ -419,7 +405,8 @@ function evaluateFuncPM(func, env){
           closure.add(match[0].name, match[1], true);
         }
       }
-      if (overflow.length > 0){
+      if (overflow.length > 0){ 
+        // If we have too many args we know we have a func
         return evaluateFunc(branch.branchBody, overflow, closure);
       }
       return evaluateExp(branch.branchBody, closure);
