@@ -159,6 +159,7 @@ function evaluateExp(exp, env){
       return evaluateFuncApp(exp, env);
 
     case "var" :
+    case "variable" :
       return evaluateVar(exp, env);
 
     case "do" :
@@ -184,6 +185,11 @@ function evaluateExp(exp, env){
 
     case "case" :
       return evaluateCase(exp, env);
+
+    // Not ideal, return type different but required for thing like definig
+    // a lambda in a variable
+    case "LambdaExp":
+      return exp;
 
     // FIXME: Not quite sure how this differs from "ListExp"
     // but I think the same comment applies.
@@ -351,16 +357,20 @@ function evaluateFunc(func, args, env){
       }
 
     } else { // We are still waiting for args
-      
-      return new V.Vfunc(func, new Env(), []); // todo 
-
+      return func;
     }
   }
 
   let f = func.clone();
-  f.args = func.args.concat(args.map(x => evaluateExp(x, env)));
-  return evaluateFunc(f, [], env);
-    
+  let consumedArgs = func.nbArgs - func.args.length; 
+  f.args = func.args.concat(
+    args.slice(0, consumedArgs).map(x => evaluateExp(x, env)));
+
+  if (func.nbArgs < args.length){
+    return evaluateFunc(evaluateExp(f, env), args.slice(consumedArgs), env);
+  }
+
+  return evaluateFunc(f, [], env);  
     
 }
 
