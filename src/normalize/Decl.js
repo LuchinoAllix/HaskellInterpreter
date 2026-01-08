@@ -44,7 +44,7 @@ export class Decl extends Term {
    * @param {Branch} branch 
    */
   addBranchDef(branch){
-    if (branch.args === null){ 
+    if (branch.args === null || branch.args === undefined){ 
       // variable branch : do nothing
     } else if (this.nbArgs === null || this.nbArgs === undefined){ 
       // number of arguments not yet initialized
