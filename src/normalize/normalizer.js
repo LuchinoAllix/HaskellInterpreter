@@ -1,8 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         LambdaExp, SpecialExp, TupleExp, 
-         ListExp } from "./Exp.js";
+         LambdaExp, SpecialExp } from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -503,18 +502,22 @@ function normalizeAfuncApp(node, givenArgs){
 
 /**
  * Transforms an aexp_ node who's first child is "(" (presumably) into a tuple
- * expression object
+ * expression object (a call to (,) function)
+ * We suppose we get a node with at least 5 childs
  * @param {Node} node 
- * @returns {TupleExp}
+ * @returns {FunctionApp}
  */
 function normalizeTuple(node){
-  let elems = [];
-  for (let child of node.childs){
-    if (child.type !== "Special"){
-      elems.push(normalizeExp(child));
-    }
+  let arg1, arg2;
+  arg1 = normalizeExp(node.childs[1]);
+  if (node.childs.length === 5){
+    arg2 = normalizeExp(node.childs[3]);
+  } else {
+    node.childs.splice(1,2); // removing the first value child and the comma 
+    arg2 = normalizeTuple(node);
   }
-  return new TupleExp(elems);
+  return new FunctionApp(new VarExp(","), [arg1, arg2]);
+
 }
 
 /**
