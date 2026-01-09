@@ -502,18 +502,23 @@ function normalizeTuple(node){
 
 /**
  * Transforms an aexp_ node who's first child is "[" (presumably) into a list
- * expression object 
+ * expression object (a call to (:) function)
  * @param {Node} node 
- * @returns {ListExp}
+ * @returns {FunctionApp}
  */
 function normalizeList(node){
-  let elems = [];
-  for (let child of node.childs){
-    if (child.type !== "Special"){
-      elems.push(normalizeExp(child));
-    }
+  let arg1, arg2;
+  if (node.childs.length < 3){
+    throw new Error("Mismanagement of aexp_ node in normalise list");
+  } else if (node.childs.length === 3){
+    arg1 = normalizeExp(node.childs[1]);
+    arg2 = new ValExp('[]','special');
+  } else { // we suppose we have an odd number of childs > 3
+    arg1 = normalizeExp(node.childs[1]);
+    node.childs.splice(1,2); // removing the first value child and the comma 
+    arg2 = normalizeList(node);
   }
-  return new ListExp(elems);
+  return new FunctionApp(new VarExp(":"), [arg1, arg2]);
 }
 
 /**
