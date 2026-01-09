@@ -15,8 +15,9 @@ Usage:
 Options :<br>
   - `--Tokens` shows the list of token after lexing
   - `--AST` shows the AST after parsing
-  - `--Debug` shows the rules took whilst parsing
-  - `--Nosave` doesn't save the AST after parsing
+  - `--DebugParse` shows the rules took whilst parsing
+  - `--DebugEval` shows the functions took whilst evaluating
+  - `--Nosave` doesn't save the AST and NF after generating them
   - `--Derivative` shows/saves the derivative tree instead of the AST
   - `--NF` shows the normal form after normalizing
   - `--Verbose` shows error messages if all tests are run
