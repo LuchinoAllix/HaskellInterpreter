@@ -193,6 +193,19 @@ export class Env {
       }
     , 2));
 
+    this.add(':', new Prim(
+      function consList(a, b){
+        // TODO
+        return null;
+      }
+    , 2));
+
+    this.add(',', new Prim(
+      function consTuple(a, b){
+        // TODO
+        return null;
+      }
+    , 2));
   }
 
   /**
