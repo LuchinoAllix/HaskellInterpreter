@@ -1,7 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         ListPatternTerm, LambdaExp, SpecialExp, TupleExp, 
+         LambdaExp, SpecialExp, TupleExp, 
          ListExp } from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
@@ -201,13 +201,14 @@ function normalizeExp(node){
     case "infixexp" :
       if (node.childs.length >= 3){
         if (node.childs[1].value === ":"){
-          return new ListPatternTerm(normalizeExp(node.childs[0]),
-                                     normalizeExp(node.childs[2]));
+          return new FunctionApp(new VarExp(":"),
+                                 [normalizeExp(node.childs[0]),
+                                  normalizeExp(node.childs[2])]);
         }
       }
       // based on the fact that the second element of an infixexp is the 
       // function 
-      return new FunctionApp(new VarExp(node.childs[1].value), 
+      return new FunctionApp(new VarExp(node.childs[1].value),
                              [normalizeExp(node.childs[0]),
                               normalizeExp(node.childs[2])]);
 
@@ -262,8 +263,9 @@ function normalizeExp(node){
       } else if (node.childs[0].value === "(" && node.childs.length === 3){
         return normalizeExp(node.childs[1]);      
       } else if (node.childs[1].value === ":" && node.childs.length === 3){
-        return new ListPatternTerm(normalizeExp(node.childs[0]),
-                                   normalizeExp(node.childs[2]));
+        return new FunctionApp(new VarExp(":"),
+                               [normalizeExp(node.childs[0]),
+                               normalizeExp(node.childs[2])]);
       } else if (node.childs[0].value === "[" && node.childs.length === 3){
         return normalizeList(node);
       } else {
