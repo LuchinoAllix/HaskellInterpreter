@@ -307,6 +307,11 @@ function normalizeExp(node){
   }
 }
 
+/**
+ * Turns a list of chars valexp into the function app of (:)
+ * @param {[ValExp]} charList 
+ * @returns {FunctionApp}
+ */
 function charListToFuncApp(charList){
   if (charList.length === 0){
     return new ValExp("[]", "special");
