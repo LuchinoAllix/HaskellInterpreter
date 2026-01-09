@@ -246,7 +246,8 @@ function normalizeExp(node){
       for (let char of charlist){
         expCharList.push(new ValExp(char, "Char"));
       }
-      return new ListExp(expCharList);
+      
+      return charListToFuncApp(expCharList);
 
     case "Special" :
     case "reservdop" :
@@ -304,6 +305,15 @@ function normalizeExp(node){
     default :
       throw Error("This expression type is not yet supported : " + node.type);
   }
+}
+
+function charListToFuncApp(charList){
+  if (charList.length === 0){
+    return new ValExp("[]", "special");
+  }
+  let arg1 = charList[0];
+  let arg2 = charListToFuncApp(charList.slice(1));
+  return new FunctionApp(new VarExp(":"), [arg1, arg2]);
 }
 
 /**
