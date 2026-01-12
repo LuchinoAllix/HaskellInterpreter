@@ -313,7 +313,7 @@ function normalizeExp(node){
  */
 function charListToFuncApp(charList){
   if (charList.length === 0){
-    return new ValExp("[]", "special");
+    return new ValExp("[]", "Special");
   }
   let arg1 = charList[0];
   let arg2 = charListToFuncApp(charList.slice(1));
@@ -532,7 +532,7 @@ function normalizeList(node){
     throw new Error("Mismanagement of aexp_ node in normalise list");
   } else if (node.childs.length === 3){
     arg1 = normalizeExp(node.childs[1]);
-    arg2 = new ValExp('[]','special');
+    arg2 = new ValExp('[]','Special');
   } else { // we suppose we have an odd number of childs > 3
     arg1 = normalizeExp(node.childs[1]);
     node.childs.splice(1,2); // removing the first value child and the comma 
