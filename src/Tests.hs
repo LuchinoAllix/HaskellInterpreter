@@ -441,10 +441,12 @@ main = do
 
 --------------------------------------------------------------------------------
 -- Test 46         : paire
--- Expected result : (1,2)
+-- Expected result : (1,2,3)
 
 --/
-main = print (1,2) 
+a = (1,2,3)
+b = (1,(2,3))
+main = print (1,2,3) 
 --/
 
 --------------------------------------------------------------------------------
@@ -480,7 +482,22 @@ main = print [1,2]
 --/
 
 --------------------------------------------------------------------------------
--- Test 51         : list
+-- Test 51         : longer list
+-- Expected result : [1,2,3]
+
+--/
+main = print [1,2,3]
+--/
+--------------------------------------------------------------------------------
+-- Test 52         : embeded list
+-- Expected result : [[1],[2]]
+
+--/
+main = print [[1],[2]] 
+--/
+
+--------------------------------------------------------------------------------
+-- Test 53         : more embeded list
 -- Expected result : [[1,2],[1,2,3]]
 
 --/
@@ -488,7 +505,7 @@ main = print [[1,2],[1,2,3]]
 --/
 
 --------------------------------------------------------------------------------
--- Test 52         : empty list
+-- Test 54         : empty list
 -- Expected result : []
 
 --/
@@ -496,7 +513,7 @@ main = print []
 --/
 
 --------------------------------------------------------------------------------
--- Test 53         : list with one element
+-- Test 55         : list with one element
 -- Expected result : [1]
 
 --/
@@ -504,7 +521,7 @@ main = print [1]
 --/
 
 --------------------------------------------------------------------------------
--- Test 54         : case of in main
+-- Test 56         : case of in main
 -- Expected result : [o,n,e]
 
 --/
@@ -517,7 +534,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 55         : case of in main with tuple
+-- Test 57         : case of in main with tuple
 -- Expected result : [o,n,e, ,z,e,r,o, ,l,e,f,t]
 
 --/
@@ -531,7 +548,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 56         : case of in main with tuple of tuple
+-- Test 58         : case of in main with tuple of tuple
 -- Expected result : 4
 
 --/
@@ -546,7 +563,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 57         : case of in main with one line
+-- Test 59         : case of in main with one line
 -- Expected result : 3
 
 --/
@@ -557,7 +574,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 58         : case of in main with a list on branch and exp
+-- Test 60         : case of in main with a list on branch and exp
 -- Expected result : 3
 
 --/
@@ -569,7 +586,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 59         : case of with a list as exp and list patterns on branch
+-- Test 61         : case of with a list as exp and list patterns on branch
 -- Expected result : 2 
 
 --/
@@ -582,7 +599,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 60         : case of in main with only list patterns as branch and exp
+-- Test 62         : case of in main with only list patterns as branch and exp
 -- Expected result : [2]
 
 --/
@@ -595,7 +612,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 61         : case of with a list as branch and list patterns as exp
+-- Test 63         : case of with a list as branch and list patterns as exp
 -- Expected result : 2 
 
 --/
@@ -608,7 +625,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 62         : case of with a list matched fully
+-- Test 64         : case of with a list matched fully
 -- Expected result : [1,2,4]
 
 --/
@@ -621,7 +638,7 @@ main = print (
               )
 --/
 --------------------------------------------------------------------------------
--- Test 63         : eval a list as a pattern
+-- Test 65         : eval a list as a pattern
 -- Expected result : [1,2]\n[1]\n[[1,2],[2]]\n[1,2,3]\n[1,2,3,4]
 
 --/
@@ -633,7 +650,7 @@ main = do
           print (1 : 2 : 3 : [4])
 --/
 --------------------------------------------------------------------------------
--- Test 64         : currying and pattern matching in function 
+-- Test 66         : currying and pattern matching in function 
 -- Expected result : 1
 
 --/
@@ -645,7 +662,7 @@ tmp = func 0
 main = print (tmp 2)
 --/
 --------------------------------------------------------------------------------
--- Test 65         : currying and pattern matching in function 
+-- Test 67         : currying and pattern matching in function 
 -- Expected result : 2
 
 --/
@@ -661,7 +678,7 @@ tmp2 = tmp1 2
 main = print (tmp2 4 2)
 --/
 --------------------------------------------------------------------------------
--- Test 66         : recursive call with prints
+-- Test 68         : recursive call with prints
 -- Expected result : 2\n1\n0\n[f,i,n,i,s,h,e,d]
 
 --/
@@ -673,7 +690,7 @@ func a = if (a >= 0) then do
 main = func 2
 --/
 --------------------------------------------------------------------------------
--- Test 67         : different functions calls 
+-- Test 69         : different functions calls 
 -- Expected result : 1\n1\n1
 
 --/
@@ -685,7 +702,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 68         : calling the same function in different statements
+-- Test 70         : calling the same function in different statements
 -- Expected result : 2\n4\n6
 
 --/
@@ -696,7 +713,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 69         : lambdas
+-- Test 71         : lambdas
 -- Expected result : 6
 
 --/
