@@ -17,7 +17,6 @@ let printDebug = false; // for debug, edited in activateDebugEval
  * Function to print in a certain color, indented according to the space
  * variable. Used in rules, branch and data functions to print the path took
  * by the parser.
- * @param {Integer} col color in which to print 
  * @param {String} text text to print 
  * @param {Boolean} val additional result to print
  */
@@ -33,7 +32,10 @@ function debug(text, val){
         name = b;
       }
     } catch(error){}
-    console.log(text, " " + name);
+//    console.log(" - ");
+    console.log(text)
+    console.log(val);
+    console.log(" - ");
   }
 }
 
@@ -329,8 +331,7 @@ function evaluateFunc(func, args, env){
       if (func.nbArgs < func.args.length){
         throw new Error("Too many args given to primIO :" + func);
       }
-      return new V.Vio( function f(){ return func.run(); }
-      ); 
+      return new V.Vio( function f(){ return func.run(); } ); 
     
     } else if (func.isPrim()){  // Call the primitive
       if (func.nbArgs < func.args.length){ 
@@ -405,7 +406,7 @@ function evaluateFuncPM(func, env){
           closure.add(match[0].name, match[1], true);
         }
       }
-      if (overflow.length > 0){ 
+      if (overflow.length > 0){
         // If we have too many args we know we have a func
         return evaluateFunc(branch.branchBody, overflow, closure);
       }
