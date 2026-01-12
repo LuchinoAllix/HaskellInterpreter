@@ -76,7 +76,7 @@ export class FunctionApp extends Exp {
   constructor(body, args){
     super();
     this.type = "functionApp";
-    this.body = body;
+    this.body = body; // change name TODO
     this.args = args;
   }
 
