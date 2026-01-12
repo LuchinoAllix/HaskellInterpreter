@@ -361,7 +361,6 @@ function evaluateFunc(func, args, env){
     } else {
       throw new Error("Func not managed in evalFunc : " + func);
     }
-
   }
 
   if (func.type === "functionApp"){
@@ -641,6 +640,10 @@ function lookupGlobalLocal(env, name){
   if (res !== undefined){
     return res;
   }
+  if (isNcommas(name)){
+    global_env.addNcommas(name);
+    return global_env.lookup(name);
+  }
   throw Error(name + " is undefined.");
 }
 
@@ -649,6 +652,14 @@ function lookupGlobalLocal(env, name){
  * To be used in interactive mode
  */
 function resetGlobalEnv(){
-  global_env = new Env;
+  global_env = new Env();
   global_env.initGlobal();
+}
+
+function isNcommas(str){
+  if (str.length === 0){
+    return true;
+  } else if (str[0] === ","){
+    return isNcommas(str.slice(1));
+  }
 }
