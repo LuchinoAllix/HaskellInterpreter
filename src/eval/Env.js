@@ -82,7 +82,6 @@ export class Env {
     this.add("print", new PrimIO( // should automatially convert list of chars 
                                   // to sring ? #fixme
       function print(a){
-        console.log(a)
         function makeStr(val){
           let bord = null;
           if (val.type === "tuple"){
