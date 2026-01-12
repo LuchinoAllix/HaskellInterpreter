@@ -216,4 +216,12 @@ export class Env {
     }
     return tmp;
   }
+
+  addNcommas(str){
+    this.add(str, new Prim(
+      function consNTuple(...a){
+        return new Vtuple(a);
+      }
+    , str.length + 1));
+  }
 }
