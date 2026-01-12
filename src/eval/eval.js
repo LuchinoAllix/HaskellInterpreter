@@ -301,7 +301,7 @@ function evaluateValue(exp){
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateFuncApp(exp, env){
+function evaluateFuncApp(exp, env){ // TODO
   let f = undefined;
   if (exp.body.type === 'var'){ // named functions
     f = lookupGlobalLocal(env, exp.body.name); 
