@@ -640,7 +640,7 @@ function lookupGlobalLocal(env, name){
   if (res !== undefined){
     return res;
   }
-  if (isNcommas(name)){
+  if (isNcommas(name)){ // Add the comma function to the global env if need be
     global_env.addNcommas(name);
     return global_env.lookup(name);
   }
@@ -656,6 +656,12 @@ function resetGlobalEnv(){
   global_env.initGlobal();
 }
 
+/**
+ * Determines if an str is a list of ','
+ * There probably is a more efficent way of doing so than with recursion
+ * @param {String} str 
+ * @returns {Boolean}
+ */
 function isNcommas(str){
   if (str.length === 0){
     return true;

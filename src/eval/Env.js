@@ -217,6 +217,11 @@ export class Env {
     return tmp;
   }
 
+  /**
+   * Adds a comma function to the env
+   * Required for tuples
+   * @param {String} str 
+   */
   addNcommas(str){
     this.add(str, new Prim(
       function consNTuple(...a){
