@@ -98,6 +98,7 @@ export class VList extends Value {
   
   /**
    * list return type
+   * Does not verify homogeneity
    * @param {[Value]} values 
    */
   constructor(values){
