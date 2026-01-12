@@ -508,16 +508,14 @@ function normalizeAfuncApp(node, givenArgs){
  * @returns {FunctionApp}
  */
 function normalizeTuple(node){
-  let arg1, arg2;
-  arg1 = normalizeExp(node.childs[1]);
-  if (node.childs.length === 5){
-    arg2 = normalizeExp(node.childs[3]);
-  } else {
-    node.childs.splice(1,2); // removing the first value child and the comma 
-    arg2 = normalizeTuple(node);
+  let args = [] ;
+  for (let i = 1; i < node.childs.length-1; i += 2){
+    args.push(normalizeExp(node.childs[i]));
   }
-  return new FunctionApp(new VarExp(","), [arg1, arg2]);
-
+  if (args.length < 2){
+    throw new Error("Not enough elements given for tuple");
+  }
+  return new FunctionApp(new VarExp(",".repeat(args.length-1)), args);
 }
 
 /**
