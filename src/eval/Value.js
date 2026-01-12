@@ -1,4 +1,5 @@
 import { Env } from "./Env.js";
+import { isMTArray } from "./eval.js";
 
 /**
  * Abstract class for acutal value return type
@@ -100,15 +101,15 @@ export class VList extends Value {
    * @param {[Value]} values 
    */
   constructor(values){
-    if (values.length > 1){
-      let t0 = values[0].type;
-      for (let i = 1; i < values.length; i ++){
-        if (values[i].type !== t0){
-          throw Error("Elements in list are not homogenous (run-time error)");
-          // This test is not recursive, so #FIXME
-        }
+    if (values.length === 0){
+      super("list", []);
+    } else {
+      if (isMTArray(values[1].value)){
+        super("list", [values[0]]);
+      } else {
+        values[1].value = [values[0]].concat(values[1].value);
+        super("list", values[1].value);
       }
     }
-    super("list", values)
   }
 }
