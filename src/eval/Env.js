@@ -1,7 +1,6 @@
-import { Decl } from "../normalize/Decl.js";
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList } from "./Value.js";
+import { Vint, Vbool, VList, Vtuple } from "./Value.js";
 
 //--                   File for environment object definition               --//
 
@@ -83,6 +82,7 @@ export class Env {
     this.add("print", new PrimIO( // should automatially convert list of chars 
                                   // to sring ? #fixme
       function print(a){
+        console.log(a)
         function makeStr(val){
           let bord = null;
           if (val.type === "tuple"){
@@ -195,15 +195,13 @@ export class Env {
 
     this.add(':', new Prim(
       function consList(a, b){
-        // TODO
-        return null;
+        return new VList([a, b]);
       }
     , 2));
 
     this.add(',', new Prim(
       function consTuple(a, b){
-        // TODO
-        return null;
+        return new Vtuple([a, b]);
       }
     , 2));
   }
