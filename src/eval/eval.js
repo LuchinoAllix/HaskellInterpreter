@@ -382,7 +382,9 @@ function evaluateFuncPM(func, env){
   }
   let evalArgs = new V.Vtuple(func.args);
   for (let branch of func.branches){
-    let patterns = new E.TupleExp(branch.args);
+    let patterns = new E.FunctionApp( // making a tuple expression
+      new E.VarExp(",".repeat(branch.args.length-1)),
+      branch.args);
     let matches = match(evalArgs, patterns);
     if (matches.length > 0 && matches[0] !== -1){
       let closure = env.clone();
