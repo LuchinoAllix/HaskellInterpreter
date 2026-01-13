@@ -457,14 +457,15 @@ function evaluateCase(exp, env){
     }
   }
   throw new Error("No pattern was found to match in case with " + exp.exp);
-      
 }
 
-/** TODO
- * 
- * @param {*} values 
- * @param {*} exps 
- * @returns 
+/** 
+ * Does a pattern matching on all the values and exps given (1 to 1)
+ * Is used in evaluateFunctionPM rather than implicitly converting the args to 
+ * pm into tuples
+ * @param {[V.Value]} values 
+ * @param {[E.Exp]} exps 
+ * @returns {[[E.Exp]]} 
  */
 function matchAll(values, exps){
   if (values.length !== exps.length){
