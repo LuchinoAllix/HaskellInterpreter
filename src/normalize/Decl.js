@@ -54,7 +54,7 @@ export class Decl extends Term {
       // number of arguments not yet initialized
       this.nbArgs = branch.args.length;
     } else if(this.nbArgs !== branch.args.length){
-      throw Error("Mismatch between number of arguments in different " +
+      throw new Error("Mismatch between number of arguments in different " +
                  "parts of the function declaration, branch already processed :" 
                  + this.nbArgs + " !== processed branch :" + branch.args.length
                  + " in function " + this.name);

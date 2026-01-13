@@ -50,9 +50,9 @@ function getProgram(program){
   if (program.index === program.input.length){
     return true;
   } else if (program.index < program.input.length){
-    throw Error("Not all input was parsed");
+    throw new Error("Not all input was parsed");
   }
-  throw Error("Index > input.length");
+  throw new Error("Index > input.length");
 }
 
 

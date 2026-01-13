@@ -37,7 +37,7 @@ function normalize(astRoot){
           return normalize(node);
         }
       }
-      throw Error("Malformed AST, body should have one non layout node.");
+      throw new Error("Malformed AST, body should have one non layout node.");
 
       //case "interactive" : 
       // TODO : Must do something different for interactive, 
@@ -49,7 +49,7 @@ function normalize(astRoot){
         if (node.type === "decl" || node.type === "gendecl"){
           addDecl(declList, normalizeDecl(node));
         } else if (!node.type.startsWith(("layout"))){
-          throw Error("Only declarations are allowed in program mode, not" + 
+          throw new Error("Only declarations are allowed in program mode, not" + 
             node.type);
         }
       }
@@ -70,7 +70,7 @@ function normalize(astRoot){
       return normalizeExp(astRoot);
     
     default :
-      throw Error("This type of node is not yet managed by normalize : " 
+      throw new Error("This type of node is not yet managed by normalize : " 
         + astRoot.type);
 
   }
@@ -97,7 +97,7 @@ function normalizeDecl(node){
         return branchFuncDecl(name, normalize(node.childs[1]), 
         getArgs(node.childs[0]));
       } else {
-        throw Error("Malformed AST");
+        throw new Error("Malformed AST");
       }
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
@@ -105,7 +105,7 @@ function normalizeDecl(node){
       return branchVarDecl(name, normalize(node.childs[1]));
     }
     } else {
-    throw Error(node.type + " was given when expected gendecl or decl.");
+    throw new Error(node.type + " was given when expected gendecl or decl.");
   }
 }
 
@@ -123,7 +123,7 @@ function isGendeclFunc(node){
       return false;
     }
   }
-  throw Error("No type found in gendecl");
+  throw new Error("No type found in gendecl");
 }
 
 /**
@@ -153,17 +153,17 @@ function addDecl(declList, decl){
     if (declList[i].name === decl.name){ // If declaration already exists
 
       if (declList[i].typeAnnotation !== null && decl.typeAnnotation !== null){
-        throw Error("Type for "+  declList[i].name + " is already defined");
+        throw new Error("Type for "+  declList[i].name + " is already defined");
       }
 
       if (declList[i].typeAnnotation === null && decl.typeAnnotation !== null){
-        throw Error("Type annotation should come before " + 
+        throw new Error("Type annotation should come before " + 
                     "definition" + decl);
       }
 
       if (i !== declList.length - 1){
         // We suppose that the declaration should be the last one
-        throw Error("Declarations on multiple lines should follow one " + 
+        throw new Error("Declarations on multiple lines should follow one " + 
           "another");
       } 
 
@@ -172,7 +172,7 @@ function addDecl(declList, decl){
           declList[i].addBranchDef(decl.branches[0]);
           return ;
         } else {
-          throw Error("Cannot redefine variable : " + decl.name);
+          throw new Error("Cannot redefine variable : " + decl.name);
         }
       
       } else if (decl.isFunc()){
@@ -181,7 +181,7 @@ function addDecl(declList, decl){
 
       
       } else {
-        throw Error("A declaration other than a function or variable was " +
+        throw new Error("A declaration other than a function or variable was " +
           "given to addDecl " + decl.type);
       }
     }
@@ -227,7 +227,7 @@ function normalizeExp(node){
       } else if (node.childs[0].value === "["){
         return normalizeList(node);
       } else {
-        throw Error("Unknow node starting in aexp_ childs : " + 
+        throw new Error("Unknow node starting in aexp_ childs : " + 
           node.childs[0].value);
       }
 
@@ -288,7 +288,7 @@ function normalizeExp(node){
         case "do" :
           return normalizeDo(node);
         default :
-          throw Error("This kind of lexp is not yet supported :" +
+          throw new Error("This kind of lexp is not yet supported :" +
             node.childs[0].value);
       }
 
@@ -297,12 +297,13 @@ function normalizeExp(node){
         case "_" :
           return new SpecialExp("_");
         default :
-          throw Error("This kind of reservdid is not yet supported :" +
+          throw new Error("This kind of reservdid is not yet supported :" +
             node.childs[0].value);
       }
 
     default :
-      throw Error("This expression type is not yet supported : " + node.type);
+      throw new Error("This expression type is not yet supported : " +
+         node.type);
   }
 }
 
@@ -347,7 +348,7 @@ function countTypeArgs(node){
   } else if (node.type === "type"){
     return 1 + countTypeArgs(node.childs[2]);
   } else {
-    throw Error("Unsupported node in counting args : " + node.type);
+    throw new Error("Unsupported node in counting args : " + node.type);
   }
 }
 
@@ -365,7 +366,7 @@ function normalizeQconid(node){
     case "True" :
       return new ValExp(true, "Boolean");
     default :
-      throw Error("Qconid not yet managed : " + node.value);
+      throw new Error("Qconid not yet managed : " + node.value);
   }
 }
 
@@ -459,7 +460,7 @@ function normalizeLambda(node){
         func = (normalizeExp(child));
       } else {
         console.log(node)
-        throw Error("Mismanagement of anonymous function");
+        throw new Error("Mismanagement of anonymous function");
       }
     }
     return new LambdaExp(args, func);

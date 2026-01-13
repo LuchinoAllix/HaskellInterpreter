@@ -65,7 +65,7 @@ export function initEvalComp(program){
   for (let term of terms){
     
     if (term.metatype === "EXP"){
-      throw Error("In succesion of terms at toplevel, only declarations " + 
+      throw new Error("In succesion of terms at toplevel, only declarations " + 
         "are allowed.");
     } 
     
@@ -107,7 +107,7 @@ function evaluate(term, env){
     case "DECL" :
       return evaluateDecl(term, env);
     default :
-      throw Error("Unknown term type in evaluation : " + term.metatype);
+      throw new Error("Unknown term type in evaluation : " + term.metatype);
   }
 }
 
@@ -188,7 +188,7 @@ function evaluateExp(exp, env){
  
     default :
       console.log(JSON.stringify(exp, null, 2))
-      throw Error("exp not yet managed in eval : " + exp.type);
+      throw new Error("exp not yet managed in eval : " + exp.type);
     
   }
 }
@@ -269,7 +269,7 @@ function evaluateValue(exp){
       }
 
     default :
-      throw Error("value type not yet managed in eval : " + exp.valueType);
+      throw new Error("value type not yet managed in eval : " + exp.valueType);
   }
 }
 
@@ -409,7 +409,7 @@ function evaluateIf(exp, env){
   debug("If", exp);
   let cond = evaluateExp(exp.condition, env);
   if (cond.type !== "bool"){
-    throw Error("Expression in if condition did not evaluate to boolean.");
+    throw new Error("Expression in if condition did not evaluate to boolean.");
   } else if (cond.value){
     return evaluateExp(exp.success, env);
   } else {

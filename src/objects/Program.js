@@ -40,7 +40,7 @@ export class Program {
   incIndex(){
 
     if (this.index + 1 > this.input.length){
-      throw Error("Index went too far over input :(");
+      throw new Error("Index went too far over input :(");
     }
     this.index ++;
     return true;
@@ -52,7 +52,7 @@ export class Program {
    */
   decIndex(){
     if (this.index === 0){
-      throw Error("Index went too far backwards :(");
+      throw new Error("Index went too far backwards :(");
     }
     this.index --;
     return true;
@@ -65,7 +65,7 @@ export class Program {
    */
   incIndexN(i){
     if (this.index + i > this.input.length){
-      throw Error("Index went too far over input :(");
+      throw new Error("Index went too far over input :(");
     }
     this.index += i;
     return true;
@@ -78,7 +78,7 @@ export class Program {
    */
   decIndexN(i){
     if (this.index - i < 0){
-      throw Error("Index went too far backwards:(");
+      throw new Error("Index went too far backwards:(");
     }
     this.index -= i;
     return true;
@@ -91,7 +91,7 @@ export class Program {
    */
   setIndex(i){
     if (i <0){
-      throw Error("Set index got negative value");
+      throw new Error("Set index got negative value");
     }
     this.index = i;
     return true;
@@ -111,7 +111,7 @@ export class Program {
    */
   getNextChar(){
     if (this.index + 1 >= this.input.length){
-      throw Error("Index + 1 went too far over input :(");
+      throw new Error("Index + 1 went too far over input :(");
     }
     return this.input[this.index+1];
   }
@@ -254,7 +254,8 @@ export class Program {
     var column = 0;
     var last = this.tokens.length-1
     if (last < 0){
-      throw Error("End Merge was called on token list of size : " + (last + 1));
+      throw new Error("End Merge was called on token list of size : " + 
+        (last + 1));
     }
     while (this.tokens[last].type !== "MERGE-START"){
       accumulator = this.tokens[last].value + accumulator;
@@ -263,7 +264,7 @@ export class Program {
       this.tokens.pop();
       last --;
       if (last < 0){
-        throw Error("End Merge did not find MERGE-START");
+        throw new Error("End Merge did not find MERGE-START");
       }
     }
     var startIndex = this.tokens.pop().value;
@@ -279,7 +280,7 @@ export class Program {
    */ 
   getLastToken(){
     if (this.tokens.length < 0){
-      throw Error("Tried to get last token out of empty token list");
+      throw new Error("Tried to get last token out of empty token list");
     }
     return this.tokens[this.tokens.length-1];
   }
@@ -305,7 +306,7 @@ export class Program {
    */
   incCursor(){
     if (this.cursor === this.tokens.length){
-      throw Error("Cursor went too far over tokens list");
+      throw new Error("Cursor went too far over tokens list");
     }
     this.cursor ++;
     return true;
@@ -320,7 +321,7 @@ export class Program {
   }
 
   /**
-   * FIXME : should throw error if cursor went too far ?
+   * FIXME : should throw new Error if cursor went too far ?
    * Return the token at the cursor position
    * @returns {Token}
    */

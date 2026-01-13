@@ -58,10 +58,11 @@ function mainLoop(program,){
   if (ruleLoop(rulesObject.rules["module"], program, root, "root")){
     program.AST = root;
   } else {
-    throw Error("First rule (module) did not yield any result");
+    throw new Error("First rule (module) did not yield any result");
   }
   if (program.peek()){
-    throw Error("Not all tokens were parsed, cursor at :  " + program.cursor);
+    throw new Error("Not all tokens were parsed, cursor at :  " + 
+      program.cursor);
   }
 }
 

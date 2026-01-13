@@ -260,7 +260,7 @@ function bigLR3(tokens, stack, nbOpen){
 function bigLR2(tokens, stack, nbOpen){ 
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   if (n === NaN){
-    throw Error("Something other than an int ended up in layout token : ", 
+    throw new Error("Something other than an int ended up in layout token : ", 
                 tokens[0]);
   }
   if (stack.length > 0){
