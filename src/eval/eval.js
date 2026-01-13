@@ -283,23 +283,20 @@ function evaluateValue(exp){
  * 
  * Note, this cannot be replaced by "evaluateExp (exp.body, env)" because then
  * we lose the arguments
- * @param {Exp} exp 
+ * @param {E.FunctionApp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateFuncApp(exp, env){ // TODO
   let f = undefined;
+  console.log(exp)
   if (exp.body.type === 'var'){ // named functions
-    f = lookupGlobalLocal(env, exp.body.name); 
-  } else if (exp.body.type === 'LambdaExp' || exp.body.type === 'functionApp'){ 
-    // anonymous functions and currified calls
+    f = lookupGlobalLocal(env, exp.body.name);
+  } else { 
     f = exp.body;
-  } 
-  if (f !== undefined){
-    return evaluateFunc(f, exp.args, env);
-  } else {
-    throw Error("function " + exp.name + " is undefined");
   }
+  return evaluateFunc(f, exp.args, env);
+
 }
 
 /**
@@ -311,6 +308,8 @@ function evaluateFuncApp(exp, env){ // TODO
  * @returns {V.Value}
  */
 function evaluateFunc(func, args, env){
+  console.log(func)
+  console.log(args)
   debug("Func", func);
   if (args.length === 0){ // All the args have been given
     if (func.isPrimIO()){ // Return the IO to be called at exec
@@ -621,7 +620,7 @@ function lookupGlobalLocal(env, name){
     global_env.addNcommas(name);
     return global_env.lookup(name);
   }
-  throw Error(name + " is undefined.");
+  throw new Error(name + " is undefined.");
 }
 
 /**
