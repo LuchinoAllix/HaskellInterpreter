@@ -97,13 +97,17 @@ export class Vdo extends Value {
 export class VList extends Value {
   
   /**
-   * list return type
-   * Does not verify homogeneity
+   * Constructor for VList, used in functionApp management, so expects either an
+   * empty list or a value and a Vlist, to make a VList for a list of any number
+   * of values, use MakeVList
    * @param {[Value]} values 
    */
   constructor(values){
     if (values.length === 0){
       super("list", []);
+    } else if (values.length === 1 || values.length > 2){
+      throw new Error("This list constructor should have an empty list" + 
+        "as argument or a list with 2 elements");
     } else {
       if (isMTArray(values[1].value)){
         super("list", [values[0]]);
@@ -113,4 +117,15 @@ export class VList extends Value {
       }
     }
   }
+}
+
+/**
+ * "Constructor" for VList but where we already have a list of values
+ * @param {[Value]} values 
+ * @returns {VList}
+ */
+export function makeVList(values){
+  let list = new VList([]);
+  list.value = values;
+  return list;
 }
