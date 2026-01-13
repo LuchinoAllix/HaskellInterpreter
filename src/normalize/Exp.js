@@ -176,7 +176,8 @@ export class LambdaExp extends Exp {
     super();
     this.type = "LambdaExp";
     this.namedArgs = namedArgs;
-    this.nbArgs = namedArgs.length; // to be uniform with prim and decl (functions)
+    this.nbArgs = namedArgs.length; // to be uniform with prim and decl 
+                                    // (functions)
     this.body = body;
     this.args = []; // given args, will be added in eval
   }
