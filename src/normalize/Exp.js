@@ -2,7 +2,6 @@
 import { Branch } from "./Branch.js";
 import { Decl } from "./Decl.js";
 import { Term } from "./Term.js";
-import { isMTArray } from "../eval/eval.js";
 
 /**
  * parent class for expressions
@@ -164,33 +163,6 @@ export class DoExp extends Exp {
 }
 
 /**
- * List pattern object, used for pattern matching
- */
-export class ListPatternTerm extends Exp {
-
-  /**
-   * Pattern matching of a list as in : (a : b) a is head b is rest
-   * @param {Exp} head 
-   * @param {Exp} rest 
-   */
-  constructor(head, rest){
-    if (rest.type !== "ListExp" && rest.type !== "var"){
-      if (rest.type === "value" && ! isMTArray(rest.value)){
-        throw new Error("In pattern of list, rest must be a list not : " + 
-          JSON.stringify(rest, null, 2));
-      }
-    }
-    if (rest.value === "[]"){
-      rest.value = [];
-    }
-    super();
-    this.type = "ListPatternExp";
-    this.head = head;
-    this.rest = rest;
-  }
-}
-
-/**
  * Lambda expresions object
  */
 export class LambdaExp extends Exp {
@@ -227,37 +199,5 @@ export class SpecialExp extends Exp {
     super();
     this.type = "SpecialExp";
     this.special = special;
-  }
-}
-
-/**
- * Tuple object class 
- */
-export class TupleExp extends Exp {
-
-  /**
-   * Creates a tuple object 
-   * @param {[Exp]} elems 
-   */
-  constructor(elems){
-    super();
-    this.type = "TupleExp";
-    this.elems = elems;
-  }
-}
-
-/**
- * List object class 
- */
-export class ListExp extends Exp {
-
-  /**
-   * Creates a List object 
-   * @param {[Exp]} elems 
-   */
-  constructor(elems){
-    super();
-    this.type = "ListExp";
-    this.elems = elems;
   }
 }
