@@ -1,6 +1,6 @@
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple } from "./Value.js";
+import { Vint, Vbool, VList, Vtuple, makeVList } from "./Value.js";
 
 //--                   File for environment object definition               --//
 
@@ -188,7 +188,7 @@ export class Env {
           throw new Error("++ can only be applied between lists, not " + a.type  
             + " and " + b.type);
         }
-      return new VList(a.value.concat(b.value));  
+      return makeVList(a.value.concat(b.value));  
       }
     , 2));
 
