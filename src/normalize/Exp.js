@@ -72,7 +72,7 @@ export class FunctionApp extends Exp {
   constructor(func, args){
     super();
     this.type = "functionApp";
-    this.func = func; // change name TODO
+    this.func = func;
     this.args = args;
   }
 
