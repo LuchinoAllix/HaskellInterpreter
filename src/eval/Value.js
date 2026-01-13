@@ -37,16 +37,14 @@ export class Vchar extends Value {
 export class Vfunc extends Value {
 
   /**
-   * Used in Curryfied function calls where we need to return a function that
-   * still waits for arguments
-   * @param {function} value 
+   * @param {function} body 
    * @param {Env} closure
-   * @param {[Exp]} extraArgs
+   * @param {[Exp]} givenArgs
    */
-  constructor(value, closure, extraArgs){
-    super("func", value);
+  constructor(body, closure, givenArgs){
+    super("func", body);
     this.closure = closure;
-    this.extraArgs = extraArgs;
+    this.givenArgs = givenArgs;
   }
 }
 
