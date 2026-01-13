@@ -180,25 +180,11 @@ function evaluateExp(exp, env){
     case "if" :
       return evaluateIf(exp, env);
 
-    // FIXME: Like `do` you should convert "TupleExp" and "ListExp"
-    // to calls to functions like (:) before evaluation/typecheck.
-    // ANS : TODO
-    case "TupleExp" :
-      return new V.Vtuple(exp.elems.map(x => evaluateExp(x,env)));
-
     case "ListExp" :
       return new V.VList(exp.elems.map(x => evaluateExp(x,env)));
 
     case "case" :
       return evaluateCase(exp, env);
-
-    // FIXME: Not quite sure how this differs from "ListExp"
-    // but I think the same comment applies.
-    // ANS : These different from ListExp because in functions and cases, for 
-    // pattern matching I can't just transform (0 : a) to [0] or [0,a] since we
-    // don't know what a is, (perhaps as a linked list perhaps ?)
-    case "ListPatternExp" :
-      return evaluateListPatternExp(exp, env);
  
     default :
       console.log(JSON.stringify(exp, null, 2))
