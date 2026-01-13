@@ -65,17 +65,14 @@ export class ValExp extends Exp {
 export class FunctionApp extends Exp {
     
   /**
-   * Creates an application function expression for function that are either :
-   *    - named
-   *    - anonymous
-   *    - currified calls
-   * @param {Exp} body function to call, (var or actual body)
+   * Creates an application function expression for function 
+   * @param {Term} func function to call, var or actual body (exp)
    * @param {[Exp]} args Arguments given to the function 
    */
-  constructor(body, args){
+  constructor(func, args){
     super();
     this.type = "functionApp";
-    this.body = body; // change name TODO
+    this.func = func; // change name TODO
     this.args = args;
   }
 
@@ -84,7 +81,7 @@ export class FunctionApp extends Exp {
    * @returns {FunctionApp}
    */
   clone(){
-    return new FunctionApp(this.body, this.args);
+    return new FunctionApp(this.func, this.args);
   }
 }
 
