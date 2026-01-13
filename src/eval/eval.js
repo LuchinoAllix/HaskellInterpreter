@@ -14,9 +14,7 @@ global_env.initGlobal();
 let printDebug = false; // for debug, edited in activateDebugEval
 
 /** 
- * Function to print in a certain color, indented according to the space
- * variable. Used in rules, branch and data functions to print the path took
- * by the parser.
+ * Function to print wich function of eval is taken
  * @param {String} text text to print 
  * @param {Boolean} val additional result to print
  */
@@ -281,22 +279,32 @@ function evaluateValue(exp){
  * ref to the function, in evaluateFunc we suppose we always have the body of 
  * the function we're evaluating
  * 
- * Note, this cannot be replaced by "evaluateExp (exp.body, env)" because then
+ * Note, this cannot be replaced by "evaluateExp (exp.func, env)" because then
  * we lose the arguments
  * @param {E.FunctionApp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateFuncApp(exp, env){ // TODO
-  let f = undefined;
+function evaluateFuncApp(exp, env){
+  let func = undefined;
   console.log(exp)
-  if (exp.body.type === 'var'){ // named functions
-    f = lookupGlobalLocal(env, exp.body.name);
+  if (exp.func.type === 'var'){ // named functions
+    func = lookupGlobalLocal(env, exp.func.name);
   } else { 
-    f = exp.body;
+    func = exp.func;
   }
-  return evaluateFunc(f, exp.args, env);
+  return evaluateFunc(func, exp.args, env);
+}
 
+/**
+ * work in progress to refactor evaluation of functions
+ * @param {Term} func a decl, exp or prim(io) 
+ * @param {*} args 
+ * @param {*} env 
+ * @returns 
+ */
+function evalFunc(func, args, env){
+  return null
 }
 
 /**
@@ -500,7 +508,7 @@ function match(value, exp){
 
     case "functionApp" :
 
-      if (isNcommas(exp.body.name)){ // Tuples
+      if (isNcommas(exp.func.name)){ // Tuples
         if (value.type !== "tuple"){
           throw new Error("Pattern matching in case not of the same type, tuple"
              + " !== " + value.type);
@@ -523,7 +531,7 @@ function match(value, exp){
           return res;
         }
 
-      } else if (exp.body.name === ':'){ // Lists
+      } else if (exp.func.name === ':'){ // Lists
         if (value.type !== "list"){
           return [-1];
         } else {
