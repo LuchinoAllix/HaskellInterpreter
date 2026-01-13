@@ -478,67 +478,59 @@ function match(value, exp){
   // we assume the pattern matching can only be on one element
   switch (exp.type){
 
-    case "TupleExp" :
-      if (value.type !== "tuple"){
-        throw new Error("Pattern matching in case not of the same type, tuple" +
-          " !== " + value.type);
-      } else if (value.value.length !== exp.elems.length){
-        throw new Error("Pattern matching between different tuples should have"
-          + " the same amount of elements");
-      } else {
-        let res = [];
-        for (let i = 0; i < value.value.length; i++){
-          let recursive = match(value.value[i], exp.elems[i]);
-          for (let rec of recursive){
-            if (rec === -1){
-              return [-1];
-            }
-            res.push(rec);
-          }
-        }
-        return res;
-      }
+    case "functionApp" :
 
-    case "ListExp" :
-      if (value.type !== "list" || value.value.length !== exp.elems.length){
-        return [-1];
-      } else {
-        let res = [];
-        for (let i = 0; i < exp.elems.length; i ++){
-          let recursive = match(value.value[i], exp.elems[i]);
-          for (let rec of recursive){
-            if (rec === -1){
+      if (isNcommas(exp.body.name)){ // Tuples
+        if (value.type !== "tuple"){
+          throw new Error("Pattern matching in case not of the same type, tuple"
+             + " !== " + value.type);
+        }
+        else if (value.value.length !== exp.args.length){
+          throw new Error("Pattern matching between different tuples should"
+           + " have the same amount of elements");
+        }
+        else {
+          let res = [];
+          for (let i = 0; i < value.value.length; i++){
+            let recursive = match(value.value[i], exp.args[i]);
+            for (let rec of recursive){
+              if (rec === -1){
+                return [-1];
+              }
+              res.push(rec);
+            }
+          }
+          return res;
+        }
+
+      } else if (exp.body.name === ':'){ // Lists
+        if (value.type !== "list"){
+          return [-1];
+        } else {
+          let arg1 = match(value.value[0], exp.args[0]);
+          if (arg1[0] === -1){
+            return arg1;
+          }
+          if (value.value.length === 0){
+            if (isMTArray(exp.args[1])){
+              return [[]];
+            } else {
               return [-1];
             }
-            res.push(rec);
           }
+          let tmp = value.value;
+          value.value = value.value.slice(1);
+          let arg2 = match(value, exp.args[1]);
+          if (arg2[0] === -1){
+            value.value = tmp;
+            return arg2;
+          }
+          return arg1.concat(arg2);
         }
-        return res;
       }
 
     case "SpecialExp" :
       return [[]];
-
-    case "ListPatternExp" :
-      if (value.type !== "list" || value.value.length <= 0){
-        throw new Error("A list pattern in a case requires a list with at " + 
-          "least one element :" + value.value );
-      } else {
-        let match_head = match(value.value[0], exp.head);
-        if(match_head.length > 0 && match_head[0] === -1){
-          return [-1]
-        }
-        let match_rest;
-        if (value.value.length === 1){
-          match_rest = match(new V.VList([]), exp.rest);
-        } else {
-          match_rest = match(new V.VList(value.value.slice(1)), exp.rest);
-        }
-        if(match_rest.length > 0 && match_rest[0] === -1){
-          return [-1]
-        }
-        return match_head.concat(match_rest);
-      }
       
     case "var" :
       return [[exp, value]];
@@ -556,28 +548,6 @@ function match(value, exp){
       throw new Error("Exp not yet managed in pattern matching of eval : " + 
         exp.type);
   }
-}
-
-/**
- * Evalues a list pattern like (1 : 2 : [3,4]) to [1,2,3,4]
- * @param {E.ListPatternTerm} exp 
- * @param {Env} env 
- * @returns {V.VList}
- */
-function evaluateListPatternExp(exp, env){
-  debug("List Pattern Exp", exp);
-  let newList = [];
-  newList.push(evaluateExp(exp.head, env));
-  if (exp.rest.type === "ListExp"){
-    newList = newList.concat(evaluateExp(exp.rest, env).value);
-  } else if (!isMTArray(exp.rest.value)){
-    let tmp = evaluateExp(exp.rest, env);
-    if (tmp.type === "list"){
-      tmp = tmp.value;
-    }
-    newList = newList.concat(tmp);
-  }
-  return new V.VList(newList);
 }
 
 /**
