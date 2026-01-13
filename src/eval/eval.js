@@ -365,7 +365,6 @@ function evaluateFunc(func, args, env){
 
 /**
  * Executes a function that requires pattern matching
- * Implicitly converts args as a tuple to use the same pattern matching as cases
  * @param {Term} func 
  * @param {Env} env 
  * @returns {V.Value}
@@ -380,12 +379,8 @@ function evaluateFuncPM(func, env){
     overflow = func.args.slice(func.nbArgs);
     func.args = func.args.slice(0, func.nbArgs);
   }
-  let evalArgs = new V.Vtuple(func.args);
   for (let branch of func.branches){
-    let patterns = new E.FunctionApp( // making a tuple expression
-      new E.VarExp(",".repeat(branch.args.length-1)),
-      branch.args);
-    let matches = match(evalArgs, patterns);
+    let matches = matchAll(func.args, branch.args);
     if (matches.length > 0 && matches[0] !== -1){
       let closure = env.clone();
       for (let match of matches){
@@ -463,6 +458,29 @@ function evaluateCase(exp, env){
   }
   throw new Error("No pattern was found to match in case with " + exp.exp);
       
+}
+
+/** TODO
+ * 
+ * @param {*} values 
+ * @param {*} exps 
+ * @returns 
+ */
+function matchAll(values, exps){
+  if (values.length !== exps.length){
+    throw new Error("Match should be called on values and exps of same length");
+  }
+  let res = [];
+  for (let i = 0; i < values.length; i++){
+    let recursive = match(values[i], exps[i]);
+    for (let rec of recursive){
+      if (rec === -1){
+        return [-1];
+      }
+      res.push(rec);
+    }
+  }
+  return res;
 }
 
 /**
