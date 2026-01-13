@@ -736,8 +736,8 @@ main = print (l 1 2 3)
 --/
 
 --------------------------------------------------------------------------------
--- Test 74         : 
--- Expected result : 
+-- Test 74         : if as a function
+-- Expected result : 0
 
 --/
 f x = x - 1
