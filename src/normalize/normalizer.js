@@ -449,18 +449,23 @@ function normalizeLet(node){
 function normalizeLambda(node){
   let args = [];
   let func, reserdopCnt = 0 ;
-  for (let child of node.childs){
-    if (child.type === "reservdop"){
-      reserdopCnt += 1;
-    } else if (reserdopCnt === 1){
-      args.push(normalizeExp(child))
-    } else if (reserdopCnt === 2){
-      func = (normalizeExp(child));
-    } else {
-      throw Error("Mismanagement of anonymous function");
+  if (node.childs[0].value === "\\"){
+    for (let child of node.childs){
+      if (child.type === "reservdop"){
+        reserdopCnt += 1;
+      } else if (reserdopCnt === 1){
+        args.push(normalizeExp(child))
+      } else if (reserdopCnt === 2){
+        func = (normalizeExp(child));
+      } else {
+        console.log(node)
+        throw Error("Mismanagement of anonymous function");
+      }
     }
+    return new LambdaExp(args, func);
+  } else {
+    throw new Error("Mismanagement of lexp node")
   }
-  return new LambdaExp(args, func);
 }
 
 /**
@@ -497,7 +502,7 @@ function normalizeDo(node){
  * @returns {FunctionApp}
  */
 function normalizeAfuncApp(node, givenArgs){
-  return new FunctionApp(normalizeLambda(node), givenArgs)
+  return new FunctionApp(normalizeExp(node), givenArgs);
 }
 
 /**
@@ -515,6 +520,8 @@ function normalizeTuple(node){
   if (args.length < 2){
     throw new Error("Not enough elements given for tuple");
   }
+  // dynamically creating the right comma function depending on the length of
+  // the tuple
   return new FunctionApp(new VarExp(",".repeat(args.length-1)), args);
 }
 
