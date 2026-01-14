@@ -1,10 +1,19 @@
-import { Exp } from "./Exp.js";
+import { CaseExp, Exp, LambdaExp } from "./Exp.js";
 import { Node } from "../objects/Node.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
 
 
 //--                 File containing "type" Decl for normalize              --//
+
+
+let count = 0;
+
+function makeNewName(){
+  let name = "arg" + count;
+  count ++;
+  return name;
+}
 
 /**
  * Decl type object used as an intermediary form for evaluation
@@ -16,50 +25,9 @@ export class Decl extends Term {
 
   /**
    * Constructor for Decl
-   * @param {DeclType} type Type of declaration (function or variable)
-   * @param {String} name 
-   * @param {Node} typeAnnotation 
-   * @param {[Branch]} branches
-   * @param {Integer} nbArgs
    */
-  constructor(type, name, typeAnnotation, branches, nbArgs){
+  constructor(){
     super("DECL");
-    this.type = type;
-    this.name = name;
-    this.typeAnnotation = typeAnnotation;
-    this.branches = branches;
-    this.nbArgs = nbArgs
-    this.args = [];
-  }
-
-  /**
-   * Duplicates a Decl object, as to not have reference issues
-   * @returns {Decl}
-   */
-  clone(){
-    return new Decl(this.type, this.name, this.typeAnnotation, this.branches, 
-      this.nbArgs);
-  }
-
-  /**
-   * Allows to add a branch definition to a declaration
-   * If it's a function declaration, checks if the number of arguments in the
-   * different branches is the same (type annotation is not considered)
-   * @param {Branch} branch 
-   */
-  addBranchDef(branch){
-    if (branch.args === null || branch.args === undefined){ 
-      // variable branch : do nothing
-    } else if (this.nbArgs === null || this.nbArgs === undefined){ 
-      // number of arguments not yet initialized
-      this.nbArgs = branch.args.length;
-    } else if(this.nbArgs !== branch.args.length){
-      throw new Error("Mismatch between number of arguments in different " +
-                 "parts of the function declaration, branch already processed :" 
-                 + this.nbArgs + " !== processed branch :" + branch.args.length
-                 + " in function " + this.name);
-    }
-    this.branches.push(branch);
   }
 
   /**
@@ -87,54 +55,83 @@ export class Decl extends Term {
   }
 }
 
-/**
- * Construct a function declaration but with only the type annoatation
- * @param {String} name 
- * @param {Node} node 
- * @returns {Decl}
- */
-export function typeFuncDecl(name, node){
-  return new Decl("function", name, node, [], null);
-}
+export class FuncDecl extends Decl {
 
-/**
- * Construct a function declaration but with only the branch definition
- * @param {String} name 
- * @param {Exp} branch 
- * @param {[String]} args 
- * @returns {Decl}
- */
-export function branchFuncDecl(name, branch, args){
-  return new Decl("function", name, null, [new Branch(args, branch)], 
-                  args.length);
-}
-
-/**
- * Construct a variable declaration but with only the type annoatation
- * @param {String} name 
- * @param {Node} node 
- * @returns {Decl}
- */
-export function typeVarDecl(name, node){
-  return new Decl("variable", name, node, [], null);
-}
-
-/**
- * Construct a variable declaration but with only the branch definition
- * @param {String} name 
- * @param {Branch} branch
- * @returns {Decl}
- */
-export function branchVarDecl(name, branch){
-  let nbArgs = null;
-  if (branch.type === "LambdaExp"){
-    nbArgs = branch.args.length;
+  /** 
+   * @param {String} name 
+   * @param {Node} typeAnnotation 
+   * @param {Branch} branch
+   */
+  constructor(name, typeAnnotation, branch){
+    super("DECL");
+    this.type = "function";
+    this.name = name;
+    this.typeAnnotation = typeAnnotation;
+    if (branch !== null){
+      this.makeBody(branch);
+    } else {
+      this.body = null;
+    }
   }
-  return new Decl("variable", name, null, [branch], nbArgs);
+
+  makeBody(branch){
+    let argsNames = []
+    for (let i = 0; i < branch.args.length; i++){
+      argsNames.push(makeNewName());
+    }
+    this.body = new LambdaExp(argsNames, new CaseExp(argsNames, [branch]));
+  }
+
+  /**
+   * Allows to add a branch definition to a declaration
+   * Checks if the number of arguments in the different branches is the same 
+   * (type annotation is not considered)
+   * @param {Branch} branch
+   */
+  addBranchDef(branch){
+    if (this.body === null){
+      this.makeBody(branch);
+    } else {
+      let caseOf = this.getCase();
+      let nbArgs = caseOf.branches[0].args.length ;
+      if(nbArgs !== branch.args.length){
+        throw new Error("Mismatch between number of arguments in different " +
+          "parts of the function declaration, branch already processed :" 
+          + nbArgs + " !== processed branch :" + branch.args.length
+          + " in function " + this.name);
+      }
+      caseOf.branches.push(branch);
+    }
+  }
+
+  /**
+   * todo
+   * @returns 
+   */
+  getCase(){
+    // we suppose we only have lambda exps until the caseExp
+    let caseOf = this.body;
+    while (caseOf.type !== "case"){ 
+      caseOf = caseOf.body;
+    }
+    return caseOf;
+  }
+
 }
 
-// Doesn't serve any real function, only to show the type options
-const DeclType = {
-  functionDecl : "function",
-  variableDecl : "variable"
+export class VarDecl extends Decl {
+
+  /** 
+   * @param {String} name 
+   * @param {Node} typeAnnotation
+   * @param {Exp} def
+   */
+  constructor(name, typeAnnotation, def){
+    super("DECL");
+    this.type = "variable";
+    this.name = name;
+    this.typeAnnotation = typeAnnotation;
+    this.def = def;
+  }
+
 }
