@@ -168,7 +168,7 @@ function addDecl(declList, decl){
 
       if(decl.isVar()){
         if (declList[i].isAnnotated() && !decl.isAnnotated()){
-          declList[i].addBranchDef(decl.getCase().branches[0]);
+          declList[i].def = decl.def;
           return ;
         } else {
           throw new Error("Cannot redefine variable : " + decl.name);
