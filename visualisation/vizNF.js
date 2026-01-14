@@ -96,9 +96,10 @@ window.addEventListener("DOMContentLoaded", () => {
           // Afficher uniquement les valeurs (sans nom d'attribut)
           if (d.data.value !== undefined) {
             label += d.data.value;
-          } else if (d.data.namedArg !== undefined) {
+          } else if (d.data.namedArg !== undefined && typeof d.data.namedArg !== 
+            "object"){
             label += d.data.namedArg;
-          } else if (d.data.exp !== undefined) {
+          } else if (d.data.exp !== undefined && typeof d.data.exp !== "object"){
             label += d.data.exp;
           }  else if (d.data.name) {
             label += d.data.name;
