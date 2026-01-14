@@ -67,13 +67,13 @@ export class FunctionApp extends Exp {
   /**
    * Creates an application function expression for function 
    * @param {Term} func function to call, var or actual body (exp)
-   * @param {[Exp]} args Arguments given to the function 
+   * @param {Exp} arg Arguments given to the function 
    */
-  constructor(func, args){
+  constructor(func, arg){
     super();
     this.type = "functionApp";
     this.func = func;
-    this.args = args;
+    this.arg = arg;
   }
 
   /**
@@ -81,7 +81,24 @@ export class FunctionApp extends Exp {
    * @returns {FunctionApp}
    */
   clone(){
-    return new FunctionApp(this.func, this.args);
+    return new FunctionApp(this.func, this.arg);
+  }
+}
+
+/**
+ * todo
+ * @param {*} func 
+ * @param {*} args 
+ * @returns 
+ */
+export function makeFuncAppOfList(func, args){
+  if (args.length === 0){
+    throw new Error("todo");
+  } else if (args.length === 1){
+    return new FunctionApp(func, args[0]);
+  } else {
+    let lastElem = args.pop();
+    return new FunctionApp(makeFuncAppOfList(func, args), lastElem);
   }
 }
 
