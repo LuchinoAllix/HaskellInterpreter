@@ -86,14 +86,17 @@ export class FunctionApp extends Exp {
 }
 
 /**
- * todo
- * @param {*} func 
- * @param {*} args 
+ * Function to make a FuncApp object but receiving a list of args, transforms it
+ * in recursive calls of functionApp to ensure that each one only take one 
+ * argument as a parameter
+ * @param {Term} func 
+ * @param {[Exp]} args 
  * @returns 
  */
 export function makeFuncAppOfList(func, args){
   if (args.length === 0){
-    throw new Error("todo");
+    throw new Error("Error in making a funcApp, at least one arg should be "
+      + "given");
   } else if (args.length === 1){
     return new FunctionApp(func, args[0]);
   } else {
