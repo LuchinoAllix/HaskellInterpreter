@@ -191,6 +191,15 @@ main = print (let x = 1 ; y = \z -> z + 1 in y x)
 --/
 
 --------------------------------------------------------------------------------
+-- Test 21         : identity function
+-- Expected result : 5
+
+--/
+id x = x
+main = print id 5 
+--/
+
+--------------------------------------------------------------------------------
 -- Test 21         : function declaration
 -- Expected result : 3
 
