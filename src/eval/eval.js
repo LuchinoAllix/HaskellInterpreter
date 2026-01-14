@@ -193,7 +193,7 @@ function evaluateExp(exp, env){
 
 /**
  * Evaluate a var by looking in the environment the value of the var, if it is
- * not yet evaluated, the result will be
+ * not yet evaluated, the result will be (evaluated)
  * @param {E.VarExp} exp 
  * @param {Env} env 
  * @returns {V.Value}
@@ -201,19 +201,23 @@ function evaluateExp(exp, env){
 function evaluateVar(exp, env){
   debug("Var ", exp);
   let variable = lookupGlobalLocal(env, exp.name);
-  if (variable !== undefined){
-    if (variable.metatype === "DECL"){
+  if (variable.isDecl()){
+    if (variable.isFunc()){
+      return new V.Vfunc(variable, new Env(), []);
+    } else if (variable.isVar()){
       return evaluateExp(variable.branches[0], env);
-    } else if (variable.metatype === "EXP"){
-      return evaluateExp(variable, env);
-    } else if (variable.metatype === "VALUE"){
-      return variable;
     } else {
-      throw new Error("variable " + exp.name + " of metatype " + 
-        variable.metatype + " is not handeled");
+      throw new Error("Decls must be either a Func or a var");
     }
+  } else if (variable.metatype === "EXP"){
+    return evaluateExp(variable, env);
+  } else if (variable.metatype === "VALUE"){
+    return variable;
+  } else if (variable.metatype === "PRIM" || variable.metatype === "PRIMIO"){
+    return new V.Vfunc(variable, new Env(), []);
   } else {
-    throw new Error("variable " + exp.name + " is undefined");
+    throw new Error("variable " + exp.name + " of metatype " + 
+      variable.metatype + " is not handeled");
   }
 }
 
@@ -286,25 +290,23 @@ function evaluateValue(exp){
  * @returns {V.Value}
  */
 function evaluateFuncApp(exp, env){
-  let func = undefined;
-  console.log(exp)
-  if (exp.func.type === 'var'){ // named functions
-    func = lookupGlobalLocal(env, exp.func.name);
-  } else { 
-    func = exp.func;
-  }
-  return evaluateFunc(func, exp.args, env);
+  let func = evaluateExp(exp.func, env);
+  let arg = evaluateExp(exp.arg, env);
+  return applyFunc(func, arg, env);
 }
 
 /**
  * work in progress to refactor evaluation of functions
  * @param {Term} func a decl, exp or prim(io) 
- * @param {*} args 
+ * @param {*} arg 
  * @param {*} env 
  * @returns 
  */
-function evalFunc(func, args, env){
-  return null
+function applyFunc(func, arg, env){
+  console.log(func)
+  console.log(arg)
+  throw new Error("todo");
+  return null;
 }
 
 /**
