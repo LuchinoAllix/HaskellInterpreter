@@ -5,10 +5,9 @@ import { isMTArray } from "./eval.js";
  * Abstract class for acutal value return type
  */
 export class Value {
-  constructor(type, value){
+  constructor(type){
     this.metatype = "VALUE";
     this.type = type;
-    this.value = value;
   }
 }
 
@@ -19,7 +18,8 @@ export class Vint extends Value {
    * @param {Integer} value 
    */
   constructor(value){
-    super("int", value);
+    super("int");
+    this.value = value;
   }
 }
 
@@ -30,7 +30,9 @@ export class Vchar extends Value {
    * @param {String} value 
    */
   constructor(value){
-    super("char", value);
+    super("char");
+    this.value = value;
+
   }
 }
 
@@ -39,12 +41,24 @@ export class Vfunc extends Value {
   /**
    * @param {function} body 
    * @param {Env} closure
-   * @param {[Exp]} givenArgs
    */
-  constructor(body, closure, givenArgs){
-    super("func", body);
+  constructor(body, arity, closure = new Env()){
+    super("func");
+    this.body = body;
+    this.arity = arity;
     this.closure = closure;
-    this.givenArgs = givenArgs;
+    this.subtype = "func";
+  }
+
+  /**
+   * todo
+   * @param {*} name 
+   * @param {*} value 
+   */
+  addArg(name, value){
+    let clone = this.closure.clone();
+    clone.add(name, value, true);
+    this.closure = clone;
   }
 }
 
@@ -55,7 +69,9 @@ export class Vio extends Value {
    * @param {function} value 
    */
   constructor(value){
-    super("IO", value);
+    super("IO");
+    this.value = value;
+
   }
 }
 
@@ -66,7 +82,8 @@ export class Vbool extends Value {
    * @param {Boolean} value 
    */
   constructor(value){
-    super("bool", value);
+    super("bool");
+    this.value = value;
   }
 }
 
@@ -77,7 +94,8 @@ export class Vtuple extends Value {
    * @param {[Value]} values 
    */
   constructor(values){
-    super("tuple", values)
+    super("tuple");
+    this.value = values;
   }
 }
 
@@ -88,7 +106,8 @@ export class Vdo extends Value {
    * @param {[Value]} values 
    */
   constructor(values){
-    super("do", values)
+    super("do");
+    this.value = value;
   }
 }
 
@@ -101,19 +120,22 @@ export class VList extends Value {
    * @param {[Value]} values 
    */
   constructor(values){
+    super("list");
+    let val;
     if (values.length === 0){
-      super("list", []);
+      val = [];
     } else if (values.length === 1 || values.length > 2){
       throw new Error("This list constructor should have an empty list" + 
         "as argument or a list with 2 elements");
     } else {
       if (isMTArray(values[1].value)){
-        super("list", [values[0]]);
+        val = [values[0]];
       } else {
         values[1].value = [values[0]].concat(values[1].value);
-        super("list", values[1].value);
+        val = values[1].value;
       }
     }
+    this.value = val;
   }
 }
 
