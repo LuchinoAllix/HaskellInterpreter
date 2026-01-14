@@ -12,32 +12,19 @@ export class Prim extends Term {
   /**
    * Creates a primitive function object
    * @param {function} func 
-   * @param {Integer} nbArgs still required 
-   * @param {[Value]} args
    */
-  constructor(func, nbArgs, args = []) {
+  constructor(func) {
     super("PRIM");
     this.func = func;
-    this.nbArgs = nbArgs;
-    this.args = args;
   }
 
   /**
    * Allows to execute the function in the func attribute with it's arguments
    * @returns {Value}
    */
-  run(){
-    return this.func(...this.args);
+  run(args){
+    return this.func(...args);
   }
-
-  /**
-   * Duplicates a prim object, as to not have reference issues
-   * @returns {Prim}
-   */
-  clone(){
-    return new Prim(this.func, this.nbArgs);
-  }
-
 }
 
 /**
@@ -48,18 +35,10 @@ export class PrimIO extends Prim {
   /**
    * Creates a primitive IO function object
    * @param {function} func 
-   * @param {Integer} nbArgs 
    */
-  constructor(func, nbArgs) {
-    super(func, nbArgs);
+  constructor(func) {
+    super(func);
     this.metatype = "PRIMIO";
   }
 
-  /**
-   * Duplicates a primIO object, as to not have reference issues
-   * @returns {PrimIO}
-   */
-  clone(){
-    return new PrimIO(this.func, this.nbArgs);
-  }
 }
