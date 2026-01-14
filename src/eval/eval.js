@@ -135,7 +135,7 @@ function output(output){
 function evaluateDecl(decl){
   debug("Decl", decl);
   if (decl.name === "main"){
-    global_env.add(decl.name, evaluateExp(decl.branches[0], new Env()));
+    global_env.add(decl.name, evaluateExp(decl.def, new Env()));
   } else {
     global_env.add(decl.name, decl);
   }
@@ -201,20 +201,22 @@ function evaluateExp(exp, env){
 function evaluateVar(exp, env){
   debug("Var ", exp);
   let variable = lookupGlobalLocal(env, exp.name);
-  if (variable.isDecl()){
+  if (variable.metatype === "DECL"){
     if (variable.isFunc()){
-      return new V.Vfunc(variable, new Env(), []);
+      return new V.Vfunc(evaluateExp(variable.body), 1, env);
     } else if (variable.isVar()){
-      return evaluateExp(variable.branches[0], env);
+      return evaluateExp(variable.def, env);
     } else {
       throw new Error("Decls must be either a Func or a var");
     }
   } else if (variable.metatype === "EXP"){
     return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
+    if (variable.type === "func" && 
+      (variable.subtype === "prim" || variable.subtype === 'primio')){
+      variable.closure = env;
+    }
     return variable;
-  } else if (variable.metatype === "PRIM" || variable.metatype === "PRIMIO"){
-    return new V.Vfunc(variable, new Env(), []);
   } else {
     throw new Error("variable " + exp.name + " of metatype " + 
       variable.metatype + " is not handeled");
@@ -279,12 +281,6 @@ function evaluateValue(exp){
  * Evaluates a function application by looking up it's definition in the env and
  * giving it it's arguments.
  * 
- * This function is different from evaluateFunc because here we may only have a
- * ref to the function, in evaluateFunc we suppose we always have the body of 
- * the function we're evaluating
- * 
- * Note, this cannot be replaced by "evaluateExp (exp.func, env)" because then
- * we lose the arguments
  * @param {E.FunctionApp} exp 
  * @param {Env} env 
  * @returns {V.Value}
@@ -437,7 +433,7 @@ function evaluateLet(exp, env){
   debug("Let", exp);
   let clone = env.clone();
   for (let decl of exp.decls){
-    clone.add(decl.name, decl.branches[0], true);
+    clone.add(decl.name, decl.branches[0], true); //TODO
   }
   return evaluateExp(exp.body, clone);
 }
