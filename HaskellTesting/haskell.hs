@@ -1,25 +1,15 @@
 --file to test random haskell scripts
 
-fact 0 = 1 
-fact n = n * fact (n - 1)
-
-factt 0 = 1 
-factt n = n * factt n - 1
-
-suml :: [Int] -> Int
-suml [] = 0
-suml (head: rest) = head + suml rest
-
-fib 0 = 0
-fib 1 = 1 
-fib a = (fib (a - 1)) + (fib (a - 2)) 
-
-main = do print (if (True) then if (False) then "sucess" else "inner fail" else "outer fail")
 
 --main = do 
-    -- fact 5
-    -- print (fact 5)
-    -- print (factt 5) -- would never finish
-    -- print (suml [1,2,3])
-    --print (fib 5)
-    --print (fib 6)
+--    x <- getLine
+--    putStrLn x
+
+--main = print (1) >> print (2)
+
+--main = do 
+--    x <- print 3
+--    return x
+
+main = do 
+    print 3 >>= \x -> return x
