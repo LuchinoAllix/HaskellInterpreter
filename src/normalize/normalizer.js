@@ -1,5 +1,4 @@
-import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
-         branchVarDecl } from "./Decl.js";
+import { Decl, FuncDecl, VarDecl} from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
          LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
@@ -86,23 +85,23 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return typeFuncDecl(name, node.childs[2]);
+      return new FuncDecl(name, node.childs[2], null);
     } else { // We know it's a variable declaration
-      return typeVarDecl(name, node.childs[2]);
+      return new VarDecl(name, node.childs[2], null);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
     if (node.childs[0].type === "funlhs"){
       name = node.childs[0].childs[0].value;
       if (isDeclFunc(node)){ // We know it's a function declaration
-        return branchFuncDecl(name, normalize(node.childs[1]), 
-        getArgs(node.childs[0]));
+        return new FuncDecl(name, null,
+          new Branch(getArgs(node.childs[0]), normalize(node.childs[1])));
       } else {
         throw new Error("Malformed AST");
       }
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
       name = node.childs[0].value;
-      return branchVarDecl(name, normalize(node.childs[1]));
+      return new VarDecl(name, null, normalize(node.childs[1]));
     }
     } else {
     throw new Error(node.type + " was given when expected gendecl or decl.");
@@ -169,16 +168,15 @@ function addDecl(declList, decl){
 
       if(decl.isVar()){
         if (declList[i].isAnnotated() && !decl.isAnnotated()){
-          declList[i].addBranchDef(decl.branches[0]);
+          declList[i].addBranchDef(decl.getCase().branches[0]);
           return ;
         } else {
           throw new Error("Cannot redefine variable : " + decl.name);
         }
       
       } else if (decl.isFunc()){
-        declList[i].addBranchDef(decl.branches[0]);
+        declList[i].addBranchDef(decl.getCase().branches[0]);
         return ;
-
       
       } else {
         throw new Error("A declaration other than a function or variable was " +
