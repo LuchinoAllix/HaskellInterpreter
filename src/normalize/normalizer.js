@@ -1,7 +1,7 @@
 import { Decl, typeFuncDecl, typeVarDecl, branchFuncDecl, 
          branchVarDecl } from "./Decl.js";
 import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
-         LambdaExp, SpecialExp } from "./Exp.js";
+         LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 
@@ -200,16 +200,16 @@ function normalizeExp(node){
     case "infixexp" :
       if (node.childs.length >= 3){
         if (node.childs[1].value === ":"){
-          return new FunctionApp(new VarExp(":"),
-                                 [normalizeExp(node.childs[0]),
-                                  normalizeExp(node.childs[2])]);
+          return makeFuncAppOfList(
+            new VarExp(":"), 
+            [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
         }
       }
       // based on the fact that the second element of an infixexp is the 
       // function 
-      return new FunctionApp(new VarExp(node.childs[1].value),
-                             [normalizeExp(node.childs[0]),
-                              normalizeExp(node.childs[2])]);
+      return makeFuncAppOfList(
+        new VarExp(node.childs[1].value),
+        [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
 
     case "fexp" :
       return normalizeCurr(node);
@@ -263,9 +263,9 @@ function normalizeExp(node){
       } else if (node.childs[0].value === "(" && node.childs.length === 3){
         return normalizeExp(node.childs[1]);      
       } else if (node.childs[1].value === ":" && node.childs.length === 3){
-        return new FunctionApp(new VarExp(":"),
-                               [normalizeExp(node.childs[0]),
-                               normalizeExp(node.childs[2])]);
+        return makeFuncAppOfList(
+          new VarExp(":"),
+          [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
       } else if (node.childs[0].value === "[" && node.childs.length === 3){
         return normalizeList(node);
       } else {
@@ -318,7 +318,7 @@ function charListToFuncApp(charList){
   }
   let arg1 = charList[0];
   let arg2 = charListToFuncApp(charList.slice(1));
-  return new FunctionApp(new VarExp(":"), [arg1, arg2]);
+  return makeFuncAppOfList(new VarExp(":"), [arg1, arg2]);
 }
 
 /**
@@ -503,8 +503,9 @@ function normalizeDo(node){
  * @returns {FunctionApp}
  */
 function normalizeAfuncApp(node, givenArgs){
-  return new FunctionApp(normalizeExp(node), givenArgs);
+  return makeFuncAppOfList(normalizeExp(node), givenArgs);
 }
+
 
 /**
  * Transforms an aexp_ node who's first child is "(" (presumably) into a tuple
@@ -521,9 +522,7 @@ function normalizeTuple(node){
   if (args.length < 2){
     throw new Error("Not enough elements given for tuple");
   }
-  // dynamically creating the right comma function depending on the length of
-  // the tuple
-  return new FunctionApp(new VarExp(",".repeat(args.length-1)), args);
+  return makeFuncAppOfList(new VarExp(",".repeat(args.length-1)), args);
 }
 
 /**
@@ -563,7 +562,7 @@ function normalizeCurr(node){
     plus = 1;
   }
 
-  for (let i = 1+plus; i < node.childs.length - plus; i++){
+  for (let i = 1 + plus; i < node.childs.length - plus; i++){
     args.push(normalizeExp(node.childs[i]))
   }
 
@@ -572,9 +571,9 @@ function normalizeCurr(node){
     if (node.childs[plus].childs[1].type === "lexp"){
       return normalizeAfuncApp(node.childs[plus].childs[1], args);
     } else {
-      return new FunctionApp(normalizeExp(node.childs[plus]), args);
+      return makeFuncAppOfList(normalizeExp(node.childs[plus]), args);
     }
   }
 
-  return new FunctionApp(new VarExp(node.childs[plus].value), args);
+  return makeFuncAppOfList(new VarExp(node.childs[plus].value), args);
 }
