@@ -747,3 +747,51 @@ main = print ((if a < 5 then f else g) a)
 --/
 
 --------------------------------------------------------------------------------
+-- Test 75         : do statement (implicient then)
+-- Expected result : 1\n2
+
+--/
+main = do
+          print (1)
+          print (2)
+--/
+--------------------------------------------------------------------------------
+-- Test 76         : do statement (explicit then)
+-- Expected result : 1\n2
+
+--/
+main = print (1) >> print (2)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 77         : do statement with '<-'
+-- Expected result : ?
+-- This would not work if, it would need to be putStrLn instead of print
+
+--/
+main = do 
+    x <- getLine
+    print x
+--/
+
+--------------------------------------------------------------------------------
+-- Test 78         : do statement with '<-' and return
+-- Expected result : 3
+
+--/
+main = do 
+    x <- print 3
+    return x
+--/
+
+--------------------------------------------------------------------------------
+-- Test 79         : do statement with '>>=' and return
+-- Expected result : 3
+
+--/
+main = do 
+    print 3 >>= \x -> return x
+--/
+
+--------------------------------------------------------------------------------
+
