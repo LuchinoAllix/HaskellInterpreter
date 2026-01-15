@@ -54,30 +54,13 @@ export class Env {
    * https://www.haskell.org/onlinereport/haskell2010/haskellch7.html
    */
   initGlobal(){
-    this.add('+', new Prim(
-      function add(a, b){
-        return new Vint(a.value + b.value);
-      }
-    , 2));
+    this.add('+', new Prim(a => new Prim(b => new Vint(a.value + b.value))));
 
-    this.add('*', new Prim(
-      function mul(a, b){
-        return new Vint(a.value * b.value);
-      }
-    , 2));
+    this.add('*', new Prim(a => new Prim(b => new Vint(a.value * b.value))));
     
-    this.add('-', new Prim(
-      function sub(a, b){
-        return new Vint(a.value - b.value);
-      }
-    , 2));
-    
+    this.add('-', new Prim(a => new Prim(b => new Vint(a.value - b.value))));
 
-    this.add('/', new Prim(
-      function div(a, b){
-        return new Vint(a.value / b.value);
-      }
-    , 2));
+    this.add('/', new Prim(a => new Prim(b => new Vint(a.value / b.value))));
 
     this.add("print", new PrimIO( // should automatially convert list of chars 
                                   // to sring ? #fixme
@@ -106,57 +89,27 @@ export class Env {
         }
         let str = makeStr(a);
         console.log(str);
-        return str; // for verification puposes
+        return str; // for verification puposes (tests)
       }
-    , 1));
+    ));
 
-    this.add("==", new Prim(
-      function equals(a,b){
-        return new Vbool(a.value === b.value);
-      }
-    , 2));
+    this.add("==", 
+      new Prim(a => new Prim(b => new Vbool(a.value === b.value))));
 
-    this.add("!=", new Prim(
-      function diff(a,b){
-        return new Vbool(a.value !== b.value);
-      }
-    , 2));
+    this.add("!=", 
+      new Prim(a => new Prim(b => new Vbool(a.value !== b.value))));
+    
+    this.add("&&", new Prim(a => new Prim(b => new Vbool(a.value && b.value))));
+    
+    this.add("||", new Prim(a => new Prim(b => new Vbool(a.value || b.value))));
 
-    this.add("&&", new Prim(
-      function and(a,b){
-        return new Vbool(a.value && b.value);
-      }
-    , 2));
+    this.add("<=", new Prim(a => new Prim(b => new Vbool(a.value <= b.value))));
 
-    this.add("||", new Prim(
-      function or(a,b){
-        return new Vbool(a.value || b.value);
-      }
-    , 2));
-
-    this.add("<", new Prim(
-      function lt(a,b){
-        return new Vbool(a.value < b.value);
-      }
-    , 2));
-
-    this.add("<=", new Prim(
-      function le(a,b){
-        return new Vbool(a.value <= b.value);
-      }
-    , 2));
-
-    this.add(">=", new Prim(
-      function ge(a,b){
-        return new Vbool(a.value >= b.value);
-      }
-    , 2));
-
-    this.add(">", new Prim(
-      function gt(a,b){
-        return new Vbool(a.value > b.value);
-      }
-    , 2));
+    this.add(">=", new Prim(a => new Prim(b => new Vbool(a.value >= b.value))));
+    
+    this.add("<", new Prim(a => new Prim(b => new Vbool(a.value < b.value))));
+    
+    this.add(">", new Prim(a => new Prim(b => new Vbool(a.value > b.value))));
 
     this.add("fst", new Prim(
       function fst(a){
@@ -182,27 +135,16 @@ export class Env {
       }
     , 1));
 
-    this.add("++", new Prim(
-      function concat(a, b){
-        if (a.type !== "list" || b.type !== "list"){
-          throw new Error("++ can only be applied between lists, not " + a.type  
-            + " and " + b.type);
-        }
-      return makeVList(a.value.concat(b.value));  
+    this.add("++", new Prim( a => new Prim(b => {
+      if (a.type !== "list" || b.type !== "list"){
+        throw new Error("++ can only be applied between lists, not " + a.type  
+          + " and " + b.type);
       }
-    , 2));
+      return makeVList(a.value.concat(b.value))})));
 
-    this.add(':', new Prim(
-      function consList(a, b){
-        return new VList([a, b]);
-      }
-    , 2));
+    this.add(':', new Prim(a => new Prim(b => new VList([a, b]))));
 
-    this.add(',', new Prim(
-      function consTuple(a, b){
-        return new Vtuple([a, b]);
-      }
-    , 2));
+    this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
   }
 
   /**
@@ -220,6 +162,7 @@ export class Env {
   /**
    * Adds a comma function to the env
    * Required for tuples
+   * #FIXME does not work with new way of handeling functions
    * @param {String} str 
    */
   addNcommas(str){
