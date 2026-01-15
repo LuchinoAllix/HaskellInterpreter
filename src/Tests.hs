@@ -196,7 +196,7 @@ main = print (let x = 1 ; y = \z -> z + 1 in y x)
 
 --/
 id x = x
-main = print id 5 
+main = print (id 5) 
 --/
 
 --------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ main = print (cardColour "clubs")
 
 --------------------------------------------------------------------------------
 -- Test 29         : lambda
--- Expected result : 2
+-- Expected result : 3
 
 --/
 main = print ((\x -> x + 2) 1 )
