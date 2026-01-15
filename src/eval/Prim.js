@@ -12,8 +12,8 @@ export class Prim extends Vfunc {
    * Creates a primitive function object
    * @param {function} func 
    */
-  constructor(body, arity, env) {
-    super(body, arity, env);
+  constructor(body, param, env) {
+    super(body, param, env);
     this.subtype = "prim";
   }
 
@@ -36,8 +36,8 @@ export class PrimIO extends Prim {
    * Creates a primitive io function object
    * @param {function} func 
    */
-  constructor(body, arity, env) {
-    super(body, arity, env);
+  constructor(body, param, env) {
+    super(body, param, env);
     this.subtype = "primio";
   }
 
