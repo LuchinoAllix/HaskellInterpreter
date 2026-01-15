@@ -281,7 +281,7 @@ main = print (cardColour "clubs")
 -- Expected result : 2
 
 --/
-main = print ((\x -> x + 1) 1 )
+main = print ((\x -> x + 2) 1 )
 --/
 
 --------------------------------------------------------------------------------
