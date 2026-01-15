@@ -42,10 +42,10 @@ export class Vfunc extends Value {
    * @param {function} body 
    * @param {Env} closure
    */
-  constructor(body, arity, closure = new Env()){
+  constructor(body, param = null, closure = new Env()){
     super("func");
     this.body = body;
-    this.arity = arity;
+    this.param = param;
     this.closure = closure;
     this.subtype = "func";
   }
@@ -68,10 +68,10 @@ export class Vio extends Value {
    * Primitive function return type
    * @param {function} value 
    */
-  constructor(value){
+  constructor(func, arg){
     super("IO");
-    this.value = value;
-
+    this.func = func;
+    this.arg = arg;
   }
 }
 
