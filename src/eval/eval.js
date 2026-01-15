@@ -153,6 +153,11 @@ function evaluateDecl(decl){
 function evaluateExp(exp, env){
   debug("Exp", exp);
 
+  //not ideal but easiest solution
+  if (exp.metatype === "VALUE"){
+    return exp;
+  }
+
   switch (exp.type){
 
     case "functionApp" :
@@ -202,14 +207,14 @@ function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
     if (variable.isFunc()){
-      return new V.Vfunc(variable.body, 1, env);
+      return new V.Vfunc(evaluateExp(variable.body, env), null, env);
     } else if (variable.isVar()){
-      return variable.def;
+      return evaluateExp(variable.def, env);
     } else {
       throw new Error("Decls must be either a Func or a var");
     }
   } else if (variable.metatype === "EXP"){
-    return variable;
+    return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
     if (variable.type === "func" && 
       (variable.subtype === "prim" || variable.subtype === 'primio')){
@@ -313,105 +318,6 @@ function applyFunc(func, arg){
 }
 
 /**
- * Executes a function that is given (not the name, the actual body) 
- * with it's arguments
- * @param {Term} func can be a Prim, Decl or lambdaExp
- * @param {[E.Exp]} args 
- * @param {Env} env 
- * @returns {V.Value}
- */
-function evaluateFunc(func, args, env){
-  console.log(func)
-  console.log(args)
-  debug("Func", func);
-  if (args.length === 0){ // All the args have been given
-    if (func.isPrimIO()){ // Return the IO to be called at exec
-      if (func.nbArgs < func.args.length){
-        throw new Error("Too many args given to primIO :" + func);
-      }
-      return new V.Vio( function f(){ return func.run(); } ); 
-    
-    } else if (func.isPrim()){  // Call the primitive
-      if (func.nbArgs < func.args.length){ 
-        throw new Error("Too many args given to primIO :" + func);
-      }
-      return func.run();
-    
-    } else if (func.isDecl()){ // call the func 
-      return evaluateFuncPM(func, env); 
-    } else if (func.type === "LambdaExp"){ 
-      let closure = env.clone();
-      for (let i = 0; i < func.nbArgs; i ++){
-        let matches = match(func.args[i], func.namedArgs[i]);
-        if (matches[0] === -1){
-          // should never happen
-          throw new Error("no match found in pattern matching in lambda");
-        }
-        for (let j = 0; j < matches.length; j ++){
-          closure.add(matches[j][0].name, matches[j][1]);
-        }
-      }
-      if (func.nbArgs < func.args.length){ // we have too many args
-        return evaluateFunc(func.body, func.args.slice(func.nbArgs), closure);
-      }
-      return evaluateExp(func.body, closure);
-    
-    } else {
-      throw new Error("Func not managed in evalFunc : " + func);
-    }
-  }
-
-  if (func.type === "functionApp"){
-    let f = func.clone();
-    f.args = func.args.concat(args);
-    return evaluateFuncApp(f, env);
-  } else if (func.nbArgs > func.args.length + args.length){
-    throw new Error("Not enough arguments were given to func " + func);
-  }
-  
-  let f = func.clone();
-  f.args = args.map(x => evaluateExp(x, env));
-
-  return evaluateFunc(f, [], env);
-}
-
-/**
- * Executes a function that requires pattern matching
- * @param {Term} func 
- * @param {Env} env 
- * @returns {V.Value}
- */
-function evaluateFuncPM(func, env){
-  debug("Func PM", func);
-  if (func.nbArgs === 0 || func.nbArgs === null){
-    return evaluateFunc(func.branches[0], func.args, env);
-  }
-  let overflow = [];
-  if (func.nbArgs < func.args.length){ // If we have too many args
-    overflow = func.args.slice(func.nbArgs);
-    func.args = func.args.slice(0, func.nbArgs);
-  }
-  for (let branch of func.branches){
-    let matches = matchAll(func.args, branch.args);
-    if (matches.length > 0 && matches[0] !== -1){
-      let closure = env.clone();
-      for (let match of matches){
-        if (match.length >= 1){
-          closure.add(match[0].name, match[1], true);
-        }
-      }
-      if (overflow.length > 0){
-        // If we have too many args we know we have a func
-        return evaluateFunc(branch.branchBody, overflow, closure);
-      }
-      return evaluateExp(branch.branchBody, closure);
-    }
-  }
-  console.log(func)
-  throw new Error("No match found for pattern matching in func : " + func.name);
-}
-
-/**
  * Evaluate an if expression by first testing the condition, if it is a boolean
  * then it returns the evaluation of the corresponding branch
  * @param {E.IfExp} exp an if expression
@@ -440,7 +346,7 @@ function evaluateLet(exp, env){
   debug("Let", exp);
   let clone = env.clone();
   for (let decl of exp.decls){
-    clone.add(decl.name, decl.branches[0], true); //TODO
+    clone.add(decl.name, decl.def, true);
   }
   return evaluateExp(exp.body, clone);
 }
