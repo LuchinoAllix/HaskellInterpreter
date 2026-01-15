@@ -153,11 +153,6 @@ function evaluateDecl(decl){
 function evaluateExp(exp, env){
   debug("Exp", exp);
 
-  // Not ideal, but the easiest solution
-  if (exp.metatype === "VALUE"){
-    return exp;
-  }
-
   switch (exp.type){
 
     case "functionApp" :
@@ -178,17 +173,21 @@ function evaluateExp(exp, env){
     case "if" :
       return evaluateIf(exp, env);
 
-    case "ListExp" :
-      return new V.VList(exp.elems.map(x => evaluateExp(x,env)));
-
     case "case" :
       return evaluateCase(exp, env);
+    
+    case "LambdaExp" :
+      return evaluateLambda(exp, env);
  
     default :
       console.log(JSON.stringify(exp, null, 2))
       throw new Error("exp not yet managed in eval : " + exp.type);
     
   }
+}
+
+function evaluateLambda(exp, env){
+  return new V.Vfunc(exp.body, exp.namedArg.name, env);
 }
 
 /**
@@ -203,14 +202,14 @@ function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
     if (variable.isFunc()){
-      return new V.Vfunc(evaluateExp(variable.body), 1, env);
+      return new V.Vfunc(variable.body, 1, env);
     } else if (variable.isVar()){
-      return evaluateExp(variable.def, env);
+      return variable.def;
     } else {
       throw new Error("Decls must be either a Func or a var");
     }
   } else if (variable.metatype === "EXP"){
-    return evaluateExp(variable, env);
+    return variable;
   } else if (variable.metatype === "VALUE"){
     if (variable.type === "func" && 
       (variable.subtype === "prim" || variable.subtype === 'primio')){
@@ -288,21 +287,29 @@ function evaluateValue(exp){
 function evaluateFuncApp(exp, env){
   let func = evaluateExp(exp.func, env);
   let arg = evaluateExp(exp.arg, env);
-  return applyFunc(func, arg, env);
+  return applyFunc(func, arg);
 }
 
 /**
  * work in progress to refactor evaluation of functions
- * @param {Term} func a decl, exp or prim(io) 
- * @param {*} arg 
- * @param {*} env 
+ * @param {Vfunc} func a decl, exp or prim(io) 
+ * @param {Value} arg 
  * @returns 
  */
-function applyFunc(func, arg, env){
+function applyFunc(func, arg){
   console.log(func)
   console.log(arg)
-  throw new Error("todo");
-  return null;
+  if (func.subtype === "prim"){
+    return func.body(arg);
+  } else if (func.subtype === "primio"){
+    return new V.Vio(func, arg);
+  }
+
+  if (func.param !== null){
+    func.addArg(func.param, arg);
+  }
+
+  return evaluateExp(func.body, func.closure);
 }
 
 /**
@@ -594,7 +601,7 @@ function execute(main_decl){
   debug("execution");
   let res = [];
   if (main_decl.type === "IO"){
-    let a = main_decl.value.call();
+    let a = main_decl.func.body(main_decl.arg);
     res.push(a);
   } else if (main_decl.type === "do"){
     for (let exp of main_decl.value){
