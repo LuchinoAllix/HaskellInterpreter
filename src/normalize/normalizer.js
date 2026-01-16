@@ -395,7 +395,7 @@ function normalizeCase(node){
   } else {
     throw new Error("Unhandeled node in case : " + node.childs[4].type);
   }
-  return new CaseExp(exp, branches);
+  return new CaseExp([exp], branches);
 }
 
 /**
