@@ -207,7 +207,7 @@ function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
     if (variable.isFunc()){
-      return new V.Vfunc(evaluateExp(variable.body, env), null, env);
+      return evaluateExp(variable.body, env);
     } else if (variable.isVar()){
       return evaluateExp(variable.def, env);
     } else {
@@ -361,14 +361,14 @@ function evaluateLet(exp, env){
  */
 function evaluateCase(exp, env){
   debug("Case", exp);
-  let val = evaluateExp(exp.exp, env);
+  let vals = exp.exps.map(x => evaluateExp(x, env));
   for (let branch of exp.branches){
-    let matches = match(val, branch.args[0]); 
+    let matches = matchAll(vals, branch.args); 
     if (matches.length >= 1 && matches[0] !== -1){
       let closure = env.clone();
       for (let match of matches){
         if (match.length >= 1){
-          closure.add(match[0].name, match[1]);
+          closure.add(match[0].name, match[1], true);
         }
       }
       return evaluateExp(branch.branchBody, closure);
@@ -379,8 +379,6 @@ function evaluateCase(exp, env){
 
 /** 
  * Does a pattern matching on all the values and exps given (1 to 1)
- * Is used in evaluateFunctionPM rather than implicitly converting the args to 
- * pm into tuples
  * @param {[V.Value]} values 
  * @param {[E.Exp]} exps 
  * @returns {[[E.Exp]]} 
