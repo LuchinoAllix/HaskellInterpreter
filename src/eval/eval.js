@@ -401,6 +401,8 @@ function matchAll(values, exps){
 }
 
 /**
+ * TODO Pattern matching is not working since funcapp only take one argument, 
+ * so FIXME
  * Determines if a given value matches a given pattern, if so returns a list 
  * (that can be empty) of pairs variable to values, if not, returns the list
  * [-1]
@@ -416,15 +418,12 @@ function match(value, exp){
   switch (exp.type){
 
     case "functionApp" :
+      let func = getLeftMostFunc(exp);
 
-      if (isNcommas(exp.func.name)){ // Tuples
+      if (isNcommas(func)){ // Tuples
         if (value.type !== "tuple"){
           throw new Error("Pattern matching in case not of the same type, tuple"
              + " !== " + value.type);
-        }
-        else if (value.value.length !== exp.args.length){
-          throw new Error("Pattern matching between different tuples should"
-           + " have the same amount of elements");
         }
         else {
           let res = [];
@@ -485,6 +484,16 @@ function match(value, exp){
       throw new Error("Exp not yet managed in pattern matching of eval : " + 
         exp.type);
   }
+}
+
+function getLeftMostFunc(exp){
+  if (exp.type === "functionApp"){
+    return getLeftMostFunc(exp.func);
+  }
+  if (exp.type === "var"){
+    return exp;
+  }
+  throw new Error ("Unhandeled case");
 }
 
 /**
