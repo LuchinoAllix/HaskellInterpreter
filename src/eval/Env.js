@@ -170,6 +170,12 @@ export class Env {
   }
 }
 
+/**todo
+ * 
+ * @param {*} n 
+ * @param {*} list 
+ * @returns 
+ */
 function makeFunc(n, list){
   if (n === 0){
     return new Vtuple(list)
