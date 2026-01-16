@@ -414,55 +414,38 @@ function matchAll(values, exps){
  */
 function match(value, exp){
   debug("match", exp);
-  // we assume the pattern matching can only be on one element
   switch (exp.type){
 
     case "functionApp" :
-      let func = getLeftMostFunc(exp);
 
-      if (isNcommas(func)){ // Tuples
-        if (value.type !== "tuple"){
-          throw new Error("Pattern matching in case not of the same type, tuple"
-             + " !== " + value.type);
-        }
-        else {
-          let res = [];
-          for (let i = 0; i < value.value.length; i++){
-            let recursive = match(value.value[i], exp.args[i]);
-            for (let rec of recursive){
-              if (rec === -1){
-                return [-1];
-              }
-              res.push(rec);
-            }
-          }
-          return res;
-        }
-
-      } else if (exp.func.name === ':'){ // Lists
-        if (value.type !== "list"){
-          return [-1];
+      if (exp.func.type === "functionApp"){
+        // It's assumed value.value is a list because we can only have lists and
+        // tuples in a funcapp of an exp of a case (perhaps this will change 
+        // when we add constructor like Just)
+        let funcMatch = match(value.value[0], exp.func);
+        if (funcMatch[0] === -1){
+          return funcMatch;
+        } 
+        let nVal;
+        if (value.type === "tuple"){
+          nVal = new V.Vtuple(value.value.slice(1));
+        } else if (value.type === "list"){
+          nVal = V.makeVList(value.value.slice(1));
         } else {
-          let arg1 = match(value.value[0], exp.args[0]);
-          if (arg1[0] === -1){
-            return arg1;
-          }
-          if (value.value.length === 0){
-            if (isMTArray(exp.args[1])){
-              return [[]];
-            } else {
-              return [-1];
-            }
-          }
-          let tmp = value.value;
-          value.value = value.value.slice(1);
-          let arg2 = match(value, exp.args[1]);
-          if (arg2[0] === -1){
-            value.value = tmp;
-            return arg2;
-          }
-          return arg1.concat(arg2);
+          throw new Error("unhandeled case in funcapp match")
         }
+        let argMatch = match(nVal, exp.arg);
+        if (argMatch[0] === -1){
+          return argMatch;
+        }
+        return funcMatch.concat(argMatch);
+      
+      } else if (isNcommas(exp.func.name) || exp.func.name === ':'){
+      
+        return match(value, exp.arg);
+
+      } else {
+        throw new Error("unhandeled case in match func app");
       }
 
     case "SpecialExp" :
@@ -484,16 +467,6 @@ function match(value, exp){
       throw new Error("Exp not yet managed in pattern matching of eval : " + 
         exp.type);
   }
-}
-
-function getLeftMostFunc(exp){
-  if (exp.type === "functionApp"){
-    return getLeftMostFunc(exp.func);
-  }
-  if (exp.type === "var"){
-    return exp;
-  }
-  throw new Error ("Unhandeled case");
 }
 
 /**
