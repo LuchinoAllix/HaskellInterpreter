@@ -1,4 +1,4 @@
-import { CaseExp, Exp, LambdaExp } from "./Exp.js";
+import { CaseExp, Exp, LambdaExp, VarExp } from "./Exp.js";
 import { Node } from "../objects/Node.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
@@ -9,10 +9,14 @@ import { Branch } from "./Branch.js";
 
 let count = 0;
 
+/**
+ * 
+ * @returns 
+ */
 function makeNewName(){
   let name = "arg" + count;
   count ++;
-  return name;
+  return new VarExp(name);
 }
 
 /**
