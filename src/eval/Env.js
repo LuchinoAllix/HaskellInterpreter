@@ -166,10 +166,14 @@ export class Env {
    * @param {String} str 
    */
   addNcommas(str){
-    this.add(str, new Prim(
-      function consNTuple(...a){
-        return new Vtuple(a);
-      }
-    , str.length + 1));
+    this.add(str, makeFunc(str.length + 1, []));
+  }
+}
+
+function makeFunc(n, list){
+  if (n === 0){
+    return new Vtuple(list)
+  } else {
+    return new Prim(a => makeFunc(n-1, [...list, a]));
   }
 }
