@@ -107,7 +107,7 @@ export class Vdo extends Value {
    */
   constructor(values){
     super("do");
-    this.value = value;
+    this.value = values;
   }
 }
 
@@ -125,7 +125,7 @@ export class VList extends Value {
     if (values.length === 0){
       val = [];
     } else if (values.length === 1 || values.length > 2){
-      throw new Error("This list constructor should have an empty list" + 
+      throw new Error("This list constructor should have an empty list " + 
         "as argument or a list with 2 elements");
     } else {
       if (isMTArray(values[1].value)){
