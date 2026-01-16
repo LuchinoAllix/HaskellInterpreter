@@ -541,7 +541,7 @@ function normalizeList(node){
     node.childs.splice(1,2); // removing the first value child and the comma 
     arg2 = normalizeList(node);
   }
-  return new FunctionApp(new VarExp(":"), [arg1, arg2]);
+  return makeFuncAppOfList(new VarExp(":"), [arg1, arg2]);
 }
 
 /**
