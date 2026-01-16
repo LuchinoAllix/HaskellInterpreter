@@ -1,148 +1,94 @@
-[
-  {
-    "metatype": "DECL",
-    "type": "function",
-    "name": "f",
-    "typeAnnotation": null,
-    "branches": [
-      {
-        "type": "branch",
-        "args": [
-          {
-            "metatype": "PATTERN",
-            "type": "var",
-            "name": "x"
-          }
-        ],
-        "branchBody": {
+{
+  "metatype": "DECL",
+  "type": "variable",
+  "name": "main",
+  "typeAnnotation": null,
+  "def": {
+    "metatype": "EXP",
+    "type": "functionApp",
+    "func": {
+      "metatype": "EXP",
+      "type": "var",
+      "name": "print"
+    },
+    "arg": {
+      "metatype": "EXP",
+      "type": "functionApp",
+      "func": {
+        "metatype": "EXP",
+        "type": "LambdaExp",
+        "namedArg": {
           "metatype": "EXP",
           "type": "functionApp",
-          "name": "+",
-          "args": [
-            {
+          "func": {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "func": {
+              "metatype": "EXP",
+              "type": "var",
+              "name": ","
+            },
+            "arg": {
               "metatype": "EXP",
               "type": "var",
               "name": "x"
-            },
-            {
-              "metatype": "EXP",
-              "type": "value",
-              "value": 1,
-              "valueType": "integer"
             }
-          ]
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": "y"
+          }
+        },
+        "body": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "func": {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "func": {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "+"
+            },
+            "arg": {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "x"
+            }
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": "y"
+          }
+        }
+      },
+      "arg": {
+        "metatype": "EXP",
+        "type": "functionApp",
+        "func": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "func": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": ","
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "value",
+            "value": 1,
+            "valueType": "integer"
+          }
+        },
+        "arg": {
+          "metatype": "EXP",
+          "type": "value",
+          "value": 2,
+          "valueType": "integer"
         }
       }
-    ],
-    "nbArgs": 1
-  },
-  {
-    "metatype": "DECL",
-    "type": "variable",
-    "name": "main",
-    "typeAnnotation": null,
-    "branches": [
-      {
-        "metatype": "EXP",
-        "type": "do",
-        "exps": [
-          {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "name": "print",
-            "args": [
-              {
-                "metatype": "EXP",
-                "type": "aFunctionApp",
-                "name": "",
-                "args": [
-                  {
-                    "metatype": "EXP",
-                    "type": "value",
-                    "value": 0,
-                    "valueType": "integer"
-                  }
-                ],
-                "func": {
-                  "metatype": "EXP",
-                  "type": "LambdaExp",
-                  "args": [
-                    {
-                      "metatype": "EXP",
-                      "type": "var",
-                      "name": "x"
-                    }
-                  ],
-                  "body": {
-                    "metatype": "EXP",
-                    "type": "functionApp",
-                    "name": "+",
-                    "args": [
-                      {
-                        "metatype": "EXP",
-                        "type": "var",
-                        "name": "x"
-                      },
-                      {
-                        "metatype": "EXP",
-                        "type": "value",
-                        "value": 1,
-                        "valueType": "integer"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "name": "print",
-            "args": [
-              {
-                "metatype": "EXP",
-                "type": "functionApp",
-                "name": "f",
-                "args": [
-                  {
-                    "metatype": "EXP",
-                    "type": "value",
-                    "value": 0,
-                    "valueType": "integer"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "name": "print",
-            "args": [
-              {
-                "metatype": "EXP",
-                "type": "curFunctionApp",
-                "name": "",
-                "args": [
-                  {
-                    "metatype": "EXP",
-                    "type": "value",
-                    "value": 0,
-                    "valueType": "integer"
-                  }
-                ],
-                "func": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "f"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "nbArgs": null
+    }
   }
-]
+}
