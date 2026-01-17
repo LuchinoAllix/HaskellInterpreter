@@ -75,14 +75,6 @@ export class FunctionApp extends Exp {
     this.func = func;
     this.arg = arg;
   }
-
-  /**
-   * Duplicates a functionapp object, as to not have reference issues
-   * @returns {FunctionApp}
-   */
-  clone(){
-    return new FunctionApp(this.func, this.arg);
-  }
 }
 
 /**
