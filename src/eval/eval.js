@@ -192,7 +192,7 @@ function evaluateExp(exp, env){
 }
 
 function evaluateLambda(exp, env){
-  return new V.Vfunc(exp.body, exp.namedArg.name, env);
+  return new V.Vfunc(exp.body, exp.namedArg, env);
 }
 
 /**
@@ -311,7 +311,7 @@ function applyFunc(func, arg){
   }
 
   if (func.param !== null){
-    func.addArg(func.param, arg);
+    func.addArg(func.param.name, arg);
   }
 
   return evaluateExp(func.body, func.closure);
