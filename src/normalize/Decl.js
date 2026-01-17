@@ -13,7 +13,7 @@ let count = 0;
  * 
  * @returns 
  */
-function makeNewName(){
+export function makeNewName(){
   let name = "arg" + count;
   count ++;
   return new VarExp(name);
