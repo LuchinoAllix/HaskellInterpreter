@@ -1,6 +1,6 @@
 
 import { Branch } from "./Branch.js";
-import { Decl } from "./Decl.js";
+import { Decl, makeNewName } from "./Decl.js";
 import { Term } from "./Term.js";
 
 /**
@@ -188,14 +188,24 @@ export class LambdaExp extends Exp {
     }
     super();
     this.type = "LambdaExp";
-    this.namedArg = namedArgs[0];
-    if (namedArgs.length === 1){
-      this.body = body;
+    if (namedArgs[0].type === "functionApp"){ 
+      let argName = makeNewName();
+      this.namedArg = argName;
+      if (namedArgs.length === 1){
+        this.body = new CaseExp([argName], [new Branch([namedArgs[0]] ,body)]);
+      } else {
+        this.body = new CaseExp([argName], [new Branch([namedArgs[0]], 
+          new LambdaExp(namedArgs.slice(1), body))]);
+      }
     } else {
-      this.body = new LambdaExp(namedArgs.slice(1), body);  
+      this.namedArg = namedArgs[0];
+      if (namedArgs.length === 1){
+        this.body = body;
+      } else {
+        this.body = new LambdaExp(namedArgs.slice(1), body);  
+      }
     }
   }
-
 }
 
 /**
