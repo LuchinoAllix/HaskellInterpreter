@@ -453,7 +453,7 @@ function normalizeLambda(node){
       if (child.type === "reservdop"){
         reserdopCnt += 1;
       } else if (reserdopCnt === 1){
-        args.push(normalizeExp(child))
+        args.push(normalizeExp(child));
       } else if (reserdopCnt === 2){
         func = (normalizeExp(child));
       } else {
