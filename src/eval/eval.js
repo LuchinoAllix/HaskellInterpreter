@@ -423,19 +423,23 @@ function match(value, exp){
         // tuples in a funcapp of an exp of a case (perhaps this will change 
         // when we add constructor like Just)
 
-        let funcMatch, argMatch;
+        let newValFunc, newValArg;
         if (value.type === "tuple"){
-          funcMatch = match(new V.Vtuple(value.value.slice(0, -1)), exp.func);
-          if (funcMatch[0] === -1){ return funcMatch; }
-          argMatch = match(value.value.slice(-1)[0], exp.arg);
+          newValFunc = new V.Vtuple(value.value.slice(0, -1));
+          newValArg = value.value.slice(-1)[0];
         } else if (value.type === "list"){
-          funcMatch = match(value.value[0], exp.func);
-          if (funcMatch[0] === -1){ return funcMatch; } 
-          argMatch = match(V.makeVList(value.value.slice(1)), exp.arg);
+          newValFunc = value.value[0];
+          newValArg = V.makeVList(value.value.slice(1));
         } else {
           throw new Error("unhandeled case in funcapp match")
         }
         
+        let funcMatch, argMatch;
+        funcMatch = match(newValFunc, exp.func);
+        if (funcMatch[0] === -1){
+          return funcMatch;
+        }
+        argMatch = match(newValArg, exp.arg);
         if (argMatch[0] === -1){
           return argMatch;
         }
