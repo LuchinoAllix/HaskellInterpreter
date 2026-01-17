@@ -422,28 +422,29 @@ function match(value, exp){
         // It's assumed value.value is a list because we can only have lists and
         // tuples in a funcapp of an exp of a case (perhaps this will change 
         // when we add constructor like Just)
-        let funcMatch = match(value.value[0], exp.func);
-        if (funcMatch[0] === -1){
-          return funcMatch;
-        } 
-        let nVal;
+
+        let funcMatch, argMatch;
         if (value.type === "tuple"){
-          nVal = new V.Vtuple(value.value.slice(1));
+          funcMatch = match(new V.Vtuple(value.value.slice(0, -1)), exp.func);
+          if (funcMatch[0] === -1){ return funcMatch; }
+          argMatch = match(value.value.slice(-1)[0], exp.arg);
         } else if (value.type === "list"){
-          nVal = V.makeVList(value.value.slice(1));
+          funcMatch = match(value.value[0], exp.func);
+          if (funcMatch[0] === -1){ return funcMatch; } 
+          argMatch = match(V.makeVList(value.value.slice(1)), exp.arg);
         } else {
           throw new Error("unhandeled case in funcapp match")
         }
-        let argMatch = match(nVal, exp.arg);
+        
         if (argMatch[0] === -1){
           return argMatch;
         }
         return funcMatch.concat(argMatch);
       
-      } else if (isNcommas(exp.func.name) || exp.func.name === ':'){
-      
+      } else if (isNcommas(exp.func.name)){ 
+        return match(value.value[0], exp.arg);
+      } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-
       } else {
         throw new Error("unhandeled case in match func app");
       }
