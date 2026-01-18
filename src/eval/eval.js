@@ -486,6 +486,7 @@ export function isMTArray(array){
 
 /**
  * Function to actually run the program, with all IO functions
+ * returns a list of what io functions return
  * @param {V.Vio} main_decl 
  */
 function execute(main_decl){
