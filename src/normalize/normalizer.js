@@ -1,5 +1,5 @@
 import { Decl, FuncDecl, VarDecl} from "./Decl.js";
-import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp, DoExp,
+import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp,
          LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
@@ -474,20 +474,38 @@ function normalizeLambda(node){
  * @returns {DoExp} 
  */
 function normalizeDo(node){
-  let exps = [];
-  if (node.childs[2].type === "stmts"){
-    for (let child of node.childs[2].childs){
-      if (child.type === "stmt"){
-        exps.push(normalizeExp(child.childs[0]));
-      } else {
-        exps.push(normalizeExp(child));
+  let stmts = node.childs[2];
+  if (stmts.type === "stmts"){
+    if (stmts.childs.length === 1){
+      return normalizeExp(stmts.childs[0]);
+    } else if (stmts.childs[0].type === "stmt" && 
+      stmts.childs[0].childs.length > 2){
+      if (stmts.childs[0].childs[1].value === "<-"){
+        // we have to bind the variable
+        let app = new FunctionApp(new VarExp(">>="), 
+          normalizeExp(stmts.childs[0].childs[2]));
+        let lambda = new LambdaExp([normalizeExp(stmts.childs[0].childs[0])],
+                         normalizeExp(stmts.childs[1].childs[0]));
+        node.childs[2].childs = node.childs[2].childs.slice(2);
+        if (node.childs[2].childs.length === 0){ 
+          return new FunctionApp(app, lambda);
+        } else { 
+          // if we still have at least one more statement to manage we need
+          // to add a >> call
+          return new FunctionApp(app,
+            new FunctionApp(
+              new FunctionApp(new VarExp(">>"), lambda),normalizeDo(node))); 
+        }
       }
     }
-  } else {
-    exps.push(normalizeExp(node.childs[2]));
-  }
+    let app1 = new FunctionApp(new VarExp(">>"), 
+      normalizeExp(node.childs[2].childs[0].childs[0]));
+    node.childs[2].childs = node.childs[2].childs.slice(1);
+    return new FunctionApp(app1, normalizeDo(node));
+  } 
+  
+  return normalizeExp(node.childs[2]);
 
-  return new DoExp(exps);
 }
 
 /**
