@@ -156,23 +156,6 @@ export class CaseExp extends Exp {
 }
 
 /**
- * Creates a do Term expression
- */
-export class DoExp extends Exp {
-
-  /**
-   * Creates a do term, which is comprised of the list of expressions to execute
-   * @param {[Exp]} exps
-   */
-  constructor(exps){
-    super();
-    this.type = "do";
-    this.exps = exps;
-  }
-
-}
-
-/**
  * Lambda expresions object
  */
 export class LambdaExp extends Exp {
