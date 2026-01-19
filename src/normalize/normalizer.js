@@ -481,7 +481,7 @@ function normalizeLambda(node){
  * Transforms the parent of a do node (presumably a lexp) into the intermidiary
  * form
  * @param {Node} node
- * @returns {DoExp} 
+ * @returns {FunctionApp} 
  */
 function normalizeDo(node){
   let stmts = node.childs[2];
@@ -503,9 +503,11 @@ function normalizeDo(node){
         } else { 
           // if we still have at least one more statement to manage we need
           // to add a >> call
-          return new FunctionApp(app,
-            new FunctionApp(
-              new FunctionApp(new VarExp(">>"), lambda),normalizeDo(node))); 
+        return new FunctionApp(app,
+            new LambdaExp([lambda.namedArg], 
+              new FunctionApp(
+                new FunctionApp(new VarExp(">>"), lambda.body), normalizeDo(node)))); 
+              
         }
       }
     }
