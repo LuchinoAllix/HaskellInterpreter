@@ -823,7 +823,7 @@ main = do
 
 --------------------------------------------------------------------------------
 -- Test 83         : inless let with something before
--- Expected result : 3/n3
+-- Expected result : 3\n3
 
 --/
 main = do 
