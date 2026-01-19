@@ -11,39 +11,6 @@ import * as V from "../eval/Value.js";
 let global_env = new Env();
 global_env.initGlobal();
 
-let printDebug = false; // for debug, edited in activateDebugEval
-
-/** 
- * Function to print wich function of eval is taken
- * @param {String} text text to print 
- * @param {Boolean} val additional result to print
- */
-function debug(text, val){
-  if(printDebug){
-    let name = JSON.stringify(val);
-    try {
-      let a = val.name;
-      if (a !== undefined){
-        name = a;
-      } else {
-        let b = val.type
-        name = b;
-      }
-    } catch(error){}
-//    console.log(" - ");
-    console.log(text)
-    console.log(val);
-    console.log(" - ");
-  }
-}
-
-/**
- * Sets printDebug to true, used in TestFile.
- */
-export function activateDebugEval(){
-  printDebug = true;
-}
-
 /**
  * Entry point of evaluation for "compiled" programs
  * @param {Program} program
@@ -133,7 +100,6 @@ function output(output){
  * @param {Decl} decl 
  */
 function evaluateDecl(decl){
-  debug("Decl", decl);
   if (decl.name === "main"){
     global_env.add(decl.name, evaluateExp(decl.def, new Env()));
   } else {
@@ -151,7 +117,6 @@ function evaluateDecl(decl){
  * @returns {V.Value} or Prim in case of Curryfied function call
  */
 function evaluateExp(exp, env){
-  debug("Exp", exp);
 
   //not ideal but easiest solution
   if (exp.metatype === "VALUE"){
@@ -203,7 +168,6 @@ function evaluateLambda(exp, env){
  * @returns {V.Value}
  */
 function evaluateVar(exp, env){
-  debug("Var ", exp);
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
     if (variable.isFunc()){
@@ -235,7 +199,6 @@ function evaluateVar(exp, env){
 // Note: Often we call these "immediate"s rather than "value"s.
 // TODO : Change value to immediate
 function evaluateValue(exp){
-  debug("Value", exp);
   switch (exp.valueType){
     case "integer" :
       return new V.Vint(exp.value);
@@ -298,7 +261,6 @@ export function applyFunc(func, arg){
  * @returns {V.Value}
  */
 function evaluateIf(exp, env){
-  debug("If", exp);
   let cond = evaluateExp(exp.condition, env);
   if (cond.type !== "bool"){
     throw new Error("Expression in if condition did not evaluate to boolean.");
@@ -316,7 +278,6 @@ function evaluateIf(exp, env){
  * @returns {V.Value}
  */
 function evaluateLet(exp, env){
-  debug("Let", exp);
   let clone = env.clone();
   for (let decl of exp.decls){
     clone.add(decl.name, decl.def, true);
@@ -333,7 +294,6 @@ function evaluateLet(exp, env){
  * @returns {V.Value}
  */
 function evaluateCase(exp, env){
-  debug("Case", exp);
   let vals = exp.exps.map(x => evaluateExp(x, env));
   for (let branch of exp.branches){
     let matches = matchAll(vals, branch.args); 
@@ -386,7 +346,6 @@ function matchAll(values, exps){
  *                    # FIXME
  */
 function match(value, exp){
-  debug("match", exp);
   switch (exp.type){
 
     case "functionApp" :
@@ -463,7 +422,6 @@ export function isMTArray(array){
  * @param {V.Vio} main_decl 
  */
 function execute(main_decl){
-  debug("execution");
 
   if (main_decl.type === "IO"){
     return main_decl.exec();
