@@ -296,12 +296,14 @@ function normalizeExp(node){
           return new SpecialExp("_");
         default :
           throw new Error("This kind of reservdid is not yet supported :" +
-            node.childs[0].value);
+            node.value);
       }
 
     case "stmt" :
       if (node.childs.length === 2){
         return normalizeExp(node.childs[0]);
+      } else if (node.childs.length === 3 && node.childs[0].value === "let"){
+        return normalizeLet(node);
       } else {
         throw new Error("stmt with this many childs is not yet supported : " +
          node.childs.length);
@@ -440,7 +442,7 @@ function normalizeLet(node){
     }
   }
   let inexp;
-  if (node.childs.length === 2){
+  if (node.childs.length === 3){
     inexp = null;
   } else {
     inexp = normalizeExp(node.childs[3]);
@@ -488,7 +490,8 @@ function normalizeDo(node){
       return normalizeExp(stmts.childs[0]);
     } else if (stmts.childs[0].type === "stmt" && 
       stmts.childs[0].childs.length > 2){
-      if (stmts.childs[0].childs[1].value === "<-"){
+      if (stmts.childs[0].childs[1].value === "<-" && 
+        stmts.childs[0].childs.length === 4){
         // we have to bind the variable
         let app = new FunctionApp(new VarExp(">>="), 
           normalizeExp(stmts.childs[0].childs[2]));
@@ -506,8 +509,13 @@ function normalizeDo(node){
         }
       }
     }
-    let app1 = new FunctionApp(new VarExp(">>"), 
-      normalizeExp(node.childs[2].childs[0].childs[0]));
+    let n1;
+    if (stmts.childs[0].childs[0].type === "fexp"){
+      n1 = normalizeExp(stmts.childs[0].childs[0]);
+    } else if (stmts.childs[0].childs[0].type === "reservdid"){
+      n1 = normalizeExp(stmts.childs[0]);
+    }
+    let app1 = new FunctionApp(new VarExp(">>"), n1);
     node.childs[2].childs = node.childs[2].childs.slice(1);
     return new FunctionApp(app1, normalizeDo(node));
   } 
