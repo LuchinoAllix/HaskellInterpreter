@@ -46,7 +46,7 @@ function ApplyRule1(program, index){
         var indent = program.tokens[index+1].column;
         program.tokens.splice(index+1, 0, newLayoutToken("{" + indent + "}", 
                                                          "R1"));
-        return 2 // (larger offset to avoid collision between R1 and R3)
+        return 1 // (larger offset to avoid collision between R1 and R3)
       }
     } else { // end of file reached
       program.tokens.splice(index+1, 0, newLayoutToken("{0}", "R1"));
