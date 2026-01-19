@@ -5,7 +5,7 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEvalComp, initEvalInter, activateDebugEval } from './eval/eval.js';
+import { initEvalComp } from './eval/eval.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -36,7 +36,6 @@ async function main(){
 
   let printAST = false;
   let printDebugParse = false;
-  let printDebugEval = false;
   let nosave = false;
   let printTokens = false;
   let derivative = false;
@@ -59,11 +58,6 @@ async function main(){
       case "--DebugParse" :
       case "--debugparse" :
         printDebugParse = true;
-        break;
-
-      case "--DebugEval" :
-      case "--debugeval" :
-        printDebugEval = true;
         break;
 
       case "--Nosave" :
@@ -100,7 +94,7 @@ async function main(){
     var cnt = 0;
     nosave = true;
     for (let i=0; i < tests.length; i ++){
-      if (testAtest(i, printTokens, printAST, printDebugParse, printDebugEval, 
+      if (testAtest(i, printTokens, printAST, printDebugParse, 
         nosave, derivative, verbose, printNF)){
         cnt +=1;
         console.log("Test passed ✅");
@@ -116,7 +110,7 @@ async function main(){
                   tests.length-1);
     } else {
       if (testAtest(testNum, printTokens, printAST, printDebugParse, 
-        printDebugEval, nosave, derivative, true, printNF)){
+         nosave, derivative, true, printNF)){
         console.log("Test passed ✅");
       } else {
         console.log("Test failed ❌");
@@ -126,10 +120,16 @@ async function main(){
   return ;
 }
 
+/**
+ * Prints the information about where each test failed
+ */
 function printDataFails(){
   let where = ["lexing", "parsing", "normalising", "evaluating"];
   for (let i = 0; i < whereFail.length; i++){
-    if (whereFail[i].length > 0){
+    if (whereFail[i].length === 1){
+      console.log("An error occured whilst " + where[i] + " for test : " + 
+        whereFail[i]);
+    } else if (whereFail[i].length > 1){
       console.log("An error occured whilst " + where[i] + " for tests : " + 
         whereFail[i]);
     }
@@ -150,7 +150,6 @@ function printOptions(){
       "  --Tokens      shows the list of token after lexing\n" +
       "  --AST         shows the AST after parsing\n" +
       "  --DebugParse  shows the rules took whilst parsing\n" +
-      "  --DebugEval   shows the functions took whilst evaluating\n" +
       "  --Nosave      doesn't save the AST and NF after generating them\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
       "  --NF          shows the normal form after normalizing\n" +
@@ -164,12 +163,11 @@ function printOptions(){
  * @param {Boolean} printTokens to print the tokens to the console
  * @param {Boolean} printAST to print the AST to the console
  * @param {Boolean} DebugParse to show the rules taken by the parser
- * @param {Boolean} DebugEval to show the functions taken by the evaluation
  * @param {Boolean} nosave to not save the newly generated AST
  * @param {Boolean} der show derivative tree instead of AST
  * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
+function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
                     der, verbose, printNF){
   
   var test = tests[testNb];
@@ -270,10 +268,6 @@ function testAtest(testNb, printTokens, printAST, DebugParse, DebugEval, nosave,
   }
 
   try{
-
-    if (DebugEval){
-      activateDebugEval();
-    }
 
     let res = initEvalComp(program);
     if (isGoodResult(program.expected, res, verbose)){
