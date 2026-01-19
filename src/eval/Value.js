@@ -66,7 +66,8 @@ export class Vio extends Value {
 
   /**
    * Primitive function return type
-   * @param {function} value 
+   * @param {function} func
+   * @param {arg}  
    */
   constructor(func, arg){
     super("IO");
