@@ -485,7 +485,7 @@ function normalizeDo(node){
         let app = new FunctionApp(new VarExp(">>="), 
           normalizeExp(stmts.childs[0].childs[2]));
         let lambda = new LambdaExp([normalizeExp(stmts.childs[0].childs[0])],
-                         normalizeExp(stmts.childs[1].childs[0]));
+                         normalizeExp(stmts.childs[1]));
         node.childs[2].childs = node.childs[2].childs.slice(2);
         if (node.childs[2].childs.length === 0){ 
           return new FunctionApp(app, lambda);
