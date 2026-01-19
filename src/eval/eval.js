@@ -272,17 +272,24 @@ function evaluateIf(exp, env){
 }
 
 /**
- * Evaluates a let exp (if is has an in part, if not it won't work)
+ * Evaluates a let exp 
  * @param {E.LetExp} exp 
  * @param {Env} env 
  * @returns {V.Value}
  */
 function evaluateLet(exp, env){
-  let clone = env.clone();
-  for (let decl of exp.decls){
-    clone.add(decl.name, decl.def, true);
+  if (exp.body !== null){
+    let clone = env.clone();
+    for (let decl of exp.decls){
+      clone.add(decl.name, decl.def, true);
+    }
+    return evaluateExp(exp.body, clone);
   }
-  return evaluateExp(exp.body, clone);
+  for (let decl of exp.decls){
+    env.add(decl.name, decl.def, true);
+  }
+  return new V.Vio(new V.Vfunc(() => [], null, env), null);
+  // kind of a unit type ? this is a temp fix
 }
 
 /**
