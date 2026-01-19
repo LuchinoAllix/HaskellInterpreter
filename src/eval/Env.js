@@ -1,6 +1,7 @@
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, makeVList } from "./Value.js";
+import { Vint, Vbool, VList, Vtuple, makeVList, Vio } from "./Value.js";
+import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
 
@@ -89,9 +90,11 @@ export class Env {
         }
         let str = makeStr(a);
         console.log(str);
-        return str; // for verification puposes (tests)
+        return [str]; // for verification puposes (tests)
       }
     ));
+    // FIXME : need to change what IO function return, to be compliant with 
+    // actual haskell code => change verification method.
 
     this.add("==", 
       new Prim(a => new Prim(b => new Vbool(a.value === b.value))));
@@ -145,6 +148,25 @@ export class Env {
     this.add(':', new Prim(a => new Prim(b => new VList([a, b]))));
 
     this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
+
+    this.add('return', new Prim(a => {console.log(a); return a}));
+
+    this.add(">>", new Prim(a => 
+      new Prim(b =>
+        new Vio(new Prim(() => {
+          let first  = a.exec();
+          let second = b.exec();
+          return first.concat(second);
+        }), null ))));
+
+    this.add(">>=", new Prim(a => 
+      new Prim(b =>
+        new Vio(new Prim(() => {
+          let first  = a.exec();
+          let lambda = applyFunc(b, first);
+          let second = lambda.exec();
+          return first.concat(second);
+        }), null ))));
   }
 
   /**
