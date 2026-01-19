@@ -514,6 +514,12 @@ function normalizeDo(node){
       n1 = normalizeExp(stmts.childs[0].childs[0]);
     } else if (stmts.childs[0].childs[0].type === "reservdid"){
       n1 = normalizeExp(stmts.childs[0]);
+    } else if (stmts.childs[0].childs[0].type === "lexp" &&
+      stmts.childs[0].childs.length === 2){ 
+      // we suppose the second child is layout ';'
+      n1 = normalizeExp(stmts.childs[0].childs[0]);
+    } else {
+      throw new Error("unhandelded case in do normalisation")
     }
     let app1 = new FunctionApp(new VarExp(">>"), n1);
     node.childs[2].childs = node.childs[2].childs.slice(1);
