@@ -16,8 +16,9 @@ const r1_vars = ["let","where","do","of"]; // reserved names that can introduce
 export function addIndentation(program){
   ApplyRule2(program);
   for (let i=0; i < program.tokens.length; i++){
-    i += ApplyRule1(program,i);
+
     i += ApplyRule3(program,i);
+    i += ApplyRule1(program,i);
   }
   program.tokens = bigL(program.tokens, [], []);
   return true;
