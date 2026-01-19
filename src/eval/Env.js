@@ -170,11 +170,11 @@ export class Env {
   }
 }
 
-/**todo
- * 
- * @param {*} n 
- * @param {*} list 
- * @returns 
+/**
+ * Makes a curryfied function that take n arguments (for comma functions)
+ * @param {Integer} n number of recursive calls required
+ * @param {[any]} list arguments to the recursive calls
+ * @returns {Value}
  */
 function makeFunc(n, list){
   if (n === 0){
