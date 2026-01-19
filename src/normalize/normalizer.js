@@ -299,6 +299,14 @@ function normalizeExp(node){
             node.childs[0].value);
       }
 
+    case "stmt" :
+      if (node.childs.length === 2){
+        return normalizeExp(node.childs[0]);
+      } else {
+        throw new Error("stmt with this many childs is not yet supported : " +
+         node.childs.length);
+      }
+
     default :
       throw new Error("This expression type is not yet supported : " +
          node.type);
