@@ -73,6 +73,14 @@ export class Vio extends Value {
     this.func = func;
     this.arg = arg;
   }
+
+  /**
+   * 
+   * @returns 
+   */
+  exec(){
+    return this.func.body(this.arg);
+  }
 }
 
 export class Vbool extends Value {
