@@ -502,12 +502,11 @@ function normalizeDo(node){
           return new FunctionApp(app, lambda);
         } else { 
           // if we still have at least one more statement to manage we need
-          // to add a >> call
+          // to add a >> call in the lambda
         return new FunctionApp(app,
           new LambdaExp([lambda.namedArg], new FunctionApp(
             new FunctionApp(new VarExp(">>"), lambda.body), 
               normalizeDo(node)))); 
-              
         }
       }
     }
