@@ -191,6 +191,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
     if(printTokens){
       showTokens(program.tokens);
+      showLayoutProgram(program.tokens);
     }
 
   } catch (error) {
@@ -198,6 +199,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     whereFail[0].push(testNb);
     if (verbose){
       showTokens(program.tokens);
+      showLayoutProgram(program.tokens);
       console.log(error);
     }
     return false;
@@ -303,7 +305,6 @@ function isGoodResult(expected, actual, verbose){
     if (expected[i] != actual[i]){
       if ((expected[i] != actual[i].toString())){
         if (verbose){
-          console.log("a")
           console.log(actual[i])
           console.log(expected[i] + " != " + actual[i]);
         }
@@ -331,8 +332,33 @@ function isGoodResult(expected, actual, verbose){
 function showTokens(tokens){
   console.log("Tokens : " );
   for (let token of tokens){
-    console.log("\t" + JSON.stringify(token));
+    console.log(token);
   }
+}
+
+/**
+ * Prints on the console all the tokens, one by line
+ * @param {Token} tokens 
+ */
+function showLayoutProgram(tokens){
+  let n = 1;
+  let prog = "";
+  let lstLine = 0;
+  console.log("Tokens with layout: " );
+  for (let token of tokens){
+    if (lstLine !== token.line || token.line === -1){
+      prog += "\n" + "  ".repeat(n);
+    }
+    if (token.value === "{"){
+      n += 1;
+    } else if (token.value === "}"){
+      n -= 1;
+    } 
+    prog += " " + token.value;
+    lstLine = token.line;
+    
+  }
+  console.log(prog);
 }
 
 /**
