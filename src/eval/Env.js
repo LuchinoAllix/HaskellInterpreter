@@ -184,7 +184,6 @@ export class Env {
   /**
    * Adds a comma function to the env
    * Required for tuples
-   * #FIXME does not work with new way of handeling functions
    * @param {String} str 
    */
   addNcommas(str){
