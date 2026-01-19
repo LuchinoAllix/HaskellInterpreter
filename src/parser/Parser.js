@@ -352,27 +352,3 @@ function didItFail(ruleName, index){
 export function activateDebugParse(){
   printDebug = true;
 }
-
-/**
- * Function to determine if the rest of the tokens are layout ones and can be 
- * ignored, this should not be used if the indentation lexing was correct,
- * alas it is not currently the case. It is used in cases like embeded 
- * let ... in ...
- * This TEMPORARY solution works because the extra layout contexts are pushed 
- * at the end of the list of tokens, were it not the case (probably in other
- * examples), this solution will not work because parsing will not find a
- * viable answer.
- * Unused fot the moment, which is a good thing
- * @param {Program} program 
- * @returns {Boolean}
- */
-function isRestofTokensLayout(program){
-  if (program.peek()){
-    if (program.getToken().type.startsWith("layout")){
-      program.incCursor();
-      return isRestofTokensLayout(program);
-    }
-    return false;
-  }
-  return true;
-}
