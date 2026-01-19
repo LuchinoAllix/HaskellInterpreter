@@ -228,31 +228,6 @@ function evaluateVar(exp, env){
 }
 
 /**
- * Evaluates a do expression by evaluating every statement individually and
- * adding them to a Do value
- * For each statement, we do not propagate the effects on the env, reseting it
- * everytime // Is this true ? #HELP
- * // FIXME: Yes and no: AFAICT currently you only support
- * // `do { A; B; C }` so there's no new binding, but once you add
- * // support for things like `do { x <- A; let y = B; return (x, y) }`,
- * // it gets different.  I recommend you macro-expand `do` to
- * // a bunch of calls to `>>=` before evaluation (and before type-inference).
- * // ANS : TODO
- * @param {E.DoExp} exp 
- * @param {Env} env
- * @returns {V.Value}
- */
-function evaluateDo(exp, env){
-  debug("Do", exp);
-  let res = []
-  for (let e of exp.exps){
-    let clone = env.clone() // not needed if all adds are protected by clone()
-    res = res.concat(evaluateExp(e, clone));
-  }
-  return new V.Vdo(res);
-}
-
-/**
  * Evaluate an expression that is only a value
  * @param {E.ValExp} exp 
  * @returns {V.Value}
@@ -301,9 +276,7 @@ function evaluateFuncApp(exp, env){
  * @param {Value} arg 
  * @returns 
  */
-function applyFunc(func, arg){
-  console.log(func)
-  console.log(arg)
+export function applyFunc(func, arg){
   if (func.subtype === "prim"){
     return func.body(arg);
   } else if (func.subtype === "primio"){
@@ -491,19 +464,13 @@ export function isMTArray(array){
  */
 function execute(main_decl){
   debug("execution");
-  let res = [];
+
   if (main_decl.type === "IO"){
-    let a = main_decl.func.body(main_decl.arg);
-    res.push(a);
-  } else if (main_decl.type === "do"){
-    for (let exp of main_decl.value){
-      res = res.concat(execute(exp));
-    }
-  } else {
-    throw new Error(
-      "Only IO functions and 'do' statements can be given to main");
+    return main_decl.exec();
   }
-  return res;
+  
+  throw new Error("Only IO functions can be given to main");
+  
 }
 
 /**
