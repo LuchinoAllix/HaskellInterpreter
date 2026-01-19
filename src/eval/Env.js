@@ -1,6 +1,6 @@
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, makeVList, Vio } from "./Value.js";
+import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Vfunc} from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -90,7 +90,7 @@ export class Env {
         }
         let str = makeStr(a);
         console.log(str);
-        return [str]; // for verification puposes (tests)
+        return new Vio(new Vfunc(() => [str], null, null), null);; // for verification puposes (tests)
       }
     ));
     // FIXME : need to change what IO function return, to be compliant with 
@@ -149,7 +149,8 @@ export class Env {
 
     this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
 
-    this.add('return', new Prim(a => {console.log(a); return a}));
+    this.add('return', new Prim(a => {
+       return a}));
 
     this.add(">>", new Prim(a => 
       new Prim(b =>
