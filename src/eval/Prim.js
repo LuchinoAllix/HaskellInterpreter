@@ -22,7 +22,6 @@ export class Prim extends Vfunc {
    * @returns {Value}
    */
   run(args){
-    //...todo
     return this.body(...args);
   }
 }
