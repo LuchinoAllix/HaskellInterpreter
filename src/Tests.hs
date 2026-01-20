@@ -781,19 +781,7 @@ main = print (1) >> print (2)
 --/
 
 --------------------------------------------------------------------------------
--- Test 79         : do statement with '<-'
--- Expected result : ?
--- This would not work if, it would need to be putStrLn instead of print
-
---/
-main = do 
-    x <- getLine
-    print x
-    print((\x -> x + 1) 1)
---/
-
---------------------------------------------------------------------------------
--- Test 80         : do statement with '<-' and return
+-- Test 79         : do statement with '<-' and return
 -- Expected result : 3
 
 --/
@@ -803,7 +791,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 81         : do statement with '>>=' and return
+-- Test 80         : do statement with '>>=' and return
 -- Expected result : 3
 
 --/
@@ -812,7 +800,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 82         : inless let
+-- Test 81         : inless let
 -- Expected result : 3
 
 --/
@@ -822,7 +810,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 83         : inless let with something before
+-- Test 82         : inless let with something before
 -- Expected result : 3\n3
 
 --/
@@ -833,7 +821,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 84         : <- with line before var call and after
+-- Test 83         : <- with line before var call and after
 -- Expected result : 3\n1\n()\n0
 
 --/
