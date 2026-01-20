@@ -1,10 +1,16 @@
 import { Term } from "../normalize/Term.js";
 import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Vfunc} from "./Value.js";
+import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Vfunc, 
+         Unit } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
 
+export let outputs = [];
+
+export function resetOutputs(){
+  outputs = [];
+}
 
 /**
  * Environment object definition, used in evaluation
@@ -67,6 +73,9 @@ export class Env {
                                   // to sring ? #fixme
       function print(a){
         function makeStr(val){
+          if (val.type === "unit"){
+            return "()";
+          }
           let bord = null;
           if (val.type === "tuple"){
             bord = "()";
@@ -90,11 +99,10 @@ export class Env {
         }
         let str = makeStr(a);
         console.log(str);
-        return new Vio(new Vfunc(() => [str], null, null), null);; // for verification puposes (tests)
+        outputs.push(str);
+        return Unit ;
       }
     ));
-    // FIXME : need to change what IO function return, to be compliant with 
-    // actual haskell code => change verification method.
 
     this.add("==", 
       new Prim(a => new Prim(b => new Vbool(a.value === b.value))));
@@ -149,15 +157,13 @@ export class Env {
 
     this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
 
-    this.add('return', new Prim(a => {
-       return a}));
+    this.add('return', new Prim(a => new Vio (new Prim(()=> a))));
 
     this.add(">>", new Prim(a => 
       new Prim(b =>
         new Vio(new Prim(() => {
-          let first  = a.exec();
-          let second = b.exec();
-          return first.concat(second);
+          a.exec();
+          return b.exec();
         }), null ))));
 
     this.add(">>=", new Prim(a => 
@@ -165,8 +171,7 @@ export class Env {
         new Vio(new Prim(() => {
           let first  = a.exec();
           let lambda = applyFunc(b, first);
-          let second = lambda.exec();
-          return first.concat(second);
+          return lambda.exec();
         }), null ))));
   }
 

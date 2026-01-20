@@ -1,6 +1,8 @@
 import { Env } from "./Env.js";
 import { isMTArray } from "./eval.js";
 
+
+
 /**
  * Abstract class for acutal value return type
  */
@@ -10,6 +12,8 @@ export class Value {
     this.type = type;
   }
 }
+
+export const Unit = new Value("unit");
 
 export class Vint extends Value {
 
