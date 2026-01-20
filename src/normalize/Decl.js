@@ -65,12 +65,15 @@ export class FuncDecl extends Decl {
    * @param {String} name 
    * @param {Node} typeAnnotation 
    * @param {Branch} branch
+   * @param {[Int]} info information relative to the postition of the origin 
+   *                     (line / column) of the token
    */
-  constructor(name, typeAnnotation, branch){
+  constructor(name, typeAnnotation, branch, info = null){
     super("DECL");
     this.type = "function";
     this.name = name;
     this.typeAnnotation = typeAnnotation;
+    this.info = info;
     if (branch !== null){
       this.makeBody(branch);
     } else {
@@ -129,13 +132,16 @@ export class VarDecl extends Decl {
    * @param {String} name 
    * @param {Node} typeAnnotation
    * @param {Exp} def
+   * @param {[Int]} info information relative to the postition of the origin 
+   *                     (line / column) of the token
    */
-  constructor(name, typeAnnotation, def){
+  constructor(name, typeAnnotation, def, info = null){
     super("DECL");
     this.type = "variable";
     this.name = name;
     this.typeAnnotation = typeAnnotation;
     this.def = def;
+    this.info = info;
   }
 
 }

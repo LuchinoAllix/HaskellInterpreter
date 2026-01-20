@@ -92,23 +92,27 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return new FuncDecl(name, node.childs[2], null);
+      return new FuncDecl(name, node.childs[2], null, 
+        [node.childs[0].line, node.childs[0].column]);
     } else { // We know it's a variable declaration
-      return new VarDecl(name, node.childs[2], null);
+      return new VarDecl(name, node.childs[2], null, 
+        [node.childs[0].line, node.childs[0].column]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
     if (node.childs[0].type === "funlhs"){
       name = node.childs[0].childs[0].value;
       if (isDeclFunc(node)){ // We know it's a function declaration
         return new FuncDecl(name, null,
-          new Branch(getArgs(node.childs[0]), normalize(node.childs[1])));
+          new Branch(getArgs(node.childs[0]), normalize(node.childs[1])),
+          [node.childs[0].line, node.childs[0].column]);
       } else {
         throw new Error("Malformed AST");
       }
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
       name = node.childs[0].value;
-      return new VarDecl(name, null, normalize(node.childs[1]));
+      return new VarDecl(name, null, normalize(node.childs[1]),
+        [node.childs[0].line, node.childs[0].column]);
     }
     } else {
     throw new Error(node.type + " was given when expected gendecl or decl.");
@@ -206,7 +210,7 @@ function normalizeExp(node){
       if (node.childs.length >= 3){
         if (node.childs[1].value === ":"){
           return makeFuncAppOfList(
-            new VarExp(":"), 
+            new VarExp(":", [node.childs[1].line, node.childs[1].column]), 
             [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
         }
       }
@@ -232,7 +236,8 @@ function normalizeExp(node){
               let right_left = node.childs[2].childs[0];
               right.childs[0] = node;
               right.childs[0].childs[2] = right_left; 
-              return makeFuncAppOfList(new VarExp(right.childs[1].value),
+              return makeFuncAppOfList(new VarExp(right.childs[1].value, 
+                [right.childs[1].line, right.childs[1].column]),
                 [normalizeExp(right.childs[0]), normalizeExp(right.childs[2])]);
             }
           } else {
@@ -240,10 +245,13 @@ function normalizeExp(node){
           }
         }
         return makeFuncAppOfList(
-          new VarExp(node.childs[1].value),
+          new VarExp(node.childs[1].value, 
+            [node.childs[1].line, node.childs[1].column]),
           [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
       } else if (node.childs.length === 2 && node.childs[0].value === '-'){
-        return new FunctionApp(new VarExp('neg'),normalizeExp(node.childs[1]));
+        return new FunctionApp(new VarExp('neg', 
+          [node.childs[1].line, node.childs[1].column]),
+          normalizeExp(node.childs[1]));
       }
 
     case "fexp" :
@@ -267,25 +275,29 @@ function normalizeExp(node){
       }
 
     case "Qvarid" :
-      return new VarExp(node.value);
+      return new VarExp(node.value, [node.line, node.column]);
 
     case "integer" :
-      return new ValExp(parseInt(node.value), node.type);
+      return new ValExp(parseInt(node.value), node.type, 
+      [node.line, node.column]);
 
     case "String" :
       let charlist = node.value.split("");
       let expCharList = []
       charlist.shift(); // remove " in first position
       charlist.pop();  // remove " in last position
+      let pos = 0;
       for (let char of charlist){
-        expCharList.push(new ValExp(char, "Char"));
+        expCharList.push(new ValExp(char, "Char", 
+          [node.line, node.column + pos]));
+        pos ++;
       }
       
       return charListToFuncApp(expCharList);
 
     case "Special" :
     case "reservdop" :
-      return new ValExp(node.value, node.type);
+      return new ValExp(node.value, node.type, [node.line, node.column]);
 
     case "apat" :
     case "pat" :
@@ -299,7 +311,7 @@ function normalizeExp(node){
         return normalizeExp(node.childs[1]);      
       } else if (node.childs[1].value === ":" && node.childs.length === 3){
         return makeFuncAppOfList(
-          new VarExp(":"),
+          new VarExp(":", [node.childs[1].line, node.childs[1].column]),
           [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
       } else if (node.childs[0].value === "[" && node.childs.length === 3){
         return normalizeList(node);
@@ -330,7 +342,7 @@ function normalizeExp(node){
     case "reservdid" :
       switch (node.value){
         case "_" :
-          return new SpecialExp("_");
+          return new SpecialExp("_", [node.line, node.column]);
         default :
           throw new Error("This kind of reservdid is not yet supported :" +
             node.value);
@@ -383,7 +395,7 @@ function getArgs(node){
 }
 
 /**
- * Counts the number of aruments in a type declaration
+ * Counts the number of arguments in a type declaration
  * @param {Node} node 
  * @returns {Integer}
  */
@@ -407,9 +419,9 @@ function countTypeArgs(node){
 function normalizeQconid(node){
   switch (node.value){
     case "False" :
-      return new ValExp(false, "Boolean");
+      return new ValExp(false, "Boolean", [node.line, node.column]);
     case "True" :
-      return new ValExp(true, "Boolean");
+      return new ValExp(true, "Boolean", [node.line, node.column]);
     default :
       throw new Error("Qconid not yet managed : " + node.value);
   }
@@ -442,7 +454,7 @@ function normalizeCase(node){
   } else {
     throw new Error("Unhandeled node in case : " + node.childs[4].type);
   }
-  return new CaseExp([exp], branches);
+  return new CaseExp([exp], branches, [node.line, node.column]);
 }
 
 /**
@@ -460,7 +472,7 @@ function normalizeIf(node){
       if (cnt === 3){ break; }
     }
   }
-  return new IfExp(elems[0], elems[1], elems[2]);
+  return new IfExp(elems[0], elems[1], elems[2], [node.line, node.column]);
 }
 
 /**
@@ -484,7 +496,7 @@ function normalizeLet(node){
   } else {
     inexp = normalizeExp(node.childs[3]);
   }
-  return new LetExp(decls, inexp);
+  return new LetExp(decls, inexp, [node.line, node.column]);
 }
 
 /**
@@ -508,7 +520,7 @@ function normalizeLambda(node){
         throw new Error("Mismanagement of anonymous function");
       }
     }
-    return new LambdaExp(args, func);
+    return new LambdaExp(args, func, [node.line, node.column]);
   } else {
     throw new Error("Mismanagement of lexp node")
   }
@@ -530,7 +542,7 @@ function normalizeDo(node){
       if (stmts.childs[0].childs[1].value === "<-" && 
         stmts.childs[0].childs.length === 4){
         // we have to bind the variable
-        let app = new FunctionApp(new VarExp(">>="), 
+        let app = new FunctionApp(new VarExp(">>=", [node.line, node.column]), 
           normalizeExp(stmts.childs[0].childs[2]));
         let lambda = new LambdaExp([normalizeExp(stmts.childs[0].childs[0])],
                          normalizeExp(stmts.childs[1]));
@@ -542,8 +554,8 @@ function normalizeDo(node){
           // to add a >> call in the lambda
         return new FunctionApp(app,
           new LambdaExp([lambda.namedArg], new FunctionApp(
-            new FunctionApp(new VarExp(">>"), lambda.body), 
-              normalizeDo(node)))); 
+            new FunctionApp(new VarExp(">>", [node.line, node.column]), 
+              lambda.body), normalizeDo(node)))); 
         }
       }
     }
@@ -559,7 +571,7 @@ function normalizeDo(node){
     } else {
       throw new Error("unhandelded case in do normalisation")
     }
-    let app1 = new FunctionApp(new VarExp(">>"), n1);
+    let app1 = new FunctionApp(new VarExp(">>", [node.line, node.column]), n1);
     node.childs[2].childs = node.childs[2].childs.slice(1);
     return new FunctionApp(app1, normalizeDo(node));
   } 
@@ -598,7 +610,8 @@ function normalizeTuple(node){
   if (args.length < 2){
     throw new Error("Not enough elements given for tuple");
   }
-  return makeFuncAppOfList(new VarExp(",".repeat(args.length-1)), args);
+  return makeFuncAppOfList(new VarExp(",".repeat(args.length-1), 
+    [node.line, node.column]), args);
 }
 
 /**
@@ -619,7 +632,8 @@ function normalizeList(node){
     node.childs.splice(1,2); // removing the first value child and the comma 
     arg2 = normalizeList(node);
   }
-  return makeFuncAppOfList(new VarExp(":"), [arg1, arg2]);
+  return makeFuncAppOfList(new VarExp(":", [node.line, node.column]),
+   [arg1, arg2]);
 }
 
 /**
@@ -651,5 +665,6 @@ function normalizeCurr(node){
     }
   }
 
-  return makeFuncAppOfList(new VarExp(node.childs[plus].value), args);
+  return makeFuncAppOfList(new VarExp(node.childs[plus].value,
+    [node.childs[plus].line, node.childs[plus].column]), args);
 }

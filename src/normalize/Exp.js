@@ -26,11 +26,14 @@ export class VarExp extends Exp{
   /**
    * Constuctor for variables expressions
    * @param {String} name 
+   * @param {[Int]} info information relative to the postition of the origin 
+   *                     (line / column) of the token
    */
-  constructor(name){
+  constructor(name, info = null){
     super();
     this.type = "var";
     this.name = name;
+    this.info = info;
   }
 }
 
@@ -45,8 +48,10 @@ export class ValExp extends Exp {
    *                           // value inside valueType is the type of the 
    *                           // value 
    * @param {String} valueType
+   * @param {[Int]} info information relative to the postition of the origin 
+   *                     (line / column) of the token
    */
-  constructor(value, valueType){
+  constructor(value, valueType, info = null){
     super();
     if(value === "[]"){
       value = [];
@@ -54,6 +59,7 @@ export class ValExp extends Exp {
     this.type = "value";
     this.value = value;
     this.valueType = valueType;
+    this.info = info;
   }
 
 }
@@ -68,12 +74,15 @@ export class FunctionApp extends Exp {
    * Creates an application function expression for function 
    * @param {Term} func function to call, var or actual body (exp)
    * @param {Exp} arg Arguments given to the function 
+   * @param {[Int]} info information relative to the postition of the origin 
+   *                     (line / column) of the token
    */
-  constructor(func, arg){
+  constructor(func, arg, info = null){
     super();
     this.type = "functionApp";
     this.func = func;
     this.arg = arg;
+    this.info = info;
   }
 }
 
@@ -108,12 +117,13 @@ export class IfExp extends Exp {
    * @param {Exp} success 
    * @param {Exp} fail 
    */
-  constructor(condition, success, fail){
+  constructor(condition, success, fail, info = null){
     super();
     this.type = "if";
     this.condition = condition;
     this.success = success;
     this.fail = fail;
+    this.info = info;
   }
 }
 
@@ -126,11 +136,12 @@ export class LetExp extends Exp {
    * Creates a let expression object
    * @param {[Decl]} decls 
    */
-  constructor(decls, body){
+  constructor(decls, body, info = null){
     super();
     this.type = "let";
     this.decls = decls
     this.body = body;
+    this.info = info;
   }
 
 }
@@ -146,11 +157,12 @@ export class CaseExp extends Exp {
    * @param {[Exp]} exps 
    * @param {[Branch]} branches  
    */
-  constructor(exps, branches){
+  constructor(exps, branches, info = null){
     super();
     this.type = "case";
     this.exps = exps;
     this.branches = branches;
+    this.info = info;
   }
 
 }
@@ -165,12 +177,13 @@ export class LambdaExp extends Exp {
    * @param {[Exp]} namedArgs 
    * @param {Exp} body
    */
-  constructor(namedArgs, body){
+  constructor(namedArgs, body, info = null){
     if (namedArgs.length === 0){
       throw new Error("Lambda Exp requires at least one argument");
     }
     super();
     this.type = "LambdaExp";
+    this.info = info;
     if (namedArgs[0].type === "functionApp"){ 
       let argName = makeNewName();
       this.namedArg = argName;
@@ -200,9 +213,10 @@ export class SpecialExp extends Exp {
    * Creates a special exp object for reserved id
    * @param {String} special 
    */
-  constructor(special){
+  constructor(special, info = null){
     super();
     this.type = "SpecialExp";
     this.special = special;
+    this.info = info;
   }
 }
