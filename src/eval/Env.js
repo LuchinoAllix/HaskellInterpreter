@@ -67,6 +67,8 @@ export class Env {
     
     this.add('-', new Prim(a => new Prim(b => new Vint(a.value - b.value))));
 
+    this.add('neg', new Prim(a => new Vint(- a.value)));
+
     this.add('/', new Prim(a => new Prim(b => new Vint(a.value / b.value))));
 
     this.add("print", new PrimIO( // should automatially convert list of chars 

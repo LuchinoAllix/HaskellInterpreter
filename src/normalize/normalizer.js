@@ -205,9 +205,14 @@ function normalizeExp(node){
       }
       // based on the fact that the second element of an infixexp is the 
       // function 
-      return makeFuncAppOfList(
-        new VarExp(node.childs[1].value),
-        [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+      if (node.childs.length === 3){
+        return makeFuncAppOfList(
+          new VarExp(node.childs[1].value),
+          [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+      } else if (node.childs.length === 2 && node.childs[0].value === '-'){
+        return new FunctionApp(new VarExp('neg'),normalizeExp(node.childs[1]));
+      }
+
 
     case "fexp" :
       return normalizeCurr(node);
