@@ -13,7 +13,7 @@ let content = readFileSync(inputFile, "utf8");
 // Sépare en lignes
 let lines = content.split(/\r?\n/);
 
-let testIndex = 0;
+let testIndex = 1;
 let outputLines = [];
 
 for (let i = 0; i < lines.length; i++) {
