@@ -219,6 +219,14 @@ function normalizeExp(node){
           if (node.childs[2].childs[1].type === "Qvarsym"){
             let op1 = op_priority[node.childs[1].value];
             let op2 = op_priority[node.childs[2].childs[1].value];
+            if (op1 === undefined){
+              throw new Error("order of priority not defined for this op : " + 
+                node.childs[1].value);
+            }
+            if (op2 === undefined){
+              throw new Error("order of priority not defined for this op : " + 
+                node.childs[2].childs[1].value);
+            }
             if (op1 < op2){
               let right = node.childs[2];
               let right_left = node.childs[2].childs[0];
