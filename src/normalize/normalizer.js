@@ -251,6 +251,15 @@ function normalizeExp(node){
           } else {
             throw new Error("Unhandelded case of middle node for infixexp;")
           }
+        } else if (node.childs[1].type === "qvarop"){ 
+          // infix function call (in backticks)
+          if (node.childs[1].childs[0].value === "`" && 
+              node.childs[1].childs[2].value === "`"){
+            return makeFuncAppOfList(
+              new VarExp(node.childs[1].childs[1].value, 
+              [node.childs[1].childs[1].line, node.childs[1].childs[1].column]),
+              [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+          }
         }
         return makeFuncAppOfList(
           new VarExp(node.childs[1].value, 
