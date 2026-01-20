@@ -103,8 +103,8 @@ main = print ((5 + 5) * 10)
 --/
 
 --------------------------------------------------------------------------------
--- Test 11          : complex operations
--- Expected result  : 25
+-- Test 11         : complex operations
+-- Expected result : 25
 
 --/
 main = print (5 + 3 * 8 - 12 / 3)
