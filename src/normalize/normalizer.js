@@ -8,6 +8,14 @@ import { Node } from "../objects/Node.js";
 //--     File containing functions for intermediary form transformation     --//
 
 const op_priority = {
+  "==" : 3 ,
+  "<" : 3 ,
+  ">" : 3 ,
+  "<=" : 3 ,
+  ">=" : 3 ,
+  "&&" : 3 ,
+  "||" : 3 ,
+  "!=" : 3 ,
   "*" : 1 ,
   "/" : 1 ,
   "+" : 2 ,
