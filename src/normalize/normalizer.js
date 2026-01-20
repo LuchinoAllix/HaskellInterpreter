@@ -3,9 +3,16 @@ import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp,
          LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
+import { Node } from "../objects/Node.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
+const op_priority = {
+  "*" : 1 ,
+  "/" : 1 ,
+  "+" : 2 ,
+  "-" : 2 
+}
 
 /**
  * Start function to make the ast of a program into a intermediary form
@@ -206,13 +213,30 @@ function normalizeExp(node){
       // based on the fact that the second element of an infixexp is the 
       // function 
       if (node.childs.length === 3){
+        if (node.childs[2].type === "infixexp"){
+          // If we have two operations, we need to swap the order of eval if
+          // need be
+          if (node.childs[2].childs[1].type === "Qvarsym"){
+            let op1 = op_priority[node.childs[1].value];
+            let op2 = op_priority[node.childs[2].childs[1].value];
+            if (op1 < op2){
+              let right = node.childs[2];
+              let right_left = node.childs[2].childs[0];
+              right.childs[0] = node;
+              right.childs[0].childs[2] = right_left; 
+              return makeFuncAppOfList(new VarExp(right.childs[1].value),
+                [normalizeExp(right.childs[0]), normalizeExp(right.childs[2])]);
+            }
+          } else {
+            throw new Error("Unhandelded case of middle node for infixexp;")
+          }
+        }
         return makeFuncAppOfList(
           new VarExp(node.childs[1].value),
           [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
       } else if (node.childs.length === 2 && node.childs[0].value === '-'){
         return new FunctionApp(new VarExp('neg'),normalizeExp(node.childs[1]));
       }
-
 
     case "fexp" :
       return normalizeCurr(node);
