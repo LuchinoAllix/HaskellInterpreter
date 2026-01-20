@@ -94,7 +94,7 @@ async function main(){
   if(isNaN(testNum)){
     var cnt = 0;
     nosave = true;
-    for (let i=0; i < tests.length; i ++){
+    for (let i=1; i <= tests.length; i ++){
       if (testAtest(i, printTokens, printAST, printDebugParse, 
         nosave, derivative, verbose, printNF)){
         cnt +=1;
@@ -106,9 +106,9 @@ async function main(){
     console.log("\nTests passed : ", cnt, "/", tests.length);
     printDataFails();
   } else {
-    if (testNum >= tests.length || testNum  < 0 ){
-      console.log("Test number out of range, tests go from 0 to : ", 
-                  tests.length-1);
+    if (testNum > tests.length || testNum  <= 0 ){
+      console.log("Test number out of range, tests go from 1 to : ", 
+                  tests.length);
     } else {
       if (testAtest(testNum, printTokens, printAST, printDebugParse, 
          nosave, derivative, true, printNF)){
@@ -171,11 +171,10 @@ function printOptions(){
 function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
                     der, verbose, printNF){
   
-  var test = tests[testNb];
+  var test = tests[testNb-1];
   const program = new Program(test.input);
   program.expected = test.expected;
   console.log("\nTest " + testNb + " : testing " + test.info);
-
 
   if (verbose){
     console.log("Input : \n" + program.input);
