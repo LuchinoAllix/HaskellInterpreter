@@ -7,12 +7,13 @@ import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
 import { initEvalComp } from './eval/eval.js';
 import { outputs, resetOutputs } from './eval/Env.js';
+import { typeCheck } from './typeCheck/TypeCheck.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
 
 let tests = []
-let whereFail = [[],[],[],[]];
+let whereFail = [[],[],[],[],[]];
 
 /**
  * Main function to test Parser
@@ -125,7 +126,7 @@ async function main(){
  * Prints the information about where each test failed
  */
 function printDataFails(){
-  let where = ["lexing", "parsing", "normalising", "evaluating"];
+  let where = ["lexing", "parsing", "normalising","type checking","evaluating"];
   for (let i = 0; i < whereFail.length; i++){
     if (whereFail[i].length === 1){
       console.log("An error occured whilst " + where[i] + " for test : " + 
@@ -270,6 +271,23 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
   }
 
   try{
+  
+    typeCheck(program);
+    
+    if (verbose){
+      console.log("Successful type checking :) ");
+    }
+
+  } catch (error) {
+    console.log("Error while type checking :");
+    whereFail[3].push(testNb);
+    if (verbose){
+      console.log(error);
+    }
+    return false;
+  }
+
+  try{
     resetOutputs();
     initEvalComp(program);
     if (isGoodResult(program.expected, outputs, verbose)){
@@ -282,11 +300,11 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
   } catch (error) {
     console.log("Error while evaluating :");
-    whereFail[3].push(testNb);
+    whereFail[4].push(testNb);
     console.log(error);
     return false;
-
   }
+
   return true;
 }
 
