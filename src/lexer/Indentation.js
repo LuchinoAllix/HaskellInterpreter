@@ -1,4 +1,5 @@
 import { Token, newLayoutToken } from "../objects/Token.js";
+import { Program } from "../objects/Program.js";
 
 //--    File containing functions to make the program layout insensitive    --//
 
@@ -8,8 +9,8 @@ const r1_vars = ["let","where","do","of"]; // reserved names that can introduce
 /**
  * Applies the indentation <n> rules and then the application to make the 
  * program layout insensitive
+ * This is the point of entry function for the layout management
  * 
- * @param {String} input 
  * @param {Program} program
  * @returns {Boolean}
  */
