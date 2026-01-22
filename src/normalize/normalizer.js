@@ -215,102 +215,23 @@ function normalizeExp(node){
   switch (node.type){
     
     case "infixexp" :
-      if (node.childs.length >= 3){
-        if (node.childs[1].value === ":"){
-          return makeFuncAppOfList(
-            new VarExp(":", [node.childs[1].line, node.childs[1].column]), 
-            [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
-        }
-      }
-      // based on the fact that the second element of an infixexp is the 
-      // function 
-      if (node.childs.length === 3){
-        if (node.childs[2].type === "infixexp"){
-          // If we have two operations, we need to swap the order of eval if
-          // need be
-          if (node.childs[2].childs[1].type === "Qvarsym"){
-            let op1 = op_priority[node.childs[1].value];
-            let op2 = op_priority[node.childs[2].childs[1].value];
-            if (op1 === undefined){
-              throw new Error("order of priority not defined for this op : " + 
-                node.childs[1].value);
-            }
-            if (op2 === undefined){
-              throw new Error("order of priority not defined for this op : " + 
-                node.childs[2].childs[1].value);
-            }
-            if (op1 < op2){
-              let right = node.childs[2];
-              let right_left = node.childs[2].childs[0];
-              right.childs[0] = node;
-              right.childs[0].childs[2] = right_left; 
-              return makeFuncAppOfList(new VarExp(right.childs[1].value, 
-                [right.childs[1].line, right.childs[1].column]),
-                [normalizeExp(right.childs[0]), normalizeExp(right.childs[2])]);
-            }
-          } else {
-            throw new Error("Unhandelded case of middle node for infixexp;")
-          }
-        } else if (node.childs[1].type === "qvarop"){ 
-          // infix function call (in backticks)
-          if (node.childs[1].childs[0].value === "`" && 
-              node.childs[1].childs[2].value === "`"){
-            return makeFuncAppOfList(
-              new VarExp(node.childs[1].childs[1].value, 
-              [node.childs[1].childs[1].line, node.childs[1].childs[1].column]),
-              [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
-          }
-        }
-        return makeFuncAppOfList(
-          new VarExp(node.childs[1].value, 
-            [node.childs[1].line, node.childs[1].column]),
-          [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
-      } else if (node.childs.length === 2 && node.childs[0].value === '-'){
-        return new FunctionApp(new VarExp('neg', 
-          [node.childs[1].line, node.childs[1].column]),
-          normalizeExp(node.childs[1]));
-      }
+      return normaliseInfixexp(node);
 
     case "fexp" :
       return normalizeCurr(node);
     
-    case "aexp_" : // we assume aexp ( ? ) is not a tuple or list
-      if (node.childs.length === 3 && 
-          node.childs[0].value !== "["){
-        return normalizeExp(node.childs[1]);
-      }
-      if (node.childs[0].value === "("){
-        if (node.childs[2].value === ","){
-          return normalizeTuple(node);
-        }
-        return normalizeCurr(node);
-      } else if (node.childs[0].value === "["){
-        return normalizeList(node);
-      } else {
-        throw new Error("Unknow node starting in aexp_ childs : " + 
-          node.childs[0].value);
-      }
+    case "aexp_" : 
+      return normaliseAexp_(node);
 
     case "Qvarid" :
       return new VarExp(node.value, [node.line, node.column]);
 
     case "integer" :
       return new ValExp(parseInt(node.value), node.type, 
-      [node.line, node.column]);
+        [node.line, node.column]);
 
     case "String" :
-      let charlist = node.value.split("");
-      let expCharList = []
-      charlist.shift(); // remove " in first position
-      charlist.pop();  // remove " in last position
-      let pos = 0;
-      for (let char of charlist){
-        expCharList.push(new ValExp(char, "Char", 
-          [node.line, node.column + pos]));
-        pos ++;
-      }
-      
-      return charListToFuncApp(expCharList);
+      return charListToFuncApp(makeCharListOfString(node));
 
     case "Special" :
     case "reservdop" :
@@ -318,43 +239,13 @@ function normalizeExp(node){
 
     case "apat" :
     case "pat" :
-      if (node.childs[2].value === ","){
-        if (node.childs[0].value === "("){
-          return normalizeTuple(node);
-        } else if (node.childs[0].value === "["){
-          return normalizeList(node);
-        } 
-      } else if (node.childs[0].value === "(" && node.childs.length === 3){
-        return normalizeExp(node.childs[1]);      
-      } else if (node.childs[1].value === ":" && node.childs.length === 3){
-        return makeFuncAppOfList(
-          new VarExp(":", [node.childs[1].line, node.childs[1].column]),
-          [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
-      } else if (node.childs[0].value === "[" && node.childs.length === 3){
-        return normalizeList(node);
-      } else {
-        throw new Error("unhandelded case in pat : " + node);
-      }
+      return normalisePattern(node);
 
     case "Qconid" :
       return normalizeQconid(node);
 
     case "lexp" :
-      switch (node.childs[0].value) {
-        case "\\" :
-          return normalizeLambda(node); 
-        case "let" :
-          return normalizeLet(node);
-        case "if" :
-          return normalizeIf(node);
-        case "case" :
-          return normalizeCase(node);
-        case "do" :
-          return normalizeDo(node);
-        default :
-          throw new Error("This kind of lexp is not yet supported :" +
-            node.childs[0].value);
-      }
+      return normaliseLexp(node);
 
     case "reservdid" :
       switch (node.value){
@@ -382,6 +273,129 @@ function normalizeExp(node){
 }
 
 /**
+ * todo
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normaliseInfixexp(node){
+  if (node.childs.length >= 3){
+    if (node.childs[1].value === ":"){
+      return makeFuncAppOfList(
+        new VarExp(":", [node.childs[1].line, node.childs[1].column]), 
+        [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+    }
+  }
+
+  // based on the fact that the second element of an infixexp is the function 
+  
+  if (node.childs.length === 3){
+    if (node.childs[2].type === "infixexp"){
+      // If we have two operations, we need to swap the order of eval if need be
+      if (node.childs[2].childs[1].type === "Qvarsym"){
+        let op1 = op_priority[node.childs[1].value];
+        let op2 = op_priority[node.childs[2].childs[1].value];
+        
+        if (op1 === undefined){
+          throw new Error("order of priority not defined for this op : " + 
+            node.childs[1].value);
+        } if (op2 === undefined){
+          throw new Error("order of priority not defined for this op : " + 
+            node.childs[2].childs[1].value);
+        }
+        
+        if (op1 < op2){ return normalisePriority(node); }
+
+      } else {
+        throw new Error("Unhandelded case of middle node for infixexp");
+      }
+
+    } else if (node.childs[1].type === "qvarop"){ 
+      // infix function call (in backticks)
+      if (node.childs[1].childs[0].value === "`" && 
+          node.childs[1].childs[2].value === "`"){
+        return makeFuncAppOfList(
+          new VarExp(node.childs[1].childs[1].value, 
+          [node.childs[1].childs[1].line, node.childs[1].childs[1].column]),
+          [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+      }
+    }
+
+    return makeFuncAppOfList(
+      new VarExp(node.childs[1].value, 
+        [node.childs[1].line, node.childs[1].column]),
+      [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+
+  } else if (node.childs.length === 2 && node.childs[0].value === '-'){
+    return new FunctionApp(new VarExp('neg', 
+      [node.childs[1].line, node.childs[1].column]),
+      normalizeExp(node.childs[1]));
+
+  } else {
+    throw new Error("Unhandelded case of infixexp");
+  }
+}
+
+/**
+ * todo
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normalisePriority(node){
+  let right = node.childs[2];
+  let right_left = node.childs[2].childs[0];
+  right.childs[0] = node;
+  right.childs[0].childs[2] = right_left; 
+  return makeFuncAppOfList(
+    new VarExp(right.childs[1].value, 
+      [right.childs[1].line, right.childs[1].column]),
+    [normalizeExp(right.childs[0]), normalizeExp(right.childs[2])]);
+}
+
+/**
+ * todo
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normalisePattern(node){
+  if (node.childs[2].value === ","){
+    if (node.childs[0].value === "("){
+      return normalizeTuple(node);
+    } else if (node.childs[0].value === "["){
+      return normalizeList(node);
+    } 
+  } else if (node.childs[0].value === "(" && node.childs.length === 3){
+    return normalizeExp(node.childs[1]);      
+  } else if (node.childs[1].value === ":" && node.childs.length === 3){
+    return makeFuncAppOfList(
+      new VarExp(":", [node.childs[1].line, node.childs[1].column]),
+      [normalizeExp(node.childs[0]), normalizeExp(node.childs[2])]);
+  } else if (node.childs[0].value === "[" && node.childs.length === 3){
+    return normalizeList(node);
+  } else {
+    throw new Error("unhandelded case in pat or apat : " + node);
+  }
+}
+
+/**
+ * todo
+ * @param {Node} node 
+ * @returns {[ValExp]} 
+ */
+function makeCharListOfString(node){
+  let charlist = node.value.split("");
+  let expCharList = []
+  charlist.shift(); // remove " in first position
+  charlist.pop();  // remove " in last position
+  let pos = 0;
+  for (let char of charlist){
+    expCharList.push(new ValExp(char, "Char", 
+      [node.line, node.column + pos]));
+    pos ++;
+  }
+  return expCharList;
+}
+
+/**
  * Turns a list of chars valexp into the function app of (:)
  * @param {[ValExp]} charList 
  * @returns {FunctionApp}
@@ -393,6 +407,51 @@ function charListToFuncApp(charList){
   let arg1 = charList[0];
   let arg2 = charListToFuncApp(charList.slice(1));
   return makeFuncAppOfList(new VarExp(":"), [arg1, arg2]);
+}
+
+/**
+ * todo
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normaliseAexp_(node){
+  // we assume aexp ( ? ) is not a tuple or list
+  if (node.childs.length === 3 && node.childs[0].value !== "["){
+    return normalizeExp(node.childs[1]);
+  } else if (node.childs[0].value === "("){
+    if (node.childs[2].value === ","){
+      return normalizeTuple(node);
+    }
+    return normalizeCurr(node);
+  } else if (node.childs[0].value === "["){
+    return normalizeList(node);
+  } else {
+    throw new Error("Unknow node starting in aexp_ childs : " + 
+      node.childs[0].value);
+  }
+}
+
+/**
+ * todo
+ * @param {Node} node 
+ * @returns {Exp}
+ */
+function normaliseLexp(node){
+  switch (node.childs[0].value) {
+    case "\\" :
+      return normalizeLambda(node); 
+    case "let" :
+      return normalizeLet(node);
+    case "if" :
+      return normalizeIf(node);
+    case "case" :
+      return normalizeCase(node);
+    case "do" :
+      return normalizeDo(node);
+    default :
+      throw new Error("This kind of lexp is not yet supported :" +
+        node.childs[0].value);
+  }
 }
 
 /**
