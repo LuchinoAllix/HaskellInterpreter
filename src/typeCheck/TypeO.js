@@ -1,6 +1,19 @@
 
 //--              File containing "type" TypeO for type checking            --//
 
+let count = 0;
+
+
+/**
+ * Makes a new name for a type (t0, t1, t2, ...)
+ * @returns {String}
+ */
+function makeNewTypeName(){
+  let name = "t" + count;
+  count ++;
+  return name
+}
+
 /**
  * Represents a the type of a term
  */
