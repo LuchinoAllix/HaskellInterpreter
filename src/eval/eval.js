@@ -170,13 +170,18 @@ function evaluateLambda(exp, env){
 function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
+    // FIXME: A variable cannot *be* a function: it can *contain* a function.
+    // FIXME: Why do we care if the variable contains a function?
     if (variable.isFunc()){
       return evaluateExp(variable.body, env);
+    // FIXME: `variable.isVar`?  Really?
+    // Like, can a variable be not a variable?
     } else if (variable.isVar()){
       return evaluateExp(variable.def, env);
     } else {
       throw new Error("Decls must be either a Func or a var");
     }
+  // FIXME: What is the difference between those `metatype`s?
   } else if (variable.metatype === "EXP"){
     return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
@@ -209,6 +214,9 @@ function evaluateValue(exp){
     case "Char" :
       return new V.Vchar(exp.value);
 
+      // FIXME: "Special" is not very informative.  Why not call it "EmptyList"?
+      // FIXME: If the `isMTArray` test fails we return ... nothing?
+      // FIXME: Why do we need to look at `exp.value`?
     case "Special" :
       if (isMTArray(exp.value)){
         return new V.VList([]);
@@ -240,6 +248,8 @@ function evaluateFuncApp(exp, env){
  * @returns 
  */
 export function applyFunc(func, arg){
+    // FIXME: The "primio" code looks suspicious.
+    // Why do you need functions of subtype `primio`?
   if (func.subtype === "prim"){
     return func.body(arg);
   } else if (func.subtype === "primio"){
@@ -453,6 +463,7 @@ function lookupGlobalLocal(env, name){
   if (res !== undefined){
     return res;
   }
+  // NOTE: I expected to see that in the normalization rather than here.
   if (isNcommas(name)){ // Add the comma function to the global env if need be
     global_env.addNcommas(name);
     return global_env.lookup(name);

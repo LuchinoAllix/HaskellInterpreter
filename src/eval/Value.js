@@ -4,7 +4,7 @@ import { isMTArray } from "./eval.js";
 
 
 /**
- * Abstract class for acutal value return type
+ * Abstract class for actual value return type
  */
 export class Value {
   constructor(type){
@@ -73,6 +73,7 @@ export class Vio extends Value {
    * @param {function} func
    * @param {arg}  
    */
+    // FIXME: What is this "arg"?  E.g. for `getChar :: IO Char`
   constructor(func, arg){
     super("IO");
     this.func = func;
@@ -125,7 +126,7 @@ export class Vdo extends Value {
 }
 
 export class VList extends Value {
-  
+
   /**
    * Constructor for VList, used in functionApp management, so expects either an
    * empty list or a value and a Vlist, to make a VList for a list of any number
@@ -144,6 +145,10 @@ export class VList extends Value {
       if (isMTArray(values[1].value)){
         val = [values[0]];
       } else {
+          // FIXME: This is an O(N) operation, whereas IIUC this is
+          // implementing the (:) operation which is supposed to be
+          // constant-time.
+          // FIXME: Why do we mutate `values[1].value`?
         values[1].value = [values[0]].concat(values[1].value);
         val = values[1].value;
       }

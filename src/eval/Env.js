@@ -16,6 +16,8 @@ export function resetOutputs(){
  * Environment object definition, used in evaluation
  */
 export class Env {
+  // FIXME: Normally for a call-by-value evaluator, the environment
+  // maps Varnames to *Values*, not Terms.
 
   /**
    * Constructor for env, always empty.
