@@ -10,8 +10,10 @@ import { Branch } from "./Branch.js";
 let count = 0;
 
 /**
- * 
- * @returns 
+ * Creates a variable expression with a new name
+ * TODO : change the Varexp so that the evaluator can do the difference between 
+ * a user entered name and a interpreter generated one
+ * @returns {VarExp}
  */
 export function makeNewName(){
   let name = "arg" + count;
