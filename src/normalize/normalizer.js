@@ -14,6 +14,7 @@ import { Node } from "../objects/Node.js";
 // for safety there should be more analysis of the nodes, many things are 
 // assumed for which we have no garanty and only tests show us 
 
+// priority of operations dictionnary, for swapping infix exp around
 const op_priority = {
   "==" : 3 ,
   "<" : 3 ,
