@@ -7,6 +7,13 @@ import { Node } from "../objects/Node.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
+// FIXME : clearly not the best code in term of readability and safety
+// one way to fix readability would be to not pass the individual line and
+// column number to declaration, but a node and the constructor would handel it
+// better
+// for safety there should be more analysis of the nodes, many things are 
+// assumed for which we have no garanty and only tests show us 
+
 const op_priority = {
   "==" : 3 ,
   "<" : 3 ,
