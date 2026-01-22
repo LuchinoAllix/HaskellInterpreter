@@ -4,6 +4,7 @@ import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp,
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
+import { TypeO } from "../typeCheck/TypeO.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -108,10 +109,10 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return new FuncDecl(name, node.childs[2], null, 
+      return new FuncDecl(name, normaliseTypeAnnotation(node.childs[2]), null, 
         [node.childs[0].line, node.childs[0].column]);
     } else { // We know it's a variable declaration
-      return new VarDecl(name, node.childs[2], null, 
+      return new VarDecl(name, normaliseTypeAnnotation(node.childs[2]), null, 
         [node.childs[0].line, node.childs[0].column]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
@@ -130,9 +131,19 @@ function normalizeDecl(node){
       return new VarDecl(name, null, normalize(node.childs[1]),
         [node.childs[0].line, node.childs[0].column]);
     }
-    } else {
+  } else {
     throw new Error(node.type + " was given when expected gendecl or decl.");
   }
+}
+
+/**
+ * Transforms a node of type declaration into the corresponding type 
+ * (typeO object)
+ * @param {Node} node
+ * @returns {TypeO} 
+ */
+function normaliseTypeAnnotation(node){
+  //todo
 }
 
 /**
