@@ -4,7 +4,7 @@ import { Value, Vfunc } from "./Value.js";
 //--                   File for primitives object definition                --//
 
 /**
- * todo
+ * Class for primitive function object, such as '+', '-', '*', 'fst', '++',  ...
  */
 export class Prim extends Vfunc {
 

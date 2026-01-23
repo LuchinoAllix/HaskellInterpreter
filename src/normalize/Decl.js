@@ -119,8 +119,9 @@ export class FuncDecl extends Decl {
   }
 
   /**
-   * todo
-   * @returns 
+   * Method to get the caseExp node at the end of a func decl lambda exp 
+   * contained in the body (because of the branches)
+   * @returns {CaseExp}
    */
   getCase(){
     // we suppose we only have lambda exps until the caseExp
@@ -133,6 +134,9 @@ export class FuncDecl extends Decl {
 
 }
 
+/**
+ * Variable declaration class, could be merged with func into just decls
+ */
 export class VarDecl extends Decl {
 
   /** 

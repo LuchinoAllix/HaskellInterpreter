@@ -55,9 +55,9 @@ export class Vfunc extends Value {
   }
 
   /**
-   * todo
-   * @param {*} name 
-   * @param {*} value 
+   * Adds the argument name and it's value to the closure of the Vfunc
+   * @param {String} name 
+   * @param {Value} value 
    */
   addArg(name, value){
     let clone = this.closure.clone();

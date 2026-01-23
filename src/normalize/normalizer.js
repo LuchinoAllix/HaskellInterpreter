@@ -18,6 +18,7 @@ import { Term } from "./Term.js";
 
 // priority of operations dictionnary, for swapping infix exp around
 // https://www.haskell.org/onlinereport/decls.html (section 4.4.2)
+// TODO
 const op_priority = {
   "==" : 3 ,
   "<" : 3 ,
@@ -305,7 +306,8 @@ function normalizeExp(node){
 }
 
 /**
- * todo
+ * Normalises a infix expression, usually composed of 'arg op arg'
+ * or 'op arg' in case of neg operator 
  * @param {Node} node 
  * @returns {Exp}
  */
@@ -368,7 +370,16 @@ function normaliseInfixexp(node){
 }
 
 /**
- * todo
+ * Normalises an infixe exp but swaps arround the nodes according to priority
+ * of operators
+ * the logic is like :
+ * 
+ *      *                      +
+ *    /    \                 /   \
+ *  exp1    +      ->       *    exp3
+ *        /   \           /   \
+ *      exp2  exp3      exp1   exp2
+ * 
  * @param {Node} node 
  * @returns {Exp}
  */
@@ -384,7 +395,7 @@ function normalisePriority(node){
 }
 
 /**
- * todo
+ * Normalises pattern matching node (pat or apat)
  * @param {Node} node 
  * @returns {Exp}
  */
@@ -409,7 +420,7 @@ function normalisePattern(node){
 }
 
 /**
- * todo
+ * Makes a lists of charVal nodes from a string node
  * @param {Node} node 
  * @returns {[ValExp]} 
  */
@@ -442,12 +453,12 @@ function charListToFuncApp(charList){
 }
 
 /**
- * todo
+ * normalises an aexp node, into a list, tuple or currified func app
  * @param {Node} node 
  * @returns {Exp}
  */
 function normaliseAexp_(node){
-  // we assume aexp ( ? ) is not a tuple or list
+  // we assume aexp is not a tuple or list
   if (node.childs.length === 3 && node.childs[0].value !== "["){
     return normalizeExp(node.childs[1]);
   } else if (node.childs[0].value === "("){
@@ -464,7 +475,7 @@ function normaliseAexp_(node){
 }
 
 /**
- * todo
+ * Normalises a Lexp node depending on its content
  * @param {Node} node 
  * @returns {Exp}
  */
