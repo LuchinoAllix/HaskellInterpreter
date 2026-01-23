@@ -130,9 +130,6 @@ function evaluateExp(exp, env){
 
     case "var" :
       return evaluateVar(exp, env);
-
-    case "do" :
-      return evaluateDo(exp, env);
     
     case "value" :
       return evaluateValue(exp);
@@ -172,16 +169,25 @@ function evaluateVar(exp, env){
   if (variable.metatype === "DECL"){
     // FIXME: A variable cannot *be* a function: it can *contain* a function.
     // FIXME: Why do we care if the variable contains a function?
+    // ANS indeed since pattern matching is using a lambda we can merge the two
+    // types
     if (variable.isFunc()){
       return evaluateExp(variable.body, env);
     // FIXME: `variable.isVar`?  Really?
     // Like, can a variable be not a variable?
+    // ANS : should it be variable.containsVar() ?? I add the or pehaps it 
+    // it would be better to say declaration.isVar() ? but the env doesn't 
+    // contain only declarations
     } else if (variable.isVar()){
       return evaluateExp(variable.def, env);
     } else {
       throw new Error("Decls must be either a Func or a var");
     }
   // FIXME: What is the difference between those `metatype`s?
+  // ANS Decl for declaration and exp for expressions ....
+  // but like decl for functions and variable which cannot be evaluated before 
+  // they are called ? because if a func is f x = if x > 0 then ... else ...
+  // should I add a Vfunc that contains an exp not evaluated ? 
   } else if (variable.metatype === "EXP"){
     return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
@@ -215,8 +221,13 @@ function evaluateValue(exp){
       return new V.Vchar(exp.value);
 
       // FIXME: "Special" is not very informative.  Why not call it "EmptyList"?
+      // TODO
       // FIXME: If the `isMTArray` test fails we return ... nothing?
+      // ANS No in js if the case doesn't have a return or break we go to the 
+      // next case, in this case the default one, so we throw an error
+      //
       // FIXME: Why do we need to look at `exp.value`?
+      // ANS Yes this verification should be done in normalisation
     case "Special" :
       if (isMTArray(exp.value)){
         return new V.VList([]);
@@ -250,6 +261,8 @@ function evaluateFuncApp(exp, env){
 export function applyFunc(func, arg){
     // FIXME: The "primio" code looks suspicious.
     // Why do you need functions of subtype `primio`?
+    // ANS : I differentiate primitives that I call when I get the arg and ones
+    // that should wait till the end to be called (io functions) 
   if (func.subtype === "prim"){
     return func.body(arg);
   } else if (func.subtype === "primio"){
@@ -351,8 +364,6 @@ function matchAll(values, exps){
 }
 
 /**
- * TODO Pattern matching is not working since funcapp only take one argument, 
- * so FIXME
  * Determines if a given value matches a given pattern, if so returns a list 
  * (that can be empty) of pairs variable to values, if not, returns the list
  * [-1]
