@@ -83,6 +83,10 @@ export class FuncDecl extends Decl {
     }
   }
 
+  /**
+   * todo
+   * @param {*} branch 
+   */
   makeBody(branch){
     let argsNames = []
     for (let i = 0; i < branch.args.length; i++){
