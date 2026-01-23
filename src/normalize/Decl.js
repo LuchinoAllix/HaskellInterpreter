@@ -10,13 +10,13 @@ import { Branch } from "./Branch.js";
 let count = 0;
 
 /**
- * Creates a variable expression with a new name
- * TODO : change the Varexp so that the evaluator can do the difference between 
- * a user entered name and a interpreter generated one
+ * Creates a variable expression with a new name (using the \ to know the 
+ * difference between a user entered var name and a generated one, since \ in 
+ * var names is not allowed in haskell)
  * @returns {VarExp}
  */
 export function makeNewName(){
-  let name = "arg" + count;
+  let name = "\\arg" + count;
   count ++;
   return new VarExp(name);
 }
