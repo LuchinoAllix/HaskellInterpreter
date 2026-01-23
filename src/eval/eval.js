@@ -22,10 +22,6 @@ export function initEvalComp(program){
   
   let terms = program.normalizedForm;
   let main_decl;
-  
-  if (terms.constructor !== Array){ // because if there is only main
-    terms = [terms];
-  }
 
   for (let term of terms){
     
@@ -209,6 +205,8 @@ function evaluateVar(exp, env){
  */
 // Note: Often we call these "immediate"s rather than "value"s.
 // TODO : Change value to immediate
+// FIXME : So in the normaliser we should change the name to immediate ? for 
+// things that were parsed directly as a 
 function evaluateValue(exp){
   switch (exp.valueType){
     case "integer" :
