@@ -673,7 +673,7 @@ export class Rules {
      * scontext -> simpleclass
      *           | ( simpleclass1 , … , simpleclassn )                   (n ≥ 0) 
      * ------------------------- */
-    this.rules.scontext.childs = [ // TODO
+    this.rules.scontext.childs = [
       branch([[ref("simpleclass"), 1]]),
       branch([
         [data("("), 1], 
