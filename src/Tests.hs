@@ -408,7 +408,6 @@ main = do print (((a 1) 2) 3)
 --------------------------------------------------------------------------------
 -- Test 44         : multi-branch main
 -- Expected result : 3\n4\n5
--- TODO manage multiline results
 
 --/
 a = (+ 1)
