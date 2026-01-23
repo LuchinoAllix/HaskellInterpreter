@@ -17,6 +17,7 @@ import { Term } from "./Term.js";
 // assumed for which we have no garanty and only tests show us 
 
 // priority of operations dictionnary, for swapping infix exp around
+// https://www.haskell.org/onlinereport/decls.html (section 4.4.2)
 const op_priority = {
   "==" : 3 ,
   "<" : 3 ,
