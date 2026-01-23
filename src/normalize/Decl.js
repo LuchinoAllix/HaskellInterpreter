@@ -84,8 +84,9 @@ export class FuncDecl extends Decl {
   }
 
   /**
-   * todo
-   * @param {*} branch 
+   * Makes the body of a function declaration into a lambda and a case based on 
+   * the branch it receives
+   * @param {Branch} branch 
    */
   makeBody(branch){
     let argsNames = []
