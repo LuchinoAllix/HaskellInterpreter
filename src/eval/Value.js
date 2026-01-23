@@ -151,10 +151,7 @@ export class VList extends Value {
           // implementing the (:) operation which is supposed to be
           // constant-time.
           // ANS i don't understand how this is O(n)
-          // FIXME: Why do we mutate `values[1].value`?
-          // ANS yup could be only one line
-        values[1].value = [values[0]].concat(values[1].value);
-        val = values[1].value;
+        val = [values[0]].concat(values[1].value);
       }
     }
     this.value = val;
