@@ -18,6 +18,7 @@ export function resetOutputs(){
 export class Env {
   // FIXME: Normally for a call-by-value evaluator, the environment
   // maps Varnames to *Values*, not Terms.
+  // ANS : same comment of the EXP / DECL distinction
 
   /**
    * Constructor for env, always empty.
@@ -135,8 +136,7 @@ export class Env {
              + a.value.length);
         }
       return a.value[0];  
-      }
-    , 1));
+      }));
 
     this.add("snd", new Prim(
       function snd(a){
@@ -147,8 +147,7 @@ export class Env {
              + a.value.length);
         }
       return a.value[1];  
-      }
-    , 1));
+      }));
 
     this.add("++", new Prim( a => new Prim(b => {
       if (a.type !== "list" || b.type !== "list"){
