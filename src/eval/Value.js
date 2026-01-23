@@ -76,6 +76,7 @@ export class Vio extends Value {
     // FIXME: What is this "arg"?  E.g. for `getChar :: IO Char`
     // ANS for like print 1 print contains the primitive (so actual js function)
     // and arg contains 1
+    // Vio should not take an argument
   constructor(func, arg){
     super("IO");
     this.func = func;
@@ -151,6 +152,8 @@ export class VList extends Value {
           // implementing the (:) operation which is supposed to be
           // constant-time.
           // ANS i don't understand how this is O(n)
+          // concat est en O(n) il faut utiliser des paires pour encoder des 
+          // lists
         val = [values[0]].concat(values[1].value);
       }
     }

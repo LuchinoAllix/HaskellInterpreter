@@ -264,7 +264,8 @@ export function applyFunc(func, arg){
   if (func.subtype === "prim"){
     return func.body(arg);
   } else if (func.subtype === "primio"){
-    return new V.Vio(func, arg);
+    return new V.Vio(func, arg); 
+    //shoudl derictly be inside the prim, no need for primio
   }
 
   if (func.param !== null){
