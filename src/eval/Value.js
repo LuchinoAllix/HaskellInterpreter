@@ -74,6 +74,8 @@ export class Vio extends Value {
    * @param {arg}  
    */
     // FIXME: What is this "arg"?  E.g. for `getChar :: IO Char`
+    // ANS for like print 1 print contains the primitive (so actual js function)
+    // and arg contains 1
   constructor(func, arg){
     super("IO");
     this.func = func;
@@ -148,7 +150,9 @@ export class VList extends Value {
           // FIXME: This is an O(N) operation, whereas IIUC this is
           // implementing the (:) operation which is supposed to be
           // constant-time.
+          // ANS i don't understand how this is O(n)
           // FIXME: Why do we mutate `values[1].value`?
+          // ANS yup could be only one line
         values[1].value = [values[0]].concat(values[1].value);
         val = values[1].value;
       }
