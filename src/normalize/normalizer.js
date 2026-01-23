@@ -5,6 +5,7 @@ import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
 import { TypeO } from "../typeCheck/TypeO.js";
+import { Term } from "./Term.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -38,35 +39,34 @@ const op_priority = {
  * @returns {Boolean}
  */
 export function normalizeStart(program){
-  program.normalizedForm = normalize(program.AST);
+  program.normalizedForm = normalizeRoot(program.AST);
   return true;
 }
 
 /**
- * Turn a node into a term
- * // FIXME : can return a term OR a list of term
- * @param {Node} astRoot 
- * @returns {Term}
+ * Converts the root of the AST into a list of term (declarations)
+ * @param {Node} astRoot
+ * @returns {[Term]}
  */
-function normalize(astRoot){
+function normalizeRoot(astRoot){
   switch (astRoot.type){
 
     case "root" :
-      return normalize(astRoot.childs[0]);
+      return normalizeRoot(astRoot.childs[0]);
 
     case "body" :
       for (let node of astRoot.childs){
         if (! node.type.startsWith("layout")){
-          return normalize(node);
+          return normalizeRoot(node);
         }
       }
       throw new Error("Malformed AST, body should have one non layout node.");
 
-      //case "interactive" : 
-      // TODO : Must do something different for interactive, 
-      // because it takes only one exp or decl at a time
+    //case "interactive" : 
+    // TODO : Must do something different for interactive, 
+    // because it takes only one exp or decl at a time
 
-      case "topdecls" : 
+    case "topdecls" :
       let declList = []
       for (let node of astRoot.childs){
         if (node.type === "decl" || node.type === "gendecl"){
@@ -77,25 +77,37 @@ function normalize(astRoot){
         }
       }
       return declList;
+    
+    default :
+      // We suppose we only have the main declaration
+      return [normalize(astRoot)];
+  }
+}
 
+/**
+ * Turn a node into a term
+ * @param {Node} astRoot 
+ * @returns {Term}
+ */
+function normalize(node){
+  switch (node.type){
     case "decl" :
     case "gendecl" :
-      return normalizeDecl(astRoot);
+      return normalizeDecl(node);
 
     case "rhs" :
       // This is not the only rhs outcome, just the only one yet managed
-      return normalizeExp(astRoot.childs[1]);
+      return normalizeExp(node.childs[1]);
 
     case "integer":
     case "String" :
     case "Qconid" :
     case "infixexp" :
-      return normalizeExp(astRoot);
+      return normalizeExp(node);
     
     default :
       throw new Error("This type of node is not yet managed by normalize : " 
-        + astRoot.type);
-
+        + node.type);
   }
 }
 
