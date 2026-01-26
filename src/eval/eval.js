@@ -208,10 +208,9 @@ function evaluateImmediate(exp){
       //
       // FIXME: Why do we need to look at `exp.value`?
       // ANS Yes this verification should be done in normalisation
-    case "Special" :
-      if (isMTArray(exp.value)){
-        return new V.VList([]);
-      }
+    case "EmptyList" :
+      return new V.VList([]);
+      
 
     default :
       throw new Error("value type not yet managed in eval : " + exp.valueType);
