@@ -1,0 +1,8 @@
+- make the env only have Values, and nothing else
+- change special tag 
+- do the primio / vio thing 
+  (comments in eval.js and value.js)
+- fix the O(n) thing with lists 
+- améliorer la gestion de la priorité des opérations
+- regarder types
+- move the addncommas to normalisation

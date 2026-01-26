@@ -31,7 +31,7 @@ export class Env {
   /**
    * Determines if a declaration exists in an environment
    * @param {String} name 
-   * @returns {Term} - Decl or Prim or undefined if declaration doesn't exists
+   * @returns {Value} - Decl or Prim or undefined if declaration doesn't exists
    */
   lookup(name){
     return this.decls[name];
@@ -42,17 +42,17 @@ export class Env {
    * Adds an element to an environment
    * Throws an error if the declaration already exists, unless overide is true
    * @param {String} name 
-   * @param {Term} term - Decl, Exp  or Prim
+   * @param {Value} val
    * @param {Boolean}
    */
-  add(name, term, overide = false){
+  add(name, val, overide = false){
     if (this.decls[name] !== undefined){
       if (!overide){
         throw new Error("This declaration already exists in the environment : " 
           + name);
       }
     }
-    this.decls[name] = term;
+    this.decls[name] = val;
   }
 
   /**

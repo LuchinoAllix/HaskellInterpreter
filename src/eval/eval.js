@@ -10,6 +10,7 @@ import * as V from "../eval/Value.js";
 // Init global env
 let global_env = new Env();
 global_env.initGlobal();
+let main;
 
 /**
  * Entry point of evaluation for "compiled" programs
@@ -19,6 +20,7 @@ global_env.initGlobal();
 export function initEvalComp(program){
   
   resetGlobalEnv();
+  main = null; // reseting main
   
   let terms = program.normalizedForm;
   let main_decl;
@@ -42,7 +44,7 @@ export function initEvalComp(program){
   evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
                            // other decl is added in the global env
 
-  return execute(global_env.lookup("main")); 
+  return execute(main); 
 
 }
 
@@ -97,9 +99,9 @@ function output(output){
  */
 function evaluateDecl(decl){
   if (decl.name === "main"){
-    global_env.add(decl.name, evaluateExp(decl.body, new Env()));
+    main = evaluateExp(decl.body, new Env());
   } else {
-    global_env.add(decl.name, decl);
+    global_env.add(decl.name, new V.Vfunc(decl));
   }
 }
 
@@ -164,12 +166,6 @@ function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
     return evaluateExp(variable.body, env);
-
-  // FIXME: What is the difference between those `metatype`s?
-  // ANS Decl for declaration and exp for expressions ....
-  // but like decl for functions and variable which cannot be evaluated before 
-  // they are called ? because if a func is f x = if x > 0 then ... else ...
-  // should I add a Vfunc that contains an exp not evaluated ? 
   } else if (variable.metatype === "EXP"){
     return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
@@ -200,14 +196,6 @@ function evaluateImmediate(exp){
     case "Char" :
       return new V.Vchar(exp.value);
 
-      // FIXME: "Special" is not very informative.  Why not call it "EmptyList"?
-      // TODO
-      // FIXME: If the `isMTArray` test fails we return ... nothing?
-      // ANS No in js if the case doesn't have a return or break we go to the 
-      // next case, in this case the default one, so we throw an error
-      //
-      // FIXME: Why do we need to look at `exp.value`?
-      // ANS Yes this verification should be done in normalisation
     case "EmptyList" :
       return new V.VList([]);
       
@@ -284,21 +272,21 @@ function evaluateLet(exp, env){
   if (exp.body !== null){
     let clone = env.clone();
     for (let decl of exp.decls){
-      clone.add(decl.name, decl.body, true);
+      clone.add(decl.name, new V.Vfunc(decl.body), true);
     }
     return evaluateExp(exp.body, clone);
   }
   for (let decl of exp.decls){
-    env.add(decl.name, decl.body, true);
+    env.add(decl.name, new Vfunc(decl.body), true);
   }
   return new V.Vio(new V.Vfunc(() => [], null, env), null);
   // kind of a unit type ? this is a temp fix
-  //FIXME
+  // FIXME
 }
 
 /**
  * Evaluates a case by determining which case needs to be chosen (with match)
- * and returning the evaluation of the correspong branch with the updated 
+ * and returning the evaluation of the corresponding branch with the updated 
  * closure
  * @param {E.CaseExp} exp 
  * @param {Env} env
@@ -441,6 +429,11 @@ function execute(main_decl){
 }
 
 /**
+ * comment stefan, on eval le premier term dans la decl 
+ * dans l'env il y a des vfunc avec des choses non évaluées
+ */
+
+/**
  * Lookup but inside the global environment and a local one given
  * @param {Env} env 
  * @param {String} name 
@@ -450,7 +443,7 @@ function lookupGlobalLocal(env, name){
   let res = env.lookup(name);
   if (res !== undefined){
     return res;
-  } 
+  }
   res = global_env.lookup(name);  
   if (res !== undefined){
     return res;

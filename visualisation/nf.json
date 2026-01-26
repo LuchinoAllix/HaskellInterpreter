@@ -1,94 +1,53 @@
-{
-  "metatype": "DECL",
-  "type": "variable",
-  "name": "main",
-  "typeAnnotation": null,
-  "def": {
-    "metatype": "EXP",
-    "type": "functionApp",
-    "func": {
+[
+  {
+    "metatype": "DECL",
+    "name": "a",
+    "typeAnnotation": null,
+    "info": [
+      1,
+      1
+    ],
+    "body": {
       "metatype": "EXP",
-      "type": "var",
-      "name": "print"
-    },
-    "arg": {
+      "type": "immediate",
+      "value": 42,
+      "valueType": "integer",
+      "info": [
+        1,
+        5
+      ]
+    }
+  },
+  {
+    "metatype": "DECL",
+    "name": "main",
+    "typeAnnotation": null,
+    "info": [
+      2,
+      1
+    ],
+    "body": {
       "metatype": "EXP",
       "type": "functionApp",
       "func": {
         "metatype": "EXP",
-        "type": "LambdaExp",
-        "namedArg": {
-          "metatype": "EXP",
-          "type": "functionApp",
-          "func": {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "func": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": ","
-            },
-            "arg": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": "x"
-            }
-          },
-          "arg": {
-            "metatype": "EXP",
-            "type": "var",
-            "name": "y"
-          }
-        },
-        "body": {
-          "metatype": "EXP",
-          "type": "functionApp",
-          "func": {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "func": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": "+"
-            },
-            "arg": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": "x"
-            }
-          },
-          "arg": {
-            "metatype": "EXP",
-            "type": "var",
-            "name": "y"
-          }
-        }
+        "type": "var",
+        "name": "print",
+        "info": [
+          2,
+          8
+        ]
       },
       "arg": {
         "metatype": "EXP",
-        "type": "functionApp",
-        "func": {
-          "metatype": "EXP",
-          "type": "functionApp",
-          "func": {
-            "metatype": "EXP",
-            "type": "var",
-            "name": ","
-          },
-          "arg": {
-            "metatype": "EXP",
-            "type": "value",
-            "value": 1,
-            "valueType": "integer"
-          }
-        },
-        "arg": {
-          "metatype": "EXP",
-          "type": "value",
-          "value": 2,
-          "valueType": "integer"
-        }
-      }
+        "type": "var",
+        "name": "a",
+        "info": [
+          2,
+          14
+        ]
+      },
+      "info": null
     }
   }
-}
+]
