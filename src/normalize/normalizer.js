@@ -1,6 +1,6 @@
 import { Decl } from "./Decl.js";
 import { Exp, VarExp, ImExp, FunctionApp, IfExp, LetExp, CaseExp,
-         LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
+         LambdaExp, SpecialExp, makeFuncAppOfList, mkMTListExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
@@ -251,7 +251,12 @@ function normalizeExp(node){
 
     case "Special" :
     case "reservdop" :
-      return new ImExp(node.value, node.type, [node.line, node.column]);
+      if (node.value === "[]"){
+        return mkMTListExp([node.line, node.column]);
+      } else {
+        throw new Error("This kind of reservdop is not yet supported :" +
+          node.value);
+      }
 
     case "apat" :
     case "pat" :
@@ -428,7 +433,7 @@ function makeCharListOfString(node){
  */
 function charListToFuncApp(charList){
   if (charList.length === 0){
-    return new ImExp("[]", "Special");
+    return mkMTListExp(null);
   }
   let arg1 = charList[0];
   let arg2 = charListToFuncApp(charList.slice(1));
@@ -728,7 +733,7 @@ function normalizeList(node){
     throw new Error("Mismanagement of aexp_ node in normalise list");
   } else if (node.childs.length === 3){
     arg1 = normalizeExp(node.childs[1]);
-    arg2 = new ImExp('[]','Special');
+    arg2 = mkMTListExp(null);
   } else { // we suppose we have an odd number of childs > 3
     arg1 = normalizeExp(node.childs[1]);
     node.childs.splice(1,2); // removing the first value child and the comma 
