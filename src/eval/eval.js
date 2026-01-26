@@ -97,7 +97,7 @@ function output(output){
  */
 function evaluateDecl(decl){
   if (decl.name === "main"){
-    global_env.add(decl.name, evaluateExp(decl.def, new Env()));
+    global_env.add(decl.name, evaluateExp(decl.body, new Env()));
   } else {
     global_env.add(decl.name, decl);
   }
@@ -163,22 +163,8 @@ function evaluateLambda(exp, env){
 function evaluateVar(exp, env){
   let variable = lookupGlobalLocal(env, exp.name);
   if (variable.metatype === "DECL"){
-    // FIXME: A variable cannot *be* a function: it can *contain* a function.
-    // FIXME: Why do we care if the variable contains a function?
-    // ANS indeed since pattern matching is using a lambda we can merge the two
-    // types
-    if (variable.isFunc()){
-      return evaluateExp(variable.body, env);
-    // FIXME: `variable.isVar`?  Really?
-    // Like, can a variable be not a variable?
-    // ANS : should it be variable.containsVar() ?? I add the or pehaps it 
-    // it would be better to say declaration.isVar() ? but the env doesn't 
-    // contain only declarations
-    } else if (variable.isVar()){
-      return evaluateExp(variable.def, env);
-    } else {
-      throw new Error("Decls must be either a Func or a var");
-    }
+    return evaluateExp(variable.body, env);
+
   // FIXME: What is the difference between those `metatype`s?
   // ANS Decl for declaration and exp for expressions ....
   // but like decl for functions and variable which cannot be evaluated before 
@@ -203,10 +189,6 @@ function evaluateVar(exp, env){
  * @param {E.ImExp} exp 
  * @returns {V.Value}
  */
-// Note: Often we call these "immediate"s rather than "value"s.
-// TODO : Change value to immediate
-// FIXME : So in the normaliser we should change the name to immediate ? for 
-// things that were parsed directly as a 
 function evaluateImmediate(exp){
   switch (exp.valueType){
     case "integer" :
@@ -303,15 +285,16 @@ function evaluateLet(exp, env){
   if (exp.body !== null){
     let clone = env.clone();
     for (let decl of exp.decls){
-      clone.add(decl.name, decl.def, true);
+      clone.add(decl.name, decl.body, true);
     }
     return evaluateExp(exp.body, clone);
   }
   for (let decl of exp.decls){
-    env.add(decl.name, decl.def, true);
+    env.add(decl.name, decl.body, true);
   }
   return new V.Vio(new V.Vfunc(() => [], null, env), null);
   // kind of a unit type ? this is a temp fix
+  //FIXME
 }
 
 /**

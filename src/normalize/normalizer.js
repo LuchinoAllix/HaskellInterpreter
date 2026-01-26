@@ -1,4 +1,4 @@
-import { Decl, FuncDecl, VarDecl} from "./Decl.js";
+import { Decl } from "./Decl.js";
 import { Exp, VarExp, ImExp, FunctionApp, IfExp, LetExp, CaseExp,
          LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
@@ -123,26 +123,23 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return new FuncDecl(name, normaliseTypeAnnotation(node.childs[2]), null, 
+      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
         [node.childs[0].line, node.childs[0].column]);
     } else { // We know it's a variable declaration
-      return new VarDecl(name, normaliseTypeAnnotation(node.childs[2]), null, 
+      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
         [node.childs[0].line, node.childs[0].column]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
     if (node.childs[0].type === "funlhs"){
       name = node.childs[0].childs[0].value;
-      if (isDeclFunc(node)){ // We know it's a function declaration
-        return new FuncDecl(name, null,
-          new Branch(getArgs(node.childs[0]), normalize(node.childs[1])),
-          [node.childs[0].line, node.childs[0].column]);
-      } else {
-        throw new Error("Malformed AST");
-      }
+      return new Decl(name, null,
+        new Branch(getArgs(node.childs[0]), normalize(node.childs[1])),
+        [node.childs[0].line, node.childs[0].column]);
+      
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
       name = node.childs[0].value;
-      return new VarDecl(name, null, normalize(node.childs[1]),
+      return new Decl(name, null, normalize(node.childs[1]),
         [node.childs[0].line, node.childs[0].column]);
     }
   } else {
@@ -178,15 +175,6 @@ function isGendeclFunc(node){
 }
 
 /**
- * Determines if a node of type 'decl' is a function or variable declaration
- * @param {Node} node 
- * @returns {Boolean}
- */
-function isDeclFunc(node){
-  return (node.childs[0].type === "funlhs");
-}
-
-/**
  * Unifies function and variable declaration (as in if declared on multiple 
  * lines, it will join de definitions (type and expression))
  * (variables are listed because they can have a type annotation)
@@ -216,23 +204,18 @@ function addDecl(declList, decl){
         // We suppose that the declaration should be the last one
         throw new Error("Declarations on multiple lines should follow one " + 
           "another");
-      } 
+      }
 
-      if(decl.isVar()){
+      if (decl.body.type === "LambdaExp"){
+        declList[i].addBranchDef(decl.getCase().branches[0]);
+        return ;
+      } else {
         if (declList[i].isAnnotated() && !decl.isAnnotated()){
-          declList[i].def = decl.def;
+          declList[i].body = decl.body;
           return ;
         } else {
           throw new Error("Cannot redefine variable : " + decl.name);
         }
-      
-      } else if (decl.isFunc()){
-        declList[i].addBranchDef(decl.getCase().branches[0]);
-        return ;
-      
-      } else {
-        throw new Error("A declaration other than a function or variable was " +
-          "given to addDecl " + decl.type);
       }
     }
     declList.push(decl);

@@ -32,24 +32,19 @@ export class Decl extends Term {
   /**
    * Constructor for Decl
    */
-  constructor(){
+  constructor(name, typeAnnotation, branch, info = null){
     super("DECL");
-  }
-
-  /**
-   * Determines if type of declaration is function
-   * @returns 
-   */
-  isFunc(){
-    return this.type === "function";
-  }
-
-  /**
-   * Determines if type of declaration is variable
-   * @returns 
-   */
-  isVar(){
-    return this.type === "variable";
+    this.name = name;
+    this.typeAnnotation = typeAnnotation;
+    this.info = info;
+    if (branch !== null){
+      if (branch.type === "branch"){
+        this.makeBody(branch);
+      } else 
+        this.body = branch;
+    } else {
+      this.body = null;
+    }
   }
 
   /**
@@ -59,31 +54,8 @@ export class Decl extends Term {
   isAnnotated(){
     return this.typeAnnotation !== null;
   }
-}
 
-export class FuncDecl extends Decl {
-
-  /** 
-   * @param {String} name 
-   * @param {Node} typeAnnotation 
-   * @param {Branch} branch
-   * @param {[Int]} info information relative to the postition of the origin 
-   *                     (line / column) of the token
-   */
-  constructor(name, typeAnnotation, branch, info = null){
-    super("DECL");
-    this.type = "function";
-    this.name = name;
-    this.typeAnnotation = typeAnnotation;
-    this.info = info;
-    if (branch !== null){
-      this.makeBody(branch);
-    } else {
-      this.body = null;
-    }
-  }
-
-  /**
+    /**
    * Makes the body of a function declaration into a lambda and a case based on 
    * the branch it receives
    * @param {Branch} branch 
@@ -131,28 +103,4 @@ export class FuncDecl extends Decl {
     }
     return caseOf;
   }
-
-}
-
-/**
- * Variable declaration class, could be merged with func into just decls
- */
-export class VarDecl extends Decl {
-
-  /** 
-   * @param {String} name 
-   * @param {Node} typeAnnotation
-   * @param {Exp} def
-   * @param {[Int]} info information relative to the postition of the origin 
-   *                     (line / column) of the token
-   */
-  constructor(name, typeAnnotation, def, info = null){
-    super("DECL");
-    this.type = "variable";
-    this.name = name;
-    this.typeAnnotation = typeAnnotation;
-    this.def = def;
-    this.info = info;
-  }
-
 }
