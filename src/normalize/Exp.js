@@ -64,6 +64,10 @@ export class ImExp extends Exp {
 
 }
 
+export function mkMTListExp(info){
+  return new ImExp([], "EmptyList",info);
+}
+
 
 /**
  * Function application expression
