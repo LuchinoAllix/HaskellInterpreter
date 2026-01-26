@@ -38,9 +38,9 @@ export class VarExp extends Exp{
 }
 
 /**
- * Values expressions object
+ * Immediates expressions object (values like numbers, chars ...)
  */
-export class ValExp extends Exp {
+export class ImExp extends Exp {
   
   /**
    * Constuctor for variables expressions
@@ -56,7 +56,7 @@ export class ValExp extends Exp {
     if(value === "[]"){
       value = [];
     }
-    this.type = "value";
+    this.type = "immediate";
     this.value = value;
     this.valueType = valueType;
     this.info = info;

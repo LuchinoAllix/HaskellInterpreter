@@ -1,5 +1,5 @@
 import { Decl, FuncDecl, VarDecl} from "./Decl.js";
-import { Exp, VarExp, ValExp, FunctionApp, IfExp, LetExp, CaseExp,
+import { Exp, VarExp, ImExp, FunctionApp, IfExp, LetExp, CaseExp,
          LambdaExp, SpecialExp, makeFuncAppOfList} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
@@ -260,7 +260,7 @@ function normalizeExp(node){
       return new VarExp(node.value, [node.line, node.column]);
 
     case "integer" :
-      return new ValExp(parseInt(node.value), node.type, 
+      return new ImExp(parseInt(node.value), node.type, 
         [node.line, node.column]);
 
     case "String" :
@@ -268,7 +268,7 @@ function normalizeExp(node){
 
     case "Special" :
     case "reservdop" :
-      return new ValExp(node.value, node.type, [node.line, node.column]);
+      return new ImExp(node.value, node.type, [node.line, node.column]);
 
     case "apat" :
     case "pat" :
@@ -422,7 +422,7 @@ function normalisePattern(node){
 /**
  * Makes a lists of charVal nodes from a string node
  * @param {Node} node 
- * @returns {[ValExp]} 
+ * @returns {[ImExp]} 
  */
 function makeCharListOfString(node){
   let charlist = node.value.split("");
@@ -431,7 +431,7 @@ function makeCharListOfString(node){
   charlist.pop();  // remove " in last position
   let pos = 0;
   for (let char of charlist){
-    expCharList.push(new ValExp(char, "Char", 
+    expCharList.push(new ImExp(char, "Char", 
       [node.line, node.column + pos]));
     pos ++;
   }
@@ -439,13 +439,13 @@ function makeCharListOfString(node){
 }
 
 /**
- * Turns a list of chars valexp into the function app of (:)
- * @param {[ValExp]} charList 
+ * Turns a list of chars ImExp into the function app of (:)
+ * @param {[ImExp]} charList 
  * @returns {FunctionApp}
  */
 function charListToFuncApp(charList){
   if (charList.length === 0){
-    return new ValExp("[]", "Special");
+    return new ImExp("[]", "Special");
   }
   let arg1 = charList[0];
   let arg2 = charListToFuncApp(charList.slice(1));
@@ -529,18 +529,18 @@ function countTypeArgs(node){
 }
 
 /**
- * Transformes a Qconid node into a valExp
+ * Transformes a Qconid node into a ImExp
  * for the moment only manages False and True because I don't know what
  * are the other Qconid values (will be changed when we meet them)
  * @param {Node} node 
- * @returns {ValExp}
+ * @returns {ImExp}
  */
 function normalizeQconid(node){
   switch (node.value){
     case "False" :
-      return new ValExp(false, "Boolean", [node.line, node.column]);
+      return new ImExp(false, "Boolean", [node.line, node.column]);
     case "True" :
-      return new ValExp(true, "Boolean", [node.line, node.column]);
+      return new ImExp(true, "Boolean", [node.line, node.column]);
     default :
       throw new Error("Qconid not yet managed : " + node.value);
   }
@@ -745,7 +745,7 @@ function normalizeList(node){
     throw new Error("Mismanagement of aexp_ node in normalise list");
   } else if (node.childs.length === 3){
     arg1 = normalizeExp(node.childs[1]);
-    arg2 = new ValExp('[]','Special');
+    arg2 = new ImExp('[]','Special');
   } else { // we suppose we have an odd number of childs > 3
     arg1 = normalizeExp(node.childs[1]);
     node.childs.splice(1,2); // removing the first value child and the comma 

@@ -127,8 +127,8 @@ function evaluateExp(exp, env){
     case "var" :
       return evaluateVar(exp, env);
     
-    case "value" :
-      return evaluateValue(exp);
+    case "immediate" :
+      return evaluateImmediate(exp);
     
     case "let" :
       return evaluateLet(exp, env);
@@ -200,14 +200,14 @@ function evaluateVar(exp, env){
 
 /**
  * Evaluate an expression that is only a value
- * @param {E.ValExp} exp 
+ * @param {E.ImExp} exp 
  * @returns {V.Value}
  */
 // Note: Often we call these "immediate"s rather than "value"s.
 // TODO : Change value to immediate
 // FIXME : So in the normaliser we should change the name to immediate ? for 
 // things that were parsed directly as a 
-function evaluateValue(exp){
+function evaluateImmediate(exp){
   switch (exp.valueType){
     case "integer" :
       return new V.Vint(exp.value);
@@ -418,7 +418,7 @@ function match(value, exp){
     case "var" :
       return [[exp, value]];
 
-    case "value" :
+    case "immediate" :
       // Might not work on strings because of "\" stuff, #FIXME
       if (exp.value === value.value || 
           (isMTArray(exp.value) && isMTArray(value.value))){
