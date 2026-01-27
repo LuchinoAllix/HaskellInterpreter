@@ -196,7 +196,9 @@ export class Env {
    * @param {String} str 
    */
   addNcommas(str){
-    this.add(str, makeFunc(str.length + 1, []));
+    if (this.decls[str] === undefined){
+      this.add(str, makeFunc(str.length + 1, []));
+    }
   }
 }
 
