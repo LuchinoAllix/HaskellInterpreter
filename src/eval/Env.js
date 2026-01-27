@@ -73,8 +73,8 @@ export class Env {
 
     this.add('/', new Prim(a => new Prim(b => new Vint(a.value / b.value))));
 
-    this.add("print", new Prim(a => new Vio( // should automatially convert list of chars 
-                               // to string ? #fixme
+    this.add("print", new Prim(a => new Vio( 
+      // should automatially convert list of chars to string ? #fixme
       function print(){
         function makeStr(val){
           if (val.type === "unit"){
@@ -85,6 +85,12 @@ export class Env {
           let bord = null;
           if (val.type === "tuple"){
             bord = "()";
+            let res = bord[0];
+            for (let t of val.value){
+              res += makeStr(t);
+              res += ",";
+            }
+            return res.slice(0,-1) + bord[1] ;
           } else if (val.type === "list"){
             bord = "[]";
             if (val.fst === null){
