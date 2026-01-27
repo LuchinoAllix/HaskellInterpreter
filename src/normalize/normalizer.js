@@ -35,7 +35,7 @@ const op_priority = {
 }
 
 /**
- * Start function to make the ast of a program into a intermediary form
+ * Start function to make the ast of a program into an intermediary form
  * for evaluation
  * @param {Program} program 
  * @returns {Boolean}
