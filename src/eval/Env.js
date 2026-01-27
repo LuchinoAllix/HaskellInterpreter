@@ -1,5 +1,5 @@
 import { Prim } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Unit, 
+import { Vint, Vbool, VList, Vtuple, Vio, Unit, 
          Vchar } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
@@ -79,24 +79,27 @@ export class Env {
         function makeStr(val){
           if (val.type === "unit"){
             return "()";
+          } else if (val.type === "mtlist"){
+            return "[]";
           }
           let bord = null;
           if (val.type === "tuple"){
             bord = "()";
           } else if (val.type === "list"){
             bord = "[]";
-            if (val.value.length === 0){
+            if (val.fst === null){
               return bord;
             }
           }
 
           if (bord !== null){
-            let res = bord[0];
-            for (let t of val.value){
-              res += makeStr(t);
-              res += ",";
+            let fst = makeStr(val.fst);
+            if (val.snd.type === "mtlist"){
+              return bord[0] + fst + bord[1];
             }
-            return res.slice(0,-1) + bord[1] ;
+            let snd = makeStr(val.snd);
+            snd = snd.substring(1, snd.length - 1);
+            return bord[0] + fst + ',' + snd + bord[1];
           } else {
             return val.value;
           }
@@ -149,13 +152,22 @@ export class Env {
       }));
 
     this.add("++", new Prim( a => new Prim(b => {
-      if (a.type !== "list" || b.type !== "list"){
-        throw new Error("++ can only be applied between lists, not " + a.type  
-          + " and " + b.type);
+      if (a.type === "mtlist"){
+        return b;
+      } else if (b.type === "mtlist"){
+        return a; 
       }
-      return makeVList(a.value.concat(b.value))})));
+      let elem = a;
+      while(elem.snd.type !== "mtlist"){
+        elem = elem.snd;
+      }
+      elem.snd = b
+      return a})));
 
-    this.add(':', new Prim(a => new Prim(b => new VList([a, b]))));
+    this.add(':', new Prim(a => new Prim(b => {
+      //if (b === null) {return a;}
+      return new VList(a, b);
+    })));
 
     this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
 
