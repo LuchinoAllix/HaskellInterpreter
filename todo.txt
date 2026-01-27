@@ -3,4 +3,3 @@
 - fix the O(n) thing with lists 
 - améliorer la gestion de la priorité des opérations
 - regarder types
-- move the addncommas to normalisation
