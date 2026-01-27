@@ -1,7 +1,6 @@
-import { Term } from "../normalize/Term.js";
-import { Prim, PrimIO } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Vfunc, 
-         Unit } from "./Value.js";
+import { Prim } from "./Prim.js";
+import { Vint, Vbool, VList, Vtuple, makeVList, Vio, Unit, 
+         Vchar } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -74,9 +73,9 @@ export class Env {
 
     this.add('/', new Prim(a => new Prim(b => new Vint(a.value / b.value))));
 
-    this.add("print", new PrimIO( // should automatially convert list of chars 
-                                  // to sring ? #fixme
-      function print(a){
+    this.add("print", new Prim(a => new Vio( // should automatially convert list of chars 
+                               // to string ? #fixme
+      function print(){
         function makeStr(val){
           if (val.type === "unit"){
             return "()";
@@ -107,7 +106,7 @@ export class Env {
         outputs.push(str);
         return Unit ;
       }
-    ));
+    )));
 
     this.add("==", 
       new Prim(a => new Prim(b => new Vbool(a.value === b.value))));
@@ -160,22 +159,20 @@ export class Env {
 
     this.add(',', new Prim(a => new Prim(b => new Vtuple([a, b]))));
 
-    this.add('return', new Prim(a => new Vio (new Prim(()=> a))));
+    this.add('return', new Prim(() => new Vio(a => a)));
 
-    this.add(">>", new Prim(a => 
-      new Prim(b =>
-        new Vio(new Prim(() => {
-          a.exec();
-          return b.exec();
-        }), null ))));
+    this.add(">>", new Prim(a => new Prim(b => new Vio(() => {
+      a.exec();
+      return b.exec();
+    }))));
 
-    this.add(">>=", new Prim(a => 
-      new Prim(b =>
-        new Vio(new Prim(() => {
-          let first  = a.exec();
-          let lambda = applyFunc(b, first);
-          return lambda.exec();
-        }), null ))));
+    this.add(">>=",  new Prim(a =>  new Prim(b => new Vio(() => {
+      let first  = a.exec();
+      let lambda = applyFunc(b, first);
+      return lambda.exec();
+    }))));
+
+    this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
   }
 
   /**
