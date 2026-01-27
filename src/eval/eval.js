@@ -107,7 +107,6 @@ function evaluateDecl(decl){
 
 /**
  * Evaluates an expression in a given (local) environement
- * Returns a list of the values evaluated
  * can take as argument a value because in case, we need to evaluate before 
  * giving it as an argument 
  * @param {E.Exp} exp
@@ -197,9 +196,7 @@ function evaluateImmediate(exp){
       return new V.Vchar(exp.value);
 
     case "EmptyList" :
-      return new V.VList([]);
-      
-
+      return new V.VMTList();
     default :
       throw new Error("value type not yet managed in eval : " + exp.valueType);
   }
@@ -220,16 +217,12 @@ function evaluateFuncApp(exp, env){
 }
 
 /**
- * work in progress to refactor evaluation of functions
- * @param {Vfunc} func a decl, exp or prim(io) 
+ * todo
+ * @param {Vfunc} func a decl, exp or prim
  * @param {Value} arg 
  * @returns 
  */
 export function applyFunc(func, arg){
-    // FIXME: The "primio" code looks suspicious.
-    // Why do you need functions of subtype `primio`?
-    // ANS : I differentiate primitives that I call when I get the arg and ones
-    // that should wait till the end to be called (io functions) 
   if (func.subtype === "prim"){
     return func.body(arg);
   }
@@ -301,7 +294,7 @@ function evaluateCase(exp, env){
       return evaluateExp(branch.branchBody, closure);
     }
   }
-  throw new Error("No pattern was found to match in case with " + exp.exp);
+  throw new Error("No pattern was found to match in case with " + exp.exps);
 }
 
 /** 
@@ -352,8 +345,8 @@ function match(value, exp){
           newValFunc = new V.Vtuple(value.value.slice(0, -1));
           newValArg = value.value.slice(-1)[0];
         } else if (value.type === "list"){
-          newValFunc = value.value[0];
-          newValArg = V.makeVList(value.value.slice(1));
+          newValFunc = value.fst;
+          newValArg = value.snd;
         } else {
           throw new Error("unhandeled case in funcapp match")
         }
@@ -386,8 +379,7 @@ function match(value, exp){
     case "immediate" :
       // Might not work on strings because of "\" stuff, #FIXME
       if (exp.value === value.value || 
-          (isMTArray(exp.value) && isMTArray(value.value))){
-            // second condition of if is to verify [] =? []
+        (exp.valueType === 'EmptyList' && value.type === 'mtlist')){
         return [[]];
       }
       return [-1];
