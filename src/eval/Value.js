@@ -1,6 +1,4 @@
 import { Env } from "./Env.js";
-import { isMTArray } from "./eval.js";
-import { Pair } from "./Pair.js";
 
 /**
  * Abstract class for actual value return type
@@ -72,10 +70,6 @@ export class Vio extends Value {
    * @param {function} func
    * @param {arg}  
    */
-    // FIXME: What is this "arg"?  E.g. for `getChar :: IO Char`
-    // ANS for like print 1 print contains the primitive (so actual js function)
-    // and arg contains 1
-    // Vio should not take an argument
   constructor(func){
     super("IO");
     this.func = func;
@@ -129,9 +123,9 @@ export class Vdo extends Value {
 export class VList extends Value {
 
   /**
-   * todo
-   * @param {*} a 
-   * @param {*} b 
+   * Constructor for lists (like haskell)
+   * @param {Value} a 
+   * @param {Value} b 
    */
   constructor(a, b){
     super("list");
@@ -143,7 +137,7 @@ export class VList extends Value {
 export class VMTList extends Value {
 
   /**
-   * todo
+   * constructor for the empty list
    */
   constructor(){
     super("mtlist");
