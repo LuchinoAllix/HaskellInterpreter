@@ -1,5 +1,5 @@
-
-import { Value, Vfunc } from "./Value.js";
+import { Env } from "./Env.js";
+import { Vfunc } from "./Value.js";
 
 //--                   File for primitives object definition                --//
 
@@ -10,34 +10,12 @@ export class Prim extends Vfunc {
 
   /**
    * Creates a primitive function object
-   * @param {function} func 
+   * @param {function} body
+   * @param {} param
+   * @param {Env} env
    */
   constructor(body, param, env) {
     super(body, param, env);
     this.subtype = "prim";
   }
-
-  /**
-   * Allows to execute the function in the func attribute with it's arguments
-   * @returns {Value}
-   */
-  run(args){
-    return this.body(...args);
-  }
-}
-
-/**
- * Class for primitive IO functions
- */
-export class PrimIO extends Prim {
-
-  /**
-   * Creates a primitive io function object
-   * @param {function} func 
-   */
-  constructor(body, param, env) {
-    super(body, param, env);
-    this.subtype = "primio";
-  }
-
 }
