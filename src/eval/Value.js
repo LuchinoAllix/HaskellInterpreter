@@ -77,18 +77,17 @@ export class Vio extends Value {
     // ANS for like print 1 print contains the primitive (so actual js function)
     // and arg contains 1
     // Vio should not take an argument
-  constructor(func, arg){
+  constructor(func){
     super("IO");
     this.func = func;
-    this.arg = arg;
   }
 
   /**
-   * 
+   * todo
    * @returns 
    */
   exec(){
-    return this.func.body(this.arg);
+    return this.func();
   }
 }
 
