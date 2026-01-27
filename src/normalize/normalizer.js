@@ -19,7 +19,10 @@ import { addNcommasToGlobalEnv } from "../eval/eval.js";
 
 // priority of operations dictionnary, for swapping infix exp around
 // https://www.haskell.org/onlinereport/decls.html (section 4.4.2)
-// TODO
+// The order here is swapped compared to the doc
+// Not all primitives are yet implemented so they do not appear here
+// The fact that certain operators are not associative or left/right 
+// associative is not implemented yet (HELP is this a priority ?)
 const op_priority = {
   "==" : 3 ,
   "<" : 3 ,
