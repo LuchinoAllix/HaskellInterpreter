@@ -1,7 +1,6 @@
 import { Env } from "./Env.js";
 import { isMTArray } from "./eval.js";
-
-
+import { Pair } from "./Pair.js";
 
 /**
  * Abstract class for actual value return type
@@ -130,43 +129,23 @@ export class Vdo extends Value {
 export class VList extends Value {
 
   /**
-   * Constructor for VList, used in functionApp management, so expects either an
-   * empty list or a value and a Vlist, to make a VList for a list of any number
-   * of values, use MakeVList
-   * @param {[Value]} values 
+   * todo
+   * @param {*} a 
+   * @param {*} b 
    */
-  constructor(values){
+  constructor(a, b){
     super("list");
-    let val;
-    if (values.length === 0){
-      val = [];
-    } else if (values.length === 1 || values.length > 2){
-      throw new Error("This list constructor should have an empty list " + 
-        "as argument or a list with 2 elements");
-    } else {
-      if (isMTArray(values[1].value)){
-        val = [values[0]];
-      } else {
-          // FIXME: This is an O(N) operation, whereas IIUC this is
-          // implementing the (:) operation which is supposed to be
-          // constant-time.
-          // ANS i don't understand how this is O(n)
-          // concat est en O(n) il faut utiliser des paires pour encoder des 
-          // lists
-        val = [values[0]].concat(values[1].value);
-      }
-    }
-    this.value = val;
+    this.fst = a;
+    this.snd = b;
   }
 }
 
-/**
- * "Constructor" for VList but where we already have a list of values
- * @param {[Value]} values 
- * @returns {VList}
- */
-export function makeVList(values){
-  let list = new VList([]);
-  list.value = values;
-  return list;
+export class VMTList extends Value {
+
+  /**
+   * todo
+   */
+  constructor(){
+    super("mtlist");
+  }
 }
