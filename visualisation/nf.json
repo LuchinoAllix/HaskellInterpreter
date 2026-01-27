@@ -1,25 +1,6 @@
 [
   {
     "metatype": "DECL",
-    "name": "a",
-    "typeAnnotation": null,
-    "info": [
-      1,
-      1
-    ],
-    "body": {
-      "metatype": "EXP",
-      "type": "immediate",
-      "value": 42,
-      "valueType": "integer",
-      "info": [
-        1,
-        5
-      ]
-    }
-  },
-  {
-    "metatype": "DECL",
     "name": "main",
     "typeAnnotation": null,
     "info": [
@@ -31,21 +12,188 @@
       "type": "functionApp",
       "func": {
         "metatype": "EXP",
-        "type": "var",
-        "name": "print",
-        "info": [
-          2,
-          8
-        ]
+        "type": "functionApp",
+        "func": {
+          "metatype": "EXP",
+          "type": "var",
+          "name": ">>",
+          "info": [
+            null,
+            null
+          ]
+        },
+        "arg": {
+          "metatype": "EXP",
+          "type": "let",
+          "decls": [
+            {
+              "metatype": "DECL",
+              "name": "x",
+              "typeAnnotation": null,
+              "info": [
+                4,
+                9
+              ],
+              "body": {
+                "metatype": "EXP",
+                "type": "immediate",
+                "value": 1,
+                "valueType": "integer",
+                "info": [
+                  4,
+                  13
+                ]
+              }
+            },
+            {
+              "metatype": "DECL",
+              "name": "y",
+              "typeAnnotation": null,
+              "info": [
+                4,
+                16
+              ],
+              "body": {
+                "metatype": "EXP",
+                "type": "immediate",
+                "value": 2,
+                "valueType": "integer",
+                "info": [
+                  4,
+                  20
+                ]
+              }
+            }
+          ],
+          "body": {
+            "metatype": "EXP",
+            "type": "functionApp",
+            "func": {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "print",
+              "info": [
+                4,
+                25
+              ]
+            },
+            "arg": {
+              "metatype": "EXP",
+              "type": "functionApp",
+              "func": {
+                "metatype": "EXP",
+                "type": "functionApp",
+                "func": {
+                  "metatype": "EXP",
+                  "type": "var",
+                  "name": "+",
+                  "info": [
+                    4,
+                    34
+                  ]
+                },
+                "arg": {
+                  "metatype": "EXP",
+                  "type": "var",
+                  "name": "x",
+                  "info": [
+                    4,
+                    32
+                  ]
+                },
+                "info": null
+              },
+              "arg": {
+                "metatype": "EXP",
+                "type": "var",
+                "name": "y",
+                "info": [
+                  4,
+                  36
+                ]
+              },
+              "info": null
+            },
+            "info": null
+          },
+          "info": [
+            null,
+            null
+          ]
+        },
+        "info": null
       },
       "arg": {
         "metatype": "EXP",
-        "type": "var",
-        "name": "a",
-        "info": [
-          2,
-          14
-        ]
+        "type": "functionApp",
+        "func": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "func": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": ">>",
+            "info": [
+              null,
+              null
+            ]
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "let",
+            "decls": [
+              {
+                "metatype": "DECL",
+                "name": "x",
+                "typeAnnotation": null,
+                "info": [
+                  6,
+                  9
+                ],
+                "body": {
+                  "metatype": "EXP",
+                  "type": "immediate",
+                  "value": 3,
+                  "valueType": "integer",
+                  "info": [
+                    6,
+                    13
+                  ]
+                }
+              }
+            ],
+            "body": null,
+            "info": [
+              null,
+              null
+            ]
+          },
+          "info": null
+        },
+        "arg": {
+          "metatype": "EXP",
+          "type": "functionApp",
+          "func": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": "print",
+            "info": [
+              8,
+              5
+            ]
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": "x",
+            "info": [
+              8,
+              11
+            ]
+          },
+          "info": null
+        },
+        "info": null
       },
       "info": null
     }
