@@ -101,7 +101,7 @@ function evaluateDecl(decl){
   if (decl.name === "main"){
     main = evaluateExp(decl.body, new Env());
   } else {
-    global_env.add(decl.name, new V.Vfunc(decl));
+    global_env.add(decl.name, evaluateExp(decl.body, new Env()));
   }
 }
 
@@ -272,12 +272,12 @@ function evaluateLet(exp, env){
   if (exp.body !== null){
     let clone = env.clone();
     for (let decl of exp.decls){
-      clone.add(decl.name, new V.Vfunc(decl.body), true);
+      clone.add(decl.name, evaluateExp(decl.body, env), true);
     }
     return evaluateExp(exp.body, clone);
   }
   for (let decl of exp.decls){
-    env.add(decl.name, new Vfunc(decl.body), true);
+    env.add(decl.name, evaluateExp(decl.body, env), true);
   }
   return new V.Vio(new V.Vfunc(() => [], null, env), null);
   // kind of a unit type ? this is a temp fix
@@ -449,6 +449,7 @@ function lookupGlobalLocal(env, name){
     return res;
   }
   // NOTE: I expected to see that in the normalization rather than here.
+  //FIXME
   if (isNcommas(name)){ // Add the comma function to the global env if need be
     global_env.addNcommas(name);
     return global_env.lookup(name);
