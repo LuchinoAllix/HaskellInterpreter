@@ -6,6 +6,7 @@ import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
 import { TypeO } from "../typeCheck/TypeO.js";
 import { Term } from "./Term.js";
+import { addNcommasToGlobalEnv } from "../eval/eval.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -717,7 +718,11 @@ function normalizeTuple(node){
   if (args.length < 2){
     throw new Error("Not enough elements given for tuple");
   }
-  return makeFuncAppOfList(new VarExp(",".repeat(args.length-1), 
+  let func_name = ",".repeat(args.length-1);
+  if (args.length > 2){ // Update the global env
+    addNcommasToGlobalEnv(func_name);
+  }
+  return makeFuncAppOfList(new VarExp(func_name, 
     [node.line, node.column]), args);
 }
 

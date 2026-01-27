@@ -448,21 +448,25 @@ function lookupGlobalLocal(env, name){
   if (res !== undefined){
     return res;
   }
-  // NOTE: I expected to see that in the normalization rather than here.
-  //FIXME
-  if (isNcommas(name)){ // Add the comma function to the global env if need be
-    global_env.addNcommas(name);
-    return global_env.lookup(name);
-  }
   throw new Error(name + " is undefined.");
 }
 
 /**
  * Allows to reset the global environment
- * To be used in interactive mode
+ * Remembers the commas function (tuples) because the env is reset at the start
+ * of each test, but the commas functions are added in normalisation (before 
+ * reset)
+ * HELP : is this a good idea ? or should the env be reset after each test ?
  */
 function resetGlobalEnv(){
-  global_env = new Env();
+  let tmp_env = new Env();
+  // going through each value in the env and keeping only ncommas functions
+  for (let [key, value] of Object.entries(global_env.decls)){
+    if (isNcommas(key) && key.length > 1){
+      tmp_env.add(key, value);
+    }
+  }
+  global_env = tmp_env;;
   global_env.initGlobal();
 }
 
@@ -478,4 +482,13 @@ function isNcommas(str){
   } else if (str[0] === ","){
     return isNcommas(str.slice(1));
   }
+}
+
+/**
+ * Allows to add to the global env from other files (used in normalisation) when
+ * working on tuples to add the ncommas function before evaluation
+ * @param {String} str 
+ */
+export function addNcommasToGlobalEnv(str){
+  global_env.addNcommas(str);
 }
