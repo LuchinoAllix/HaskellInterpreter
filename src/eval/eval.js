@@ -232,9 +232,6 @@ export function applyFunc(func, arg){
     // that should wait till the end to be called (io functions) 
   if (func.subtype === "prim"){
     return func.body(arg);
-  } else if (func.subtype === "primio"){
-    return new V.Vio(func, arg); 
-    //shoudl derictly be inside the prim, no need for primio
   }
 
   if (func.param !== null){
@@ -279,9 +276,7 @@ function evaluateLet(exp, env){
   for (let decl of exp.decls){
     env.add(decl.name, evaluateExp(decl.body, env), true);
   }
-  return new V.Vio(new V.Vfunc(() => [], null, env), null);
-  // kind of a unit type ? this is a temp fix
-  // FIXME
+  return new V.Vio(() => V.Unit);
 }
 
 /**
@@ -427,11 +422,6 @@ function execute(main_decl){
   throw new Error("Only IO functions can be given to main");
   
 }
-
-/**
- * comment stefan, on eval le premier term dans la decl 
- * dans l'env il y a des vfunc avec des choses non évaluées
- */
 
 /**
  * Lookup but inside the global environment and a local one given
