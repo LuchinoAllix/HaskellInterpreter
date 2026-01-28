@@ -171,15 +171,16 @@ function normaliseTypeAnnotation(node){
         throw new Error("Unhandeled case of type annotation with type node");
       }
     case 'atype' :
-      if (node.childs.length !== 3){
-        // TODO see how type annotation come up for tuples
+     if (node.childs[0].value === '['){
+       if (node.childs.length !== 3){
         throw new Error("Mismanaged case of atype node (length !== 3");
-      } else if (node.childs[0].value === '['){
-        return new T.TArrow(
-          new T.TBuiltin("List"), 
-          normaliseTypeAnnotation(node.childs[1])
-        );
-      } else if (node.childs[0].value === '('){
+        } else {
+          return new T.TArrow(
+            new T.TBuiltin("List"), 
+            normaliseTypeAnnotation(node.childs[1])
+          );
+        }
+     } else if (node.childs[0].value === '('){
         // TODO see how type annotation come up for tuples
         return new T.TArrow(
           new T.TBuiltin("List"), 
