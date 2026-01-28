@@ -1,4 +1,5 @@
 import { Exp } from "./Exp.js";
+import { Term } from "./Term.js";
 
 //--               File containing "type" branch for normalize              --//
 
@@ -6,7 +7,7 @@ import { Exp } from "./Exp.js";
 /**
  * Object type Branch, used in Decl for declaring functions and variables
  */
-export class Branch {
+export class Branch extends Term{
 
   /**
    * Constructor for branch element
@@ -18,6 +19,7 @@ export class Branch {
    * @param {Exp} branchBody actual body of the branch
    */
   constructor(args, branchBody){
+    super();
     this.type = "branch"
     this.args = args;
     this.branchBody = branchBody;
