@@ -181,11 +181,15 @@ function normaliseTypeAnnotation(node){
           );
         }
      } else if (node.childs[0].value === '('){
-        // TODO see how type annotation come up for tuples
-        return new T.TArrow(
-          new T.TBuiltin("List"), 
-          normaliseTypeAnnotation(node.childs[1])
-        );
+        if (node.childs.length === 3){
+          return new T.TArrow(
+            new T.TBuiltin("Tuple"), 
+            normaliseTypeAnnotation(node.childs[1])
+          );
+        } 
+        let to = normaliseTypeAnnotation(node.childs[node.childs.length - 2]);
+        node.childs.splice(node.childs.length - 3, 2);
+        return new T.TArrow(normaliseTypeAnnotation(node), to);
       } else {
         throw new Error("Mismanaged case of atype node");
       }
