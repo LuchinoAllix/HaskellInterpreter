@@ -15,12 +15,12 @@ function makeNewTypeName(){
 }
 
 /**
- * Represents a the type of a term
+ * Represents the type of a term (Algebric Data Type)
  */
 export class TypeO {
   
   /**
-   * todo
+   * Constructor for the abstract class
    */
   constructor(){
     this.metatype = "TYPEO";
@@ -29,12 +29,11 @@ export class TypeO {
 }
 
 /**
- * todo
+ * Type of functions 
  */
-export class TypeArrow extends TypeO {
+export class TArrow extends TypeO {
 
   /**
-   * todo
    * @param {TypeO} from 
    * @param {TypeO} to 
    */  
@@ -47,44 +46,80 @@ export class TypeArrow extends TypeO {
 }
 
 /**
- * todo
+ * Type of builtin types (String, Int, Bool)
  */
-export class TypeInt extends TypeO {
+export class TBuiltin extends TypeO {
 
   /**
-   * todo
+   * @param {String} type
    */
-  constructor(){
+  constructor(type){
     super();
-    this.type = "Integer";
+    this.type = type;
   }
 }
 
 /**
- * todo
+ * Type of application of type
  */
-export class TypeBool extends TypeO {
+export class TApp extends TypeO {
 
   /**
-   * todo
+   * @param {TypeO} func
+   * @param {TypeO} arg
    */
-  constructor(){
+  constructor(func, arg){
     super();
-    this.type = "Bool";
+    this.func = func;
+    this.arg = arg;
   }
 }
 
 /**
- * todo
+ * Type for polymorphism
  */
-export class TypeChar extends TypeO {
+export class TForall extends TypeO {
 
   /**
-   * todo
+   * @param {String} name
+   * @param {TypeO} body
    */
-  constructor(){
+  constructor(name, body){
     super();
-    this.type = "Char";
+    this.name = name;
+    this.body = body;
+  }
+}
+
+/**
+ * Type for type variable
+ */
+export class TVar extends TypeO {
+
+  /**
+   * @param {String} name
+   * @param {Int} num
+   */
+  constructor(name, num){
+    super();
+    this.name = name;
+    this.num = num;
+  } 
+}
+
+/**
+ * Type for unknown types
+ */
+export class TMetavar extends TypeO {
+
+  /**
+   * @param {String} name
+   * @param {Int} num
+   */
+  constructor(name, num){
+    super();
+    this.name = name;
+    this.num = num;
   }
 }
 
