@@ -4,7 +4,7 @@ import { Exp, VarExp, ImExp, FunctionApp, IfExp, LetExp, CaseExp,
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
-import { TypeO } from "../typeCheck/TypeO.js";
+import * as T from '../typeCheck/TypeO.js';
 import { Term } from "./Term.js";
 import { addNcommasToGlobalEnv } from "../eval/eval.js";
 
@@ -155,10 +155,42 @@ function normalizeDecl(node){
  * Transforms a node of type declaration into the corresponding type 
  * (typeO object)
  * @param {Node} node
- * @returns {TypeO} 
+ * @returns {T.TypeO} 
  */
 function normaliseTypeAnnotation(node){
-  //todo
+    switch (node.type){
+    case 'Qtycon' :
+      return new T.TBuiltin(node.value);
+    case 'type' :
+      if (node.childs[1].value === '->' ){
+        return new T.TArrow(
+          normaliseTypeAnnotation(node.childs[0]),
+          normaliseTypeAnnotation(node.childs[2])
+        );
+      } else {
+        throw new Error("Unhandeled case of type annotation with type node");
+      }
+    case 'atype' :
+      if (node.childs.length !== 3){
+        // TODO see how type annotation come up for tuples
+        throw new Error("Mismanaged case of atype node (length !== 3");
+      } else if (node.childs[0].value === '['){
+        return new T.TArrow(
+          new T.TBuiltin("List"), 
+          normaliseTypeAnnotation(node.childs[1])
+        );
+      } else if (node.childs[0].value === '('){
+        // TODO see how type annotation come up for tuples
+        return new T.TArrow(
+          new T.TBuiltin("List"), 
+          normaliseTypeAnnotation(node.childs[1])
+        );
+      } else {
+        throw new Error("Mismanaged case of atype node");
+      }
+    default :
+        throw new Error("unhandeled case of type annotation : " + node.type);
+  }
 }
 
 /**
