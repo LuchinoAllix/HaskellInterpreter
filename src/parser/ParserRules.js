@@ -372,12 +372,12 @@ export class Rules {
         [branch([
           [ref("context"), 0],
           [data("=>"), 1]
-        ]), 0]
+        ]), 0],
         [ref("simpletype"), 1],
         [branch([
           [data("="), 1],
           [ref("constrs"), 1]
-        ]), 0]
+        ]), 0],
         [ref("deriving"), 0]
       ]),
       branch([
@@ -385,12 +385,12 @@ export class Rules {
         [branch([
           [ref("context"), 0],
           [data("=>"), 1]
-        ]), 0]
+        ]), 0],
         [ref("simpletype"), 1],
         [branch([
           [data("="), 1],
           [ref("newconstr"), 1]
-        ]), 0]
+        ]), 0],
         [ref("deriving"), 0]
       ]),
       branch([
@@ -398,7 +398,7 @@ export class Rules {
         [branch([
           [ref("scontext"), 0],
           [data("=>"), 1]
-        ]), 0]
+        ]), 0],
         [tokentype("Tycls"), 1],
         [tokentype("Tyvar"), 1],
         [branch([
@@ -411,7 +411,7 @@ export class Rules {
         [branch([
           [ref("scontext"), 0],
           [data("=>"), 1]
-        ]), 0]
+        ]), 0],
         [tokentype("Qtycls"), 1],
         [ref("inst"), 1],
         [branch([
@@ -425,7 +425,7 @@ export class Rules {
         [branch([
           [ref("type"), 1],
           [data(","), 1]
-        ]), 3]
+        ]), 3],
         [ref("type"), 0],
         [data(")"), 1]
       ]),
@@ -608,7 +608,7 @@ export class Rules {
         [branch([
           [data(","), 1],
           [ref("type"), 1],
-        ]),3]
+        ]),3],
         [data(")"), 1]
       ]),
       branch([[data("["), 1], [ref("type"), 1], [data("]"), 1]]),
