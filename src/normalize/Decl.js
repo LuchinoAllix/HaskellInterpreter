@@ -2,6 +2,7 @@ import { CaseExp, Exp, LambdaExp, VarExp } from "./Exp.js";
 import { Node } from "../objects/Node.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
+import { TypeO } from "../typeCheck/TypeO.js";
 
 
 //--                 File containing "type" Decl for normalize              --//
@@ -23,25 +24,28 @@ export function makeNewName(){
 
 /**
  * Decl type object used as an intermediary form for evaluation
- * Decls can either be a function or a variable, they could be definied as
- * subclasses (especially since variable need only one branch definition) but
- * it works for the moment to have them both as the same "parent" type
+ * Decls can either be a function or a variable
  */
 export class Decl extends Term {
 
+
   /**
    * Constructor for Decl
+   * @param {String} name 
+   * @param {TypeO} typeAnnotation 
+   * @param {Term} term A branch or an exp
+   * @param {[Int]} info 
    */
-  constructor(name, typeAnnotation, branch, info = null){
+  constructor(name, typeAnnotation, term, info = null){
     super("DECL");
     this.name = name;
     this.typeAnnotation = typeAnnotation;
     this.info = info;
-    if (branch !== null){
-      if (branch.type === "branch"){
-        this.makeBody(branch);
+    if (term !== null){
+      if (term.type === "branch"){
+        this.makeBody(term);
       } else 
-        this.body = branch;
+        this.body = term;
     } else {
       this.body = null;
     }
@@ -49,7 +53,7 @@ export class Decl extends Term {
 
   /**
    * Determines if a declaration has a type annotation or not
-   * @returns 
+   * @returns {Boolean}
    */
   isAnnotated(){
     return this.typeAnnotation !== null;
