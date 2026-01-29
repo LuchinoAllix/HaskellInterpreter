@@ -39,7 +39,7 @@ export class TArrow extends TypeO {
    */  
   constructor(from, to){
     super();
-    this.type = "Arrow"
+    this.type = "Arrow";
     this.from = from;
     this.to = to;
   }
@@ -51,11 +51,12 @@ export class TArrow extends TypeO {
 export class TBuiltin extends TypeO {
 
   /**
-   * @param {String} type
+   * @param {String} blt
    */
-  constructor(type){
+  constructor(blt){
     super();
-    this.type = type;
+    this.type = "Builtin";
+    this.blt = blt;
   }
 }
 
@@ -70,6 +71,7 @@ export class TApp extends TypeO {
    */
   constructor(func, arg){
     super();
+    this.type = "App";
     this.func = func;
     this.arg = arg;
   }
@@ -86,6 +88,7 @@ export class TForall extends TypeO {
    */
   constructor(name, body){
     super();
+    this.type = "Forall";
     this.name = name;
     this.body = body;
   }
@@ -102,6 +105,7 @@ export class TVar extends TypeO {
    */
   constructor(name, num){
     super();
+    this.type = "Tvar";
     this.name = name;
     this.num = num;
   }
@@ -129,6 +133,7 @@ export class TMetavar extends TypeO {
    */
   constructor(name, num){
     super();
+    this.type = "TMetavar";
     this.name = name;
     this.num = num;
   }
