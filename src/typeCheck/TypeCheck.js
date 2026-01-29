@@ -1,4 +1,6 @@
 import { Program } from "../objects/Program.js";
+import { Decl } from "../normalize/Decl.js";
+import * as T from "./TypeO.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -10,6 +12,27 @@ import { Program } from "../objects/Program.js";
  * @returns {Boolean}
  */
 export function typeCheck(program){
-    // TODO
-    return true;
+  annotate(program.normalizedForm);
+  return true;
+}
+
+/**
+ * TODO
+ * @param {[Decl]} decls 
+ */
+function annotate(decls){
+  for (let decl of decls){
+    if (!decl.isAnnotated()){
+        // TODO
+    }
+  }
+  
+}
+
+function unify(){
+    //todo
+}
+
+function occursCheck(){
+    //todo
 }
