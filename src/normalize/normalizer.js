@@ -175,21 +175,21 @@ function normaliseTypeAnnotation(node){
        if (node.childs.length !== 3){
         throw new Error("Mismanaged case of atype node (length !== 3");
         } else {
-          return new T.TArrow(
+          return new T.TApp(
             new T.TBuiltin("List"), 
             normaliseTypeAnnotation(node.childs[1])
           );
         }
      } else if (node.childs[0].value === '('){
         if (node.childs.length === 3){
-          return new T.TArrow(
+          return new T.TApp(
             new T.TBuiltin("Tuple"), 
             normaliseTypeAnnotation(node.childs[1])
           );
         } 
         let to = normaliseTypeAnnotation(node.childs[node.childs.length - 2]);
         node.childs.splice(node.childs.length - 3, 2);
-        return new T.TArrow(normaliseTypeAnnotation(node), to);
+        return new T.TApp(normaliseTypeAnnotation(node), to);
       } else {
         throw new Error("Mismanaged case of atype node");
       }
