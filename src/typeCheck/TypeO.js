@@ -104,8 +104,19 @@ export class TVar extends TypeO {
     super();
     this.name = name;
     this.num = num;
-  } 
+  }
 }
+
+/**
+ * Make a Tvar with a fresh name
+ * @returns {TVar}
+ */
+export function freshVar(){
+  count ++;
+  return new TVar("t", count);
+}
+
+
 
 /**
  * Type for unknown types
