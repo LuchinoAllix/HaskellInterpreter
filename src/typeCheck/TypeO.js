@@ -148,14 +148,13 @@ export class TForall extends TypeO {
 export class TVar extends TypeO {
 
   /**
-   * @param {String} name
+   * @param {String} str
    * @param {Integer} num
    */
-  constructor(name, num){
+  constructor(str, num){
     super();
     this.type = "Tvar";
-    this.name = name;
-    this.num = num;
+    this.name = str + num;
   }
 }
 
@@ -174,14 +173,13 @@ export function freshVar(){
 export class TMetavar extends TypeO {
 
   /**
-   * @param {String} name
+   * @param {String} str
    * @param {Integer} num
    */
-  constructor(name, num){
+  constructor(str, num){
     super();
     this.type = "TMetavar";
-    this.name = name;
-    this.num = num;
+    this.name = str + num;
   }
 }
 
