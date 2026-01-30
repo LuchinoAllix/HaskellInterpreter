@@ -61,6 +61,54 @@ export class TBuiltin extends TypeO {
 }
 
 /**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TInt() {
+  return new TBuiltin("Int");
+}
+
+/**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TBool() {
+  return new TBuiltin("Bool");
+}
+
+/**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TChar() {
+  return new TBuiltin("Char");
+}
+
+/**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TUnit() {
+  return new TBuiltin("Unit");
+}
+
+/**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TList() {
+  return new TBuiltin("List");
+}
+
+/**
+ * 
+ * @returns {TBuiltin}
+ */
+export function TTuple() {
+  return new TBuiltin("Tuple");
+}
+
+/**
  * Type of application of type
  */
 export class TApp extends TypeO {
@@ -119,8 +167,6 @@ export function freshVar(){
   count ++;
   return new TVar("t", count);
 }
-
-
 
 /**
  * Type for unknown types
