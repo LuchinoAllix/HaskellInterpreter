@@ -15,13 +15,10 @@ export function resetOutputs(){
  * Environment object definition, used in evaluation
  */
 export class Env {
-  // FIXME: Normally for a call-by-value evaluator, the environment
-  // maps Varnames to *Values*, not Terms.
-  // ANS : same comment of the EXP / DECL distinction
 
   /**
    * Constructor for env, always empty.
-   * decls is a dictionnary String (name) -> Term
+   * decls is a dictionnary String (name) -> Value
    */
   constructor(){
     this.decls = {};
@@ -30,7 +27,7 @@ export class Env {
   /**
    * Determines if a declaration exists in an environment
    * @param {String} name 
-   * @returns {Value} - Decl or Prim or undefined if declaration doesn't exists
+   * @returns {Value} Value or undefined if declaration doesn't exists
    */
   lookup(name){
     return this.decls[name];
