@@ -1,18 +1,8 @@
 
 //--              File containing "type" TypeO for type checking            --//
 
-let count = 0;
-
-
-/**
- * Makes a new name for a type (t0, t1, t2, ...)
- * @returns {String}
- */
-function makeNewTypeName(){
-  let name = "t" + count;
-  count ++;
-  return name
-}
+let countVar = 0;
+let countMetavar = 0;
 
 /**
  * Represents the type of a term (Algebric Data Type)
@@ -125,7 +115,7 @@ export class TVar extends TypeO {
  * @returns {TVar}
  */
 export function freshVar(){
-  count ++;
+  countMetavar ++;
   return new TVar("t", count);
 }
 
@@ -143,6 +133,15 @@ export class TMetavar extends TypeO {
     this.type = "TMetavar";
     this.name = str + num;
   }
+}
+
+/**
+ * Make a TMetavar with a fresh name
+ * @returns {TMetavar}
+ */
+export function freshMetavar(){
+  countVar ++;
+  return new TMetavar("mt", count);
 }
 
 // how should we manage the type of expressions like '_' ?
