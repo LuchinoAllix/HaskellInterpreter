@@ -61,52 +61,14 @@ export class TBuiltin extends TypeO {
 }
 
 /**
- * 
- * @returns {TBuiltin}
+ * Functions to generate builtin types
  */
-export function TInt() {
-  return new TBuiltin("Int");
-}
-
-/**
- * 
- * @returns {TBuiltin}
- */
-export function TBool() {
-  return new TBuiltin("Bool");
-}
-
-/**
- * 
- * @returns {TBuiltin}
- */
-export function TChar() {
-  return new TBuiltin("Char");
-}
-
-/**
- * 
- * @returns {TBuiltin}
- */
-export function TUnit() {
-  return new TBuiltin("Unit");
-}
-
-/**
- * 
- * @returns {TBuiltin}
- */
-export function TList() {
-  return new TBuiltin("List");
-}
-
-/**
- * 
- * @returns {TBuiltin}
- */
-export function TTuple() {
-  return new TBuiltin("Tuple");
-}
+export function TInt() { return new TBuiltin("Int"); }
+export function TBool() { return new TBuiltin("Bool"); }
+export function TChar() { return new TBuiltin("Char"); }
+export function TUnit() { return new TBuiltin("Unit"); }
+export function TList() { return new TBuiltin("List"); }
+export function TTuple() { return new TBuiltin("Tuple"); }
 
 /**
  * Type of application of type
