@@ -149,7 +149,7 @@ export class TVar extends TypeO {
 
   /**
    * @param {String} name
-   * @param {Int} num
+   * @param {Integer} num
    */
   constructor(name, num){
     super();
@@ -175,7 +175,7 @@ export class TMetavar extends TypeO {
 
   /**
    * @param {String} name
-   * @param {Int} num
+   * @param {Integer} num
    */
   constructor(name, num){
     super();
