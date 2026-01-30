@@ -71,6 +71,11 @@ export class Context {
   }
 
   /**
+   * TODO : add function to verify that global env and context have the same 
+   * functions definition 
+   */
+
+  /**
    * Copy function to return a copy of a context, not a reference
    * @returns {Env}
    */
