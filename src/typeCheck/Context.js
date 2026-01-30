@@ -1,5 +1,25 @@
 import * as T from "./TypeO";
 
+
+// Tvar variables for primitives 
+const print = T.freshVar();
+const eq = T.freshVar();
+const neq = T.freshVar();
+const and = T.freshVar();
+const or = T.freshVar();
+const lt = T.freshVar();
+const leq = T.freshVar();
+const gt = T.freshVar();
+const geq = T.freshVar();
+const fst1 = T.freshVar();
+const fst2 = T.freshVar();
+const snd1 = T.freshVar();
+const snd2 = T.freshVar();
+const concat = T.freshVar();
+const cons = T.freshVar();
+const comma1 = T.freshVar();
+const comma2 = T.freshVar();
+
 /**
  * Context object definition, used in type inference
  */
@@ -114,10 +134,8 @@ export class Context {
     this.add("getChar", ); // TODO
   }
 
-  /**
-   * TODO : add function to verify that global env and gloabl context have the 
-   * same functions definition 
-   */
+  // TODO : add function to verify that global env and gloabl context have the 
+  // same functions definition 
 
   /**
    * Copy function to return a copy of a context, not a reference
@@ -175,20 +193,4 @@ function makeFunc(n){
   return forAlls;
 }
 
-const print = T.freshVar();
-const eq = T.freshVar();
-const neq = T.freshVar();
-const and = T.freshVar();
-const or = T.freshVar();
-const lt = T.freshVar();
-const leq = T.freshVar();
-const gt = T.freshVar();
-const geq = T.freshVar();
-const fst1 = T.freshVar();
-const fst2 = T.freshVar();
-const snd1 = T.freshVar();
-const snd2 = T.freshVar();
-const concat = T.freshVar();
-const cons = T.freshVar();
-const comma1 = T.freshVar();
-const comma2 = T.freshVar();
+
