@@ -144,17 +144,35 @@ export class Context {
 }
 
 /**
- * Makes a curryfied function that take n arguments (for comma functions)
+ * Makes a curryfied type that take n arguments (for comma functions)
  * @param {Integer} n number of recursive calls required
- * @param {[any]} list arguments to the recursive calls
  * @returns {Value}
  */
-function makeFunc(n, list){
-  if (n === 0){
-    return new Vtuple(list)
-  } else {
-    return new Prim(a => makeFunc(n-1, [...list, a]));
+function makeFunc(n){
+  let forAlls, arrows ;
+  let lstForall, lstArrow, lstApp;
+  for (let i = 0; i < n; i++){
+    let tvar = T.freshVar();
+    let nForAll = new T.TForall(tvar.name, null); 
+    let nArrow = new T.TArrow(tvar, null);
+    let nApp;
+    if (i === 0){
+      forAlls = nForAll;
+      arrows = nArrow;
+      nApp = new T.TApp(new T.TBuiltin(','.repeat(n)), tvar);
+    } else {
+      lstForall.body = nForAll;
+      lstArrow.to = nArrow;
+      nApp = new T.TApp(lstApp, tvar);
+      lstApp = nApp;
+    }
+    lstForall = nForAll;
+    lstArrow = nArrow;
+    lstApp = nApp
   }
+  lstArrow.to = lstApp;
+  lstForall.body = arrows;
+  return forAlls;
 }
 
 const print = T.freshVar();
