@@ -151,7 +151,7 @@ function inferLambda(exp, context){
  * @returns {T.TypeO}
  */
 function instantiate(type) {
-  if (!type.isForall()) {
+  if (!type.isForAll()) {
     return type;
   }
 
