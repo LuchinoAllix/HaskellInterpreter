@@ -16,6 +16,53 @@ export class TypeO {
     this.metatype = "TYPEO";
   }
 
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isForAll(){
+    return this.type === "Forall";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isArrow(){
+    return this.type === "Arrow";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isBuiltin(){
+    return this.type === "Builtin";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isApp(){
+    return this.type === "App";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isVar(){
+    return this.type === "TVar";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isMetavar(){
+    return this.type === "TMetavar";
+  }
 }
 
 /**
@@ -105,7 +152,7 @@ export class TVar extends TypeO {
    */
   constructor(str, num){
     super();
-    this.type = "Tvar";
+    this.type = "TVar";
     this.name = str + num;
   }
 }
