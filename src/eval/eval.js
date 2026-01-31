@@ -115,7 +115,7 @@ function evaluateDecl(decl){
  */
 function evaluateExp(exp, env){
 
-  //not ideal but easiest solution
+  // not ideal but easiest solution
   if (exp.metatype === "VALUE"){
     return exp;
   }
@@ -162,7 +162,7 @@ function evaluateLambda(exp, env){
  * @returns {V.Value}
  */
 function evaluateVar(exp, env){
-  let variable = lookupGlobalLocal(env, exp.name);
+  let variable = lookupGlobalLocalEnv(env, exp.name);
   if (variable.metatype === "DECL"){
     return evaluateExp(variable.body, env);
   } else if (variable.metatype === "EXP"){
@@ -421,7 +421,7 @@ function execute(main_decl){
  * @param {String} name 
  * @returns {Term}
  */
-function lookupGlobalLocal(env, name){
+function lookupGlobalLocalEnv(env, name){
   let res = env.lookup(name);
   if (res !== undefined){
     return res;
@@ -458,7 +458,7 @@ function resetGlobalEnv(){
  * @param {String} str 
  * @returns {Boolean}
  */
-function isNcommas(str){
+export function isNcommas(str){
   if (str.length === 0){
     return true;
   } else if (str[0] === ","){
