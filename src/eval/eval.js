@@ -115,11 +115,6 @@ function evaluateDecl(decl){
  */
 function evaluateExp(exp, env){
 
-  // not ideal but easiest solution
-  if (exp.metatype === "VALUE"){
-    return exp;
-  }
-
   switch (exp.type){
 
     case "functionApp" :
