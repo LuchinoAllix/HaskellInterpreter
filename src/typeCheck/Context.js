@@ -139,7 +139,7 @@ export class Context {
 
   /**
    * Copy function to return a copy of a context, not a reference
-   * @returns {Env}
+   * @returns {Context}
    */
   clone(){
     let tmp = new Context();
