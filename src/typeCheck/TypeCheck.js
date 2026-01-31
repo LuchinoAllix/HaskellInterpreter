@@ -51,7 +51,7 @@ function infer(exp, context){
       return inferVar(exp, context);
       
     case 'immediate' :
-      return inferImmediate(exp, context);
+      return inferImmediate(exp);
 
     case 'let' :
       return inferLet(exp, context);
@@ -93,13 +93,12 @@ function inferVar(exp, context){
 }
 
 /**
- * 
+ * Makes a builtin type from the immediate value's type
  * @param {Exp} exp 
- * @param {Context} context 
- * @returns {?}
+ * @returns {T.TBuiltin}
  */
-function inferImmediate(exp, context){
-  //TODO
+function inferImmediate(exp){
+  return new T.TBuiltin(exp.valueType);
 }
 
 /**
