@@ -86,10 +86,11 @@ function inferFunctionApp(exp, context){
  * 
  * @param {Exp} exp 
  * @param {Context} context 
- * @returns {?}
+ * @returns {T.TypeO}
  */
 function inferVar(exp, context){
-  //TODO
+  const type = lookupGlobalLocalContext(context, exp.name);
+  return instantiate(type);
 }
 
 /**
@@ -132,7 +133,7 @@ function inferCase(exp, context){
 }
 
 /**
- * 
+ * creates an arrow type from with a new metavar for the argument
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TArrow}
@@ -142,6 +143,19 @@ function inferLambda(exp, context){
   let clone = context.clone();
   clone.add(exp.namedArg.name, arg);
   return new T.TArrow(arg, infer(exp.body, clone));
+}
+
+/**
+ * todo
+ * @param {T.TypeO} type 
+ * @returns {T.TypeO}
+ */
+function instantiate(type) {
+  if (!type.isForall()) {
+    return type;
+  }
+
+  // TODO
 }
 
 
