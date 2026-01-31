@@ -1,5 +1,5 @@
 import { Program } from "../objects/Program.js";
-import { Exp } from "../normalize/Exp.js";
+import { Exp, LambdaExp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
@@ -18,7 +18,6 @@ global_context.initGlobal();
  * @returns {Boolean}
  */
 export function typeCheck(program){
-  return true;
   resetGlobalContext();
   let main 
   for (let decl of program.normalizedForm){
@@ -137,10 +136,13 @@ function inferCase(exp, context){
  * 
  * @param {Exp} exp 
  * @param {Context} context 
- * @returns {?}
+ * @returns {T.TArrow}
  */
 function inferLambda(exp, context){
-  //TODO
+  let arg = T.freshMetavar()
+  let clone = context.clone();
+  clone.add(exp.namedArg.name, arg);
+  return new T.TArrow(arg, infer(exp.body, clone));
 }
 
 
