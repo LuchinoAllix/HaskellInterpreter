@@ -7,6 +7,7 @@ import { Node } from "../objects/Node.js";
 import * as T from '../typeCheck/TypeO.js';
 import { Term } from "./Term.js";
 import { addNcommasToGlobalEnv } from "../eval/eval.js";
+import { addNcommasToGlobalContext } from "../typeCheck/TypeCheck.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -761,6 +762,7 @@ function normalizeTuple(node){
   let func_name = ",".repeat(args.length-1);
   if (args.length > 2){ // Update the global env
     addNcommasToGlobalEnv(func_name);
+    addNcommasToGlobalContext(func_name);
   }
   return makeFuncAppOfList(new VarExp(func_name, 
     [node.line, node.column]), args);
