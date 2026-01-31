@@ -1,4 +1,4 @@
-import * as T from "./TypeO";
+import * as T from "./TypeO.js";
 
 
 // Tvar variables for primitives 
