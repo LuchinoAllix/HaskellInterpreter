@@ -115,8 +115,8 @@ export class TVar extends TypeO {
  * @returns {TVar}
  */
 export function freshVar(){
-  countMetavar ++;
-  return new TVar("t", count);
+  countVar ++;
+  return new TVar("t", countVar);
 }
 
 /**
@@ -140,8 +140,8 @@ export class TMetavar extends TypeO {
  * @returns {TMetavar}
  */
 export function freshMetavar(){
-  countVar ++;
-  return new TMetavar("mt", count);
+  countMetavar ++;
+  return new TMetavar("mt", countMetavar);
 }
 
 // how should we manage the type of expressions like '_' ?
