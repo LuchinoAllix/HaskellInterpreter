@@ -3,6 +3,7 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
+import { Substitution } from "./Substitution.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -124,7 +125,7 @@ function inferIf(exp, context){
 }
 
 /**
- * 
+ * in the works, not finished (at all (nothing works))
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TypeO}
@@ -134,38 +135,23 @@ function inferCase(exp, context){
   // Determine the type of the patterns (multiple for functions) 
   let argstype = exp.exps.map(x => infer(x, context));
 
-  // Add the types of the pattern to the context
-  let clone = context.clone();
-  for (let i = 0; i < argstype.length; i ++){
-    clone.add(exp.exps[i].name, argstype[i]);
-  }
-
   let outputType = null;
   
   for (let branch of exp.branches){
-    let patternsType = branch.args.map(x => infer(x, clone));
-    if (check(argstype, patternsType, clone)){
+    let branchCtx = context.clone();
 
-      // If args and pattern have the same type, we add variables one to the 
-      // context
-      let clone2 = clone.clone();
-      for (let i = 0; i < patternsType.length; i ++){
-        if (branch.args[i].type === 'var'){
-          clone2.add(branch.args[i].name, patternsType[i]);
-        }
-      }
+    let patternsType = branch.args.map(x => infer(x, branchCtx));
+    let substitutions= unify_all(argstype, patternsType, branchCtx);
+    let clone3 = updateContext(substitutions);
+    let branchTypeOutput = infer(branch.branchBody, branchCtx);
 
-      let branchTypeOutput = infer(branch.branchBody, clone2);
-
-      // verify that branches have the same type 
-      if (outputType === null){
-        outputType = branchTypeOutput ;
-      } else {
-        check(outputType, branchTypeOutput, clone2);
-      }
+    // verify that branches have the same type
+    if (outputType === null){
+      outputType = branchTypeOutput ;
     } else {
-      throw new Error("Pattern types on cases are different");
+      clone = unify(outputType, branchTypeOutput, clone2);
     }
+
   }
 
   return outputType;
@@ -200,14 +186,14 @@ function instantiate(type) {
 
 /**
  * Verifies that two types are the same in a given context
- * @param {Type0} type1 
- * @param {Type0} type2 
+ * @param {T.Type0} type1 
+ * @param {T.Type0} type2 
  * @param {Context} context
- * @returns {Boolean}
+ * @returns {Substitution}
  */
-function check(type1, type2, context){
+function unify(type1, type2, context){
   if (type1.type !== type2.type){
-    return false ;
+    throw new Error("Unification failed");
   }
 
   switch (type1.type){
@@ -215,27 +201,34 @@ function check(type1, type2, context){
       const fresh = T.freshMetavar();
       const body1 = T.substitute(type1, type1.name, fresh);
       const body2 = T.substitute(type2, fresh);
-      return check(body1, body2, context)
+      return unify(body1, body2, context)
     case "Arrow" :
-      return check(type1.from, type2.form, context) && 
-             check(type1.to, type2.to, context) ; 
+      return ERROR//(type1.from, type2.from, context) && 
+             //check(type1.to, type2.to, context) ; 
     case "Builtin" :
-      return type1.blt === type2.blt ;
+      return ERROR // type1.blt === type2.blt ;
     case "App" :
-      return check(type1.func, type2.func, context) && 
-             check(type1.arg, type2.arg, context) ;
+      return ERROR//check(type1.func, type2.func, context) && 
+             //check(type1.arg, type2.arg, context) ;
     case "TVar" :
-      return type1.name === type2.name;
+      return ERROR //type1.name === type2.name;
     case "TMetavar" :
-      break
+      return ERROR
     default :
       throw new Error("Unhandeled case of type :" + type1.type);
   }
 }
 
+function updateContext(substitutions, context){
+  //todo
+}
 
-function unify(){
-  throw new Error("TODO");
+function unify_all(types1, types2, context){
+  let substitutions = [];
+  for (let i = 0; i < types1.length; i++){
+    substitutions.push(unify(types1[i], types2[i], context));
+  }
+  return substitutions;
 }
 
 function occursCheck(){
