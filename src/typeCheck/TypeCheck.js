@@ -80,7 +80,7 @@ function infer(exp, context){
  * @returns {?}
  */
 function inferFunctionApp(exp, context){
-  //TODO
+  throw new Error("TODO");
 }
 
 /**
@@ -110,7 +110,7 @@ function inferImmediate(exp){
  * @returns {?}
  */
 function inferLet(exp, context){
-  //TODO
+  throw new Error("TODO");
 }
 
 /**
@@ -120,7 +120,7 @@ function inferLet(exp, context){
  * @returns {?}
  */
 function inferIf(exp, context){
-  //TODO
+  throw new Error("TODO");
 }
 
 /**
@@ -197,7 +197,7 @@ function instantiate(type) {
     return type;
   }
 
-  // TODO
+  throw new Error("TODO");
 }
 
 
@@ -208,16 +208,17 @@ function instantiate(type) {
  * @param {Context} context 
  */
 function check(type1, type2, context){
-  // todo
+  throw new Error("TODO");
+
 }
 
 
 function unify(){
-    //todo
+  throw new Error("TODO");
 }
 
 function occursCheck(){
-    //todo
+  throw new Error("TODO");
 }
 
 /**
