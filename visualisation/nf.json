@@ -1,30 +1,11 @@
 [
   {
     "metatype": "DECL",
-    "name": "sum",
-    "typeAnnotation": {
-      "metatype": "TYPEO",
-      "type": "Arrow",
-      "from": {
-        "metatype": "TYPEO",
-        "type": "App",
-        "func": {
-          "metatype": "TYPEO",
-          "type": "List"
-        },
-        "arg": {
-          "metatype": "TYPEO",
-          "type": "Int"
-        }
-      },
-      "to": {
-        "metatype": "TYPEO",
-        "type": "Int"
-      }
-    },
+    "name": "id",
+    "typeAnnotation": null,
     "info": [
-      1,
-      1
+      null,
+      null
     ],
     "body": {
       "metatype": "EXP",
@@ -33,7 +14,7 @@
       "namedArg": {
         "metatype": "EXP",
         "type": "var",
-        "name": "\\arg1",
+        "name": "\\arg0",
         "info": null
       },
       "body": {
@@ -43,7 +24,7 @@
           {
             "metatype": "EXP",
             "type": "var",
-            "name": "\\arg1",
+            "name": "\\arg0",
             "info": null
           }
         ],
@@ -53,117 +34,22 @@
             "args": [
               {
                 "metatype": "PATTERN",
-                "type": "immediate",
-                "value": [],
-                "valueType": "EmptyList",
+                "type": "var",
+                "name": "x",
                 "info": [
-                  2,
-                  5
+                  1,
+                  4
                 ]
               }
             ],
             "branchBody": {
               "metatype": "EXP",
-              "type": "immediate",
-              "value": 0,
-              "valueType": "integer",
+              "type": "var",
+              "name": "x",
               "info": [
-                2,
-                10
+                1,
+                8
               ]
-            }
-          },
-          {
-            "type": "branch",
-            "args": [
-              {
-                "metatype": "PATTERN",
-                "type": "functionApp",
-                "func": {
-                  "metatype": "EXP",
-                  "type": "functionApp",
-                  "func": {
-                    "metatype": "EXP",
-                    "type": "var",
-                    "name": ":",
-                    "info": [
-                      3,
-                      10
-                    ]
-                  },
-                  "arg": {
-                    "metatype": "EXP",
-                    "type": "var",
-                    "name": "head",
-                    "info": [
-                      3,
-                      6
-                    ]
-                  },
-                  "info": null
-                },
-                "arg": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "rest",
-                  "info": [
-                    3,
-                    12
-                  ]
-                },
-                "info": null
-              }
-            ],
-            "branchBody": {
-              "metatype": "EXP",
-              "type": "functionApp",
-              "func": {
-                "metatype": "EXP",
-                "type": "functionApp",
-                "func": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "+",
-                  "info": [
-                    3,
-                    25
-                  ]
-                },
-                "arg": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "head",
-                  "info": [
-                    3,
-                    20
-                  ]
-                },
-                "info": null
-              },
-              "arg": {
-                "metatype": "EXP",
-                "type": "functionApp",
-                "func": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "sum",
-                  "info": [
-                    3,
-                    27
-                  ]
-                },
-                "arg": {
-                  "metatype": "EXP",
-                  "type": "var",
-                  "name": "rest",
-                  "info": [
-                    3,
-                    31
-                  ]
-                },
-                "info": null
-              },
-              "info": null
             }
           }
         ],
@@ -176,7 +62,7 @@
     "name": "main",
     "typeAnnotation": null,
     "info": [
-      4,
+      2,
       1
     ],
     "body": {
@@ -187,7 +73,7 @@
         "type": "var",
         "name": "print",
         "info": [
-          4,
+          2,
           8
         ]
       },
@@ -197,76 +83,21 @@
         "func": {
           "metatype": "EXP",
           "type": "var",
-          "name": "sum",
+          "name": "id",
           "info": [
-            4,
+            2,
             15
           ]
         },
         "arg": {
           "metatype": "EXP",
-          "type": "functionApp",
-          "func": {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "func": {
-              "metatype": "EXP",
-              "type": "var",
-              "name": ":",
-              "info": [
-                null,
-                null
-              ]
-            },
-            "arg": {
-              "metatype": "EXP",
-              "type": "immediate",
-              "value": 1,
-              "valueType": "integer",
-              "info": [
-                4,
-                20
-              ]
-            },
-            "info": null
-          },
-          "arg": {
-            "metatype": "EXP",
-            "type": "functionApp",
-            "func": {
-              "metatype": "EXP",
-              "type": "functionApp",
-              "func": {
-                "metatype": "EXP",
-                "type": "var",
-                "name": ":",
-                "info": [
-                  null,
-                  null
-                ]
-              },
-              "arg": {
-                "metatype": "EXP",
-                "type": "immediate",
-                "value": 2,
-                "valueType": "integer",
-                "info": [
-                  4,
-                  22
-                ]
-              },
-              "info": null
-            },
-            "arg": {
-              "metatype": "EXP",
-              "type": "immediate",
-              "value": [],
-              "valueType": "EmptyList",
-              "info": null
-            },
-            "info": null
-          },
-          "info": null
+          "type": "immediate",
+          "value": 5,
+          "valueType": "integer",
+          "info": [
+            2,
+            18
+          ]
         },
         "info": null
       },
