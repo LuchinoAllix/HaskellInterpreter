@@ -142,6 +142,42 @@ export class TForall extends TypeO {
 }
 
 /**
+ * Substitues the metavariable of a forall
+ * @param {TypeO} body 
+ * @param {String} name 
+ * @param {TMetavar} fresh new metavar
+ * @returns {TypeO}
+ */
+export function substitute(body, name, fresh){
+  switch (body.type){
+    case "Forall" :
+      if (body.name === name){
+        return new TForall(fresh.name, substitute(body, name, fresh)); 
+      } else {
+        return new TForall(body.name, substitute(body, name, fresh));
+      }
+    case "Arrow" :
+      return new TArrow(
+        substitute(body.from, name, fresh), 
+        substitute(body.to, name, fresh));
+    case "Builtin" :
+      return body;
+    case "App" :
+      return new TApp(
+        substitute(body.func, name, fresh), 
+        substitute(body.arg, name, fresh));
+    case "TVar" :
+      return body;
+    case "TMetavar" :
+      if (body.name === name){
+        return fresh;
+      }
+    default :
+      throw new Error("Unhandeled case of type :" + body.type);
+  }
+}
+
+/**
  * Type for type variable
  */
 export class TVar extends TypeO {
