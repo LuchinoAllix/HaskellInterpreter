@@ -1,5 +1,5 @@
 import { Program } from "../objects/Program.js";
-import { Exp, LambdaExp } from "../normalize/Exp.js";
+import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
@@ -127,7 +127,7 @@ function inferIf(exp, context){
  * 
  * @param {Exp} exp 
  * @param {Context} context 
- * @returns {?}
+ * @returns {T.TypeO}
  */
 function inferCase(exp, context){
   
@@ -141,7 +141,6 @@ function inferCase(exp, context){
   }
 
   let outputType = null;
-
   
   for (let branch of exp.branches){
     let patternsType = branch.args.map(x => infer(x, clone));
@@ -167,11 +166,9 @@ function inferCase(exp, context){
     } else {
       throw new Error("Pattern types on cases are different");
     }
-
   }
 
   return outputType;
-  
 }
 
 /**
@@ -205,11 +202,35 @@ function instantiate(type) {
  * Verifies that two types are the same in a given context
  * @param {Type0} type1 
  * @param {Type0} type2 
- * @param {Context} context 
+ * @param {Context} context
+ * @returns {Boolean}
  */
 function check(type1, type2, context){
-  throw new Error("TODO");
+  if (type1.type !== type2.type){
+    return false ;
+  }
 
+  switch (type1.type){
+    case "Forall" :
+      const fresh = T.freshMetavar();
+      const body1 = T.substitute(type1, type1.name, fresh);
+      const body2 = T.substitute(type2, fresh);
+      return check(body1, body2, context)
+    case "Arrow" :
+      return check(type1.from, type2.form, context) && 
+             check(type1.to, type2.to, context) ; 
+    case "Builtin" :
+      return type1.blt === type2.blt ;
+    case "App" :
+      return check(type1.func, type2.func, context) && 
+             check(type1.arg, type2.arg, context) ;
+    case "TVar" :
+      return type1.name === type2.name;
+    case "TMetavar" :
+      break
+    default :
+      throw new Error("Unhandeled case of type :" + type1.type);
+  }
 }
 
 
