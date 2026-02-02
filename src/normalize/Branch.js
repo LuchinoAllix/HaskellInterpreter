@@ -19,7 +19,7 @@ export class Branch extends Term{
    * @param {Exp} branchBody actual body of the branch
    */
   constructor(args, branchBody){
-    super();
+    super("BRANCHTERM");
     this.type = "branch"
     this.args = args;
     this.branchBody = branchBody;
