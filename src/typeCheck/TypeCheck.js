@@ -38,7 +38,7 @@ export function typeCheck(program){
  * TODO
  * @param {Exp} exp
  * @param {Context} context
- * @returns {?}
+ * @returns {TypeO}
  */
 function infer(exp, context){
 
@@ -66,7 +66,8 @@ function infer(exp, context){
       return inferLambda(exp, context);
 
     default :
-      console.log(JSON.stringify(exp, null, 2))
+      console.log(JSON.stringify(exp, null, 2));
+      console.log(global_context);
       throw new Error("exp not yet managed in infer : " + exp.type);
   }
 }
@@ -129,7 +130,48 @@ function inferIf(exp, context){
  * @returns {?}
  */
 function inferCase(exp, context){
-  //TODO
+  
+  // Determine the type of the patterns (multiple for functions) 
+  let argstype = exp.exps.map(x => infer(x, context));
+
+  // Add the types of the pattern to the context
+  let clone = context.clone();
+  for (let i = 0; i < argstype.length; i ++){
+    clone.add(exp.exps[i].name, argstype[i]);
+  }
+
+  let outputType = null;
+
+  
+  for (let branch of exp.branches){
+    let patternsType = branch.args.map(x => infer(x, clone));
+    if (check(argstype, patternsType, clone)){
+
+      // If args and pattern have the same type, we add variables one to the 
+      // context
+      let clone2 = clone.clone();
+      for (let i = 0; i < patternsType.length; i ++){
+        if (branch.args[i].type === 'var'){
+          clone2.add(branch.args[i].name, patternsType[i]);
+        }
+      }
+
+      let branchTypeOutput = infer(branch.branchBody, clone2);
+
+      // verify that branches have the same type 
+      if (outputType === null){
+        outputType = branchTypeOutput ;
+      } else {
+        check(outputType, branchTypeOutput, clone2);
+      }
+    } else {
+      throw new Error("Pattern types on cases are different");
+    }
+
+  }
+
+  return outputType;
+  
 }
 
 /**
@@ -156,6 +198,17 @@ function instantiate(type) {
   }
 
   // TODO
+}
+
+
+/**
+ * Verifies that two types are the same in a given context
+ * @param {Type0} type1 
+ * @param {Type0} type2 
+ * @param {Context} context 
+ */
+function check(type1, type2, context){
+  // todo
 }
 
 
