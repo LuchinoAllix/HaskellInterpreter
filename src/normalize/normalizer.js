@@ -84,7 +84,7 @@ function normalizeRoot(astRoot){
         }
       }
       return declList;
-    
+
     default :
       // We suppose we only have the main declaration
       return [normalize(astRoot)];
@@ -102,6 +102,7 @@ function normalize(node){
     case "gendecl" :
       return normalizeDecl(node);
 
+    case "topdecl" :
     case "rhs" :
       // This is not the only rhs outcome, just the only one yet managed
       return normalizeExp(node.childs[1]);
@@ -110,9 +111,13 @@ function normalize(node){
     case "String" :
     case "Qconid" :
     case "infixexp" :
+    case "fexp" :
+    case "lexp" :
+    case "aexp_" :
       return normalizeExp(node);
     
     default :
+      console.log(JSON.stringify(node, null, 2));
       throw new Error("This type of node is not yet managed by normalize : " 
         + node.type);
   }
