@@ -5,7 +5,7 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEvalComp } from './eval/eval.js';
+import { initEvalComp, initGlobal } from './eval/eval.js';
 import { outputs, resetOutputs } from './eval/Env.js';
 import { typeCheck } from './typeCheck/TypeCheck.js';
 
@@ -289,6 +289,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
   try{
     resetOutputs();
+    initGlobal();
     initEvalComp(program);
     if (isGoodResult(program.expected, outputs, verbose)){
       if (verbose){
