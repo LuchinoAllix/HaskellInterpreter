@@ -125,36 +125,33 @@ function inferIf(exp, context){
 }
 
 /**
- * in the works, not finished (at all (nothing works))
+ * in the works todo
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TypeO}
  */
 function inferCase(exp, context){
   
-  // Determine the type of the patterns (multiple for functions) 
-  let argstype = exp.exps.map(x => infer(x, context));
+  // Determine the type of the argument (multiple for functions) 
+  let argsType = exp.exps.map(x => infer(x, context));
 
-  let outputType = null;
+  let outputType = T.freshVar();
   
   for (let branch of exp.branches){
     let branchCtx = context.clone();
 
     let patternsType = branch.args.map(x => infer(x, branchCtx));
-    let substitutions= unify_all(argstype, patternsType, branchCtx);
-    let clone3 = updateContext(substitutions);
-    let branchTypeOutput = infer(branch.branchBody, branchCtx);
+    let substitutions = unify_all(argsType, patternsType, branchCtx);
+    branchCtx = updateContext(branchCtx, substitutions);
+    let branchTypeOutput = infer(branch.branchBody, branchCtxClone);
 
     // verify that branches have the same type
-    if (outputType === null){
-      outputType = branchTypeOutput ;
-    } else {
-      clone = unify(outputType, branchTypeOutput, clone2);
-    }
+    let substitutions2 = unify(branchTypeOutput, outputType, branchCtx); 
+    context = updateContext(context, substitutions2);
 
   }
 
-  return outputType;
+  return substitute(outputType, context);
 }
 
 /**
@@ -219,8 +216,8 @@ function unify(type1, type2, context){
   }
 }
 
-function updateContext(substitutions, context){
-  //todo
+function updateContext(context, substitutions){
+  throw new Error("TODO");
 }
 
 function unify_all(types1, types2, context){
@@ -229,6 +226,10 @@ function unify_all(types1, types2, context){
     substitutions.push(unify(types1[i], types2[i], context));
   }
   return substitutions;
+}
+
+function substitute(type, context){
+  throw new Error("TODO");
 }
 
 function occursCheck(){
