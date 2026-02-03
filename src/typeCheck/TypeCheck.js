@@ -182,7 +182,8 @@ function instantiate(type) {
 
 
 /**
- * Verifies that two types are the same in a given context
+ * Unifies two types in a given context
+ * todo add examples
  * @param {T.Type0} type1 
  * @param {T.Type0} type2 
  * @param {Context} context
@@ -216,10 +217,27 @@ function unify(type1, type2, context){
   }
 }
 
+/**
+ * Updates the context with a list of substitutions
+ * @param {Context} context 
+ * @param {Substitution} substitutions 
+ * @returns {Context}
+ */
 function updateContext(context, substitutions){
-  throw new Error("TODO");
+  let clone = context.clone();
+  for (let sub of substitutions){
+    clone.add(sub.name, sub.type);
+  }
+  return clone;
 }
 
+/**
+ * Unifies a list of types (1 to 1) in a given context
+ * @param {T.TypeO} types1 
+ * @param {T.TypeO} types2 
+ * @param {Context} context 
+ * @returns {[Substitution]}
+ */
 function unify_all(types1, types2, context){
   let substitutions = [];
   for (let i = 0; i < types1.length; i++){
