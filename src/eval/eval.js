@@ -9,10 +9,9 @@ import * as V from "../eval/Value.js";
 
 // Init global env
 let global_env;
-
 let main;
 
-function initGlobal(){
+export function initGlobal(){
   global_env = new Env();
   global_env.initGlobal();
 }
@@ -24,7 +23,6 @@ function initGlobal(){
  */
 export function initEvalComp(program){
   
-  initGlobal();
   resetGlobalEnv();
   main = null; // reseting main
   
@@ -60,17 +58,18 @@ export function initEvalComp(program){
  * @param {Env} env
  */
 export function initEvalInter(program, env){
+
   let terms = program.normalizedForm;
   if (terms.length > 1){
     throw new Error("Only one term allowed in repl mode")
   }
-
-  if (terms[0].metatype === 'decl'){
-    env.add(evaluateExp(terms[0].body, env));
+  if (terms[0].metatype === 'DECL'){
+    env.add(terms[0].name,evaluateExp(terms[0].body, env));
   } else {
-    let exp = evaluateExp(terms[0].body, env);
+    let exp = evaluateExp(terms[0], env);
     if (exp.type !== 'IO'){ // might not be best verification
-      console.log(exp);
+      const print = global_env.lookup('print');
+      print.body(exp).exec();
     } else {
       exp.exec()
     }
