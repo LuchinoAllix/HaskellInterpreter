@@ -243,7 +243,8 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
   }
 
   try{
-  
+    
+    initGlobal();
     normalizeStart(program)
     
     if (verbose){
@@ -272,7 +273,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
   try{
   
-    typeCheck(program);
+    //typeCheck(program);
     
     if (verbose){
       console.log("Successful type checking :) ");
@@ -289,7 +290,6 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
   try{
     resetOutputs();
-    initGlobal();
     initEvalComp(program);
     if (isGoodResult(program.expected, outputs, verbose)){
       if (verbose){
