@@ -1,46 +1,46 @@
-import { readline } from 'readline/promises';
-import { Env } from './eval/Env.js';
 import { Program } from './objects/Program.js';
+import { Env } from "./eval/Env.js"
+import { typeCheck } from './typeCheck/TypeCheck.js';
+import { initEvalInter } from './eval/eval.js';
+import { tokenize } from './lexer/Lexer.js';
+import { parse } from './parser/Parser.js';
+import { normalizeStart } from './normalize/normalizer.js';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: '> '
-});
 
-rl.prompt();
+let localEnv = new Env();
 
-let program;
-let env = new Env();
+function startRepl(){
+  process.stdin.setEncoding('utf8');
+  process.stdout.write('> ');
+  process.stdin.on('data', (input) => repl(input))
+}
 
-rl.on('line', (input) => {
+function repl(input){
+  input = input.trim();
+
   switch (input){
-    case "test" :
-      //todo special actions commands like reset env...
-    break ;
+    case "exit" :
+      process.exit(0);
 
     case "help" :
       printHelp();
-    break;
+      process.stdout.write('> ');
+      break;
 
+    case "reset env" :
+      localEnv = new Env();
+      process.stdout.write('> ');
+      break;
+    
     default :
-      run(input, env);
-
+      run(input, localEnv);
+      process.stdout.write('> ');
 
   }
-
-  rl.prompt();
-}).on('close', () => {
-  console.log('Bye!');
-  process.exit(0);
-});
-
-function printHelp(){
-
 }
 
 function run(input, env){
-  program = new Program(input);
+  let program = new Program(input);
 
   try {
     tokenize(program);
@@ -59,14 +59,28 @@ function run(input, env){
   }
 
   try {
-    normalize(program);
+    normalizeStart(program);
   } catch (error) {
     console.log("Error while tokenizating :");
     console.log(error);
     return false;
   }
 
-  // todo eval
+  try {
+    typeCheck(program);
+  } catch (error) {
+    console.log("Error while type checking :");
+    console.log(error);
+    return false;
+  }
 
-
+  try {
+    initEvalInter(program, env);
+  } catch (error) {
+    console.log("Error while tokenizating :");
+    console.log(error);
+    return false;
+  }
 }
+
+startRepl();
