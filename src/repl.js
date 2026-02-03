@@ -1,15 +1,17 @@
 import { Program } from './objects/Program.js';
 import { Env } from "./eval/Env.js"
 import { typeCheck } from './typeCheck/TypeCheck.js';
-import { initEvalInter } from './eval/eval.js';
+import { initEvalInter, initGlobal } from './eval/eval.js';
 import { tokenize } from './lexer/Lexer.js';
 import { parse } from './parser/Parser.js';
 import { normalizeStart } from './normalize/normalizer.js';
+import { compressTree } from './objects/Node.js';
 
 
 let localEnv = new Env();
 
 function startRepl(){
+  initGlobal();
   process.stdin.setEncoding('utf8');
   process.stdout.write('> ');
   process.stdin.on('data', (input) => repl(input))
@@ -59,15 +61,16 @@ function run(input, env){
   }
 
   try {
+    compressTree(program.AST);
     normalizeStart(program);
   } catch (error) {
-    console.log("Error while tokenizating :");
+    console.log("Error while normalising :");
     console.log(error);
     return false;
   }
 
   try {
-    typeCheck(program);
+    //typeCheck(program);
   } catch (error) {
     console.log("Error while type checking :");
     console.log(error);
@@ -77,7 +80,7 @@ function run(input, env){
   try {
     initEvalInter(program, env);
   } catch (error) {
-    console.log("Error while tokenizating :");
+    console.log("Error while evaluating :");
     console.log(error);
     return false;
   }
