@@ -3,7 +3,7 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
-import { Substitution } from "./Substitution.js";
+import { newSub, Subs, Substitution } from "./Substitution.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -146,7 +146,7 @@ function inferCase(exp, context){
     let branchTypeOutput = infer(branch.branchBody, branchCtxClone);
 
     // verify that branches have the same type
-    let substitutions2 = unify(branchTypeOutput, outputType, branchCtx); 
+    let substitutions2 = unify(branchTypeOutput, outputType, branchCtx);
     context = updateContext(context, substitutions2);
 
   }
@@ -234,10 +234,10 @@ function unify(type1, type2, context){
         throw new Error("Type mismatch in unification");
       }
 
-      let s3 = unify(type1.func, type2.func, context);
-      let s4 = unify(type1.arg, type2.arg, context);
+      let s3 = unify(type1.arg, type2.arg, context);
+      let s4 = unify(type1.func, type2.func, context);
 
-      return compose(s3, s4);
+      return compose(s4, s3);
     
     case "TVar" :
 
@@ -259,18 +259,16 @@ function unify(type1, type2, context){
  */
 function prune(type, context) {
   if (type.type === "TMetavar") {
-    let subst = context.lookup(type.id);
+    let subst = context.lookup(type.name);
     if (subst) {
-      let pruned = prune(subst, ctx);
-      context.add(type.name, pruned);
-      return pruned;
+      return prune(subst, context);
     }
   }
   return type;
 }
 
 /**
- * todo
+ * To bind the metavariable to a given type
  * @param {T.TMetavar} metavar 
  * @param {T.TypeO} type 
  * @param {Context} context 
@@ -282,12 +280,11 @@ function bindMeta(metavar, type, context){
   
   if (exists) {
     return unify(exists, type, context);
-  } if (!occursCheck()){
+  } if (!occursCheck()){ // todo
     throw new Error("Occurs check failed.");
   }
 
-  context.add(metavar.name, type);
-  return new Substitution(metavar.name, type);
+  return newSub(metavar.name, type);
 }
 
 // todo add compose
@@ -295,13 +292,13 @@ function bindMeta(metavar, type, context){
 /**
  * Updates the context with a list of substitutions
  * @param {Context} context 
- * @param {[Substitution]} substitutions 
+ * @param {Substitution} subs 
  * @returns {Context}
  */
-function updateContext(context, substitutions){
+function updateContext(context, subs){
   let clone = context.clone();
-  for (let sub of substitutions){
-    clone.add(sub.name, sub.type);
+  for (let subKey of Object.keys(subs)){
+    clone.add(subKey, subs[subKey]);
   }
   return clone;
 }
@@ -311,12 +308,12 @@ function updateContext(context, substitutions){
  * @param {T.TypeO} types1 
  * @param {T.TypeO} types2 
  * @param {Context} context 
- * @returns {[Substitution]}
+ * @returns {Substitution}
  */
 function unify_all(types1, types2, context){
-  let substitutions = [];
+  let substitutions = new Subs();
   for (let i = 0; i < types1.length; i++){
-    substitutions.push(unify(types1[i], types2[i], context));
+    substitutions.merge(unify(types1[i], types2[i], context));
   }
   return substitutions;
 }
