@@ -1,4 +1,4 @@
-import { TypeO } from "./TypeO";
+import { TypeO } from "./TypeO.js";
 
 /**
  * Substitions class, contains a dict of mapping names to types
