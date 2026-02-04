@@ -182,7 +182,7 @@ function instantiate(type) {
 
 
 /**
- * Unifies two types in a given context
+ * Unifies two types in a given context by 
  * todo add examples
  * @param {T.Type0} type1 
  * @param {T.Type0} type2 
@@ -239,7 +239,7 @@ function unify(type1, type2, context){
 
       return compose(s3, s4);
     
-      case "TVar" :
+    case "TVar" :
 
       if (type2.type === "TVar" && type1.name === type2.name) { return {} ; }
       throw new Error("Failed unification of TVar");
@@ -250,29 +250,52 @@ function unify(type1, type2, context){
 }
 
 /**
- * TODO
- * @param {*} type 
- * @param {*} context 
- * @returns 
+ * Returns the infered type if it's a metavar, otherwise just returns the type
+ * Example : We know in the context that metavar 'x' is of type metavar 'a'
+ *           and 'a' is of type Int, therefore return type Int on input x. 
+ * @param {T.TypeO} type 
+ * @param {Context} context 
+ * @returns {T.TypeO}
  */
 function prune(type, context) {
   if (type.type === "TMetavar") {
     let subst = context.lookup(type.id);
     if (subst) {
       let pruned = prune(subst, ctx);
-      context.bind(type.id, pruned);
+      context.add(type.name, pruned);
       return pruned;
     }
   }
   return type;
 }
 
-// todo add bind and compose
+/**
+ * todo
+ * @param {T.TMetavar} metavar 
+ * @param {T.TypeO} type 
+ * @param {Context} context 
+ * @returns {Substitution}
+ */
+function bindMeta(metavar, type, context){
+  type = prune(type, context);
+  let exists = context.lookup(metavar.name);
+  
+  if (exists) {
+    return unify(exists, type, context);
+  } if (!occursCheck()){
+    throw new Error("Occurs check failed.");
+  }
+
+  context.add(metavar.name, type);
+  return new Substitution(metavar.name, type);
+}
+
+// todo add compose
 
 /**
  * Updates the context with a list of substitutions
  * @param {Context} context 
- * @param {Substitution} substitutions 
+ * @param {[Substitution]} substitutions 
  * @returns {Context}
  */
 function updateContext(context, substitutions){
