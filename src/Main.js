@@ -273,7 +273,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
   try{
   
-    //typeCheck(program);
+    typeCheck(program);
     
     if (verbose){
       console.log("Successful type checking :) ");
