@@ -60,19 +60,38 @@ function infer(exp, context){
     case 'if' :
       return inferIf(exp, context);
           
-    case 'case' :
-      return inferCase(exp, context);
-            
-    case 'LambdaExp' :
-      return inferLambda(exp, context);
-
     default :
-      console.log(JSON.stringify(exp, null, 2));
-      console.log(global_context);
-      throw new Error("exp not yet managed in infer : " + exp.type);
+      check(exp, T.freshMetavar(), context);
+      return //?
   }
 }
 
+/**
+ * Throws error if type is not compatible
+ * @param {Exp} exp 
+ * @param {T.TypeO} type 
+ * @param {Context} context 
+ */
+function check(exp, type, context){
+  switch (exp.type){
+    case 'LambdaExp' :
+      //todo
+    case 'case' :
+      //todo
+    default :
+      return infer(exp, context);
+  }
+}
+
+/**
+ * Throws error if not compatible 
+ * Side effect : modifies the metavar value 
+ * @param {T.TypeO} type1 
+ * @param {T.TypeO} type2 
+ */
+function unify(type1, type2){
+  //todo
+}
 
 /**
  * 
@@ -124,225 +143,13 @@ function inferIf(exp, context){
   throw new Error("TODO");
 }
 
-/**
- * in the works todo
- * @param {Exp} exp 
- * @param {Context} context 
- * @returns {T.TypeO}
- */
-function inferCase(exp, context){
-  
-  // Determine the type of the argument (multiple for functions) 
-  let argsType = exp.exps.map(x => infer(x, context));
 
-  let outputType = T.freshVar();
-  
-  for (let branch of exp.branches){
-    let branchCtx = context.clone();
-
-    let patternsType = branch.args.map(x => infer(x, branchCtx));
-    let substitutions = unify_all(argsType, patternsType, branchCtx);
-    branchCtx = updateContext(branchCtx, substitutions);
-    let branchTypeOutput = infer(branch.branchBody, branchCtxClone);
-
-    // verify that branches have the same type
-    let substitutions2 = unify(branchTypeOutput, outputType, branchCtx);
-    context = updateContext(context, substitutions2);
-  }
-
-  return substitute(outputType, context);
+function check(exp, type, context){
+  let new_type = infer(exp, context);
+  return type == new_type;
 }
 
-/**
- * creates an arrow type from with a new metavar for the argument
- * @param {Exp} exp 
- * @param {Context} context 
- * @returns {T.TArrow}
- */
-function inferLambda(exp, context){
-  let arg = T.freshMetavar()
-  let clone = context.clone();
-  clone.add(exp.namedArg.name, arg);
-  return new T.TArrow(arg, infer(exp.body, clone));
-}
 
-/**
- * todo
- * @param {T.TypeO} type 
- * @returns {T.TypeO}
- */
-function instantiate(type) {
-  if (!type.isForAll()) {
-    return type;
-  }
-
-  throw new Error("TODO");
-}
-
-/**
- * Unifies two types in a given context by 
- * todo add examples
- * @param {T.Type0} type1 
- * @param {T.Type0} type2 
- * @param {Context} context
- * @returns {Subs}
- */
-function unify(type1, type2, context){
-
-  type1 = prune(type1, context);
-  type2 = prune(type2, context);
-
-  if (type1.type === "TMetavar") {
-    return bindMeta(type1, type2, context);
-  }
-
-  if (type2.type === "TMetavar") {
-    return bindMeta(type2, type1, context);
-  }
-
-  if (type1.type !== type2.type) {
-    throw new Error("Type mismatch");
-  }
-
-  switch (type1.type){
-    
-    case "Forall" :
-    
-      return unify(instantiate(type1, context), type2, context);
-    
-    case "Arrow" :
-      
-      if (type2.type !== "Arrow") {
-        throw new Error("Type mismatch in unification");
-      }
-
-      let s1 = unify(type1.from, type2.from, context);
-      let s2 = unify(type1.to, type2.to, context);
-
-      return compose(s2, s1); // FIXME : not sure of order of composition
-    
-    case "Builtin" :
-    
-      if (type1.name === type2.name) { return {} ; }
-      throw new Error("Builtin types mismatch");
-    
-    case "App" :
-    
-      if (type2.type !== "App") {
-        throw new Error("Type mismatch in unification");
-      }
-
-      let s3 = unify(type1.arg, type2.arg, context);
-      let s4 = unify(type1.func, type2.func, context);
-
-      return compose(s4, s3); // FIXME : not sure of order of composition
-    
-    case "TVar" :
-
-      if (type2.type === "TVar" && type1.name === type2.name) { return {} ; }
-      throw new Error("Failed unification of TVar");
-
-    default :
-      throw new Error("Unhandeled case of type :" + type1.type);
-  }
-}
-
-/**
- * Returns the infered type if it's a metavar, otherwise just returns the type
- * Example : We know in the context that metavar 'x' is of type metavar 'a'
- *           and 'a' is of type Int, therefore return type Int on input x. 
- * @param {T.TypeO} type 
- * @param {Context} context 
- * @returns {T.TypeO}
- */
-function prune(type, context) {
-  if (type.type === "TMetavar") {
-    let subst = context.lookup(type.name);
-    if (subst) {
-      return prune(subst, context);
-    }
-  }
-  return type;
-}
-
-/**
- * To bind the metavariable to a given type
- * @param {T.TMetavar} metavar 
- * @param {T.TypeO} type 
- * @param {Context} context 
- * @returns {Subs}
- */
-function bindMeta(metavar, type, context){
-  type = prune(type, context);
-  let exists = context.lookup(metavar.name);
-  
-  if (exists !== undefined) {
-    return unify(exists, type, context);
-  } if (!occursCheck()){ // todo
-    throw new Error("Occurs check failed.");
-  }
-
-  return newSub(metavar.name, type);
-}
-
-/**
- * Composes two substitutions, like :
- * 
- * subs1 = { a: T1, b: T2 }
- * subs2 = { c: a -> b, d: Int }
- * result = { a: T1, b: T2, c: T1 -> T2, d: Int }
- * 
- * @param {Subs} subs1 
- * @param {Subs} subs2 
- * @returns {Subs}
- */
-function compose(subs1, subs2){
-  let result = new Subs();
-  for (let keyS1 of Object.keys(subs1)){
-    result.add(keyS1, subs1.subs[keyS1]);
-  }
-  for (let keyS2 of Object.keys(subs2)){
-    result.add(keyS2, subs2.subs[keyS2], true);
-  }
-  return result;
-}
-
-/**
- * Updates the context with a list of substitutions
- * @param {Context} context 
- * @param {Subs} subs 
- * @returns {Context}
- */
-function updateContext(context, subs){
-  let clone = context.clone();
-  for (let subKey of Object.keys(subs)){
-    clone.add(subKey, subs.subs[subKey]);
-  }
-  return clone;
-}
-
-/**
- * Unifies a list of types (1 to 1) in a given context
- * @param {[T.TypeO]} types1 
- * @param {[T.TypeO]} types2 
- * @param {Context} context 
- * @returns {Subs}
- */
-function unify_all(types1, types2, context){
-  let substitutions = new Subs();
-  for (let i = 0; i < types1.length; i++){
-    substitutions.merge(unify(types1[i], types2[i], context));
-  }
-  return substitutions;
-}
-
-function substitute(type, context){
-  throw new Error("TODO");
-}
-
-function occursCheck(){
-  throw new Error("TODO");
-}
 
 /**
  * Lookup but inside the global environment and a local one given
