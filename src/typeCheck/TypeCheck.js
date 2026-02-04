@@ -190,32 +190,84 @@ function instantiate(type) {
  * @returns {Substitution}
  */
 function unify(type1, type2, context){
-  if (type1.type !== type2.type){
-    throw new Error("Unification failed");
+
+  type1 = prune(type1, context);
+  type2 = prune(type2, context);
+
+  if (type1.type === "TMetavar") {
+    return bindMeta(type1, type2, context);
+  }
+
+  if (type2.type === "TMetavar") {
+    return bindMeta(type2, type1, context);
+  }
+
+  if (type1.type !== type2.type) {
+    throw new Error("Type mismatch");
   }
 
   switch (type1.type){
+    
     case "Forall" :
-      const fresh = T.freshMetavar();
-      const body1 = T.substitute(type1, type1.name, fresh);
-      const body2 = T.substitute(type2, fresh);
-      return unify(body1, body2, context)
+    
+      return unify(instantiate(type1, context), type2, context);
+    
     case "Arrow" :
-      return ERROR//(type1.from, type2.from, context) && 
-             //check(type1.to, type2.to, context) ; 
+      
+      if (type2.type !== "Arrow") {
+        throw new Error("Type mismatch in unification");
+      }
+
+      let s1 = unify(type1.from, type2.from, context);
+      let s2 = unify(type1.to, type2.to, context);
+
+      return compose(s2, s1);
+    
     case "Builtin" :
-      return ERROR // type1.blt === type2.blt ;
+    
+      if (type1.name === type2.name) { return {} ; }
+      throw new Error("Builtin types mismatch");
+    
     case "App" :
-      return ERROR//check(type1.func, type2.func, context) && 
-             //check(type1.arg, type2.arg, context) ;
-    case "TVar" :
-      return ERROR //type1.name === type2.name;
-    case "TMetavar" :
-      return ERROR
+    
+      if (type2.type !== "App") {
+        throw new Error("Type mismatch in unification");
+      }
+
+      let s3 = unify(type1.func, type2.func, context);
+      let s4 = unify(type1.arg, type2.arg, context);
+
+      return compose(s3, s4);
+    
+      case "TVar" :
+
+      if (type2.type === "TVar" && type1.name === type2.name) { return {} ; }
+      throw new Error("Failed unification of TVar");
+
     default :
       throw new Error("Unhandeled case of type :" + type1.type);
   }
 }
+
+/**
+ * TODO
+ * @param {*} type 
+ * @param {*} context 
+ * @returns 
+ */
+function prune(type, context) {
+  if (type.type === "TMetavar") {
+    let subst = context.lookup(type.id);
+    if (subst) {
+      let pruned = prune(subst, ctx);
+      context.bind(type.id, pruned);
+      return pruned;
+    }
+  }
+  return type;
+}
+
+// todo add bind and compose
 
 /**
  * Updates the context with a list of substitutions
