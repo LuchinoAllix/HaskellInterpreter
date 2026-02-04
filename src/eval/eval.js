@@ -8,9 +8,13 @@ import * as V from "../eval/Value.js";
 //--               File for functions needed to evaluate a term             --//
 
 // Init global env
-let global_env = new Env();
-global_env.initGlobal();
+let global_env;
 let main;
+
+export function initGlobal(){
+  global_env = new Env();
+  global_env.initGlobal();
+}
 
 /**
  * Entry point of evaluation for "compiled" programs
@@ -51,38 +55,26 @@ export function initEvalComp(program){
 /**
  * Entry point of evaluation for "interactive" programs
  * @param {Program} program 
+ * @param {Env} env
  */
-export function initEvalInter(program){
-  // TODO
-}
+export function initEvalInter(program, env){
 
-/**
- * Main function to evaluate an expression
- * Would be used in evalInitInter()
- * @param {Term} term 
- * @param {Env} env 
- * @returns {V.Value}
- */
-function evaluate(term, env){
-  switch (term.metatype){
-    case "EXP" :
-      return evaluateExp(term, env);
-    case "DECL" :
-      return evaluateDecl(term, env);
-    default :
-      throw new Error("Unknown term type in evaluation : " + term.metatype);
+  let terms = program.normalizedForm;
+  if (terms.length > 1){
+    throw new Error("Only one term allowed in repl mode")
   }
-}
+  if (terms[0].metatype === 'DECL'){
+    env.add(terms[0].name,evaluateExp(terms[0].body, env));
+  } else {
+    let exp = evaluateExp(terms[0], env);
+    if (exp.type !== 'IO'){ // might not be best verification
+      const print = global_env.lookup('print');
+      print.body(exp).exec();
+    } else {
+      exp.exec()
+    }
+  }
 
-/**
- * Output function, to chose what to do with the final output of each evaluation
- * currently : just print it to the console
- * would be used in interactive mode
- * would need to verify first that the type of the value isn't IO
- * @param {?} output 
- */
-function output(output){
-  console.log(output);
 }
 
 /**
