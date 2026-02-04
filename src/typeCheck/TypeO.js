@@ -179,6 +179,7 @@ export class TMetavar extends TypeO {
     super();
     this.type = "TMetavar";
     this.name = str + num;
+    this.value = null;
   }
 }
 
