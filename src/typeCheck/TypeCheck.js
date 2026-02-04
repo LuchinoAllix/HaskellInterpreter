@@ -3,7 +3,7 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
-import { newSub, Subs, Substitution } from "./Substitution.js";
+import { newSub, Subs } from "./Substitution.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -299,10 +299,10 @@ function bindMeta(metavar, type, context){
 function compose(subs1, subs2){
   let result = new Subs();
   for (let keyS1 of Object.keys(subs1)){
-    result.add(keyS1, subs1[keyS1]);
+    result.add(keyS1, subs1.subs[keyS1]);
   }
   for (let keyS2 of Object.keys(subs2)){
-    result.add(keyS2, subs2[keyS2], true);
+    result.add(keyS2, subs2.subs[keyS2], true);
   }
   return result;
 }
@@ -316,15 +316,15 @@ function compose(subs1, subs2){
 function updateContext(context, subs){
   let clone = context.clone();
   for (let subKey of Object.keys(subs)){
-    clone.add(subKey, subs[subKey]);
+    clone.add(subKey, subs.subs[subKey]);
   }
   return clone;
 }
 
 /**
  * Unifies a list of types (1 to 1) in a given context
- * @param {T.TypeO} types1 
- * @param {T.TypeO} types2 
+ * @param {[T.TypeO]} types1 
+ * @param {[T.TypeO]} types2 
  * @param {Context} context 
  * @returns {Subs}
  */
