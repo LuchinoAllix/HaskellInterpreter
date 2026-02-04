@@ -148,7 +148,6 @@ function inferCase(exp, context){
     // verify that branches have the same type
     let substitutions2 = unify(branchTypeOutput, outputType, branchCtx);
     context = updateContext(context, substitutions2);
-
   }
 
   return substitute(outputType, context);
@@ -180,14 +179,13 @@ function instantiate(type) {
   throw new Error("TODO");
 }
 
-
 /**
  * Unifies two types in a given context by 
  * todo add examples
  * @param {T.Type0} type1 
  * @param {T.Type0} type2 
  * @param {Context} context
- * @returns {Substitution}
+ * @returns {Subs}
  */
 function unify(type1, type2, context){
 
@@ -221,7 +219,7 @@ function unify(type1, type2, context){
       let s1 = unify(type1.from, type2.from, context);
       let s2 = unify(type1.to, type2.to, context);
 
-      return compose(s2, s1);
+      return compose(s2, s1); // FIXME : not sure of order of composition
     
     case "Builtin" :
     
@@ -237,7 +235,7 @@ function unify(type1, type2, context){
       let s3 = unify(type1.arg, type2.arg, context);
       let s4 = unify(type1.func, type2.func, context);
 
-      return compose(s4, s3);
+      return compose(s4, s3); // FIXME : not sure of order of composition
     
     case "TVar" :
 
@@ -272,13 +270,13 @@ function prune(type, context) {
  * @param {T.TMetavar} metavar 
  * @param {T.TypeO} type 
  * @param {Context} context 
- * @returns {Substitution}
+ * @returns {Subs}
  */
 function bindMeta(metavar, type, context){
   type = prune(type, context);
   let exists = context.lookup(metavar.name);
   
-  if (exists) {
+  if (exists !== undefined) {
     return unify(exists, type, context);
   } if (!occursCheck()){ // todo
     throw new Error("Occurs check failed.");
@@ -287,12 +285,32 @@ function bindMeta(metavar, type, context){
   return newSub(metavar.name, type);
 }
 
-// todo add compose
+/**
+ * Composes two substitutions, like :
+ * 
+ * subs1 = { a: T1, b: T2 }
+ * subs2 = { c: a -> b, d: Int }
+ * result = { a: T1, b: T2, c: T1 -> T2, d: Int }
+ * 
+ * @param {Subs} subs1 
+ * @param {Subs} subs2 
+ * @returns {Subs}
+ */
+function compose(subs1, subs2){
+  let result = new Subs();
+  for (let keyS1 of Object.keys(subs1)){
+    result.add(keyS1, subs1[keyS1]);
+  }
+  for (let keyS2 of Object.keys(subs2)){
+    result.add(keyS2, subs2[keyS2], true);
+  }
+  return result;
+}
 
 /**
  * Updates the context with a list of substitutions
  * @param {Context} context 
- * @param {Substitution} subs 
+ * @param {Subs} subs 
  * @returns {Context}
  */
 function updateContext(context, subs){
@@ -308,7 +326,7 @@ function updateContext(context, subs){
  * @param {T.TypeO} types1 
  * @param {T.TypeO} types2 
  * @param {Context} context 
- * @returns {Substitution}
+ * @returns {Subs}
  */
 function unify_all(types1, types2, context){
   let substitutions = new Subs();
