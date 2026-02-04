@@ -30,6 +30,7 @@
         ],
         "branches": [
           {
+            "metatype": "BRANCHTERM",
             "type": "branch",
             "args": [
               {
