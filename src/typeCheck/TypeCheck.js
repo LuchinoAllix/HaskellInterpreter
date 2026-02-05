@@ -66,21 +66,6 @@ function infer(exp, context){
       return res;
   }
 }
-      
-/*  
- * Commentaire pour comprendre le fonctionnement
- * \arg -> case arg of x -> App(App(+,x),1)
- * lambda est de type t1
- * on dit que t1 est t2 -> t3
- * on dit que arg est du type t2 dans le context (cloné)
- * on dit que t3 est le type du body 
- *        -> nous dit que t3 est de type int 
- *        -> nous dit que arg est du type de x
- *        -> nous dit que x est de type int 
- * unifie que t2 est de type int par le fait que arg est du type de t2,
- * que arg est du type de x et que x est de type int
- * on sait donc que t1 est t2 -> t3, donc int -> int
- */
 
 /**
  * Function to verify that an expression has a given type, if not throws error
@@ -97,7 +82,7 @@ function check(exp, type, context){
       let to = T.freshMetavar();
 
       type.setVal(new T.TArrow(from, to));
-      clone = context.clone();
+      let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
       check(exp.body, to, clone);
 
@@ -137,11 +122,12 @@ function check(exp, type, context){
  */
 function unify(type1, type2){
   //todo
+  throw new Error("TODO");
 }
 
 /**
  * Verifies that each pattern is of it's corresponding type
- * Modifies the metavars's values
+ * Modifies the metavars's values or the context (for variables)
  * Most of the time the patterns is a list of one element, but for functions
  * it can be more
  * @param {[Exp]} patterns 
@@ -152,15 +138,15 @@ function checkPatterns(patterns, patternsTypes, context){
   for (let i = 0; i < patterns.length; i ++){
     switch(patterns[i].type){
       case "var" :
-        // todo
+        context.add(patterns[i].name, patternsTypes[i]);
         break;
 
       case "immediate" :
-        // todo
+        patternsTypes[i].setVal(inferImmediate(patterns[i]));
         break;
 
       case "funcitonApp" :
-        // todo
+        patternsTypes[i].setVal(inferFunctionApp(patterns[i], context));
         break
       
       default :
@@ -171,16 +157,20 @@ function checkPatterns(patterns, patternsTypes, context){
 }
 
 /**
- * 
+ * returns the type of the application of a function on an argument
+ * Examples :
+ *     app(+,x) returns arrow(int, int)
+ *     app(app(+,x),1) returns int
  * @param {Exp} exp 
  * @param {Context} context 
- * @returns {?}
+ * @returns {T.TypeO}
  */
 function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
   let targ = infer(exp.arg, context);
-  
-  throw new Error("TODO");
+  let res = T.freshMetavar();
+  unify(tfun, new T.TArrow(targ, res));
+  return res;
 }
 
 /**
@@ -191,6 +181,7 @@ function inferFunctionApp(exp, context){
  */
 function inferVar(exp, context){
   const type = lookupGlobalLocalContext(context, exp.name);
+  return type;
   return instantiate(type); // todo instantiate
 }
 
@@ -222,14 +213,6 @@ function inferLet(exp, context){
 function inferIf(exp, context){
   throw new Error("TODO");
 }
-
-
-function check(exp, type, context){
-  let new_type = infer(exp, context);
-  return type == new_type;
-}
-
-
 
 /**
  * Lookup but inside the global environment and a local one given
