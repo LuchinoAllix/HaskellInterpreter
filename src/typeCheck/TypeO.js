@@ -181,6 +181,14 @@ export class TMetavar extends TypeO {
     this.name = str + num;
     this.value = null;
   }
+
+  /**
+   * Setter for the value attribut of the metavar
+   * @param {TypeO} type 
+   */
+  setVal(type){
+    this.value = type;
+  }
 }
 
 /**
