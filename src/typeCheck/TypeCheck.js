@@ -35,7 +35,7 @@ export function typeCheck(program){
 }
 
 /**
- * TODO
+ * Determines the type of an expression in a given context
  * @param {Exp} exp
  * @param {Context} context
  * @returns {TypeO}
@@ -83,8 +83,8 @@ function infer(exp, context){
  */
 
 /**
- * Throws error if type is not compatible
- * Side effect : modifies the metavar value 
+ * Function to verify that an expression has a given type, if not throws error
+ * Side effect : modifies the metavar's value 
  * @param {Exp} exp 
  * @param {T.TypeO} type 
  * @param {Context} context 
@@ -129,6 +129,7 @@ function check(exp, type, context){
 }
 
 /**
+ * todo
  * Throws error if not compatible 
  * Side effect : modifies the metavar value 
  * @param {T.TypeO} type1 
@@ -139,12 +140,33 @@ function unify(type1, type2){
 }
 
 /**
- * 
+ * Verifies that each pattern is of it's corresponding type
+ * Modifies the metavars's values
+ * Most of the time the patterns is a list of one element, but for functions
+ * it can be more
  * @param {[Exp]} patterns 
  * @param {[Type]} patternsTypes 
  * @param {Context} context 
  */
 function checkPatterns(patterns, patternsTypes, context){
+  for (let i = 0; i < patterns.length; i ++){
+    switch(patterns[i].type){
+      case "var" :
+        // todo
+        break;
+
+      case "immediate" :
+        // todo
+        break;
+
+      case "funcitonApp" :
+        // todo
+        break
+      
+      default :
+        throw new Error("Unhandeled case in checkPatterns");
+    }
+  }
   throw new Error("TODO");
 }
 
