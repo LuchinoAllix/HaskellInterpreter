@@ -3,7 +3,6 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
-import { newSub, Subs } from "./Substitution.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -80,8 +79,11 @@ function check(exp, type, context){
       let to = T.freshMetavar();
       type.setVal(new T.TArrow(from, to));
       clone = context.clone();
-      clone.add(exp.namedArg.name, from);
+      clone.add(from); // comment indique que t2 est du type de arg si on ne 
+                       // connait pas le type de arg ? métavar ?
       check(exp.body, to, clone); // met à jour to
+
+      unify() // ??
       
       // \arg -> case arg of x -> App(App(+,x),1)
       // lambda est de type t1
@@ -95,12 +97,15 @@ function check(exp, type, context){
       // que arg est du type de x et que x est de type int
       // on sait donc que t1 est t2 -> t3, donc int -> int
 
-      
-
     case 'case' :
-      //todo
+      // on a une exp case, un type attendu (metavar) et un context
+      // on doit inférer le type de chaque branche, déterminer le type des 
+      // motifs (avec un check ?)
+      // on doit modifier la metavar donné en paramètre comme étant le type
+      // de retour des branches 
+      
     default :
-      return infer(exp, context);
+      return infer(exp, context); // ?
   }
 }
 
