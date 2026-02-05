@@ -77,7 +77,7 @@ export class FunctionApp extends Exp {
   /**
    * Creates an application function expression for function 
    * @param {Term} func function to call, var or actual body (exp)
-   * @param {Exp} arg Arguments given to the function 
+   * @param {Exp} arg argument given to the function 
    * @param {[Int]} info information relative to the postition of the origin 
    *                     (line / column) of the token
    */
@@ -168,7 +168,6 @@ export class CaseExp extends Exp {
     this.branches = branches;
     this.info = info;
   }
-
 }
 
 /**
