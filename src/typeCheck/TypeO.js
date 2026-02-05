@@ -189,6 +189,21 @@ export class TMetavar extends TypeO {
   setVal(type){
     this.value = type;
   }
+
+  /**
+   * Returns the most advanced know type for a metavar (follows the value)
+   */
+  resolve(){
+    // How to we prevent infinite cycles like t2 -> t3 -> t2 ? #HELP
+    
+    if (this.value === null) return this;
+
+    if (this.value.isMetavar() && this.value.value !== null){
+      return this.value.resolve();
+    }
+
+    return this.value;
+  }
 }
 
 /**
