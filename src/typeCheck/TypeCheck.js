@@ -60,10 +60,27 @@ function infer(exp, context){
       return inferIf(exp, context);
           
     default :
-      check(exp, T.freshMetavar(), context);
-      return //?
+      // #HELP is this the way to go for default ?
+      let res = T.freshMetavar();
+      check(exp, res, context);
+      return res;
   }
 }
+      
+/*  
+ * Commentaire pour comprendre le fonctionnement
+ * \arg -> case arg of x -> App(App(+,x),1)
+ * lambda est de type t1
+ * on dit que t1 est t2 -> t3
+ * on dit que arg est du type t2 dans le context (cloné)
+ * on dit que t3 est le type du body 
+ *        -> nous dit que t3 est de type int 
+ *        -> nous dit que arg est du type de x
+ *        -> nous dit que x est de type int 
+ * unifie que t2 est de type int par le fait que arg est du type de t2,
+ * que arg est du type de x et que x est de type int
+ * on sait donc que t1 est t2 -> t3, donc int -> int
+ */
 
 /**
  * Throws error if type is not compatible
@@ -75,37 +92,39 @@ function infer(exp, context){
 function check(exp, type, context){
   switch (exp.type){
     case 'LambdaExp' :
+
       let from = T.freshMetavar();
       let to = T.freshMetavar();
+
       type.setVal(new T.TArrow(from, to));
       clone = context.clone();
-      clone.add(from); // comment indique que t2 est du type de arg si on ne 
-                       // connait pas le type de arg ? métavar ?
-      check(exp.body, to, clone); // met à jour to
+      clone.add(exp.namedArg.name, from); 
+      check(exp.body, to, clone);
 
-      unify() // ??
-      
-      // \arg -> case arg of x -> App(App(+,x),1)
-      // lambda est de type t1
-      // on dit que t1 est t2 -> t3
-      // on dit que t2 est du type de arg dans le context (cloné)
-      // on dit que t3 est le type du body 
-      //        -> nous dit que t3 est de type int 
-      //        -> nous dit que arg est du type de x
-      //        -> nous dit que x est de type int 
-      // unifie que t2 est de type int par le fait que t2 est du type de arg,
-      // que arg est du type de x et que x est de type int
-      // on sait donc que t1 est t2 -> t3, donc int -> int
+      break;
 
     case 'case' :
-      // on a une exp case, un type attendu (metavar) et un context
-      // on doit inférer le type de chaque branche, déterminer le type des 
-      // motifs (avec un check ?)
-      // on doit modifier la metavar donné en paramètre comme étant le type
-      // de retour des branches 
-      
+
+      // Args of the case (multiple for functions)
+
+      let argsType = [];
+
+      for (let i = 0; i < exp.exps.length; i ++){
+        argsType.push(T.freshMetavar());
+        check(exp.exps[i], argsType[i], context); 
+      }
+
+      for (branch of exp.branches){
+        let branchCtx = context.clone();
+        checkPatterns(branch.args, argsType, branchCtx);
+        check(branch.body, type, branchCtx);
+      }
+
+      break;
+
     default :
-      return infer(exp, context); // ?
+      // #HELP is this the way to go for default ?
+      unify(infer(exp, context), type);
   }
 }
 
@@ -121,11 +140,24 @@ function unify(type1, type2){
 
 /**
  * 
+ * @param {[Exp]} patterns 
+ * @param {[Type]} patternsTypes 
+ * @param {Context} context 
+ */
+function checkPatterns(patterns, patternsTypes, context){
+  throw new Error("TODO");
+}
+
+/**
+ * 
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {?}
  */
 function inferFunctionApp(exp, context){
+  let tfun = infer(exp.func, context);
+  let targ = infer(exp.arg, context);
+  
   throw new Error("TODO");
 }
 
@@ -137,7 +169,7 @@ function inferFunctionApp(exp, context){
  */
 function inferVar(exp, context){
   const type = lookupGlobalLocalContext(context, exp.name);
-  return instantiate(type);
+  return instantiate(type); // todo instantiate
 }
 
 /**
