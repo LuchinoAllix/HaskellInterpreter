@@ -68,6 +68,7 @@ function infer(exp, context){
 
 /**
  * Throws error if type is not compatible
+ * Side effect : modifies the metavar value 
  * @param {Exp} exp 
  * @param {T.TypeO} type 
  * @param {Context} context 
@@ -75,7 +76,27 @@ function infer(exp, context){
 function check(exp, type, context){
   switch (exp.type){
     case 'LambdaExp' :
-      //todo
+      let from = T.freshMetavar();
+      let to = T.freshMetavar();
+      type.setVal(new T.TArrow(from, to));
+      clone = context.clone();
+      clone.add(exp.namedArg.name, from);
+      check(exp.body, to, clone); // met à jour to
+      
+      // \arg -> case arg of x -> App(App(+,x),1)
+      // lambda est de type t1
+      // on dit que t1 est t2 -> t3
+      // on dit que t2 est du type de arg dans le context (cloné)
+      // on dit que t3 est le type du body 
+      //        -> nous dit que t3 est de type int 
+      //        -> nous dit que arg est du type de x
+      //        -> nous dit que x est de type int 
+      // unifie que t2 est de type int par le fait que t2 est du type de arg,
+      // que arg est du type de x et que x est de type int
+      // on sait donc que t1 est t2 -> t3, donc int -> int
+
+      
+
     case 'case' :
       //todo
     default :
