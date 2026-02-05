@@ -48,7 +48,7 @@ function infer(exp, context){
       return inferFunctionApp(exp, context);
     
     case 'var' :
-      return inferVar(exp, context);
+      return lookupGlobalLocalContext(context, exp.name);
       
     case 'immediate' :
       return inferImmediate(exp);
@@ -81,7 +81,7 @@ function check(exp, type, context){
       let from = T.freshMetavar();
       let to = T.freshMetavar();
 
-      type.setVal(new T.TArrow(from, to));
+      type.setVal(new T.TArrow(from, to)); //#HELP should this be unify ?
       let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
       check(exp.body, to, clone);
@@ -114,15 +114,57 @@ function check(exp, type, context){
 }
 
 /**
- * todo
+ * Unifies two types, for example :
+ *     - we have (a -> a) and int
+ *     - therefore a must be type int (since application)
+ *     - thus return type will also be int (the metavar a's value will be 
+ *       updated)
+ * 
  * Throws error if not compatible 
  * Side effect : modifies the metavar value 
- * @param {T.TypeO} type1 
- * @param {T.TypeO} type2 
+ * @param {T.TypeO} t1 
+ * @param {T.TypeO} t2 
  */
-function unify(type1, type2){
-  //todo
-  throw new Error("TODO");
+function unify(t1, t2){
+  t1 = t1.resolve();
+  t2 = t2.resolve();
+
+  if(t1.isMetavar()){
+    occursCheck(t1, t2);
+    t1.setVal(t2);
+  } else if (t2.isMetavar()){
+    occursCheck(t2, t1);
+    t2.setVal(t1);
+  } else if (t1.isArrow() && t2.isArrow()){
+    unify(t1.from, t2.from);
+    unify(t1.to, t2.to);
+  } else if (t1.type === t2.type){
+    // do nothing
+  } else {
+    throw new Error(`Unification failed on terms ${t1} and ${t2}`);
+  }
+}
+
+/**
+ * Verifies that a type doesn't appear in it's own definition to prevent 
+ * recursive definition
+ * @param {T.TMetavar} t1 
+ * @param {T.TypeO} t2 
+ */
+function occursCheck(t1, t2){
+
+  if (t2.isMetavar()){
+    t2 = t2.resolve()
+  }
+
+  if (t2.isMetavar() && t1.name === t2.name){ 
+    // #HELP not sure this is the right way of doing things
+    throw new Error(`Recursive definition detected between ${t1} and ${t2}`);
+  } else if (t2.isArrow()){
+    occursCheck(t1, t2.from);
+    occursCheck(t1, t2.to);
+  }
+
 }
 
 /**
@@ -143,17 +185,18 @@ function checkPatterns(patterns, patternsTypes, context){
 
       case "immediate" :
         patternsTypes[i].setVal(inferImmediate(patterns[i]));
+        // #HELP should this be unify() ?
         break;
 
       case "funcitonApp" :
         patternsTypes[i].setVal(inferFunctionApp(patterns[i], context));
+        // #HELP should this be unify() ?
         break
       
       default :
         throw new Error("Unhandeled case in checkPatterns");
     }
   }
-  throw new Error("TODO");
 }
 
 /**
