@@ -1,3 +1,19 @@
 https://stackoverflow.com/questions/8274650/in-haskell-when-do-we-use-in-with-let
 
 https://stackoverflow.com/questions/29285897/difference-between-for-in-and-for-of-statements
+
+
+/*  
+ * Commentaire pour comprendre le fonctionnement
+ * \arg -> case arg of x -> App(App(+,x),1)
+ * lambda est de type t1
+ * on dit que t1 est t2 -> t3
+ * on dit que arg est du type t2 dans le context (cloné)
+ * on dit que t3 est le type du body 
+ *        -> nous dit que t3 est de type int 
+ *        -> nous dit que arg est du type de x
+ *        -> nous dit que x est de type int 
+ * unifie que t2 est de type int par le fait que arg est du type de t2,
+ * que arg est du type de x et que x est de type int
+ * on sait donc que t1 est t2 -> t3, donc int -> int
+ */
