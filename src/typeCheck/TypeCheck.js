@@ -99,10 +99,10 @@ function check(exp, type, context){
         check(exp.exps[i], argsType[i], context); 
       }
 
-      for (branch of exp.branches){
+      for (let branch of exp.branches){
         let branchCtx = context.clone();
         checkPatterns(branch.args, argsType, branchCtx);
-        check(branch.body, type, branchCtx);
+        check(branch.branchBody, type, branchCtx);
       }
 
       break;
@@ -126,8 +126,14 @@ function check(exp, type, context){
  * @param {T.TypeO} t2 
  */
 function unify(t1, t2){
-  t1 = t1.resolve();
-  t2 = t2.resolve();
+  
+  if(t1.isMetavar()){
+    t1 = t1.resolve();
+  }
+
+  if (t2.isMetavar()){
+    t2 = t2.resolve();
+  }
 
   if(t1.isMetavar()){
     occursCheck(t1, t2);
