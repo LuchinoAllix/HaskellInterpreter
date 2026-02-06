@@ -158,7 +158,9 @@ function unify(t1, t2){
   } else if (t1.type === t2.type){
     // do nothing
   } else {
-    throw new Error(`Unification failed on terms ${t1} and ${t2}`);
+    throw new Error(`Unification failed on terms 
+      ${JSON.stringify(t1, null, 2)} \n\nand 
+      ${JSON.stringify(t2, null, 2)}`);
   }
 }
 
