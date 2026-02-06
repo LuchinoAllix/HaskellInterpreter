@@ -42,6 +42,9 @@ export function typeCheck(program){
   return true;
 }
 
+// Test 2 works on it's own but not in sequence of tests FIXME
+// Perhaps in the instanciation of var in print ?  
+
 /**
  * Determines the type of an expression in a given context
  * @param {Exp} exp
