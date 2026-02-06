@@ -24,12 +24,18 @@ export function typeCheck(program){
     if (decl.name === "main"){
       main = decl;
     } else {
-      global_context.add(decl.name, infer(decl.body, new Context()));
+      if (decl.isAnnotated()){
+        global_context.add(decl.name, decl.typeAnnotation);  
+      } else {
+        global_context.add(decl.name, infer(decl.body, new Context()));
+      }
     }
   }
 
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
+
+  // can main have a type annotation ?
   //todo add verification on main type IO
 
   return true;
