@@ -31,7 +31,7 @@ export function typeCheck(program){
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
   //todo add verification on main type IO
-  
+
   return true;
 }
 
@@ -145,6 +145,10 @@ function unify(t1, t2){
   } else if (t1.isArrow() && t2.isArrow()){
     unify(t1.from, t2.from);
     unify(t1.to, t2.to);
+  } else if (t1.isForAll()){
+    unify(t1.body, t2);
+  } else if (t2.isForAll()){
+    unify(t1, t2.body);
   } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
             t2.isBuiltin() && t2.blt === "EmptyList"){
     // do nothing
