@@ -25,7 +25,8 @@ export function typeCheck(program){
       main = decl;
     } else {
       if (decl.isAnnotated()){
-        global_context.add(decl.name, decl.typeAnnotation);  
+        global_context.add(decl.name, decl.typeAnnotation);
+        // should the type annotation be verified in any way ? surely
       } else {
         global_context.add(decl.name, infer(decl.body, new Context()));
       }
