@@ -59,19 +59,29 @@ function infer(exp, context){
       return inferFunctionApp(exp, context);
     
     case 'var' :
+      // FIXME: Once you add the "let-generalization" that introduces
+      // forall, you'll need here to "un-forall" the type.
+      // E.g. if the lookup returns `∀α,β. (α→β) → List α → List β`
+      // you'll want to return the type `(T1→T2) → List T1 → List T2`,
+      // where T1 and T2 are fresh new metavars.
       return lookupGlobalLocalContext(context, exp.name);
       
     case 'immediate' :
+      // FIXME: In general immedates may have a "forall" type and thus
+      // require a similar treatment as described above.
       return inferImmediate(exp);
 
     case 'let' :
       return inferLet(exp, context);
-        
+
+    // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
+    // it to `case`.
     case 'if' :
       return inferIf(exp, context);
           
     default :
       // #HELP is this the way to go for default ?
+      // FIXME: Yup, LGTM.
       let res = T.freshMetavar();
       check(exp, res, context);
       return res;
@@ -91,7 +101,9 @@ function check(exp, type, context){
 
       let from = T.freshMetavar();
       let to = T.freshMetavar();
-
+      // FIXME: Clearly `setVal` is wrong because it throws away the previous
+      // information.  Instead, you should use the same "mini-unify" as in
+      // `inferFunctionApp`.
       type.setVal(new T.TArrow(from, to)); //#HELP should this be unify ?
       let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
@@ -106,6 +118,7 @@ function check(exp, type, context){
       let argsType = [];
 
       for (let i = 0; i < exp.exps.length; i ++){
+        // FIXME: Always prefer `infer` over `freshMetavar+check`.
         argsType.push(T.freshMetavar());
         check(exp.exps[i], argsType[i], context); 
       }
@@ -118,8 +131,12 @@ function check(exp, type, context){
 
       break;
 
+    // FIXME: You may want to add a `checkLet` as well.
+    // It's not indispensible, but it can reduce the number of metavars.
+
     default :
       // #HELP is this the way to go for default ?
+      // FIXME: Yup, LGTM.
       unify(infer(exp, context), type);
   }
 }
@@ -155,19 +172,30 @@ function unify(t1, t2){
   } else if (t1.isArrow() && t2.isArrow()){
     unify(t1.from, t2.from);
     unify(t1.to, t2.to);
+  // FIXME: Actually, we should never need to unify foralls and if we had
+  // to, we'd need to do it more like for arrows, (i.e. make sure)
+  // both sides are foralls.
+  // The types received by `check` and returned by `infer` should never
+  // contains foralls.  Foralls appear only in the type of variables
+  // in the context.
   } else if (t1.isForAll()){
     unify(t1.body, t2);
   } else if (t2.isForAll()){
     unify(t1, t2.body);
+  // FIXME: No need to treat `List` specially.
+  // FIXME: What is this `EmptyList` type?
   } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
             t2.isBuiltin() && t2.blt === "EmptyList"){
     // do nothing
   }else if(t2.isApp() && t2.func.isBuiltin() && t2.func.blt === "List" &&
             t1.isBuiltin() && t1.blt === "EmptyList"){
     // do nothing
+  // FIXME: I think this "base case" needs to come earlier, e.g. to avoid
+  // an occurs check failure when unifying a metavar with itself.
   } else if (t1.type === t2.type){
     // do nothing
   } else {
+    // FIXME: These are "terms" in the type language, so call them "types"?
     throw new Error(`Unification failed on terms 
       ${JSON.stringify(t1, null, 2)} \n\nand 
       ${JSON.stringify(t2, null, 2)}`);
@@ -186,13 +214,17 @@ function occursCheck(t1, t2){
     t2 = t2.resolve()
   }
 
+  // FIXME: Why not compare `t1 === t2` rather than comparing their names?
   if (t2.isMetavar() && t1.name === t2.name){ 
     // #HELP not sure this is the right way of doing things
+    // FIXME: That looks OK.  Not sure if "Recursive definition" is the
+    // best explanation, but it'll do for now.
     throw new Error(`Recursive definition detected between ${t1} and ${t2}`);
   } else if (t2.isArrow()){
     occursCheck(t1, t2.from);
     occursCheck(t1, t2.to);
   }
+  // FIXME: What about App?
 
 }
 
@@ -215,11 +247,15 @@ function checkPatterns(patterns, patternsTypes, context){
       case "immediate" :
         patternsTypes[i].setVal(inferImmediate(patterns[i]));
         // #HELP should this be unify() ?
+        // FIXME: Yup.
         break;
 
-      case "funcitonApp" :
+    case "funcitonApp" :      // FIXME: Typo?
+        // FIXME: This won't work: you're passing to `inferFunctionApp`
+        // a pattern rather than an expression.
         patternsTypes[i].setVal(inferFunctionApp(patterns[i], context));
         // #HELP should this be unify() ?
+        // FIXME: Yup.
         break
       
       default :
@@ -239,7 +275,13 @@ function checkPatterns(patterns, patternsTypes, context){
  */
 function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
+  // FIXME: Nah, in general it's better to *check* the argument because
+  // in most cases `tfun` already give you its type.
   let targ = infer(exp.arg, context);
+  // It's worth writing an ad-hoc "mini-unify" function for this case,
+  // since in most cases `tfun` will already be an arrow type and all
+  // we want is to *extract* the two types it carries without creating
+  // any new metavariables.
   let res = T.freshMetavar();
   unify(tfun, new T.TArrow(targ, res));
   return res;

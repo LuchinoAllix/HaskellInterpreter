@@ -195,10 +195,13 @@ export class TMetavar extends TypeO {
    */
   resolve(){
     // How to we prevent infinite cycles like t2 -> t3 -> t2 ? #HELP
+    // FIXME: The occurs check should do that for us.
     
     if (this.value === null) return this;
 
     if (this.value.isMetavar() && this.value.value !== null){
+      // FIXME: `this.value.resolve()` will redo the null test,
+      // which is a bit inelegant.
       return this.value.resolve();
     }
 
