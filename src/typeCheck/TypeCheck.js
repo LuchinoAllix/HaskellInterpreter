@@ -150,15 +150,10 @@ function check(exp, type, context){
  */
 function unify(t1, t2){
   
-  if(t1.isMetavar()){
-    t1 = t1.resolve();
-  }
+  if (t1.isMetavar()){ t1 = t1.resolve() ; }
+  if (t2.isMetavar()){ t2 = t2.resolve() ; }
 
-  if (t2.isMetavar()){
-    t2 = t2.resolve();
-  }
-
-  if(t1.isMetavar()){
+  if (t1.isMetavar()){
     occursCheck(t1, t2);
     t1.setVal(t2);
   } else if (t2.isMetavar()){
@@ -167,6 +162,7 @@ function unify(t1, t2){
   } else if (t1.isArrow() && t2.isArrow()){
     unify(t1.from, t2.from);
     unify(t1.to, t2.to);
+
   // FIXME: Actually, we should never need to unify foralls and if we had
   // to, we'd need to do it more like for arrows, (i.e. make sure)
   // both sides are foralls.
@@ -177,6 +173,7 @@ function unify(t1, t2){
     unify(t1.body, t2);
   } else if (t2.isForAll()){
     unify(t1, t2.body);
+
   // FIXME: No need to treat `List` specially.
   // FIXME: What is this `EmptyList` type?
   } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
@@ -185,13 +182,13 @@ function unify(t1, t2){
   }else if(t2.isApp() && t2.func.isBuiltin() && t2.func.blt === "List" &&
             t1.isBuiltin() && t1.blt === "EmptyList"){
     // do nothing
+  
   // FIXME: I think this "base case" needs to come earlier, e.g. to avoid
   // an occurs check failure when unifying a metavar with itself.
   } else if (t1.type === t2.type){
     // do nothing
   } else {
-    // FIXME: These are "terms" in the type language, so call them "types"?
-    throw new Error(`Unification failed on terms 
+    throw new Error(`Unification failed on types : 
       ${JSON.stringify(t1, null, 2)} \n\nand 
       ${JSON.stringify(t2, null, 2)}`);
   }
@@ -209,8 +206,7 @@ function occursCheck(t1, t2){
     t2 = t2.resolve();
   }
 
-  // FIXME: Why not compare `t1 === t2` rather than comparing their names?
-  if (t2.isMetavar() && t1.name === t2.name){ 
+  if (t2.isMetavar() && t1 === t2){ 
     throw new Error(`Recursive definition detected between ${t1} and ${t2}`);
   } else if (t2.isArrow()){
     occursCheck(t1, t2.from);
