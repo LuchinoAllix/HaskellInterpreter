@@ -76,12 +76,11 @@ function infer(exp, context){
 
     // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
     // it to `case`.
+    // Should this be used in evaluation ?
     case 'if' :
-      return inferIf(exp, context);
+      return infer(ifToCase(exp), context);
           
     default :
-      // #HELP is this the way to go for default ?
-      // FIXME: Yup, LGTM.
       let res = T.freshMetavar();
       check(exp, res, context);
       return res;
@@ -118,9 +117,7 @@ function check(exp, type, context){
       let argsType = [];
 
       for (let i = 0; i < exp.exps.length; i ++){
-        // FIXME: Always prefer `infer` over `freshMetavar+check`.
-        argsType.push(T.freshMetavar());
-        check(exp.exps[i], argsType[i], context); 
+        argsType.push(infer(exp.exps[i], context)); 
       }
 
       for (let branch of exp.branches){
@@ -135,8 +132,6 @@ function check(exp, type, context){
     // It's not indispensible, but it can reduce the number of metavars.
 
     default :
-      // #HELP is this the way to go for default ?
-      // FIXME: Yup, LGTM.
       unify(infer(exp, context), type);
   }
 }
@@ -211,14 +206,11 @@ function unify(t1, t2){
 function occursCheck(t1, t2){
 
   if (t2.isMetavar()){
-    t2 = t2.resolve()
+    t2 = t2.resolve();
   }
 
   // FIXME: Why not compare `t1 === t2` rather than comparing their names?
   if (t2.isMetavar() && t1.name === t2.name){ 
-    // #HELP not sure this is the right way of doing things
-    // FIXME: That looks OK.  Not sure if "Recursive definition" is the
-    // best explanation, but it'll do for now.
     throw new Error(`Recursive definition detected between ${t1} and ${t2}`);
   } else if (t2.isArrow()){
     occursCheck(t1, t2.from);
@@ -250,7 +242,7 @@ function checkPatterns(patterns, patternsTypes, context){
         // FIXME: Yup.
         break;
 
-    case "funcitonApp" :      // FIXME: Typo?
+    case "functionApp" :
         // FIXME: This won't work: you're passing to `inferFunctionApp`
         // a pattern rather than an expression.
         patternsTypes[i].setVal(inferFunctionApp(patterns[i], context));
