@@ -231,13 +231,11 @@ function checkPatterns(patterns, patternsTypes, context){
     switch(patterns[i].type){
       case "var" :
         context.add(patterns[i].name, patternsTypes[i]);
-        break;
+        break ;
 
       case "immediate" :
-        patternsTypes[i].setVal(inferImmediate(patterns[i]));
-        // #HELP should this be unify() ?
-        // FIXME: Yup.
-        break;
+        unify(patternsTypes[i], inferImmediate(patterns[i]));
+        break; 
 
     case "functionApp" :
         // FIXME: This won't work: you're passing to `inferFunctionApp`
