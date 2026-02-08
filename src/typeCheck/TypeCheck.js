@@ -237,12 +237,11 @@ function checkPatterns(patterns, patternsTypes, context){
         unify(patternsTypes[i], inferImmediate(patterns[i]));
         break; 
 
-    case "functionApp" :
+      case "functionApp" :
         // FIXME: This won't work: you're passing to `inferFunctionApp`
         // a pattern rather than an expression.
-        patternsTypes[i].setVal(inferFunctionApp(patterns[i], context));
-        // #HELP should this be unify() ?
-        // FIXME: Yup.
+        // But patterns are a list of expressions (coming from check function)
+        unify(patternsTypes[i],inferFunctionApp(patterns[i], context));
         break
       
       default :
