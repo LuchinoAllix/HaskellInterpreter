@@ -44,7 +44,8 @@ export function typeCheck(program){
 }
 
 // Test 2 works on it's own but not in sequence of tests FIXME
-// Perhaps in the instanciation of var in print ?  
+// Perhaps in the instanciation of var in print ? 
+// Same with test  12, 13, ...
 
 /**
  * Determines the type of an expression in a given context
