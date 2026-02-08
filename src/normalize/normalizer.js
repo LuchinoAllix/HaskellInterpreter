@@ -837,7 +837,7 @@ function normalizeCurr(node){
 export function ifToCase(ifExp){
   return new CaseExp(
     [ifExp.condition],
-    [ new Branch([new ImExp("True", "Boolean")], ifExp.success),
-      new Branch([new ImExp("False", "Boolean")], ifExp.fail)],
+    [ new Branch([new ImExp("True", "Bool")], ifExp.success),
+      new Branch([new ImExp("False", "Bool")], ifExp.fail)],
     ifExp.info);
 }
