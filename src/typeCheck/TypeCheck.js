@@ -3,6 +3,7 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
+import { ifToCase } from "../normalize/normalizer.js";
 
 //--        File containing functions to type check the program             --//
 
