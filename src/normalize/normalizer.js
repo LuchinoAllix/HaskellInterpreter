@@ -827,3 +827,17 @@ function normalizeCurr(node){
   return makeFuncAppOfList(new VarExp(node.childs[plus].value,
     [node.childs[plus].line, node.childs[plus].column]), args);
 }
+
+/**
+ * Transforms an if expression into a case expression.
+ * Used in type inference.
+ * @param {IfExp} ifExp
+ * @returns {CaseExp} 
+ */
+export function ifToCase(ifExp){
+  return new CaseExp(
+    [ifExp.condition],
+    [ new Branch([new ImExp("True", "Boolean")], ifExp.success),
+      new Branch([new ImExp("False", "Boolean")], ifExp.fail)],
+    ifExp.info);
+}
