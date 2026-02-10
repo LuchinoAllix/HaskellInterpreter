@@ -21,6 +21,7 @@ global_context.initGlobal();
 export function typeCheck(program){
   resetGlobalContext();
   let main 
+  //console.log(JSON.stringify(global_context.lookup("print"), null, 2));
   for (let decl of program.normalizedForm){
     if (decl.name === "main"){
       main = decl;
@@ -36,6 +37,7 @@ export function typeCheck(program){
 
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
+  console.log(JSON.stringify(global_context.lookup("id"), null, 2));
 
   // can main have a type annotation ?
   //todo add verification on main type IO
@@ -262,8 +264,15 @@ function checkPatterns(patterns, patternsTypes, context){
  */
 function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
-  // FIXME: Nah, in general it's better to *check* the argument because
-  // in most cases `tfun` already give you its type.
+  
+  if (tfun.isArrow()){
+    // FIXME: Nah, in general it's better to *check* the argument because
+    // in most cases `tfun` already give you its type.
+    check(exp.arg, tfun.from, context);
+    return tfun.to;
+  } 
+
+  
   let targ = infer(exp.arg, context);
   // It's worth writing an ad-hoc "mini-unify" function for this case,
   // since in most cases `tfun` will already be an arrow type and all
