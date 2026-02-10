@@ -38,6 +38,7 @@ export function typeCheck(program){
     }
   }
 
+  console.log(global_context.lookup("id"));
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
 
@@ -108,6 +109,11 @@ function check(exp, type, context){
       // information.  Instead, you should use the same "mini-unify" as in
       // `inferFunctionApp`.
       // ANS : ???
+
+      // This should introduce a forall if from does not get instanciated
+      // it should not be setVal, cos the type might already be instanciated
+      // (function declaration on multiple line)
+      // so it should be unify 
       type.setVal(new T.TArrow(from, to)); //#HELP should this be unify ?
       let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
@@ -283,7 +289,8 @@ function inferFunctionApp(exp, context){
 }
 
 /**
- * 
+ * Determines the type of a varibale by looking up in the context, and 
+ * instantiating it if it is a forall type.
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TypeO}
@@ -297,7 +304,7 @@ function inferVar(exp, context){
  * Instantiate the type, if it's a forall return it's body where the metavar is 
  * swapped for a fresh one, otherwise the the the type returned as is.
  * @param {T.TypeO} type 
- * @param {{String, T.TMetavar}} dict 
+ * @param {{String: T.TMetavar}} dict 
  * @returns {T.TypeO}
  */
 function instantiate(type, dict){
@@ -337,7 +344,8 @@ function inferImmediate(exp){
 }
 
 /**
- * 
+ * Determines the type of the declarations of a let by adding them to a local
+ * context and returning the type of the body in said context.
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TypeO}
