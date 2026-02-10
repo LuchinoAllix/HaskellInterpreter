@@ -324,8 +324,8 @@ function isGoodResult(expected, actual, verbose){
     if (expected[i] !== actual[i]){
       if ((expected[i] !== actual[i].toString())){
         if (verbose){
-          console.log(actual[i])
-          console.log(expected[i] + " !== " + actual[i]);
+          console.log("(expected) " + expected[i] + " !== " + actual[i] + 
+            " (received)");
         }
         return false;
       }
