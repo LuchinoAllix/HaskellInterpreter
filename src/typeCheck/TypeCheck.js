@@ -332,16 +332,6 @@ function inferLet(exp, context){
 }
 
 /**
- * 
- * @param {Exp} exp 
- * @param {Context} context 
- * @returns {?}
- */
-function inferIf(exp, context){
-  throw new Error("TODO");
-}
-
-/**
  * Lookup but inside the global environment and a local one given
  * @param {Context} context 
  * @param {String} name 
