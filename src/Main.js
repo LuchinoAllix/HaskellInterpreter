@@ -321,11 +321,11 @@ function isGoodResult(expected, actual, verbose){
 
   for (let i = 0; i < expected.length; i++ ){
     expected[i] = expected[i].trimEnd();
-    if (expected[i] != actual[i]){
-      if ((expected[i] != actual[i].toString())){
+    if (expected[i] !== actual[i]){
+      if ((expected[i] !== actual[i].toString())){
         if (verbose){
           console.log(actual[i])
-          console.log(expected[i] + " != " + actual[i]);
+          console.log(expected[i] + " !== " + actual[i]);
         }
         return false;
       }
