@@ -28,6 +28,10 @@ export function typeCheck(program){
       if (decl.isAnnotated()){
         global_context.add(decl.name, decl.typeAnnotation);
         // should the type annotation be verified in any way ? surely
+        // FIXME : what strategy should we adopt ?
+        // eg : x :: (Int, Int)
+        //      x = (1, False)
+        //      main = print (snd x)
       } else {
         global_context.add(decl.name, infer(decl.body, new Context()));
       }
@@ -62,6 +66,7 @@ function infer(exp, context){
       // E.g. if the lookup returns `∀α,β. (α→β) → List α → List β`
       // you'll want to return the type `(T1→T2) → List T1 → List T2`,
       // where T1 and T2 are fresh new metavars.
+      // ANS : I have this case without the "let-generalisation"
       return inferVar(exp, context);
       
     case 'immediate' :
@@ -152,20 +157,22 @@ function unify(t1, t2){
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
-  // "Base case" is verified first to avoid an occurs check failure when 
-  // unifying a metavar with itself
-
-  if (tmpt1.type === tmpt2.type){
+  if (tmpt1.isApp() && tmpt2.isApp()){
+    unify(tmpt1.func, tmpt2.func);
+    unify(tmpt1.arg, tmpt2.arg);
+  } else if (tmpt1.isArrow() && tmpt2.isArrow()){
+    unify(tmpt1.from, tmpt2.from);
+    unify(tmpt1.to, tmpt2.to);
+  } else if (tmpt1.type === tmpt2.type){
     // do nothing
+    // "Base case" is verified before to avoid an occurs check failure when 
+    // unifying a metavar with itself
   } else if (tmpt1.isMetavar()){
     occursCheck(tmpt1, tmpt2);
     tmpt1.setVal(tmpt2);
   } else if (tmpt2.isMetavar()){
     occursCheck(tmpt2, tmpt1);
     tmpt2.setVal(tmpt1);
-  } else if (tmpt1.isArrow() && tmpt2.isArrow()){
-    unify(tmpt1.from, tmpt2.from);
-    unify(tmpt1.to, tmpt2.to);
 
   // FIXME: No need to treat `List` specially.
   // ANS : it's to check wether unify([], ["a","b"]) should pass or not
@@ -333,10 +340,20 @@ function inferImmediate(exp){
  * 
  * @param {Exp} exp 
  * @param {Context} context 
- * @returns {?}
+ * @returns {T.TypeO}
  */
 function inferLet(exp, context){
-  throw new Error("TODO");
+  if (exp.body !== null){
+    let clone = context.clone();
+    for (let decl of exp.decls){
+      clone.add(decl.name, infer(decl.body, context), true);
+    }
+    return infer(exp.body, clone);
+
+  } else {
+    // should we just add all the exps to the global context ? 
+    throw new Error("TODO");
+  }
 }
 
 /**
