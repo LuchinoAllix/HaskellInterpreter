@@ -68,7 +68,7 @@ function infer(exp, context){
       // E.g. if the lookup returns `∀α,β. (α→β) → List α → List β`
       // you'll want to return the type `(T1→T2) → List T1 → List T2`,
       // where T1 and T2 are fresh new metavars.
-      return lookupGlobalLocalContext(context, exp.name);
+      return inferVar(exp, context);
       
     case 'immediate' :
       // FIXME: In general immedates may have a "forall" type and thus
@@ -291,8 +291,41 @@ function inferFunctionApp(exp, context){
  */
 function inferVar(exp, context){
   const type = lookupGlobalLocalContext(context, exp.name);
+  return instantiate(type, {});
+}
+
+/**
+ * Instantiate the type, if it's a forall return it's body where the metavar is 
+ * swapped for a fresh one, otherwise the the the type returned as is.
+ * @param {T.TypeO} type 
+ * @param {{String, T.TMetavar}} dict 
+ * @returns {T.TypeO}
+ */
+function instantiate(type, dict){
+
+  // If we have a forall, return the body where the metavar is swapped for a 
+  // fresh one
+  if (type.isForAll()){
+    let copyDict = {...dict}; // creates a copy of dict
+    copyDict[type.name] = new T.freshMetavar(); 
+    return instantiate(type.body, copyDict);
+  } 
+  
+  // If we have no swapping to do we can dirrectly return the type 
+  if (Object.keys(dict).length > 0){
+    if (type.isMetavar()){
+      const tmp = dict[type.name];
+      if (tmp !== undefined) { return tmp ; }
+      return type;
+    } else if (type.isArrow()){
+      return new T.TArrow(instantiate(type.from, dict), 
+                          instantiate(type.to, dict));
+    } else if (type.isApp()){
+      return new T.TApp(instantiate(type.func, dict), 
+                          instantiate(type.arg, dict));
+    }
+  }
   return type;
-  return instantiate(type); // todo instantiate
 }
 
 /**
