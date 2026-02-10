@@ -39,14 +39,10 @@ export function typeCheck(program){
   //console.log(JSON.stringify(global_context.lookup("id"), null, 2));
 
   // can main have a type annotation ?
-  //todo add verification on main type IO
+  // todo add verification on main type IO
 
   return true;
 }
-
-// Test 2 works on it's own but not in sequence of tests FIXME
-// Perhaps in the instanciation of var in print ? 
-// Same with test  12, 13, ...
 
 /**
  * Determines the type of an expression in a given context
@@ -72,6 +68,7 @@ function infer(exp, context){
     case 'immediate' :
       // FIXME: In general immedates may have a "forall" type and thus
       // require a similar treatment as described above.
+      // ANS : how ?
       return inferImmediate(exp);
 
     case 'let' :
@@ -79,7 +76,7 @@ function infer(exp, context){
 
     // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
     // it to `case`.
-    // Should this be used in evaluation ?
+    // ANS : Should this be used in evaluation ?
     case 'if' :
       return infer(ifToCase(exp), context);
           
@@ -156,7 +153,9 @@ function unify(t1, t2){
   if (t1.isMetavar()){ t1 = t1.resolve() ; }
   if (t2.isMetavar()){ t2 = t2.resolve() ; }
 
-  if (t1.isMetavar()){
+  if (t1.type === t2.type){
+    // do nothing
+  } else if (t1.isMetavar()){
     occursCheck(t1, t2);
     t1.setVal(t2);
   } else if (t2.isMetavar()){
@@ -166,30 +165,17 @@ function unify(t1, t2){
     unify(t1.from, t2.from);
     unify(t1.to, t2.to);
 
-  // FIXME: Actually, we should never need to unify foralls and if we had
-  // to, we'd need to do it more like for arrows, (i.e. make sure)
-  // both sides are foralls.
-  // The types received by `check` and returned by `infer` should never
-  // contains foralls.  Foralls appear only in the type of variables
-  // in the context.
-  } else if (t1.isForAll()){
-    unify(t1.body, t2);
-  } else if (t2.isForAll()){
-    unify(t1, t2.body);
-
   // FIXME: No need to treat `List` specially.
   // FIXME: What is this `EmptyList` type?
   } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
             t2.isBuiltin() && t2.blt === "EmptyList"){
     // do nothing
-  }else if(t2.isApp() && t2.func.isBuiltin() && t2.func.blt === "List" &&
+  } else if(t2.isApp() && t2.func.isBuiltin() && t2.func.blt === "List" &&
             t1.isBuiltin() && t1.blt === "EmptyList"){
     // do nothing
-  
-  // FIXME: I think this "base case" needs to come earlier, e.g. to avoid
-  // an occurs check failure when unifying a metavar with itself.
-  } else if (t1.type === t2.type){
-    // do nothing
+
+  } else if (t1.isForAll() || t2.isForAll()){
+    throw new Error(`Forall in unification should not happen`);
   } else {
     throw new Error(`Unification failed on types : 
       ${JSON.stringify(t1, null, 2)} \n\nand 
@@ -267,12 +253,9 @@ function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
   
   if (tfun.isArrow()){
-    // FIXME: Nah, in general it's better to *check* the argument because
-    // in most cases `tfun` already give you its type.
     check(exp.arg, tfun.from, context);
     return tfun.to;
   } 
-
   
   let targ = infer(exp.arg, context);
   // It's worth writing an ad-hoc "mini-unify" function for this case,
@@ -323,7 +306,7 @@ function instantiate(type, dict){
                           instantiate(type.to, dict));
     } else if (type.isApp()){
       return new T.TApp(instantiate(type.func, dict), 
-                          instantiate(type.arg, dict));
+                        instantiate(type.arg, dict));
     }
   }
   return type;
