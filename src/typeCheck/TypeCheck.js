@@ -36,7 +36,6 @@ export function typeCheck(program){
 
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
-  //console.log(JSON.stringify(global_context.lookup("id"), null, 2));
 
   // can main have a type annotation ?
   // todo add verification on main type IO
@@ -103,6 +102,7 @@ function check(exp, type, context){
       // FIXME: Clearly `setVal` is wrong because it throws away the previous
       // information.  Instead, you should use the same "mini-unify" as in
       // `inferFunctionApp`.
+      // ANS : ???
       type.setVal(new T.TArrow(from, to)); //#HELP should this be unify ?
       let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
@@ -270,6 +270,7 @@ function inferFunctionApp(exp, context){
   // since in most cases `tfun` will already be an arrow type and all
   // we want is to *extract* the two types it carries without creating
   // any new metavariables.
+  // ANS : ???
   let res = T.freshMetavar();
   unify(tfun, new T.TArrow(targ, res));
   return res;
