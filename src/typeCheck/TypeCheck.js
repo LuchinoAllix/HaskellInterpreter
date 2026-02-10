@@ -215,8 +215,10 @@ function occursCheck(t1, t2){
   } else if (t2.isArrow()){
     occursCheck(t1, t2.from);
     occursCheck(t1, t2.to);
+  } else if (t2.isApp()){
+    occursCheck(t1, t2.func);
+    occursCheck(t1, t2.arg);
   }
-  // FIXME: What about App?
 
 }
 
