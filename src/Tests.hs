@@ -893,11 +893,11 @@ main = print ((1, "string"))
 
 --------------------------------------------------------------------------------
 -- Test 92         : id with different types
--- Expected result : (1,false)
+-- Expected result : (1,[s,t,r])
 
 --/
 id x = x
-main = print ((id 1, id False))
+main = print ((id 1, id "str"))
 --/
 
 --------------------------------------------------------------------------------
