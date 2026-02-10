@@ -149,43 +149,42 @@ function check(exp, type, context){
  * @param {T.TypeO} t2 
  */
 function unify(t1, t2){
-  
-  if (t1.isMetavar()){ t1 = t1.resolve() ; }
-  if (t2.isMetavar()){ t2 = t2.resolve() ; }
+  let tmpt1 = t1.resolve();
+  let tmpt2 = t2.resolve();
 
   // "Base case" is verified first to avoid an occurs check failure when 
   // unifying a metavar with itself
 
-  if (t1.type === t2.type){
+  if (tmpt1.type === tmpt2.type){
     // do nothing
-  } else if (t1.isMetavar()){
-    occursCheck(t1, t2);
-    t1.setVal(t2);
-  } else if (t2.isMetavar()){
-    occursCheck(t2, t1);
-    t2.setVal(t1);
-  } else if (t1.isArrow() && t2.isArrow()){
-    unify(t1.from, t2.from);
-    unify(t1.to, t2.to);
+  } else if (tmpt1.isMetavar()){
+    occursCheck(tmpt1, tmpt2);
+    tmpt1.setVal(tmpt2);
+  } else if (tmpt2.isMetavar()){
+    occursCheck(tmpt2, tmpt1);
+    tmpt2.setVal(tmpt1);
+  } else if (tmpt1.isArrow() && tmpt2.isArrow()){
+    unify(tmpt1.from, tmpt2.from);
+    unify(tmpt1.to, tmpt2.to);
 
   // FIXME: No need to treat `List` specially.
   // ANS : it's to check wether unify([], ["a","b"]) should pass or not
   // FIXME: What is this `EmptyList` type?
   // ANS : Since lists are functions, there exists an immediate exp which's type
   //       is emptylist for the end call of the function
-  } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
-            t2.isBuiltin() && t2.blt === "EmptyList"){
+  } else if (tmpt1.isApp() && tmpt1.func.isBuiltin() && tmpt1.func.blt === 
+             "List" && tmpt2.isBuiltin() && tmpt2.blt === "EmptyList"){
     // do nothing
-  } else if(t2.isApp() && t2.func.isBuiltin() && t2.func.blt === "List" &&
-            t1.isBuiltin() && t1.blt === "EmptyList"){
+  } else if (tmpt2.isApp() && tmpt2.func.isBuiltin() && tmpt2.func.blt === 
+             "List" && tmpt1.isBuiltin() && tmpt1.blt === "EmptyList"){
     // do nothing
 
-  } else if (t1.isForAll() || t2.isForAll()){
+  } else if (t1.isForAll() || tmpt2.isForAll()){
     throw new Error(`Forall in unification should not happen`);
   } else {
     throw new Error(`Unification failed on types : 
-      ${JSON.stringify(t1, null, 2)} \n\nand 
-      ${JSON.stringify(t2, null, 2)}`);
+      ${JSON.stringify(tmpt1, null, 2)} \n\nand 
+      ${JSON.stringify(tmpt2, null, 2)}`);
   }
 }
 

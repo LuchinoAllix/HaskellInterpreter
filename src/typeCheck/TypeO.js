@@ -63,6 +63,22 @@ export class TypeO {
   isMetavar(){
     return this.type === "TMetavar";
   }
+
+  /**
+   * Returns the most advanced known type for a metavar (follows the value)
+   */
+  resolve(){
+    // How to we prevent infinite cycles like t2 -> t3 -> t2 ? #HELP
+    // FIXME: The occurs check should do that for us.
+    // But resolve is called in the occurs check ?
+    if (this.isMetavar()){
+      if (this.value === null) return this ;
+      if (this.value.isMetavar()) return this.value.resolve() ;
+      return this.value ;
+    }
+    
+    return this;
+  }
 }
 
 /**
@@ -188,21 +204,6 @@ export class TMetavar extends TypeO {
    */
   setVal(type){
     this.value = type;
-  }
-
-  /**
-   * Returns the most advanced know type for a metavar (follows the value)
-   */
-  resolve(){
-    // How to we prevent infinite cycles like t2 -> t3 -> t2 ? #HELP
-    // FIXME: The occurs check should do that for us.
-    // But resolve is called in the occurs check ?
-    
-    if (this.value === null) return this ;
-
-    if (this.value.isMetavar()) return this.value.resolve() ;
-    
-    return this.value ;
   }
 }
 
