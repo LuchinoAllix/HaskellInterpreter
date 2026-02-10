@@ -20,8 +20,7 @@ global_context.initGlobal();
  */
 export function typeCheck(program){
   resetGlobalContext();
-  let main 
-  //console.log(JSON.stringify(global_context.lookup("print"), null, 2));
+  let main; 
   for (let decl of program.normalizedForm){
     if (decl.name === "main"){
       main = decl;
@@ -37,7 +36,7 @@ export function typeCheck(program){
 
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
-  console.log(JSON.stringify(global_context.lookup("id"), null, 2));
+  //console.log(JSON.stringify(global_context.lookup("id"), null, 2));
 
   // can main have a type annotation ?
   //todo add verification on main type IO
