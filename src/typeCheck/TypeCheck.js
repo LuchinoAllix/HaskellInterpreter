@@ -153,6 +153,9 @@ function unify(t1, t2){
   if (t1.isMetavar()){ t1 = t1.resolve() ; }
   if (t2.isMetavar()){ t2 = t2.resolve() ; }
 
+  // "Base case" is verified first to avoid an occurs check failure when 
+  // unifying a metavar with itself
+
   if (t1.type === t2.type){
     // do nothing
   } else if (t1.isMetavar()){
@@ -166,7 +169,10 @@ function unify(t1, t2){
     unify(t1.to, t2.to);
 
   // FIXME: No need to treat `List` specially.
+  // ANS : it's to check wether unify([], ["a","b"]) should pass or not
   // FIXME: What is this `EmptyList` type?
+  // ANS : Since lists are functions, there exists an immediate exp which's type
+  //       is emptylist for the end call of the function
   } else if(t1.isApp() && t1.func.isBuiltin() && t1.func.blt === "List" &&
             t2.isBuiltin() && t2.blt === "EmptyList"){
     // do nothing
@@ -230,7 +236,8 @@ function checkPatterns(patterns, patternsTypes, context){
       case "functionApp" :
         // FIXME: This won't work: you're passing to `inferFunctionApp`
         // a pattern rather than an expression.
-        // But patterns are a list of expressions (coming from check function)
+        // ANS : But patterns are a list of expressions 
+        //       (coming from check function)
         unify(patternsTypes[i],inferFunctionApp(patterns[i], context));
         break
       
@@ -258,6 +265,7 @@ function inferFunctionApp(exp, context){
   } 
   
   let targ = infer(exp.arg, context);
+  // FIXME :
   // It's worth writing an ad-hoc "mini-unify" function for this case,
   // since in most cases `tfun` will already be an arrow type and all
   // we want is to *extract* the two types it carries without creating
