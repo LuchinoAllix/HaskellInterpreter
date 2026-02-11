@@ -11,6 +11,13 @@ import { ifToCase } from "../normalize/normalizer.js";
 let global_context = new Context();
 global_context.initGlobal();
 
+// generalise to pick up all the non instanciated metavars for the forall
+// lookup wiki of generalise function
+
+// form prenex, all the quantificateur sont au début
+
+// in sml (standart ml) they infer and then check with the type annotation
+
 /**
  * Verifies that a given program type checks
  * This is the point of entry function for type checking
@@ -32,6 +39,7 @@ export function typeCheck(program){
         // eg : x :: (Int, Int)
         //      x = (1, False)
         //      main = print (snd x)
+        // il faut check (comme haskell)
       } else {
         global_context.add(decl.name, infer(decl.body, new Context()));
       }
@@ -73,7 +81,7 @@ function infer(exp, context){
     case 'immediate' :
       // FIXME: In general immedates may have a "forall" type and thus
       // require a similar treatment as described above.
-      // ANS : how ?
+      // ANS : how ? liste vide, qu'il faut instancier quand on l'utilise
       return inferImmediate(exp);
 
     case 'let' :
@@ -81,7 +89,9 @@ function infer(exp, context){
 
     // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
     // it to `case`.
-    // ANS : Should this be used in evaluation ?
+    // ANS : Should this be used in evaluation ? Yes
+    // if et case equivalent en théorie, en pratique remplacer des case par des 
+    // if complique l'inférence de types
     case 'if' :
       return infer(ifToCase(exp), context);
           
@@ -177,7 +187,9 @@ function unify(t1, t2){
   } else if (tmpt1.isArrow() && tmpt2.isArrow()){
     unify(tmpt1.from, tmpt2.from);
     unify(tmpt1.to, tmpt2.to);
-  } else if (tmpt1.type === tmpt2.type){
+  } else if (tmpt1.type === tmpt2.type){ // comme regarder le nom mais c'est 
+                                         // plus efficace de regarder le 
+                                         // pointeur
     // do nothing
     // "Base case" is verified before to avoid an occurs check failure when 
     // unifying a metavar with itself
@@ -263,6 +275,8 @@ function checkPatterns(patterns, patternsTypes, context){
         // a pattern rather than an expression.
         // ANS : But patterns are a list of expressions 
         //       (coming from check function)
+        // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
+        // on peut pas regarder le type de x ou y, il faut "l'indiquer"
         unify(patternsTypes[i],inferFunctionApp(patterns[i], context));
         break
       
@@ -284,7 +298,7 @@ function checkPatterns(patterns, patternsTypes, context){
 function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
   
-  if (tfun.isArrow()){
+  if (tfun.isArrow()){ // <- this is the mini unify
     check(exp.arg, tfun.from, context);
     return tfun.to;
   } 
