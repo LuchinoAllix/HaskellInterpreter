@@ -33,7 +33,7 @@ export function typeCheck(program){
       main = decl;
     } else {
       if (decl.isAnnotated()){
-        global_context.add(decl.name, decl.typeAnnotation);
+        global_context.add(decl.name, generalize(decl.typeAnnotation));
         // should the type annotation be verified in any way ? surely
         // FIXME : what strategy should we adopt ?
         // eg : x :: (Int, Int)
@@ -41,7 +41,9 @@ export function typeCheck(program){
         //      main = print (snd x)
         // il faut check (comme haskell)
       } else {
-        global_context.add(decl.name, infer(decl.body, new Context()));
+        let declType = infer(decl.body, new Context());
+        declType = generalize(declType);
+        global_context.add(decl.name, declType);
       }
     }
   }
@@ -198,6 +200,38 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt1, null, 2)} \n\nand 
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
+}
+
+/**
+ * makes a forall with all the free metavars in a type
+ * @param {T.TypeO} type
+ * @returns {T.TForall} 
+ */
+function generalize(type){
+  let names = generalizeRec(type);
+  return new T.TForall(
+    names.filter((item, index) => names.indexOf(item) === index), 
+    type);
+}
+
+/**
+ * Makes a list of all the free metavars in a type
+ * @param {T.TypeO} type 
+ * @returns {[String]}
+ */
+function generalizeRec(type){
+  if (type.isArrow()){
+    return generalizeRec(type.from).concat(generalizeRec(type.to));
+  } else if (type.isApp()){
+    return generalizeRec(type.func).concat(generalizeRec(type.arg));
+  } else if (type.isMetavar()){
+    if (type.value === null){
+      return [type.name];
+    } else {
+      return generalizeRec(type.value);
+    }
+  }
+  return [] ;
 }
 
 /**
