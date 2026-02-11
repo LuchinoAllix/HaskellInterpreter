@@ -326,7 +326,9 @@ function instantiate(type, dict = {}){
   // fresh one
   if (type.isForAll()){
     let copyDict = {...dict}; // creates a copy of dict
-    copyDict[type.name] = new T.freshMetavar(); 
+    for (let name of type.names){
+      copyDict[name] = new T.freshMetavar(); 
+    }
     return instantiate(type.body, copyDict);
   } 
   
