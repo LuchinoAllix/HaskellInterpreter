@@ -110,14 +110,22 @@ function check(exp, type, context){
       // `inferFunctionApp`.
       // ANS : ???
 
-      // This should introduce a forall if from does not get instanciated
-      // it should not be setVal, cos the type might already be instanciated
-      // (function declaration on multiple line)
-      // so it should be unify 
-      type.setVal(new T.TArrow(from, to)); //#HELP should this be unify ?
       let clone = context.clone();
       clone.add(exp.namedArg.name, from); 
       check(exp.body, to, clone);
+      unify(from, to);
+
+      // if resolve returns a metavar then it has no value
+      if (from.resolve().isMetavar()){
+        let typeResolved = type.resolve(); 
+        if (typeResolved.isMetavar()){
+          type.setVal(new T.TForall(from.name, new T.TArrow(from, to)));
+        } else {
+          unify(type, new T.TArrow(from, to));
+        }
+      } else {
+        unify(type, new T.TArrow(from, to));
+      }
 
       break;
 
