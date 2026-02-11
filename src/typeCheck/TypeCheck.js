@@ -187,14 +187,12 @@ function unify(t1, t2){
   } else if (tmpt1.isArrow() && tmpt2.isArrow()){
     unify(tmpt1.from, tmpt2.from);
     unify(tmpt1.to, tmpt2.to);
-  } else if (tmpt1.type === tmpt2.type){ // comme regarder le nom mais c'est 
-                                         // plus efficace de regarder le 
-                                         // pointeur
+
+    // Comparing pointer wise is more efficent than name wise
+  } else if (tmpt1 === tmpt2){
     // do nothing
     // "Base case" is verified before to avoid an occurs check failure when 
     // unifying a metavar with itself
-    // FIXME : when this case comes earlier then if we receive two metavars they
-    //         will not be updated
   } else if (tmpt1.isMetavar()){
     occursCheck(tmpt1, tmpt2);
     tmpt1.setVal(tmpt2);
