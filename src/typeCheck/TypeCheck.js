@@ -106,28 +106,16 @@ function check(exp, type, context){
 
       let from = T.freshMetavar();
       let to = T.freshMetavar();
+      
+      let clone = context.clone();
+      clone.add(exp.namedArg.name, from);
+      check(exp.body, to, clone);
+      unify(type, new T.TArrow(from, to));
+      
       // FIXME: Clearly `setVal` is wrong because it throws away the previous
       // information.  Instead, you should use the same "mini-unify" as in
       // `inferFunctionApp`.
       // ANS : ???
-
-      let clone = context.clone();
-      clone.add(exp.namedArg.name, from); 
-      check(exp.body, to, clone);
-      unify(from, to);
-
-      // if resolve returns a metavar then it has no value
-      if (from.resolve().isMetavar()){
-        let typeResolved = type.resolve(); 
-        if (typeResolved.isMetavar()){
-          type.setVal(new T.TForall(from.name, new T.TArrow(from, to)));
-        } else {
-          unify(type, new T.TArrow(from, to));
-        }
-      } else {
-        unify(type, new T.TArrow(from, to));
-      }
-
       break;
 
     case 'case' :
@@ -286,22 +274,32 @@ function checkPatterns(patterns, patternsTypes, context){
  */
 function inferFunctionApp(exp, context){
   let tfun = infer(exp.func, context);
-  
-  if (tfun.isArrow()){ // <- this is the mini unify
+
+  if (tfun.isArrow()){
     check(exp.arg, tfun.from, context);
     return tfun.to;
-  } 
+  }
   
   let targ = infer(exp.arg, context);
-  // FIXME :
-  // It's worth writing an ad-hoc "mini-unify" function for this case,
-  // since in most cases `tfun` will already be an arrow type and all
-  // we want is to *extract* the two types it carries without creating
-  // any new metavariables.
-  // ANS : ???
   let res = T.freshMetavar();
+
   unify(tfun, new T.TArrow(targ, res));
   return res;
+}
+
+/**
+ * todo
+ * @param {Exp} exp 
+ * @param {T.TypeO} tfun 
+ * @param {Context} context 
+ * @returns {T.TypeO | null}
+ */
+function miniUnify(exp, tfun, context){
+  if (tfun.isArrow()){
+    check(exp.arg, tfun.from, context);
+    return tfun.to;
+  }
+  return null;
 }
 
 /**
