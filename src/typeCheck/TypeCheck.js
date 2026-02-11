@@ -70,22 +70,13 @@ function infer(exp, context){
       return inferFunctionApp(exp, context);
     
     case 'var' :
-      // FIXME: Once you add the "let-generalization" that introduces
-      // forall, you'll need here to "un-forall" the type.
-      // E.g. if the lookup returns `∀α,β. (α→β) → List α → List β`
-      // you'll want to return the type `(T1→T2) → List T1 → List T2`,
-      // where T1 and T2 are fresh new metavars.
-      // ANS : I have this case without the "let-generalisation"
-      return inferVar(exp, context);
+      return instantiate(inferVar(exp, context));
       
     case 'immediate' :
-      // FIXME: In general immedates may have a "forall" type and thus
-      // require a similar treatment as described above.
-      // ANS : how ? liste vide, qu'il faut instancier quand on l'utilise
       return inferImmediate(exp);
 
     case 'let' :
-      return inferLet(exp, context);
+      return instantiate(inferLet(exp, context));
 
     // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
     // it to `case`.
@@ -321,8 +312,7 @@ function inferFunctionApp(exp, context){
  * @returns {T.TypeO}
  */
 function inferVar(exp, context){
-  const type = lookupGlobalLocalContext(context, exp.name);
-  return instantiate(type, {});
+  return lookupGlobalLocalContext(context, exp.name);
 }
 
 /**
@@ -332,7 +322,7 @@ function inferVar(exp, context){
  * @param {{String: T.TMetavar}} dict 
  * @returns {T.TypeO}
  */
-function instantiate(type, dict){
+function instantiate(type, dict = {}){
 
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
