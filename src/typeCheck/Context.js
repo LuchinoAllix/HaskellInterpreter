@@ -2,23 +2,23 @@ import * as T from "./TypeO.js";
 
 
 // tmetavar variables for primitives 
-const print = T.freshMetavar();
-const eq = T.freshMetavar();
-const neq = T.freshMetavar();
-const and = T.freshMetavar();
-const or = T.freshMetavar();
-const lt = T.freshMetavar();
-const leq = T.freshMetavar();
-const gt = T.freshMetavar();
-const geq = T.freshMetavar();
-const fst1 = T.freshMetavar();
-const fst2 = T.freshMetavar();
-const snd1 = T.freshMetavar();
-const snd2 = T.freshMetavar();
-const concat = T.freshMetavar();
-const cons = T.freshMetavar();
-const comma1 = T.freshMetavar();
-const comma2 = T.freshMetavar();
+const print = T.freshVar();
+const eq = T.freshVar();
+const neq = T.freshVar();
+const and = T.freshVar();
+const or = T.freshVar();
+const lt = T.freshVar();
+const leq = T.freshVar();
+const gt = T.freshVar();
+const geq = T.freshVar();
+const fst1 = T.freshVar();
+const fst2 = T.freshVar();
+const snd1 = T.freshVar();
+const snd2 = T.freshVar();
+const concat = T.freshVar();
+const cons = T.freshVar();
+const comma1 = T.freshVar();
+const comma2 = T.freshVar();
 
 /**
  * Context object definition, used in type inference
@@ -170,18 +170,18 @@ function makeFunc(n){
   let forAlls, arrows ;
   let lstForall, lstArrow, lstApp;
   for (let i = 0; i < n; i++){
-    let tmetavar = T.freshMetavar();
-    let nForAll = new T.TForall([tmetavar.name], null); 
-    let nArrow = new T.TArrow(tmetavar, null);
+    let tvar = T.freshVar();
+    let nForAll = new T.TForall([tvar.name], null); 
+    let nArrow = new T.TArrow(tvar, null);
     let nApp;
     if (i === 0){
       forAlls = nForAll;
       arrows = nArrow;
-      nApp = new T.TApp(new T.TBuiltin(','.repeat(n)), tmetavar);
+      nApp = new T.TApp(new T.TBuiltin(','.repeat(n)), tvar);
     } else {
       lstForall.body = nForAll;
       lstArrow.to = nArrow;
-      nApp = new T.TApp(lstApp, tmetavar);
+      nApp = new T.TApp(lstApp, tvar);
       lstApp = nApp;
     }
     lstForall = nForAll;
