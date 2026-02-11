@@ -181,6 +181,8 @@ function unify(t1, t2){
     // do nothing
     // "Base case" is verified before to avoid an occurs check failure when 
     // unifying a metavar with itself
+    // FIXME : when this case comes earlier then if we receive two metavars they
+    //         will not be updated
   } else if (tmpt1.isMetavar()){
     occursCheck(tmpt1, tmpt2);
     tmpt1.setVal(tmpt2);
