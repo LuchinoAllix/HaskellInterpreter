@@ -893,7 +893,7 @@ main = print ((1, "string"))
 
 --------------------------------------------------------------------------------
 -- Test 92         : id with different types
--- Expected result : (1,[s,t,r])
+-- Expected result : (1,false)
 
 --/
 id x = x
