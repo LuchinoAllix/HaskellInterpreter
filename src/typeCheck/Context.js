@@ -72,61 +72,61 @@ export class Context {
 
     // FIXME : shoud be monad IO ?
     this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
-    this.add('print', new T.TForall(print.name, 
+    this.add('print', new T.TForall([print.name], 
                                     new T.TArrow(print, T.TUnit()))); 
 
-    this.add("==", new T.TForall(eq.name, 
+    this.add("==", new T.TForall([eq.name], 
                                  new T.TArrow(eq, 
                                   new T.TArrow(eq, T.TBool()))));
-    this.add("!=", new T.TForall(neq.name, 
+    this.add("!=", new T.TForall([neq.name], 
                                  new T.TArrow(neq, 
                                   new T.TArrow(neq, T.TBool()))));
-    this.add("||", new T.TForall(or.name, 
+    this.add("||", new T.TForall([or.name], 
                                  new T.TArrow(or, 
                                   new T.TArrow(or, T.TBool()))));
-    this.add("&&", new T.TForall(and.name, 
+    this.add("&&", new T.TForall([and.name], 
                                  new T.TArrow(and, 
                                   new T.TArrow(and, T.TBool()))));
-    this.add("<", new T.TForall(lt.name, 
+    this.add("<", new T.TForall([lt.name], 
                                  new T.TArrow(lt, 
                                   new T.TArrow(lt, T.TBool()))));
-    this.add(">", new T.TForall(gt.name, 
+    this.add(">", new T.TForall([gt.name], 
                                  new T.TArrow(gt, 
                                   new T.TArrow(gt, T.TBool()))));
-    this.add("<=", new T.TForall(leq.name, 
+    this.add("<=", new T.TForall([leq.name], 
                                  new T.TArrow(leq, 
                                   new T.TArrow(leq, T.TBool()))));
-    this.add(">=", new T.TForall(geq.name, 
+    this.add(">=", new T.TForall([geq.name], 
                                  new T.TArrow(geq, 
                                   new T.TArrow(geq, T.TBool()))));
 
     // Very repetitive, should find an other way or it's fine ?
 
-    this.add("fst", new T.TForall(fst1.name, new T.TForall(fst2.name,
-      new T.TArrow(new T.TApp(new T.TApp(T.TTuple(), fst1), fst2), fst1))));
+    this.add("fst", new T.TForall([fst1.name, fst2.name],
+      new T.TArrow(new T.TApp(new T.TApp(T.TTuple(), fst1), fst2), fst1)));
 
-    this.add("snd", new T.TForall(snd1.name, new T.TForall(snd2.name,
-      new T.TArrow(new T.TApp(new T.TApp(T.TTuple(), snd1), snd2), snd2))));
+    this.add("snd", new T.TForall([snd1.name, snd2.name],
+      new T.TArrow(new T.TApp(new T.TApp(T.TTuple(), snd1), snd2), snd2)));
 
     // Where do we add the verification that fst and snd can only be called on
     // tuples of size two ? Or does this yield from the fact that we only have 
     // two TApps ?
 
-    this.add("++", new T.TForall(concat.name,
+    this.add("++", new T.TForall([concat.name],
       new T.TArrow(new T.TApp(T.TList(), concat), 
         new T.TArrow(new T.TApp(T.TList(), concat), 
           new T.TApp(T.TList(), concat)))));
     
-    this.add(":", new T.TForall(cons.name,
+    this.add(":", new T.TForall([cons.name],
       new T.TArrow(cons, 
         new T.TArrow(new T.TApp(T.TList(), cons), 
           new T.TApp(T.TList(), cons)))));
 
     // How will empty lists be managed ??
       
-    this.add(",", new T.TForall(comma1.name, new T.TForall(comma2.name,
+    this.add(",", new T.TForall([comma1.name, comma2.name],
       new T.TArrow(comma1, new T.TArrow(comma2, new T.TApp(
-        new T.TApp(T.TTuple(), comma1), comma2))))));
+        new T.TApp(T.TTuple(), comma1), comma2)))));
 
     this.add('return', ); // TODO
     this.add(">>", ); // TODO
@@ -171,7 +171,7 @@ function makeFunc(n){
   let lstForall, lstArrow, lstApp;
   for (let i = 0; i < n; i++){
     let tmetavar = T.freshMetavar();
-    let nForAll = new T.TForall(tmetavar.name, null); 
+    let nForAll = new T.TForall([tmetavar.name], null); 
     let nArrow = new T.TArrow(tmetavar, null);
     let nApp;
     if (i === 0){
