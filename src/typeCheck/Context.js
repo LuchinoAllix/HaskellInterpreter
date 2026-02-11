@@ -69,9 +69,9 @@ export class Context {
     this.add('*', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('-', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('/', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
+    this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
 
     // FIXME : shoud be monad IO ?
-    this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
     this.add('print', new T.TForall([print.name], 
                                     new T.TArrow(print, T.TUnit()))); 
 
