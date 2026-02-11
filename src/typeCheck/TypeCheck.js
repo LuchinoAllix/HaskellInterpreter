@@ -206,35 +206,41 @@ function unify(t1, t2){
 }
 
 /**
- * makes a forall with all the free metavars in a type
+ * Makes a forall with all the free metavars in a type
  * @param {T.TypeO} type
  * @returns {T.TForall} 
  */
 function generalize(type){
-  let names = generalizeRec(type);
-  return new T.TForall(
-    names.filter((item, index) => names.indexOf(item) === index), 
-    type);
+  let names = {};
+  let nType = generalizeRec(type, names);
+  if (Object.keys(names).length > 0 ){
+    return new T.TForall(Object.values(names), nType);
+  }
+  return type ;
 }
 
 /**
- * Makes a list of all the free metavars in a type
- * @param {T.TypeO} type 
- * @returns {[String]}
+ * todo
+ * updates the names dict
  */
-function generalizeRec(type){
+function generalizeRec(type, names){
   if (type.isArrow()){
-    return generalizeRec(type.from).concat(generalizeRec(type.to));
+    return new T.TArrow(generalizeRec(type.from, names),
+                        generalizeRec(type.to, names));
   } else if (type.isApp()){
-    return generalizeRec(type.func).concat(generalizeRec(type.arg));
+    return new T.TApp(generalizeRec(type.func, names), 
+                      generalizeRec(type.arg, names));
   } else if (type.isMetavar()){
     if (type.value === null){
-      return [type.name];
+      let tmp = T.freshVar();
+      names[type.name] = tmp.name; 
+      return tmp;
     } else {
-      return generalizeRec(type.value);
+      type.value = generalizeRec(type.value); 
+      return type;
     }
   }
-  return [] ;
+  return type;
 }
 
 /**
@@ -351,6 +357,7 @@ function inferVar(exp, context){
 }
 
 /**
+ * 
  * Instantiate the type, if it's a forall return it's body where the metavar is 
  * swapped for a fresh one, otherwise the the the type returned as is.
  * @param {T.TypeO} type 
