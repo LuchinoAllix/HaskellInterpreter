@@ -357,7 +357,8 @@ function inferVar(exp, context){
 }
 
 /**
- * 
+ * FIXME : should do the switch on the var, not metavar
+ * FIXME : verify in this file that creating a forall uses var and not metavars
  * Instantiate the type, if it's a forall return it's body where the metavar is 
  * swapped for a fresh one, otherwise the the the type returned as is.
  * @param {T.TypeO} type 
