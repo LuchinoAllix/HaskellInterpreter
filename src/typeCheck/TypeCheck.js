@@ -362,9 +362,13 @@ function instantiate(type, dict){
 /**
  * Makes a builtin type from the immediate value's type
  * @param {Exp} exp 
- * @returns {T.TBuiltin}
+ * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
+  if (exp.valueType === 'EmptyList'){
+    const metavar = T.freshMetavar();
+    return new T.TForall(metavar.name, new T.TApp(T.TList(), metavar));
+  }
   return new T.TBuiltin(exp.valueType);
 }
 
