@@ -146,13 +146,13 @@ export class TApp extends TypeO {
 export class TForall extends TypeO {
 
   /**
-   * @param {String} name
+   * @param {[String]} names
    * @param {TypeO} body
    */
-  constructor(name, body){
+  constructor(names, body){
     super();
     this.type = "Forall";
-    this.name = name;
+    this.names = names;
     this.body = body;
   }
 }
