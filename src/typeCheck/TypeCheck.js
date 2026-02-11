@@ -48,7 +48,7 @@ export function typeCheck(program){
     }
   }
 
-  console.log(global_context.lookup("id"));
+  console.log(JSON.stringify(global_context.lookup("id"), null, 2));
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
 
@@ -75,10 +75,10 @@ function infer(exp, context){
       return instantiate(inferVar(exp, context));
       
     case 'immediate' :
-      return inferImmediate(exp);
+      return instantiate(inferImmediate(exp));
 
     case 'let' :
-      return instantiate(inferLet(exp, context));
+      return inferLet(exp, context);
 
     // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
     // it to `case`.
@@ -180,6 +180,9 @@ function unify(t1, t2){
   } else if (tmpt2.isMetavar()){
     occursCheck(tmpt2, tmpt1);
     tmpt2.setVal(tmpt1);
+  } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin && tmpt1.blt === tmpt2.blt){
+    // do nothing
+  
 
   // FIXME: No need to treat `List` specially.
   // ANS : it's to check wether unify([], ["a","b"]) should pass or not
@@ -391,7 +394,7 @@ function instantiate(type, dict = {}){
 function inferImmediate(exp){
   if (exp.valueType === 'EmptyList'){
     const metavar = T.freshMetavar();
-    return new T.TForall(metavar.name, new T.TApp(T.TList(), metavar));
+    return new T.TForall([metavar.name], new T.TApp(T.TList(), metavar));
   }
   return new T.TBuiltin(exp.valueType);
 }
