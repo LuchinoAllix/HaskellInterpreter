@@ -222,24 +222,6 @@ export function applyFunc(func, arg){
 }
 
 /**
- * Evaluate an if expression by first testing the condition, if it is a boolean
- * then it returns the evaluation of the corresponding branch
- * @param {E.IfExp} exp an if expression
- * @param {Env} env the environement 
- * @returns {V.Value}
- */
-function evaluateIf(exp, env){
-  let cond = evaluateExp(exp.condition, env);
-  if (cond.type !== "bool"){
-    throw new Error("Expression in if condition did not evaluate to boolean.");
-  } else if (cond.value){
-    return evaluateExp(exp.success, env);
-  } else {
-    return evaluateExp(exp.fail, env);
-  }
-}
-
-/**
  * Evaluates a let exp 
  * @param {E.LetExp} exp 
  * @param {Env} env 
