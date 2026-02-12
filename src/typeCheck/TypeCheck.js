@@ -263,21 +263,21 @@ function generalizeRec(type, names){
  */
 function occursCheck(t1, t2){
 
-  // FIXME : use a tmp var to avoid reference issues with params
-  if (t2.isMetavar()){
-    t2 = t2.resolve();
+  let tmpt2 = t2;
+  if (tmpt2.isMetavar()){
+    tmpt2 = t2.resolve();
   }
 
-  if (t2.isMetavar() && t1 === t2){ 
+  if (tmpt2.isMetavar() && t1 === tmpt2){ 
     throw new Error(`Recursive definition detected between 
       ${JSON.stringify(t1, null, 2)} \n\nand 
       ${JSON.stringify(t2, null, 2)}`);
-  } else if (t2.isArrow()){
-    occursCheck(t1, t2.from);
-    occursCheck(t1, t2.to);
-  } else if (t2.isApp()){
-    occursCheck(t1, t2.func);
-    occursCheck(t1, t2.arg);
+  } else if (tmpt2.isArrow()){
+    occursCheck(t1, tmpt2.from);
+    occursCheck(t1, tmpt2.to);
+  } else if (tmpt2.isApp()){
+    occursCheck(t1, tmpt2.func);
+    occursCheck(t1, tmpt2.arg);
   }
 
 }
