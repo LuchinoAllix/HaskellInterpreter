@@ -232,9 +232,12 @@ function generalizeRec(type, names){
                       generalizeRec(type.arg, names));
   } else if (type.isMetavar()){
     if (type.value === null){
-      let tmp = T.freshVar();
-      names[type.name] = tmp.name; 
-      return tmp;
+      let lookup = names[type.name];
+      if (lookup === undefined){
+        lookup = T.freshVar();
+        names[type.name] = lookup;
+      }
+      return lookup;
     } else {
       type.value = generalizeRec(type.value, names); 
       return type;
