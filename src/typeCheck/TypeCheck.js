@@ -224,8 +224,13 @@ function generalize(type){
 }
 
 /**
- * todo
- * updates the names dict
+ * Recursive call for generalization (substition of free metavars for fresh 
+ * vars) by keeping track of the substitutions in a dict that is modified 
+ * dynamically
+ * 
+ * @param {T.TypeO} type 
+ * @param {{String : T.Tvar}} names 
+ * @returns {T.TypeO}
  */
 function generalizeRec(type, names){
   if (type.isArrow()){
@@ -363,10 +368,8 @@ function inferVar(exp, context){
 }
 
 /**
- * FIXME : should do the switch on the var, not metavar
- * FIXME : verify in this file that creating a forall uses var and not metavars
  * Instantiate the type, if it's a forall return it's body where the metavar is 
- * swapped for a fresh one, otherwise the the the type returned as is.
+ * swapped for a fresh var, otherwise the the the type returned as is.
  * @param {T.TypeO} type 
  * @param {{String: T.TMetavar}} dict 
  * @returns {T.TypeO}
