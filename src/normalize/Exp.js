@@ -111,27 +111,6 @@ export function makeFuncAppOfList(func, args){
 }
 
 /**
- * If term expression
- */
-export class IfExp extends Exp {
-  
-  /**
-   * Creates an if expression
-   * @param {Exp} condition 
-   * @param {Exp} success 
-   * @param {Exp} fail 
-   */
-  constructor(condition, success, fail, info = null){
-    super();
-    this.type = "if";
-    this.condition = condition;
-    this.success = success;
-    this.fail = fail;
-    this.info = info;
-  }
-}
-
-/**
  * Creates a let Term expression
  */
 export class LetExp extends Exp {
