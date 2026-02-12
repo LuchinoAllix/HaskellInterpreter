@@ -17,3 +17,10 @@ https://stackoverflow.com/questions/29285897/difference-between-for-in-and-for-o
  * que arg est du type de x et que x est de type int
  * on sait donc que t1 est t2 -> t3, donc int -> int
  */
+
+
+    // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
+    // it to `case`.
+    // ANS : Should this be used in evaluation ? Yes
+    // if et case equivalent en théorie, en pratique remplacer des case par des 
+    // if complique l'inférence de types
