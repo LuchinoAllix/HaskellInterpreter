@@ -628,8 +628,8 @@ function normalizeIf(node){
   }
   return new CaseExp(
     [elems[0]],
-    [ new Branch([new ImExp(true, "Bool")], elems[1]),
-      new Branch([new ImExp(false, "Bool")], elems[2])],
+    [ new Branch([new ImExp(true, "Boolean")], elems[1]),
+      new Branch([new ImExp(false, "Boolean")], elems[2])],
     [node.line, node.column]);
 }
 
