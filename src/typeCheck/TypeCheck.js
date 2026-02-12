@@ -211,7 +211,7 @@ function unify(t1, t2){
  * @returns {T.TForall} 
  */
 function generalize(type){
-  let names = {};
+  let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
   if (Object.keys(names).length > 0 ){
     return new T.TForall(Object.values(names), nType);
@@ -236,7 +236,7 @@ function generalizeRec(type, names){
       names[type.name] = tmp.name; 
       return tmp;
     } else {
-      type.value = generalizeRec(type.value); 
+      type.value = generalizeRec(type.value, names); 
       return type;
     }
   }
@@ -346,8 +346,7 @@ function miniUnify(exp, tfun, context){
 }
 
 /**
- * Determines the type of a varibale by looking up in the context, and 
- * instantiating it if it is a forall type.
+ * Determines the type of a varibale by looking up in the context
  * @param {Exp} exp 
  * @param {Context} context 
  * @returns {T.TypeO}
@@ -412,8 +411,8 @@ function instantiate(type, dict = {}){
  */
 function inferImmediate(exp){
   if (exp.valueType === 'EmptyList'){
-    const metavar = T.freshMetavar();
-    return new T.TForall([metavar.name], new T.TApp(T.TList(), metavar));
+    const nvar = T.freshVar();
+    return new T.TForall([nvar.name], new T.TApp(T.TList(), nvar));
   }
   return new T.TBuiltin(exp.valueType);
 }
