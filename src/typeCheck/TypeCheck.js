@@ -214,9 +214,13 @@ function generalize(type){
   let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
   if (Object.keys(names).length > 0 ){
-    return new T.TForall(Object.values(names), nType);
+    let listNames = []
+    for (let tvar of Object.values(names)){
+      listNames.push(tvar.name);
+    }
+    return new T.TForall(listNames, nType);
   }
-  return type ;
+  return type ; // no free metavars found
 }
 
 /**
