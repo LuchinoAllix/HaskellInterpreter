@@ -33,14 +33,16 @@ export function typeCheck(program){
         //      main = print (snd x)
         // il faut check (comme haskell)
       } else {
-        let declType = infer(decl.body, new Context());
-        declType = generalize(declType);
+        let declType = T.freshMetavar();
         global_context.add(decl.name, declType);
+        check(decl.body, declType, new Context());
+        global_context.add(decl.name, generalize(declType), true);
       }
     }
   }
 
-  console.log(JSON.stringify(global_context.lookup("id"), null, 2));
+  //console.log(JSON.stringify(global_context.lookup("id"), null, 2));
+  
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
 
@@ -166,20 +168,6 @@ function unify(t1, t2){
     tmpt2.setVal(tmpt1);
   } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin && tmpt1.blt === tmpt2.blt){
     // do nothing
-  
-
-  // FIXME: No need to treat `List` specially.
-  // ANS : it's to check wether unify([], ["a","b"]) should pass or not
-  // FIXME: What is this `EmptyList` type?
-  // ANS : Since lists are functions, there exists an immediate exp which's type
-  //       is emptylist for the end call of the function
-  } else if (tmpt1.isApp() && tmpt1.func.isBuiltin() && tmpt1.func.blt === 
-             "List" && tmpt2.isBuiltin() && tmpt2.blt === "EmptyList"){
-    // do nothing
-  } else if (tmpt2.isApp() && tmpt2.func.isBuiltin() && tmpt2.func.blt === 
-             "List" && tmpt1.isBuiltin() && tmpt1.blt === "EmptyList"){
-    // do nothing
-
   } else if (t1.isForAll() || tmpt2.isForAll()){
     throw new Error(`Forall in unification should not happen`);
   } else {
@@ -349,6 +337,7 @@ function miniUnify(exp, tfun, context){
  */
 function inferVar(exp, context){
   return lookupGlobalLocalContext(context, exp.name);
+
 }
 
 /**
