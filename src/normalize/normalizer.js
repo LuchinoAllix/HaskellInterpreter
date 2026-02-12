@@ -1,5 +1,5 @@
 import { Decl } from "./Decl.js";
-import { Exp, VarExp, ImExp, FunctionApp, IfExp, LetExp, CaseExp,
+import { Exp, VarExp, ImExp, FunctionApp, LetExp, CaseExp,
          LambdaExp, SpecialExp, makeFuncAppOfList, mkMTListExp} from "./Exp.js";
 import { Program } from "../objects/Program.js";
 import { Branch } from "./Branch.js";
@@ -612,9 +612,9 @@ function normalizeCase(node){
 }
 
 /**
- * Turns a lexp node of if into an IfExp object 
+ * Turns a lexp node of if into a CaseExp object 
  * @param {Node} node
- * @returns {IfExp} 
+ * @returns {CaseExp} 
  */
 function normalizeIf(node){
   let cnt = 0;
@@ -626,7 +626,11 @@ function normalizeIf(node){
       if (cnt === 3){ break; }
     }
   }
-  return new IfExp(elems[0], elems[1], elems[2], [node.line, node.column]);
+  return new CaseExp(
+    [elems[0]],
+    [ new Branch([new ImExp(true, "Bool")], elems[1]),
+      new Branch([new ImExp(false, "Bool")], elems[2])],
+    [node.line, node.column]);
 }
 
 /**
@@ -826,18 +830,4 @@ function normalizeCurr(node){
 
   return makeFuncAppOfList(new VarExp(node.childs[plus].value,
     [node.childs[plus].line, node.childs[plus].column]), args);
-}
-
-/**
- * Transforms an if expression into a case expression.
- * Used in type inference.
- * @param {IfExp} ifExp
- * @returns {CaseExp} 
- */
-export function ifToCase(ifExp){
-  return new CaseExp(
-    [ifExp.condition],
-    [ new Branch([new ImExp("True", "Bool")], ifExp.success),
-      new Branch([new ImExp("False", "Bool")], ifExp.fail)],
-    ifExp.info);
 }
