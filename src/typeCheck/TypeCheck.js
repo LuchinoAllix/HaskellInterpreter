@@ -379,16 +379,27 @@ function instantiate(type, dict = {}){
   
   // If we have no swapping to do we can dirrectly return the type 
   if (Object.keys(dict).length > 0){
-    if (type.isMetavar()){
+    if (type.isVar()){
       const tmp = dict[type.name];
-      if (tmp !== undefined) { return tmp ; }
-      return type;
+      if (tmp === undefined){ 
+        throw new Error("Undefined var in instanciation");
+      }
+      return tmp;
     } else if (type.isArrow()){
-      return new T.TArrow(instantiate(type.from, dict), 
+      return new T.TArrow(instantiate(type.from, dict),
                           instantiate(type.to, dict));
     } else if (type.isApp()){
-      return new T.TApp(instantiate(type.func, dict), 
+      return new T.TApp(instantiate(type.func, dict),
                         instantiate(type.arg, dict));
+    } else if (type.isMetavar()){
+      if (type.value === null){
+        return T.freshMetavar();
+      } else {
+        let val = instantiate(type.value, dict);
+        let mtvar = T.freshMetavar();
+        mtvar.value = val;
+        return mtvar;
+      }
     }
   }
   return type;
