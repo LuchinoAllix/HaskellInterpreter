@@ -10,13 +10,6 @@ import { isNcommas } from "../eval/eval.js"
 let global_context = new Context();
 global_context.initGlobal();
 
-// generalise to pick up all the non instanciated metavars for the forall
-// lookup wiki of generalise function
-
-// form prenex, all the quantificateur sont au début
-
-// in sml (standart ml) they infer and then check with the type annotation
-
 /**
  * Verifies that a given program type checks
  * This is the point of entry function for type checking
@@ -160,11 +153,11 @@ function unify(t1, t2){
     unify(tmpt1.from, tmpt2.from);
     unify(tmpt1.to, tmpt2.to);
 
-    // Comparing pointer wise is more efficent than name wise
-  } else if (tmpt1 === tmpt2){
-    // do nothing
-    // "Base case" is verified before to avoid an occurs check failure when 
-    // unifying a metavar with itself
+  } else if (tmpt1 === tmpt2){ // Comparing pointer wise is more efficent than 
+    // do nothing              // name wise.
+                               // "Base case" is verified before to avoid an 
+                               // occurs check failure when unifying a metavar 
+                               // with itself
   } else if (tmpt1.isMetavar()){
     occursCheck(tmpt1, tmpt2);
     tmpt1.setVal(tmpt2);

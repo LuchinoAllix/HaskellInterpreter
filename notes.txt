@@ -24,3 +24,10 @@ https://stackoverflow.com/questions/29285897/difference-between-for-in-and-for-o
     // ANS : Should this be used in evaluation ? Yes
     // if et case equivalent en théorie, en pratique remplacer des case par des 
     // if complique l'inférence de types
+
+
+https://en.wikipedia.org/wiki/Prenex_normal_form
+
+// form prenex, all the quantificateur sont au début
+
+// in sml (standart ml) they infer and then check with the type annotation
