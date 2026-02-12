@@ -3,7 +3,6 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
-import { ifToCase } from "../normalize/normalizer.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -79,14 +78,6 @@ function infer(exp, context){
 
     case 'let' :
       return inferLet(exp, context);
-
-    // FIXME: Actually, you don't need `if` nodes, you can use "normalize"
-    // it to `case`.
-    // ANS : Should this be used in evaluation ? Yes
-    // if et case equivalent en théorie, en pratique remplacer des case par des 
-    // if complique l'inférence de types
-    case 'if' :
-      return infer(ifToCase(exp), context);
           
     default :
       let res = T.freshMetavar();
