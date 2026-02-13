@@ -275,7 +275,7 @@ function checkPatterns(patterns, patternsTypes, context){
         break; 
 
       case "functionApp" :
-
+        checkFuncAppPattern(patterns[i], patternsTypes[i], context);
         break
       
       default :
@@ -285,6 +285,12 @@ function checkPatterns(patterns, patternsTypes, context){
 }
 
 
+/**
+ * todo
+ * @param {Exp} pattern 
+ * @param {T.TypeO} patternTypeR 
+ * @param {Context} context 
+ */
 function checkFuncAppPattern(pattern, patternTypeR, context){
   // FIXME: This won't work: you're passing to `inferFunctionApp`
   // a pattern rather than an expression.
