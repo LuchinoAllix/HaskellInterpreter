@@ -41,7 +41,7 @@ export function typeCheck(program){
     }
   }
 
-  //console.log(JSON.stringify(global_context.lookup("id"), null, 2));
+  console.log(JSON.stringify(global_context.lookup("f"), null, 2));
   
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
@@ -282,17 +282,23 @@ function checkPatterns(patterns, patternsTypes, context){
         // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
         // on peut pas regarder le type de x ou y, il faut "l'indiquer"
 
-        let tPattern = patternsTypes[i].resolve(); 
+        let tPattern = patternsTypes[i].resolve();
         // not sure this works FIXME
         // in example 28 (reverse function), at the unify, the context has 
         // types head :: list
         //       rest :: metavar (value null)
+
+        // not working
         if (tPattern.isApp()){
-          checkPatterns([patterns[i].arg], [tPattern.arg], context)
-          checkPatterns([patterns[i].func], [tPattern.func], context)
+          checkPatterns([patterns[i].arg], [tPattern.arg], context);
+          checkPatterns([patterns[i].func], [tPattern.func], context);
+        } else if (tPattern.isMetavar() && tPattern.value === null) {
+          tPattern.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
+          checkPatterns([patterns[i].arg], [tPattern.value.arg], context);
+          checkPatterns([patterns[i].func], [tPattern.value.func], context);
         } else {
-          checkPatterns([patterns[i].arg], [patternsTypes[i]], context)
-          checkPatterns([patterns[i].func], [patternsTypes[i]], context)
+          checkPatterns([patterns[i].arg], [patternsTypes[i]], context);
+          checkPatterns([patterns[i].func], [patternsTypes[i]], context);
         }
         unify(patternsTypes[i],tPattern);
         break
