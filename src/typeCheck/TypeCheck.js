@@ -292,9 +292,10 @@ function checkPatterns(patterns, patternsTypes, context){
  * @param {Context} context 
  */
 function checkFuncAppPattern(pattern, patternTypeR, context){
-  // not working
+  // not working FIXME
+  // tests 93, 94 and 28 
   let patternType = patternTypeR.resolve();
-  if (patternType.isApp()){
+  if (patternType.isApp()) {
     checkPatterns([pattern.func], [patternType.func], context);
     checkPatterns([pattern.arg], [patternType.arg], context);
   } else if (patternType.isMetavar() && patternType.value === null) {
