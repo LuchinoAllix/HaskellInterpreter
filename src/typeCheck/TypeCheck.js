@@ -265,13 +265,13 @@ function occursCheck(t1, t2){
  */
 function checkPatterns(patterns, patternsTypes, context){
   for (let i = 0; i < patterns.length; i ++){
-    switch(patterns[i].type){
+    switch (patterns[i].type){
       case "var" :
         context.add(patterns[i].name, patternsTypes[i]);
         break ;
 
       case "immediate" :
-        unify(patternsTypes[i], inferImmediate(patterns[i]));
+        unify(patternsTypes[i], instantiate(inferImmediate(patterns[i])));
         break; 
 
       case "functionApp" :
@@ -281,7 +281,20 @@ function checkPatterns(patterns, patternsTypes, context){
         //       (coming from check function)
         // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
         // on peut pas regarder le type de x ou y, il faut "l'indiquer"
-        unify(patternsTypes[i],inferFunctionApp(patterns[i], context));
+
+        let tPattern = patternsTypes[i].resolve(); 
+        // not sure this works FIXME
+        // in example 28 (reverse function), at the unify, the context has 
+        // types head :: list
+        //       rest :: metavar (value null)
+        if (tPattern.isApp()){
+          checkPatterns([patterns[i].arg], [tPattern.arg], context)
+          checkPatterns([patterns[i].func], [tPattern.func], context)
+        } else {
+          checkPatterns([patterns[i].arg], [patternsTypes[i]], context)
+          checkPatterns([patterns[i].func], [patternsTypes[i]], context)
+        }
+        unify(patternsTypes[i],tPattern);
         break
       
       default :
