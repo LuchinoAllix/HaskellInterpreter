@@ -292,21 +292,8 @@ function checkPatterns(patterns, patternsTypes, context){
  * @param {Context} context 
  */
 function checkFuncAppPattern(pattern, patternTypeR, context){
-  // FIXME: This won't work: you're passing to `inferFunctionApp`
-  // a pattern rather than an expression.
-  // ANS : But patterns are a list of expressions 
-  //       (coming from check function)
-  // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
-  // on peut pas regarder le type de x ou y, il faut "l'indiquer"
-  let pattern = pattern;
-  let patternType = patternTypeR.resolve();
-  // not sure this works FIXME
-  // in example 28 (reverse function), at the unify, the context has 
-  // types head :: list
-  //       rest :: metavar (value null)
-
   // not working
-  // 
+  let patternType = patternTypeR.resolve();
   if (patternType.isApp()){
     checkPatterns([pattern.func], [patternType.func], context);
     checkPatterns([pattern.arg], [patternType.arg], context);
