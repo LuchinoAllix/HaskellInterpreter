@@ -275,38 +275,44 @@ function checkPatterns(patterns, patternsTypes, context){
         break; 
 
       case "functionApp" :
-        // FIXME: This won't work: you're passing to `inferFunctionApp`
-        // a pattern rather than an expression.
-        // ANS : But patterns are a list of expressions 
-        //       (coming from check function)
-        // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
-        // on peut pas regarder le type de x ou y, il faut "l'indiquer"
 
-        let tPattern = patternsTypes[i].resolve();
-        // not sure this works FIXME
-        // in example 28 (reverse function), at the unify, the context has 
-        // types head :: list
-        //       rest :: metavar (value null)
-
-        // not working
-        if (tPattern.isApp()){
-          checkPatterns([patterns[i].arg], [tPattern.arg], context);
-          checkPatterns([patterns[i].func], [tPattern.func], context);
-        } else if (tPattern.isMetavar() && tPattern.value === null) {
-          tPattern.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
-          checkPatterns([patterns[i].arg], [tPattern.value.arg], context);
-          checkPatterns([patterns[i].func], [tPattern.value.func], context);
-        } else {
-          checkPatterns([patterns[i].arg], [patternsTypes[i]], context);
-          checkPatterns([patterns[i].func], [patternsTypes[i]], context);
-        }
-        unify(patternsTypes[i],tPattern);
         break
       
       default :
         throw new Error("Unhandeled case in checkPatterns");
     }
   }
+}
+
+
+function checkFuncAppPattern(pattern, patternTypeR, context){
+  // FIXME: This won't work: you're passing to `inferFunctionApp`
+  // a pattern rather than an expression.
+  // ANS : But patterns are a list of expressions 
+  //       (coming from check function)
+  // si le pattern est (x,y) et qu'on sait qu' on a le type (int, int) 
+  // on peut pas regarder le type de x ou y, il faut "l'indiquer"
+  let pattern = pattern;
+  let patternType = patternTypeR.resolve();
+  // not sure this works FIXME
+  // in example 28 (reverse function), at the unify, the context has 
+  // types head :: list
+  //       rest :: metavar (value null)
+
+  // not working
+  // 
+  if (patternType.isApp()){
+    checkPatterns([pattern.func], [patternType.func], context);
+    checkPatterns([pattern.arg], [patternType.arg], context);
+  } else if (patternType.isMetavar() && patternType.value === null) {
+    patternType.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
+    checkPatterns([pattern.func], [patternType.value.func], context);
+    checkPatterns([pattern.arg], [patternType.value.arg], context);
+  } else {
+    checkPatterns([pattern.func], [patternType], context);
+    checkPatterns([pattern.arg], [patternType], context);
+  }
+  unify(patternTypeR, patternType);
 }
 
 /**
