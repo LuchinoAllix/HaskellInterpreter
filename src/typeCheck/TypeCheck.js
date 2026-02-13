@@ -286,8 +286,8 @@ function checkPatterns(patterns, patternsTypes, context){
 
 
 /**
- * If possible, modifies the type expected of a pattern (patternTypeR),  
- * based on the constitution of the pattern, for example :
+ * If possible, modifies the type expected of a pattern (patternTypeR), and 
+ * the context based on the constitution of the pattern, for example :
  * 
  * - (a:b) = ... will yield that the pattern is of type metavar where it's value
  *   is list metavar t42 and the context will be updated where a is of type t42 
@@ -298,7 +298,7 @@ function checkPatterns(patterns, patternsTypes, context){
  *   a is of type t42 and b is t43  
  * 
  * @param {Exp} pattern 
- * @param {T.TypeO} patternTypeR 
+ * @param {T.TypeO} patternTypeR // should this be a metavar ?
  * @param {Context} context 
  */
 function checkFuncAppPattern(pattern, patternTypeR, context){
