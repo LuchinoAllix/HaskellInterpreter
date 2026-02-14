@@ -324,9 +324,10 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
   // tests 93, 94 and 28 
   let patternType = patternTypeR.resolve();
   if (patternType.isApp()) {
-    checkFuncAppPattern(pattern.func, patternType.func, context);
-    checkFuncAppPattern(pattern.arg, patternType.arg, context);
-    unify(patternType.func, patternType.arg);
+    throw new Error("TODO");
+    // checkFuncAppPattern(pattern.func, patternType.func, context);
+    // checkFuncAppPattern(pattern.arg, patternType.arg, context);
+    // unify(patternType.func, patternType.arg);
   } else if (patternType.isMetavar() && patternType.value === null) {
     let func = T.freshMetavar();
     checkPatterns([pattern.func], [func], context);
@@ -336,19 +337,10 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
     } else {
       throw new Error("TODO");
     }
-
-
-
-    //patternType.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
-    //checkPatterns([pattern.func], [patternType.value.func], context);
-    //checkPatterns([pattern.arg], [patternType.value.arg], context);
-    //if (patternType.value.func.isArrow()){
-    //  unify(patternType.value.func.from, patternType.value.arg);
-    //}
-    //unify(patternType.value.func, patternType.value.arg);
   } else {
-    checkPatterns([pattern.func], [patternType], context);
-    checkPatterns([pattern.arg], [patternType], context);
+    throw new Error("TODO");
+    // checkPatterns([pattern.func], [patternType], context);
+    // checkPatterns([pattern.arg], [patternType], context);
   }
 }
 
