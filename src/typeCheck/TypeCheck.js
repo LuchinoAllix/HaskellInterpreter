@@ -41,7 +41,7 @@ export function typeCheck(program){
     }
   }
 
-  console.log(JSON.stringify(global_context.lookup("f"), null, 2));
+  console.log(JSON.stringify(global_context.lookup("reverse"), null, 2));
   
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
@@ -324,10 +324,14 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
   // tests 93, 94 and 28 
   let patternType = patternTypeR.resolve();
   if (patternType.isApp()) {
-    throw new Error("TODO");
-    // checkFuncAppPattern(pattern.func, patternType.func, context);
-    // checkFuncAppPattern(pattern.arg, patternType.arg, context);
-    // unify(patternType.func, patternType.arg);
+    let func = T.freshMetavar();
+    checkPatterns([pattern.func], [func], context);
+    if (func.value.isArrow()){
+      checkPatterns([pattern.arg], [func.value.from], context);
+      unify(patternType, func.value.to);
+    } else {
+      throw new Error("TODO");
+    }
   } else if (patternType.isMetavar() && patternType.value === null) {
     let func = T.freshMetavar();
     checkPatterns([pattern.func], [func], context);
