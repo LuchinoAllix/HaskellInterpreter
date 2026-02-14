@@ -921,3 +921,13 @@ main = print (f [1])
 --/
 
 --------------------------------------------------------------------------------
+-- Test 95         : String type annotation
+-- Expected result : [H,e,l,p, ,m,e]
+
+--/
+concatStr :: String -> String -> String
+concatStr a b = a ++ b 
+main = print (concatStr "Help" " me")
+--/
+
+--------------------------------------------------------------------------------
