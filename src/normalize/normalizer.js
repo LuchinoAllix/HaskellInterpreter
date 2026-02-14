@@ -166,6 +166,9 @@ function normalizeDecl(node){
 function normaliseTypeAnnotation(node){
     switch (node.type){
     case 'Qtycon' :
+      if (node.value === "String"){ // desugariser String to [Char]
+        return new T.TApp(new T.TBuiltin("List"), new T.TBuiltin("Char"));
+      }
       return new T.TBuiltin(node.value);
     case 'type' :
       if (node.childs[1].value === '->' ){
