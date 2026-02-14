@@ -41,7 +41,8 @@ export function typeCheck(program){
     }
   }
 
-  console.log(JSON.stringify(global_context.lookup("reverse"), null, 2));
+  // debug
+  //console.log(JSON.stringify(global_context.lookup("reverse"), null, 2));
   
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
