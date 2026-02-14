@@ -107,7 +107,7 @@ function normalize(node){
       // This is not the only rhs outcome, just the only one yet managed
       return normalizeExp(node.childs[1]);
 
-    case "integer":
+    case "Integer":
     case "String" :
     case "Qconid" :
     case "infixexp" :
@@ -289,7 +289,7 @@ function normalizeExp(node){
     case "Qvarid" :
       return new VarExp(node.value, [node.line, node.column]);
 
-    case "integer" :
+    case "Integer" :
       return new ImExp(parseInt(node.value), node.type, 
         [node.line, node.column]);
 

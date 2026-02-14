@@ -173,7 +173,7 @@ function evaluateVar(exp, env){
  */
 function evaluateImmediate(exp){
   switch (exp.valueType){
-    case "integer" :
+    case "Integer" :
       return new V.Vint(exp.value);
 
     case "Boolean" :

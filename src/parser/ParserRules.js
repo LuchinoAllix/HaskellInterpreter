@@ -527,7 +527,7 @@ export class Rules {
       ]),
       branch([
         [ref("fixity"), 1], 
-        [tokentype("integer"), 0], 
+        [tokentype("Integer"), 0], 
         [ref("ops"), 1]
       ])
       //branch([]) FIXME : normal que ceci soit commenté ?
@@ -1295,7 +1295,7 @@ export class Rules {
       branch([[ref("apat"), 1]]),
       branch([
         [data("-"), 1],
-        [tokentype("integer"), 1]
+        [tokentype("Integer"), 1]
       ]),
       branch([
         [data("-"), 1],
@@ -1485,7 +1485,7 @@ export class Rules {
      * ------------------------- */
     this.rules.literal.childs = [
       // TODO verify if capital letter or not
-      branch([[tokentype("integer"), 1]]),
+      branch([[tokentype("Integer"), 1]]),
       branch([[tokentype("float"), 1]]),
       branch([[tokentype("char"), 1]]),
       branch([[tokentype("String"), 1]])

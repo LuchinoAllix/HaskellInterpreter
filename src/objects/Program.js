@@ -190,7 +190,7 @@ export class Program {
       this.tokens[len - 1].type = type;
       if (len > 1){
         if ((this.tokens[len - 1].type === this.tokens[len - 2].type) &&
-            this.tokens[len - 1].type !== 'integer'){
+            this.tokens[len - 1].type !== 'Integer'){
           this.tokens[len - 2].value += this.tokens[len - 1].value;
           this.tokens.pop();
         }

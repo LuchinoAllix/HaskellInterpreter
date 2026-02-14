@@ -312,19 +312,19 @@ function getHexadecimal(program){
  */
 function getInteger(program){
   if (getDecimal(program)){
-    program.overwriteTypeLastToken('integer');
+    program.overwriteTypeLastToken('Integer');
     return true;}
   if (program.getChar() === '0'){
-    program.addToken('integer');
+    program.addToken('Integer');
     if (program.getChar() === 'o' || program.getChar() === '0'){
-      program.addToken('integer');
+      program.addToken('Integer');
       if (getOctal(program)){
-        return program.overwriteTypeLastToken('integer');
+        return program.overwriteTypeLastToken('Integer');
       }
     } else if (program.getChar() === 'x' || program.getChar() === 'X'){
-      program.addToken('integer');
+      program.addToken('Integer');
       if (getHexadecimal(program)){
-        return program.overwriteTypeLastToken('integer');
+        return program.overwriteTypeLastToken('Integer');
       }
     } else { 
       program.removeLastTokensLastValue();
