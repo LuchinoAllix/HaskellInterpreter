@@ -549,21 +549,6 @@ function getArgs(node){
 }
 
 /**
- * Counts the number of arguments in a type declaration
- * @param {Node} node 
- * @returns {Integer}
- */
-function countTypeArgs(node){
-  if (node.childs.length === 0){
-    return 1
-  } else if (node.type === "type"){
-    return 1 + countTypeArgs(node.childs[2]);
-  } else {
-    throw new Error("Unsupported node in counting args : " + node.type);
-  }
-}
-
-/**
  * Transformes a Qconid node into a ImExp
  * for the moment only manages False and True because I don't know what
  * are the other Qconid values (will be changed when we meet them)
