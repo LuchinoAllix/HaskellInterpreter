@@ -291,11 +291,11 @@ function checkPatterns(patterns, patternsTypes, context){
  * 
  * - (a:b) = ... will yield that the pattern is of type metavar where it's value
  *   is list metavar t42 and the context will be updated where a is of type t42 
- *   and b is list metavar t42
+ *   and b is of type list metavar t42
  * 
  * - (a,b) = ... will yield that the pattern is of type metavar where it's value
  *   is tuple metavar t42 , metavar t43 and the context will be updated where 
- *   a is of type t42 and b is t43  
+ *   a is of type t42 and b is of of type t43  
  * 
  * @param {Exp} pattern 
  * @param {T.TypeO} patternTypeR // should this be a metavar ?
