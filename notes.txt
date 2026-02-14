@@ -31,3 +31,5 @@ https://en.wikipedia.org/wiki/Prenex_normal_form
 // form prenex, all the quantificateur sont au début
 
 // in sml (standart ml) they infer and then check with the type annotation
+
+// TODO desugar type annotation String to [Char]
