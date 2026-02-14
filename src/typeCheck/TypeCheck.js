@@ -316,35 +316,24 @@ function isAppinCase(name){
  *   a is of type t42 and b is of of type t43  
  * 
  * @param {Exp} pattern 
- * @param {T.TypeO} patternTypeR // should this be a metavar ?
+ * @param {T.TypeO} patternTypeR
  * @param {Context} context 
  */
 function checkFuncAppPattern(pattern, patternTypeR, context){
-  // not working FIXME
-  // tests 93, 94 and 28 
   let patternType = patternTypeR.resolve();
-  if (patternType.isApp()) {
-    let func = T.freshMetavar();
-    checkPatterns([pattern.func], [func], context);
-    if (func.value.isArrow()){
-      checkPatterns([pattern.arg], [func.value.from], context);
+  let func = T.freshMetavar();
+  checkPatterns([pattern.func], [func], context);
+  if (func.value.isArrow()){
+    checkPatterns([pattern.arg], [func.value.from], context);
+    if (patternType.isApp()) {
       unify(patternType, func.value.to);
-    } else {
-      throw new Error("TODO");
-    }
-  } else if (patternType.isMetavar() && patternType.value === null) {
-    let func = T.freshMetavar();
-    checkPatterns([pattern.func], [func], context);
-    if (func.value.isArrow()){
-      checkPatterns([pattern.arg], [func.value.from], context);
+    } else if (patternType.isMetavar() && patternType.value === null) {
       patternType.setVal(func.value.to);
     } else {
       throw new Error("TODO");
     }
   } else {
     throw new Error("TODO");
-    // checkPatterns([pattern.func], [patternType], context);
-    // checkPatterns([pattern.arg], [patternType], context);
   }
 }
 
