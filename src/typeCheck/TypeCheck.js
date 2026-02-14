@@ -284,8 +284,15 @@ function checkPatterns(patterns, patternsTypes, context){
         checkFuncAppPattern(patterns[i], patternsTypes[i], context);
         break
       
+      case "SpecialExp" :
+        if (patterns[i].special === "_"){
+          unify(patternsTypes[i], T.freshMetavar());
+          break;
+        } else {
+          throw new Error("Unhandeled SpecialExp " + patterns[i].special);
+        }
       default :
-        throw new Error("Unhandeled case in checkPatterns");
+        throw new Error("Unhandeled case in checkPatterns " + patterns[i].type);
     }
   }
 }
