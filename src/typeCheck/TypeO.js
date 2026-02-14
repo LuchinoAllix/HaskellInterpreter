@@ -116,7 +116,7 @@ export class TBuiltin extends TypeO {
 /**
  * Functions to generate builtin types
  */
-export function TInt() { return new TBuiltin("integer"); }
+export function TInt() { return new TBuiltin("Integer"); }
 export function TBool() { return new TBuiltin("Boolean"); }
 export function TChar() { return new TBuiltin("Char"); }
 export function TUnit() { return new TBuiltin("Unit"); }
