@@ -267,7 +267,12 @@ function checkPatterns(patterns, patternsTypes, context){
   for (let i = 0; i < patterns.length; i ++){
     switch (patterns[i].type){
       case "var" :
-        context.add(patterns[i].name, patternsTypes[i]);
+        if (isAppinCase(patterns[i].name)){
+          unify(patternsTypes[i], 
+            instantiate(global_context.lookup(patterns[i].name)));
+        } else {
+          context.add(patterns[i].name, patternsTypes[i]);
+        }
         break ;
 
       case "immediate" :
@@ -282,6 +287,19 @@ function checkPatterns(patterns, patternsTypes, context){
         throw new Error("Unhandeled case in checkPatterns");
     }
   }
+}
+
+/**
+ * Returns true if the name given is a function that can be called in a pattern
+ * in Haskell code
+ * #HELP are there other functions ?
+ * @param {String} name 
+ * @returns {Boolean}
+ */
+function isAppinCase(name){
+  return name === ":" 
+      || name === ","
+      || isNcommas(name);
 }
 
 
@@ -306,17 +324,32 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
   // tests 93, 94 and 28 
   let patternType = patternTypeR.resolve();
   if (patternType.isApp()) {
-    checkPatterns([pattern.func], [patternType.func], context);
-    checkPatterns([pattern.arg], [patternType.arg], context);
+    checkFuncAppPattern(pattern.func, patternType.func, context);
+    checkFuncAppPattern(pattern.arg, patternType.arg, context);
+    unify(patternType.func, patternType.arg);
   } else if (patternType.isMetavar() && patternType.value === null) {
-    patternType.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
-    checkPatterns([pattern.func], [patternType.value.func], context);
-    checkPatterns([pattern.arg], [patternType.value.arg], context);
+    let func = T.freshMetavar();
+    checkPatterns([pattern.func], [func], context);
+    if (func.value.isArrow()){
+      checkPatterns([pattern.arg], [func.value.from], context);
+      patternType.setVal(func.value.to);
+    } else {
+      throw new Error("TODO");
+    }
+
+
+
+    //patternType.value = new T.TApp(T.freshMetavar(), T.freshMetavar());          
+    //checkPatterns([pattern.func], [patternType.value.func], context);
+    //checkPatterns([pattern.arg], [patternType.value.arg], context);
+    //if (patternType.value.func.isArrow()){
+    //  unify(patternType.value.func.from, patternType.value.arg);
+    //}
+    //unify(patternType.value.func, patternType.value.arg);
   } else {
     checkPatterns([pattern.func], [patternType], context);
     checkPatterns([pattern.arg], [patternType], context);
   }
-  unify(patternTypeR, patternType);
 }
 
 /**
