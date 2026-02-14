@@ -262,7 +262,7 @@ main = do print (reverse [1,2,3])
 -- Expected result : 3
 
 --/
-sum :: [Int] -> Int
+sum :: [Integer] -> Integer
 sum [] = 0
 sum (head: rest) = head + sum rest
 main = print (sum [1,2])
@@ -273,7 +273,7 @@ main = print (sum [1,2])
 -- Expected result : [b,l,a,c,k]
 
 --/
-cardColour :: String -> String
+cardColour :: [Char] -> [Char]
 cardColour suit =
   case suit of
     "hearts" -> "red"
@@ -314,7 +314,7 @@ main = print ((\x y -> x + (\a -> a * a) y ) 2 3)
 -- Expected result : 1
 
 --/
-func :: [[Int]] -> Int
+func :: [[Integer]] -> Integer
 func [] = 0
 func [[]] = 0
 func [(a: b)] = a
@@ -345,7 +345,7 @@ main =  if (x==0) && (y==0) || (x + y) == 1 then print ("yes") else print ("no")
 -- Expected result : 3
 
 --/
-x :: Int
+x :: Integer
 x = 5
 main = print ((\x -> let x = 3 in x) 1)
 --/
@@ -372,7 +372,7 @@ main = print ( f 1 2 3)
 -- Expected result : 5
 
 --/
-f :: Int -> Int
+f :: Integer -> Integer
 f x = x
 a = 5
 
@@ -878,7 +878,7 @@ main = print (3 `f` 4)
 -- Expected result : 0
 
 --/
-x :: (Int, Int)
+x :: (Integer, Integer)
 x = (1, 0)
 main = print (snd x)
 --/
