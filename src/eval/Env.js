@@ -1,6 +1,8 @@
 import { Prim } from "./Prim.js";
 import { Vint, Vbool, VList, Vtuple, Vio, Unit, 
-         Vchar } from "./Value.js";
+         Vchar, 
+         Value,
+         Vfunc} from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -73,40 +75,6 @@ export class Env {
     this.add("print", new Prim(a => new Vio( 
       // should automatially convert list of chars to string ? #fixme
       function print(){
-        function makeStr(val){
-          if (val.type === "unit"){
-            return "()";
-          } else if (val.type === "mtlist"){
-            return "[]";
-          }
-          let bord = null;
-          if (val.type === "tuple"){
-            bord = "()";
-            let res = bord[0];
-            for (let t of val.value){
-              res += makeStr(t);
-              res += ",";
-            }
-            return res.slice(0,-1) + bord[1] ;
-          } else if (val.type === "list"){
-            bord = "[]";
-            if (val.fst === null){
-              return bord;
-            }
-          }
-
-          if (bord !== null){
-            let fst = makeStr(val.fst);
-            if (val.snd.type === "mtlist"){
-              return bord[0] + fst + bord[1];
-            }
-            let snd = makeStr(val.snd);
-            snd = snd.substring(1, snd.length - 1);
-            return bord[0] + fst + ',' + snd + bord[1];
-          } else {
-            return val.value;
-          }
-        }
         let str = makeStr(a);
         console.log(str);
         outputs.push(str);
@@ -132,13 +100,7 @@ export class Env {
     
     this.add(">", new Prim(a => new Prim(b => new Vbool(a.value > b.value))));
 
-    this.add("map", new Prim(f => new Prim(l => {
-      function map(f,l){
-        if (l.type === "mtlist"){ return l ; }
-        return new VList(applyFunc(f, l.fst), map(f, l.snd));
-      }
-      return map(f,l);
-    })))
+    this.add("map", new Prim(f => new Prim(l => map(f,l))))
 
     this.add("fst", new Prim(
       function fst(a){
@@ -235,3 +197,58 @@ function makeFunc(n, list){
     return new Prim(a => makeFunc(n-1, [...list, a]));
   }
 }
+
+/**
+ * Function used in the print primitive, can be seen as a pretty printer
+ * Converts a value into a string
+ * @param {Value} val 
+ * @returns {String}
+ */
+function makeStr(val){
+  if (val.type === "unit"){
+    return "()";
+  } else if (val.type === "mtlist"){
+    return "[]";
+  }
+  let bord = null;
+  if (val.type === "tuple"){
+    bord = "()";
+    let res = bord[0];
+    for (let t of val.value){
+      res += makeStr(t);
+      res += ",";
+    }
+    return res.slice(0,-1) + bord[1] ;
+  } else if (val.type === "list"){
+    bord = "[]";
+    if (val.fst === null){
+      return bord;
+    }
+  }
+
+  if (bord !== null){
+    let fst = makeStr(val.fst);
+    if (val.snd.type === "mtlist"){
+      return bord[0] + fst + bord[1];
+    }
+    let snd = makeStr(val.snd);
+    snd = snd.substring(1, snd.length - 1);
+    return bord[0] + fst + ',' + snd + bord[1];
+  } else {
+    return val.value;
+  }
+}
+
+/**
+ * function used in the map primitive
+ * implementation of map
+ * @param {Vfunc} f 
+ * @param {VList} l 
+ * @returns {VList}
+ */
+function map(f,l){
+  if (l.type === "mtlist"){ return l ; }
+  return new VList(applyFunc(f, l.fst), map(f, l.snd));
+}
+
+
