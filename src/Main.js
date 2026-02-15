@@ -1,5 +1,6 @@
 import { Program } from './objects/Program.js'
 import { tokenize }from './lexer/Lexer.js'
+import { addIndentation } from "./lexer/Indentation.js"
 import { parse, activateDebugParse } from './parser/Parser.js'
 import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
@@ -40,6 +41,7 @@ async function main(){
   let printDebugParse = false;
   let nosave = false;
   let printTokens = false;
+  let printIndent = false;
   let derivative = false;
   let printNF = false;
   let verbose = false;
@@ -55,6 +57,11 @@ async function main(){
       case "--AST" :
       case "--ast" :
         printAST = true;
+        break;
+
+      case "--Indent" :
+      case "--indent" :
+        printIndent = true;
         break;
 
       case "--DebugParse" :
@@ -96,12 +103,12 @@ async function main(){
     var cnt = 0;
     nosave = true;
     for (let i=1; i <= tests.length; i ++){
-      if (testAtest(i, printTokens, printAST, printDebugParse, 
+      if (testAtest(i, printTokens, printIndent, printAST, printDebugParse, 
         nosave, derivative, verbose, printNF)){
         cnt +=1;
-        console.log("Test passed ✅");
+        console.log("✅ Test passed");
       } else {
-        console.log("Test failed ❌");
+        console.log("❌ Test failed");
       }
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
@@ -111,11 +118,11 @@ async function main(){
       console.log("Test number out of range, tests go from 1 to : ", 
                   tests.length);
     } else {
-      if (testAtest(testNum, printTokens, printAST, printDebugParse, 
-         nosave, derivative, true, printNF)){
-        console.log("Test passed ✅");
+      if (testAtest(testNum, printTokens, printIndent, printAST, printDebugParse
+        , nosave, derivative, true, printNF)){
+        console.log("✅ Test passed");
       } else {
-        console.log("Test failed ❌");
+        console.log("❌ Test failed");
       }
     }
   }
@@ -150,6 +157,7 @@ function printOptions(){
 
       "Options :\n" +
       "  --Tokens      shows the list of token after lexing\n" +
+      "  --Indent      shows the list of token after indentation\n" +
       "  --AST         shows the AST after parsing\n" +
       "  --DebugParse  shows the rules took whilst parsing\n" +
       "  --Nosave      doesn't save the AST and NF after generating them\n" +
@@ -163,14 +171,15 @@ function printOptions(){
  * Tests a file according to the options specified
  * @param {Int} testNb the number of the test to test
  * @param {Boolean} printTokens to print the tokens to the console
+ * @param {Boolean} printTokensIndent to print the tokens (with indentation)
  * @param {Boolean} printAST to print the AST to the console
  * @param {Boolean} DebugParse to show the rules taken by the parser
  * @param {Boolean} nosave to not save the newly generated AST
  * @param {Boolean} der show derivative tree instead of AST
  * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
-                    der, verbose, printNF){
+function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse, 
+  nosave, der, verbose, printNF){
   
   var test = tests[testNb-1];
   const program = new Program(test.input);
@@ -186,7 +195,7 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     tokenize(program);
     
     if (verbose){
-      console.log("Successful tokenization :) ");
+      console.log("✅ Tokenization");
     }
     
 
@@ -196,7 +205,31 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     }
 
   } catch (error) {
-    console.log("Error while tokenizating :");
+    console.log("❌ Error while tokenizating :");
+    whereFail[0].push(testNb);
+    if (verbose){
+      showTokens(program.tokens);
+      showLayoutProgram(program.tokens);
+      console.log(error);
+    }
+    return false;
+  }
+
+  try {
+
+    addIndentation(program);
+    
+    if (verbose){
+      console.log("✅ Indentation");
+    }
+
+    if(printTokensIndent){
+      showTokens(program.tokens);
+      showLayoutProgram(program.tokens);
+    }
+
+  } catch (error) {
+    console.log("❌ Error while indentation :");
     whereFail[0].push(testNb);
     if (verbose){
       showTokens(program.tokens);
@@ -213,27 +246,28 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
 
     parse(program);
 
-    if (verbose){
-      console.log("Successful parsing :) ");
-    }
-      
-
     if (!der){
       compressTree(program.AST);
+    }
+    
+    let printAstMsg = "";
+
+    if (!nosave){
+      writeFileSync("../visualisation/ast.json", 
+                        JSON.stringify(program.AST, null, 2));
+      printAstMsg = " (AST saved to ast.json)";
+    }
+
+    if (verbose){
+      console.log("✅ Parsing" + printAstMsg);
     }
 
     if (printAST){
       showAST(program.AST);
     }
 
-    if (!nosave){
-      writeFileSync("../visualisation/ast.json", 
-                        JSON.stringify(program.AST, null, 2));
-      console.log("AST saved to ast.json");
-    }
-
   } catch (error) {
-    console.log("Error while parsing :");
+    console.log("❌ Error while parsing :");
     whereFail[1].push(testNb);
     if (verbose){
       showAST(program.AST);
@@ -246,23 +280,26 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     
     initGlobal();
     normalizeStart(program)
+
+    let printNorMsg = "";
     
+    if (!nosave){
+      writeFileSync("../visualisation/nf.json", 
+                        JSON.stringify(program.normalizedForm, null, 2));
+      printNorMsg = " (NF saved to nf.json)";
+    }
+
     if (verbose){
-      console.log("Successful normalisation :) ");
+      console.log("✅ Normalisation" + printNorMsg);
     }
 
     if (printNF){
       showNormalForm(program.normalizedForm);
     }
 
-    if (!nosave){
-      writeFileSync("../visualisation/nf.json", 
-                        JSON.stringify(program.normalizedForm, null, 2));
-      console.log("NF saved to nf.json");
-    }
 
   } catch (error) {
-    console.log("Error while normalizing :");
+    console.log("❌ Error while normalizing :");
     whereFail[2].push(testNb);
     if (verbose){
       showNormalForm(program.normalizedForm);
@@ -276,11 +313,11 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     typeCheck(program);
     
     if (verbose){
-      console.log("Successful type checking :) ");
+      console.log("✅ Type checking");
     }
 
   } catch (error) {
-    console.log("Error while type checking :");
+    console.log("❌ Error while type checking :");
     whereFail[3].push(testNb);
     if (verbose){
       console.log(error);
@@ -293,14 +330,14 @@ function testAtest(testNb, printTokens, printAST, DebugParse, nosave,
     initEvalComp(program);
     if (isGoodResult(program.expected, outputs, verbose)){
       if (verbose){
-        console.log("Successful evaluation :) ");
+        console.log("✅ Evaluation");
       } 
     } else {
-      throw new Error("Expected result is different than the one evaluated");
+      throw new Error("❌ Expected result is different than the one evaluated");
     }
 
   } catch (error) {
-    console.log("Error while evaluating :");
+    console.log("❌ Error while evaluating :");
     whereFail[4].push(testNb);
     console.log(error);
     return false;
