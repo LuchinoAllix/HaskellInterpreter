@@ -22,7 +22,7 @@ main = print a
 
 --------------------------------------------------------------------------------
 -- Test 2          : string
--- Expected result : [H,e,l,l,o, ,W,o,r,l,d,!]
+-- Expected result : "Hello World!"
 
 --/
 b = "Hello World!"
@@ -112,7 +112,7 @@ main = print (5 + 3 * 8 - 12 / 3)
 
 --------------------------------------------------------------------------------
 -- Test 13         : if statement
--- Expected result : [n,o,t, ,z,e,r,o]
+-- Expected result : "not zero"
 
 --/
 a = 1
@@ -121,7 +121,7 @@ main = print (if a == 0 then "zero" else "not zero")
 
 --------------------------------------------------------------------------------
 -- Test 14         : multiple ifs
--- Expected result : [i,n,n,e,r, ,f,a,i,l]
+-- Expected result : "inner fail"
 
 --/
 main = print (if (True) 
@@ -270,7 +270,7 @@ main = print (sum [1,2])
 
 --------------------------------------------------------------------------------
 -- Test 30         : case of in func
--- Expected result : [b,l,a,c,k]
+-- Expected result : "black"
 
 --/
 cardColour :: [Char] -> [Char]
@@ -332,7 +332,7 @@ main = do print (a 1)
 
 -------------------------------------------------------------------------------
 -- Test 36         : logical operators
--- Expected result : [n,o]
+-- Expected result : "no"
 
 --/
 x = 1
@@ -561,7 +561,7 @@ main = print [1]
 
 --------------------------------------------------------------------------------
 -- Test 62         : case of in main
--- Expected result : [o,n,e]
+-- Expected result : "one"
 
 --/
 a = 1
@@ -574,7 +574,7 @@ main = print (
 --/
 --------------------------------------------------------------------------------
 -- Test 63         : case of in main with tuple
--- Expected result : [o,n,e, ,z,e,r,o, ,l,e,f,t]
+-- Expected result : "one zero left"
 
 --/
 a = (0, 2)
@@ -718,7 +718,7 @@ main = print (tmp2 4 2)
 --/
 --------------------------------------------------------------------------------
 -- Test 74         : recursive call with prints
--- Expected result : 2\n1\n0\n[f,i,n,i,s,h,e,d]
+-- Expected result : 2\n1\n0\n"finished"
 
 --/
 func a = if (a >= 0) then do
@@ -885,7 +885,7 @@ main = print (snd x)
 
 --------------------------------------------------------------------------------
 -- Test 91         : string in tuple
--- Expected result : (1,[s,t,r,i,n,g])
+-- Expected result : (1,"string")
 
 --/
 main = print ((1, "string"))
@@ -922,7 +922,7 @@ main = print (f [1])
 
 --------------------------------------------------------------------------------
 -- Test 95         : String type annotation
--- Expected result : [H,e,l,p, ,m,e]
+-- Expected result : "Help me"
 
 --/
 concatStr :: String -> String -> String

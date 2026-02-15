@@ -1,8 +1,6 @@
 import { Prim } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, Vio, Unit, 
-         Vchar, 
-         Value,
-         Vfunc} from "./Value.js";
+import { Vint, Vbool, VList, Vtuple, Vio, Unit, Vchar, Value,
+         Vfunc } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -138,7 +136,6 @@ export class Env {
       return a})));
 
     this.add(':', new Prim(a => new Prim(b => {
-      //if (b === null) {return a;}
       return new VList(a, b);
     })));
 
@@ -223,6 +220,9 @@ function makeStr(val){
     bord = "[]";
     if (val.fst === null){
       return bord;
+    } else if (val.fst.type === "char"){
+      // converting lists of char to strings
+      return "\"" + charListToStr(val) +  "\"";
     }
   }
 
@@ -237,6 +237,17 @@ function makeStr(val){
   } else {
     return val.value;
   }
+}
+
+/**
+ * Turns a vlist of chars into a string
+ * @param {VList} val 
+ * @returns {String}
+ */
+function charListToStr(val){
+  let res = val.fst.value;
+  if (val.snd.type === 'mtlist'){ return res ; }
+  return res + charListToStr(val.snd);
 }
 
 /**
