@@ -7,7 +7,7 @@
 --#                        must be on one line. for results with multiple
 --#                        answers (like in a do stmt) the expected results need
 --#                        to be seperated by \n.
---#                        Errors are not yet managed. 
+--#                        Errors are managed in TestFail.hs. 
 
 --# Tests are processed by makeTests() in Main.js.
 
@@ -17,7 +17,7 @@
 
 --/
 a = 42
-main = print a
+main = print aa
 --/
 
 --------------------------------------------------------------------------------
