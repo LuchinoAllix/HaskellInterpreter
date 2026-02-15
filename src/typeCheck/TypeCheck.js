@@ -471,8 +471,10 @@ function inferLet(exp, context){
     return infer(exp.body, clone);
 
   } else {
-    // should we just add all the exps to the global context ? 
-    throw new Error("TODO");
+    for (let decl of exp.decls){
+      global_context.add(decl.name, infer(decl.body, context), true);
+    }
+    return T.TUnit();
   }
 }
 
