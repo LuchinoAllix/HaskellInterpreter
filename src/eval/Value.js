@@ -40,6 +40,7 @@ export class Vchar extends Value {
 export class Vfunc extends Value {
 
   /**
+   * todo
    * @param {function} body 
    * @param {Env} closure
    */
@@ -104,18 +105,6 @@ export class Vtuple extends Value {
    */
   constructor(values){
     super("tuple");
-    this.value = values;
-  }
-}
-
-export class Vdo extends Value {
-  
-  /**
-   * do statement return type (contains a list of return values)
-   * @param {[Value]} values 
-   */
-  constructor(values){
-    super("do");
     this.value = values;
   }
 }
