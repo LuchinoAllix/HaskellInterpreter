@@ -19,6 +19,8 @@ const concat = T.freshVar();
 const cons = T.freshVar();
 const comma1 = T.freshVar();
 const comma2 = T.freshVar();
+const map1 = T.freshVar();
+const map2 = T.freshVar();
 
 /**
  * Context object definition, used in type inference
@@ -127,6 +129,13 @@ export class Context {
     this.add(",", new T.TForall([comma1.name, comma2.name],
       new T.TArrow(comma1, new T.TArrow(comma2, new T.TApp(
         new T.TApp(T.TTuple(), comma1), comma2)))));
+
+    this.add("map", new T.TForall([map1.name, map2.name],
+      new T.TArrow(
+        new T.TArrow(map1, map2), 
+        new T.TArrow(
+          new T.TApp(T.TList(), map1), 
+          new T.TApp(T.TList(), map2)))));
 
     this.add('return', ); // TODO
     this.add(">>", ); // TODO
