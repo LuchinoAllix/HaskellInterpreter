@@ -154,7 +154,7 @@ export class Env {
       return lambda.exec();
     }))));
 
-    this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
+    //this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
   }
 
   /**

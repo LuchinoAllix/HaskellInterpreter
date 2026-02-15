@@ -21,6 +21,14 @@ const comma1 = T.freshVar();
 const comma2 = T.freshVar();
 const map1 = T.freshVar();
 const map2 = T.freshVar();
+const varReturn = T.freshVar();
+const monadReturn = T.freshVar();
+const varThen1 = T.freshVar();
+const varThen2 = T.freshVar();
+const monadThen = T.freshVar();
+const varBind1 = T.freshVar();
+const varBind2 = T.freshVar();
+const monadBind = T.freshVar();
 
 /**
  * Context object definition, used in type inference
@@ -73,9 +81,8 @@ export class Context {
     this.add('/', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
 
-    // FIXME : shoud be monad IO ?
     this.add('print', new T.TForall([print.name], 
-                                    new T.TArrow(print, T.TUnit()))); 
+                                    new T.TArrow(print, T.TIO()))); 
 
     this.add("==", new T.TForall([eq.name], 
                                  new T.TArrow(eq, 
@@ -123,8 +130,6 @@ export class Context {
       new T.TArrow(cons, 
         new T.TArrow(new T.TApp(T.TList(), cons), 
           new T.TApp(T.TList(), cons)))));
-
-    // How will empty lists be managed ??
       
     this.add(",", new T.TForall([comma1.name, comma2.name],
       new T.TArrow(comma1, new T.TArrow(comma2, new T.TApp(
@@ -137,10 +142,30 @@ export class Context {
           new T.TApp(T.TList(), map1), 
           new T.TApp(T.TList(), map2)))));
 
-    this.add('return', ); // TODO
-    this.add(">>", ); // TODO
-    this.add(">>=", ); // TODO
-    this.add("getChar", ); // TODO
+    // ∀ a m. a → m a
+    // ∀ a . a → a
+    this.add('return', new T.TForall([varReturn.name],
+      new T.TArrow(varReturn, varReturn)));
+    
+    // ∀ a b m. m a → m b → m b
+    // ∀ a b . a → b → b
+    this.add('>>', new T.TForall([varThen1.name, varThen2.name],
+      new T.TArrow(
+        varThen1,
+        new T.TArrow(
+             varThen2,
+             varThen2))));
+
+    // ∀ a b m. m a → (a → m b) → m b
+    // ∀ a b . a → (a → b) → b
+    this.add('>>=', new T.TForall([varBind1.name, varBind2.name],
+      new T.TArrow(
+        varBind1,
+        new T.TArrow(
+            new T.TArrow(varBind1, varBind2),
+            varBind2))));
+
+    //this.add("getChar", ); // TODO
   }
 
   // TODO : add function to verify that global env and gloabl context have the 
