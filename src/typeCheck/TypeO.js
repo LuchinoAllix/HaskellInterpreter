@@ -122,6 +122,7 @@ export function TChar() { return new TBuiltin("Char"); }
 export function TUnit() { return new TBuiltin("Unit"); }
 export function TList() { return new TBuiltin("List"); }
 export function TTuple() { return new TBuiltin("Tuple"); }
+export function TIO() { return new TBuiltin("IO"); }
 
 /**
  * Type of application of type
