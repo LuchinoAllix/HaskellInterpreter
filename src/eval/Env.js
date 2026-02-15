@@ -132,6 +132,14 @@ export class Env {
     
     this.add(">", new Prim(a => new Prim(b => new Vbool(a.value > b.value))));
 
+    this.add("map", new Prim(f => new Prim(l => {
+      function map(f,l){
+        if (l.type === "mtlist"){ return l ; }
+        return new VList(applyFunc(f, l.fst), map(f, l.snd));
+      }
+      return map(f,l);
+    })))
+
     this.add("fst", new Prim(
       function fst(a){
         if (a.type !== "tuple"){
