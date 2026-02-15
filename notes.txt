@@ -31,3 +31,18 @@ https://en.wikipedia.org/wiki/Prenex_normal_form
 // form prenex, all the quantificateur sont au début
 
 // in sml (standart ml) they infer and then check with the type annotation
+
+
+-- Test 97         : Maybe Int
+-- Expected result : Nothing\nInt
+
+--/
+div a b = if b == 0 
+          then Nothing
+          else a/b 
+main = do 
+            print ( div 4 0 )
+            print ( div 4 2 )
+--/
+
+--------------------------------------------------------------------------------
