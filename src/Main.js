@@ -279,7 +279,11 @@ function testAtest(testNb){
 
   } catch (error) {
 
-    if (fail && program.expected === "0"){ return true ; }
+    if (fail && program.expected === "0"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
+
     console.log("❌ Error while tokenizating");
 
     if (fail) { 
@@ -311,7 +315,10 @@ function testAtest(testNb){
 
   } catch (error) {
 
-    if (fail && program.expected === "1"){ return true ; }
+    if (fail && program.expected === "1"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
     
     console.log("❌ Error while indentation");
 
@@ -353,7 +360,10 @@ function testAtest(testNb){
 
   } catch (error) {
 
-    if (fail && program.expected === "2"){ return true ; }
+    if (fail && program.expected === "2"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
     
     console.log("❌ Error while parsing");
 
@@ -392,7 +402,10 @@ function testAtest(testNb){
 
   } catch (error) {
     
-    if (fail && program.expected === "3"){ return true ; }
+    if (fail && program.expected === "3"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
     
     console.log("❌ Error while normalizing");
 
@@ -419,7 +432,10 @@ function testAtest(testNb){
 
   } catch (error) {
 
-    if (fail && program.expected === "4"){ return true ; }
+    if (fail && program.expected === "4"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
     
     console.log("❌ Error while type checking");
 
@@ -449,7 +465,10 @@ function testAtest(testNb){
 
   } catch (error) {
 
-    if (fail && program.expected === "5"){ return true ; }
+    if (fail && program.expected === "5"){ 
+      if (verbose){ console.log(error) ; }
+      return true ; 
+    }
     
     console.log("❌ Error while evaluating");
 
