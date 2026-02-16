@@ -58,7 +58,7 @@ export class Context {
    * Throws an error if the declaration already exists, unless overide is true
    * @param {String} name 
    * @param {Value} val
-   * @param {Boolean}
+   * @param {Boolean} overide
    */
   add(name, val, overide = false){
     if (this.decls[name] !== undefined){
