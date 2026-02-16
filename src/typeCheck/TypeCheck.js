@@ -338,7 +338,7 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
     } else if (patternType.isMetavar() && patternType.value === null) {
       patternType.setVal(func.value.to);
     } else {
-      throw new Error("TODO");
+      throw new Error("TODO"); // #HELP
     }
   } else {
     throw new Error("TODO");
