@@ -24,13 +24,23 @@ main = 1 + "1"
 --/
 
 --------------------------------------------------------------------------------
--- Test 2         : Type annotation does not correspond
+-- Test 2         : type annotation does not correspond
 -- Expected crash : 4
 
 --/
 x :: (Integer, Integer)
 x = (1, False)
 main = print (snd x)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 3         : main incorrect type annotation
+-- Expected crash : 4
+
+--/
+main :: Integer
+main = do 
+    print 3
 --/
 
 --------------------------------------------------------------------------------
