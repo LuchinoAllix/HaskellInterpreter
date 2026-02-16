@@ -5,19 +5,19 @@
 --# 'Test x : blabla' blabla will be the info of the test, must be on one line.
 --# 'Espected crash : ?'  ? will be in which phase the test is expected to fail
 --# Phases :
---#   1 : Lexing  
---#   2 : Indentation  
---#   3 : Parsing
---#   4 : Normalizing  
---#   5 : Type checking
---#   6 : Evaluation
+--#   0 : Lexing  
+--#   1 : Indentation  
+--#   2 : Parsing
+--#   3 : Normalizing  
+--#   4 : Type checking
+--#   5 : Evaluation
 
 
 --# Tests are processed by makeTests() in Main.js.
 
 --------------------------------------------------------------------------------
--- Test 1         : Calling add with a char and not an integer 
--- Expected crash : 5
+-- Test 1         : calling add with a char and not an integer 
+-- Expected crash : 4
 
 --/
 main = 1 + "1" 
