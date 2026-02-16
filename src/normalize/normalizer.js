@@ -202,6 +202,23 @@ function normaliseTypeAnnotation(node){
       } else {
         throw new Error("Mismanaged case of atype node");
       }
+    case 'btype' :
+      if (node.childs.length === 2){
+          return new T.TApp(
+            normaliseTypeAnnotation(node.childs[0]),
+            normaliseTypeAnnotation(node.childs[1])
+          );
+      } else {
+        throw new Error("unhandeled case of btype annotation : " + node);
+      }
+    case 'Special' :
+      if (node.value === '()'){
+        return new T.TUnit();
+      } else {
+        throw new Error("unhandeled case of special type annotation : " 
+          + node.value);
+      }
+
     default :
         throw new Error("unhandeled case of type annotation : " + node.type);
   }
