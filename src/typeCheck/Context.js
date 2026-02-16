@@ -158,6 +158,7 @@ export class Context {
 
     // ∀ a b m. m a → (a → m b) → m b
     // ∀ a b . a → (a → b) → b
+    // enforece all monad be IO
     this.add('>>=', new T.TForall([varBind1.name, varBind2.name],
       new T.TArrow(
         varBind1,
