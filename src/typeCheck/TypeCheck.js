@@ -29,24 +29,31 @@ export function typeCheck(program){
       check(decl.body, declType, new Context());
       if (decl.isAnnotated()){
         let genDeclType = generalize(declType)
-        unify(genDeclType, decl.typeAnnotation);
+        
+        // verify the type annotation
+        unify(instantiate(genDeclType), decl.typeAnnotation); 
+
         global_context.add(decl.name, genDeclType, true);
       } else {
         global_context.add(decl.name, generalize(declType), true);
       }
     }
   }
-
-  // debug
-  //console.log(JSON.stringify(global_context.lookup("reverse"), null, 2));
   
   // To ensure that main is the last decl to be type checked
   let mainType = infer(main.body, new Context());
+  
+  // verify the type annotation of main
+  if (main.isAnnotated()){ 
+    unify(mainType, main.typeAnnotation);
+  }
+  
+  if (isMainAppIoUnit(mainType)){
+    return true; 
+  }
+  console.log(mainType);
+  throw new Error("Main should have type IO, not " + mainType);
 
-  // can main have a type annotation ?
-  // todo add verification on main type IO
-
-  return true;
 }
 
 /**
@@ -470,7 +477,9 @@ function inferLet(exp, context){
     for (let decl of exp.decls){
       global_context.add(decl.name, infer(decl.body, context), true);
     }
-    return T.TUnit();
+    return new T.TApp(T.TIO(), T.TUnit()); 
+    // #HELP I'm using IO here because we say all monads are just IO, 
+    // so it's fine ? (looks suspicious) 
   }
 }
 
@@ -518,4 +527,37 @@ function resetGlobalContext(){
  */
 export function addNcommasToGlobalContext(str){
   global_context.addNcommas(str);
+}
+
+/**
+ * Function to verify that a type is App(IO, Unit)
+ * @param {T.TypeO} mainType 
+ * @returns {Boolean}
+ */
+function isMainAppIoUnit(mainType){
+  
+  if (mainType.isMetavar()){
+    return isMainAppIoUnit(mainType.value);
+  }
+  
+  if (mainType.isApp()){
+    
+    let func = mainType.func;
+    
+    while (func.isMetavar()){
+      func = func.value;
+    } 
+
+    if (func.isBuiltin() && func.blt === 'IO'){
+      
+      let arg = mainType.arg;
+
+      while (arg.isMetavar()){
+        arg = arg.value;
+      }
+
+      return arg.isBuiltin() && arg.blt === 'Unit' ;
+    }
+  }
+  return false;
 }
