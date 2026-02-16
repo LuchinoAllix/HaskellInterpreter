@@ -1,3 +1,11 @@
+
+//--                   File to test the program on input (tests)            --//
+
+/*
+ * Note : The code for tests is not particularly well written, there is a lot
+ * of duplicated code.
+*/
+
 import { Program } from './objects/Program.js'
 import { tokenize }from './lexer/Lexer.js'
 import { addIndentation } from "./lexer/Indentation.js"
@@ -129,9 +137,10 @@ async function main(){
 }
 
 /**
- * todo
- * @param {*} testNum 
- * @returns 
+ * Runs the tests that are supposed to fail (one if specified, all otherwise)
+ * Returns the number of tests passed
+ * @param {number} testNum 
+ * @returns {Intger}
  */
 async function runFailTests(testNum){
   await makeFailTests();
@@ -165,9 +174,10 @@ async function runFailTests(testNum){
 }
 
 /**
- * todo
- * @param {*} testNum 
- * @returns 
+ * Runs the tests (one if specified, all otherwise)
+ * Returns the number of tests passed
+ * @param {number} testNum 
+ * @returns {Integer}
  */
 async function runTests(testNum){
   await makeTests();
