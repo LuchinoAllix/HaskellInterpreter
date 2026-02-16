@@ -69,7 +69,6 @@ export class Context {
     }
     this.decls[name] = val;
   }
-  
 
   /**
    * Initialises the context with all primitive functions type
@@ -82,7 +81,8 @@ export class Context {
     this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
 
     this.add('print', new T.TForall([print.name], 
-                                    new T.TArrow(print, T.TIO()))); 
+                                    new T.TArrow(print, 
+                                      new T.TApp(T.TIO(), T.TUnit())))); 
 
     this.add("==", new T.TForall([eq.name], 
                                  new T.TArrow(eq, 
@@ -145,26 +145,28 @@ export class Context {
     // ∀ a m. a → m a
     // ∀ a . a → a
     this.add('return', new T.TForall([varReturn.name],
-      new T.TArrow(varReturn, varReturn)));
+      new T.TArrow(varReturn, new T.TApp(T.TIO(), varReturn))));
     
     // ∀ a b m. m a → m b → m b
     // ∀ a b . a → b → b
     this.add('>>', new T.TForall([varThen1.name, varThen2.name],
       new T.TArrow(
-        varThen1,
+        new T.TApp(T.TIO(), varThen1),
         new T.TArrow(
-             varThen2,
-             varThen2))));
+          new T.TApp(T.TIO(), varThen2),
+          new T.TApp(T.TIO(), varThen2)))));
 
     // ∀ a b m. m a → (a → m b) → m b
     // ∀ a b . a → (a → b) → b
     // enforece all monad be IO
     this.add('>>=', new T.TForall([varBind1.name, varBind2.name],
       new T.TArrow(
-        varBind1,
+        new T.TApp(T.TIO(), varBind1),
         new T.TArrow(
-            new T.TArrow(varBind1, varBind2),
-            varBind2))));
+            new T.TArrow(
+              varBind1,
+              new T.TApp(T.TIO(), varBind2)),
+            new T.TApp(T.TIO(), varBind2)))));
 
     //this.add("getChar", ); // TODO
   }
