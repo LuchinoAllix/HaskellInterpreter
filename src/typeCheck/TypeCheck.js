@@ -24,18 +24,14 @@ export function typeCheck(program){
     if (decl.name === "main"){
       main = decl;
     } else {
+      let declType = T.freshMetavar();
+      global_context.add(decl.name, declType);
+      check(decl.body, declType, new Context());
       if (decl.isAnnotated()){
-        global_context.add(decl.name, generalize(decl.typeAnnotation));
-        // should the type annotation be verified in any way ? surely
-        // FIXME : what strategy should we adopt ?
-        // eg : x :: (Int, Int)
-        //      x = (1, False)
-        //      main = print (snd x)
-        // il faut check (comme haskell)
+        let genDeclType = generalize(declType)
+        unify(genDeclType, decl.typeAnnotation);
+        global_context.add(decl.name, genDeclType, true);
       } else {
-        let declType = T.freshMetavar();
-        global_context.add(decl.name, declType);
-        check(decl.body, declType, new Context());
         global_context.add(decl.name, generalize(declType), true);
       }
     }
