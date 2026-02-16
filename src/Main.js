@@ -13,8 +13,22 @@ import { typeCheck } from './typeCheck/TypeCheck.js';
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
 
-let tests = []
-let whereFail = [[],[],[],[],[]];
+let tests = [];
+let testsFail = [];
+let whereFail = [[],[],[],[],[],[]];
+let where = ["lexing", "indentation", "parsing", "normalising", "type checking", 
+  "evaluating"];
+
+let printAST = false;
+let printDebugParse = false;
+let nosave = false;
+let printTokens = false;
+let printIndent = false;
+let derivative = false;
+let printNF = false;
+let verbose = false;
+let fail = false;
+let all = false
 
 /**
  * Main function to test Parser
@@ -22,7 +36,7 @@ let whereFail = [[],[],[],[],[]];
  */
 async function main(){
   
-  let testNum = parseInt(process.argv[2]);
+  let testNum =parseInt(process.argv[2]);
   let nbElemsToRemove = 3;
 
   if(isNaN(testNum)){ // no specific test was passed so test all the tests
@@ -36,15 +50,6 @@ async function main(){
     printOptions();
     return ;
   }
-
-  let printAST = false;
-  let printDebugParse = false;
-  let nosave = false;
-  let printTokens = false;
-  let printIndent = false;
-  let derivative = false;
-  let printNF = false;
-  let verbose = false;
 
   // Parcourt tous les arguments restants pour voir les options
   for (const arg of args) {
@@ -90,6 +95,17 @@ async function main(){
         verbose = true;
         break;
 
+      case "--Fail" :
+      case "--fail" :
+        fail = true;
+        break;
+
+      case "--all" :
+      case "--All" :
+        all = true;
+        break;
+
+
       default :
         console.log("\nArgument specified unrecognised : ", arg);
         printOptions();
@@ -97,14 +113,69 @@ async function main(){
     }
   }
 
+  if (all) {
+    let cnt = 0;
+    cnt += await runTests(testNum);
+    cnt += await runFailTests(testNum);
+    console.log("\nTests passed (fail and sucess): ", cnt, "/", 
+      tests.length + testsFail.length);
+    return ;
+  }
+
+  if (fail) { runFailTests(testNum);
+  } else { runTests(testNum) ; }
+
+  return;
+}
+
+/**
+ * todo
+ * @param {*} testNum 
+ * @returns 
+ */
+async function runFailTests(testNum){
+  await makeFailTests();
+  if(isNaN(testNum)){ // running all the tests
+    var cnt = 0;
+    nosave = true;
+    for (let i=1; i <= testsFail.length; i ++){
+      if (testAtest(i)){
+        cnt +=1;
+        console.log("✅ Test failed as expected");
+      } else {
+        console.log("❌ Test didn't fail as expected");
+      }
+    }
+    console.log("\nTests passed : ", cnt, "/", testsFail.length);
+    printDataFails();
+  } else { // running a particular test
+    if (testNum > testsFail.length || testNum  <= 0 ){
+      console.log("Test number out of range, tests go from 1 to : ", 
+                  testsFail.length);
+    } else {
+      verbose = true;
+      if (testAtest(testNum, fail)){
+        console.log("✅ Test failed as expected");
+      } else {
+        console.log("❌ Test didn't fail as expected");
+      }
+    }
+  }
+  return cnt;
+}
+
+/**
+ * todo
+ * @param {*} testNum 
+ * @returns 
+ */
+async function runTests(testNum){
   await makeTests();
-  
-  if(isNaN(testNum)){
+  if(isNaN(testNum)){ // running all the tests
     var cnt = 0;
     nosave = true;
     for (let i=1; i <= tests.length; i ++){
-      if (testAtest(i, printTokens, printIndent, printAST, printDebugParse, 
-        nosave, derivative, verbose, printNF)){
+      if (testAtest(i)){
         cnt +=1;
         console.log("✅ Test passed");
       } else {
@@ -113,27 +184,26 @@ async function main(){
     }
     console.log("\nTests passed : ", cnt, "/", tests.length);
     printDataFails();
-  } else {
+  } else { // running a particular test
     if (testNum > tests.length || testNum  <= 0 ){
       console.log("Test number out of range, tests go from 1 to : ", 
                   tests.length);
     } else {
-      if (testAtest(testNum, printTokens, printIndent, printAST, printDebugParse
-        , nosave, derivative, true, printNF)){
+      verbose = true;
+      if (testAtest(testNum)){
         console.log("✅ Test passed");
       } else {
         console.log("❌ Test failed");
       }
     }
   }
-  return ;
+  return cnt;
 }
 
 /**
  * Prints the information about where each test failed
  */
 function printDataFails(){
-  let where = ["lexing", "parsing", "normalising","type checking","evaluating"];
   for (let i = 0; i < whereFail.length; i++){
     if (whereFail[i].length === 1){
       console.log("An error occured whilst " + where[i] + " for test : " + 
@@ -144,7 +214,6 @@ function printDataFails(){
     }
   }
 }
-
 
 /**
  * Prints all the options to execute the code
@@ -163,6 +232,7 @@ function printOptions(){
       "  --Nosave      doesn't save the AST and NF after generating them\n" +
       "  --Derivative  shows/saves the derivative tree instead of the AST\n" +
       "  --NF          shows the normal form after normalizing\n" +
+      "  --Fail        runs the tests that are supposed to fail\n" +
       "  --Verbose     shows error messages if all tests are run"
     );
 }
@@ -170,34 +240,27 @@ function printOptions(){
 /**
  * Tests a file according to the options specified
  * @param {Int} testNb the number of the test to test
- * @param {Boolean} printTokens to print the tokens to the console
- * @param {Boolean} printTokensIndent to print the tokens (with indentation)
- * @param {Boolean} printAST to print the AST to the console
- * @param {Boolean} DebugParse to show the rules taken by the parser
- * @param {Boolean} nosave to not save the newly generated AST
- * @param {Boolean} der show derivative tree instead of AST
- * @param {Boolean} verbose wether to show errors or not
  */
-function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse, 
-  nosave, der, verbose, printNF){
+function testAtest(testNb){
   
-  var test = tests[testNb-1];
+  var test ;
+  if (fail){
+    test = testsFail[testNb-1];
+  } else {
+    test = tests[testNb-1];
+  }
+  
   const program = new Program(test.input);
   program.expected = test.expected;
   console.log("\nTest " + testNb + " : testing " + test.info);
 
-  if (verbose){
-    console.log("Input : \n" + program.input);
-  }
+  if (verbose){ console.log("Input : \n" + program.input) ; }
 
   try {
 
     tokenize(program);
-    
-    if (verbose){
-      console.log("✅ Tokenization");
-    }
-    
+
+    if (verbose){ console.log("✅ Tokenization") ; }
 
     if(printTokens){
       showTokens(program.tokens);
@@ -205,74 +268,97 @@ function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse,
     }
 
   } catch (error) {
-    console.log("❌ Error while tokenizating :");
+
+    if (fail && program.expected === "0"){ return true ; }
+    console.log("❌ Error while tokenizating");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);   
+    }
+
     whereFail[0].push(testNb);
+
     if (verbose){
       showTokens(program.tokens);
       showLayoutProgram(program.tokens);
       console.log(error);
     }
+
     return false;
   }
 
   try {
 
     addIndentation(program);
-    
-    if (verbose){
-      console.log("✅ Indentation");
-    }
 
-    if(printTokensIndent){
+    if (verbose){ console.log("✅ Indentation") ; }
+
+    if(printIndent){
       showTokens(program.tokens);
       showLayoutProgram(program.tokens);
     }
 
   } catch (error) {
-    console.log("❌ Error while indentation :");
-    whereFail[0].push(testNb);
+
+    if (fail && program.expected === "1"){ return true ; }
+    
+    console.log("❌ Error while indentation");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);   
+    }
+    
+    whereFail[1].push(testNb);
+
     if (verbose){
       showTokens(program.tokens);
       showLayoutProgram(program.tokens);
       console.log(error);
     }
+
     return false;
   }
 
   try {
-    if (DebugParse){
-      activateDebugParse();
-    }
+
+    if (printDebugParse){ activateDebugParse() ; }
 
     parse(program);
-
-    if (!der){
-      compressTree(program.AST);
-    }
     
-    let printAstMsg = "";
-
+    if (!derivative){ compressTree(program.AST) ; }
+    
+    let printAstMsg = "" ;
+    
     if (!nosave){
       writeFileSync("../visualisation/ast.json", 
                         JSON.stringify(program.AST, null, 2));
       printAstMsg = " (AST saved to ast.json)";
-    }
+    } 
+    
+    if (verbose){ console.log("✅ Parsing" + printAstMsg) ; }
 
-    if (verbose){
-      console.log("✅ Parsing" + printAstMsg);
-    }
-
-    if (printAST){
-      showAST(program.AST);
-    }
+    if (printAST){ showAST(program.AST) ; }
 
   } catch (error) {
-    console.log("❌ Error while parsing :");
-    whereFail[1].push(testNb);
+
+    if (fail && program.expected === "2"){ return true ; }
+    
+    console.log("❌ Error while parsing");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);
+    }
+
+    whereFail[2].push(testNb);
+
     if (verbose){
       showAST(program.AST);
       console.log(error);
     }
+
     return false;
   }
 
@@ -289,22 +375,29 @@ function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse,
       printNorMsg = " (NF saved to nf.json)";
     }
 
-    if (verbose){
-      console.log("✅ Normalisation" + printNorMsg);
-    }
+    if (verbose){ console.log("✅ Normalisation" + printNorMsg) ; }
 
-    if (printNF){
-      showNormalForm(program.normalizedForm);
-    }
+    if (printNF){ showNormalForm(program.normalizedForm) ; }
 
 
   } catch (error) {
-    console.log("❌ Error while normalizing :");
-    whereFail[2].push(testNb);
+    
+    if (fail && program.expected === "3"){ return true ; }
+    
+    console.log("❌ Error while normalizing");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);   
+    }
+
+    whereFail[3].push(testNb);
+
     if (verbose){
       showNormalForm(program.normalizedForm);
       console.log(error);
     }
+
     return false;
   }
 
@@ -312,34 +405,59 @@ function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse,
   
     typeCheck(program);
     
-    if (verbose){
-      console.log("✅ Type checking");
-    }
+    if (verbose){ console.log("✅ Type checking") ; }
 
   } catch (error) {
-    console.log("❌ Error while type checking :");
-    whereFail[3].push(testNb);
-    if (verbose){
-      console.log(error);
+
+    if (fail && program.expected === "4"){ return true ; }
+    
+    console.log("❌ Error while type checking");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);   
     }
+
+    whereFail[4].push(testNb);
+
+    if (verbose){ console.log(error) ; }
+
     return false;
   }
 
   try{
+
     resetOutputs();
     initEvalComp(program);
-    if (isGoodResult(program.expected, outputs, verbose)){
-      if (verbose){
-        console.log("✅ Evaluation");
-      } 
+
+    if (isGoodResult(program.expected, outputs)){
+      if (verbose){ console.log("✅ Evaluation") ; } 
     } else {
+
       throw new Error("❌ Expected result is different than the one evaluated");
     }
 
   } catch (error) {
-    console.log("❌ Error while evaluating :");
-    whereFail[4].push(testNb);
-    console.log(error);
+
+    if (fail && program.expected === "5"){ return true ; }
+    
+    console.log("❌ Error while evaluating");
+
+    if (fail) { 
+      console.log("Test did not fail where it was supposed to, was supposed to" 
+        + " fail at " + where[program.expected]);   
+    }
+
+    whereFail[5].push(testNb);
+    
+    if (verbose){ console.log(error) ; }
+
+    return false;
+  }
+
+  if (fail){
+    console.log("Test succeded when in was not supposed to. It was supposed to" 
+      + " fail at " + where[program.expected]);
     return false;
   }
 
@@ -350,10 +468,9 @@ function testAtest(testNb, printTokens, printTokensIndent, printAST, DebugParse,
  * Determines if the result of evaluation is the same as the expected one
  * @param {String} expected 
  * @param {[String]} actual not really strings but whatever 
- * @param {Boolean} verbose to print what failed
  * @returns {Boolean}
  */
-function isGoodResult(expected, actual, verbose){
+function isGoodResult(expected, actual){
   expected = expected.split("\\n");
 
   for (let i = 0; i < expected.length; i++ ){
@@ -463,6 +580,42 @@ async function makeTests(){
       }
       test.input = content[i+1];
       tests.push(test); 
+    }
+    return true;
+
+  } catch (error) {
+    console.error("Error while reading test file:", error);
+  }
+}
+
+/**
+ * Creates the list of tests based on the TestsFail.hs file.
+ * Each input is in between '--/' (if there are no other '--/' before)
+ * information about the tests are given with :   
+ * -- Test : ...
+ * -- Expected crash : ...
+ * @returns {Boolean}
+ */
+async function makeFailTests(){
+  try {
+    var content = await readFile("./TestsFail.hs", 'utf8');
+      
+    content = content.split("--/");
+
+    for (let i = 0; i < content.length -1; i += 2){
+      let test = {};
+      test.num = i/2;
+      let lines = content[i].split("\n");
+      for (let j = 0; j < lines.length; j ++){
+        let line = lines [j]
+        if (line.startsWith("-- Test")){
+          test.info = line.split(":")[1].slice(1);
+        } else if (line.startsWith("-- Expected crash : ")){
+          test.expected = line.split(":")[1].slice(1);
+        }
+      }
+      test.input = content[i+1];
+      testsFail.push(test); 
     }
     return true;
 
