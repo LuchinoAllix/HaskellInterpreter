@@ -705,11 +705,11 @@ export class Rules {
      * ------------------------- */
     this.rules.constrs.childs = [
       branch([
+        [ref("constr"), 1], 
         [branch([
-          [ref("constr"), 1], 
           [data("|"), 1], 
-        ]), 2],
-        [ref("constr"), 0]
+          [ref("constr"), 1], 
+        ]), 3]
       ])
     ];
 
