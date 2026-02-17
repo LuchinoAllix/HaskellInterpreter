@@ -570,8 +570,6 @@ function getArgs(node){
 
 /**
  * Transformes a Qconid node into a ImExp
- * for the moment only manages False and True because I don't know what
- * are the other Qconid values (will be changed when we meet them)
  * @param {Node} node 
  * @returns {ImExp}
  */
@@ -582,7 +580,8 @@ function normalizeQconid(node){
     case "True" :
       return new ImExp(true, "Boolean", [node.line, node.column]);
     default :
-      throw new Error("Qconid not yet managed : " + node.value);
+      // Algebraic data types
+      return new ImExp(node.value, node.value, [node.line, node.column]);
   }
 }
 
