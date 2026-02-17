@@ -206,6 +206,8 @@ function makeStr(val){
     return "()";
   } else if (val.type === "mtlist"){
     return "[]";
+  } else if (val.type === 'Nothing'){
+    return val.type;
   }
   let bord = null;
   if (val.type === "tuple"){
