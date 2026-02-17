@@ -132,3 +132,25 @@ export class VMTList extends Value {
     super("mtlist");
   }
 }
+
+export class VNothing extends Value {
+
+  /**
+   * constructor for the value nothing
+   */
+  constructor(){
+    super("Nothing");
+  }
+}
+
+export class VJust extends Value {
+
+  /**
+   * constructor for the value just
+   * @param {Value} value
+   */
+  constructor(value){
+    super("Just");
+    this.value = value;
+  }
+}
