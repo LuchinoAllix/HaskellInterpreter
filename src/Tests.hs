@@ -968,7 +968,7 @@ main = do
 -- Expected result : Nothing
 
 --/
-data Perhaps = Nothing | Just a
+data Perhaps a = Nothing | Just a
 divv a b = if b == 0
           then Nothing
           else Just (a/b)
