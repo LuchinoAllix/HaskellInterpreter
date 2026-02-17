@@ -950,3 +950,30 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
+-- Test 98         : Maybe
+-- Expected result : Nothing\nJust 5
+
+--/
+divv a b = if b == 0
+          then Nothing
+          else Just (a/b)
+
+main = do 
+    print (divv 5 0)
+    print (divv 5 1)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 98         : Algebraic data type
+-- Expected result : Nothing
+
+--/
+data Perhaps = Nothing | Just a
+divv a b = if b == 0
+          then Nothing
+          else Just (a/b)
+
+main = print (divv 5 0)
+--/
+
+--------------------------------------------------------------------------------
