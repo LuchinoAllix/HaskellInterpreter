@@ -26,6 +26,8 @@ const varThen1 = T.freshVar();
 const varThen2 = T.freshVar();
 const varBind1 = T.freshVar();
 const varBind2 = T.freshVar();
+const just = T.freshVar();
+const maybe = T.freshVar();
 
 /**
  * Context object definition, used in type inference
@@ -140,12 +142,10 @@ export class Context {
           new T.TApp(T.TList(), map2)))));
 
     // ∀ a m. a → m a
-    // ∀ a . a → a
     this.add('return', new T.TForall([varReturn.name],
       new T.TArrow(varReturn, new T.TApp(T.TIO(), varReturn))));
     
     // ∀ a b m. m a → m b → m b
-    // ∀ a b . a → b → b
     this.add('>>', new T.TForall([varThen1.name, varThen2.name],
       new T.TArrow(
         new T.TApp(T.TIO(), varThen1),
@@ -154,8 +154,6 @@ export class Context {
           new T.TApp(T.TIO(), varThen2)))));
 
     // ∀ a b m. m a → (a → m b) → m b
-    // ∀ a b . a → (a → b) → b
-    // enforece all monad be IO
     this.add('>>=', new T.TForall([varBind1.name, varBind2.name],
       new T.TArrow(
         new T.TApp(T.TIO(), varBind1),
@@ -164,6 +162,16 @@ export class Context {
               varBind1,
               new T.TApp(T.TIO(), varBind2)),
             new T.TApp(T.TIO(), varBind2)))));
+
+    this.add("Just", new T.TForall([just.name],
+      new T.TArrow(
+        just, 
+        new T.TApp(T.TMaybe(), just))));
+
+    this.add("Maybe", new T.TForall([maybe.name],
+      new T.TArrow(
+        maybe, 
+        new T.TApp(T.TMaybe(), maybe))));
 
     //this.add("getChar", ); // TODO
   }
