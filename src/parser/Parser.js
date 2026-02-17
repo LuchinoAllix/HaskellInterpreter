@@ -107,7 +107,6 @@ function branchLoop(branch, program, currNode){
   let cursorStart = program.cursor;     // need to rollback in case of failure
   let nbChilds = currNode.childs.length;//
   let func;
-  
   for (let i = 0; i < branch.childs.length; i++){
     let elem = branch.childs[i];
     if (elem[0].type === "rule"){ 
@@ -293,10 +292,11 @@ function verifyAmbi(elem, token){
   if (elem.value === token.type){
     return elem.value;
   }
-  let problematic = ["Qconid"];
+  let problematic = ["Qconid", "Qvarid"];
   // list of elements that could be something else
   
-  let alternatives = ["Tycls", "Qtycls", "Qtycon","Qtyvar","Tycon"]; 
+  let alternatives = ["Tycls", "Qtycls", "Qtycon", "Qtyvar", "Tycon", "Conid",
+    , "Tyvar"]; 
   // list of elements that could replace rules that are not called in the lexer
 
   if (problematic.includes(token.type) && alternatives.includes(elem.value)){
