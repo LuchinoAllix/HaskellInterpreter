@@ -701,7 +701,7 @@ export class Rules {
     ];
 
     /** -------------------------
-     * constrs -> constr1 | … | constrn                                  (n ≥ 1) 
+     * constrs -> constr1 '|' … '|' constrn                              (n ≥ 1) 
      * ------------------------- */
     this.rules.constrs.childs = [
       branch([
@@ -722,7 +722,7 @@ export class Rules {
       branch([
         [ref("con"), 1],
         [branch([
-          [data("!"), 0]
+          [data("!"), 0],
           [ref("atype"), 1]
         ]), 3] 
       ]),
@@ -754,7 +754,7 @@ export class Rules {
         [data("{"), 1],
         [branch([
           [ref("fielddecl"), 1],
-          [data(","), 1],
+          [data(","), 1]
         ]), 3],
         [ref("fielddecl"), 0],
         [data("}"), 1]
