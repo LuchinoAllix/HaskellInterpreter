@@ -22,13 +22,10 @@ const comma2 = T.freshVar();
 const map1 = T.freshVar();
 const map2 = T.freshVar();
 const varReturn = T.freshVar();
-const monadReturn = T.freshVar();
 const varThen1 = T.freshVar();
 const varThen2 = T.freshVar();
-const monadThen = T.freshVar();
 const varBind1 = T.freshVar();
 const varBind2 = T.freshVar();
-const monadBind = T.freshVar();
 
 /**
  * Context object definition, used in type inference
