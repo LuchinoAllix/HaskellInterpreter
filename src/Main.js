@@ -600,7 +600,7 @@ async function makeTests(){
       test.num = i/2;
       let lines = content[i].split("\n");
       for (let j = 0; j < lines.length; j ++){
-        let line = lines [j]
+        let line = lines[j];
         if (line.startsWith("-- Test")){
           test.info = line.split(":")[1].slice(1);
         } else if (line.startsWith("-- Expected result : ")){
@@ -636,7 +636,7 @@ async function makeFailTests(){
       test.num = i/2;
       let lines = content[i].split("\n");
       for (let j = 0; j < lines.length; j ++){
-        let line = lines [j]
+        let line = lines[j];
         if (line.startsWith("-- Test")){
           test.info = line.split(":")[1].slice(1);
         } else if (line.startsWith("-- Expected crash : ")){

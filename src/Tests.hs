@@ -964,7 +964,7 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 98         : Algebraic data type
+-- Test 99         : Algebraic data type
 -- Expected result : Nothing
 
 --/

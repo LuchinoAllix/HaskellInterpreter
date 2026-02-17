@@ -454,6 +454,9 @@ function inferImmediate(exp){
   if (exp.valueType === 'EmptyList'){
     const nvar = T.freshVar();
     return new T.TForall([nvar.name], new T.TApp(T.TList(), nvar));
+  } else if (exp.valueType === 'Nothing'){
+    const nvar = T.freshVar();
+    return new T.TForall([nvar.name], new T.TApp(T.TMaybe(), nvar));
   }
   return new T.TBuiltin(exp.valueType);
 }
