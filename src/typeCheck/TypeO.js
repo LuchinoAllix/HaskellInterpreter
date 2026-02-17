@@ -123,6 +123,8 @@ export function TUnit() { return new TBuiltin("Unit"); }
 export function TList() { return new TBuiltin("List"); }
 export function TTuple() { return new TBuiltin("Tuple"); }
 export function TIO() { return new TBuiltin("IO"); }
+export function TJust() { return new TBuiltin("Just"); }
+export function TMaybe() { return new TBuiltin("Maybe"); }
 
 /**
  * Type of application of type
