@@ -184,6 +184,10 @@ function evaluateImmediate(exp){
 
     case "EmptyList" :
       return new V.VMTList();
+
+    case "Nothing" :
+      return new V.VNothing();
+      
     default :
       throw new Error("value type not yet managed in eval : " + exp.valueType);
   }
