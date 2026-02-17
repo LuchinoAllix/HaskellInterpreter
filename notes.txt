@@ -46,3 +46,14 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
+
+ghci> divi a b = if b == 0 then Nothing else Just (a/b)
+ghci> divi 5 1
+Just 5.0
+ghci> :t divi
+divi :: (Eq a, Fractional a) => a -> a -> Maybe a
+ghci> data Perhaps a = Nothing | Just a
+ghci> divi a b = if b == 0 then Nothing else Just (a/b)
+ghci> :t divi
+divi :: (Eq a, Fractional a) => a -> a -> Perhaps a
+ghci>
