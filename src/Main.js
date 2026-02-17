@@ -474,7 +474,7 @@ function testAtest(testNb){
 
     if (fail) { 
       console.log("Test did not fail where it was supposed to, was supposed to" 
-        + " fail at " + where[program.expected]);   
+        + " fail at " + where[program.expected]); 
     }
 
     whereFail[5].push(testNb);
