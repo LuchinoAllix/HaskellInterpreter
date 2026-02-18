@@ -76,11 +76,13 @@ function normalizeRoot(astRoot){
     case "topdecls" :
       let declList = []
       for (let node of astRoot.childs){
-        if (node.type === "decl" || node.type === "gendecl"){
+        if (node.type === "decl" 
+         || node.type === "gendecl" 
+         || node.type === "topdecl"){
           addDecl(declList, normalizeDecl(node));
         } else if (!node.type.startsWith(("layout"))){
-          throw new Error("Only declarations are allowed in program mode, not" + 
-            node.type);
+          throw new Error("Only declarations are allowed in program mode, not " 
+            + node.type);
         }
       }
       return declList;
@@ -102,7 +104,6 @@ function normalize(node){
     case "gendecl" :
       return normalizeDecl(node);
 
-    case "topdecl" :
     case "rhs" :
       // This is not the only rhs outcome, just the only one yet managed
       return normalizeExp(node.childs[1]);
@@ -133,28 +134,54 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
-        [node.childs[0].line, node.childs[0].column]);
+      return new Decl(name, [normaliseTypeAnnotation(node.childs[2])], null, 
+      "func", [node.childs[0].line, node.childs[0].column]);
     } else { // We know it's a variable declaration
-      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
-        [node.childs[0].line, node.childs[0].column]);
+      return new Decl(name, [normaliseTypeAnnotation(node.childs[2])], null, 
+        "var", [node.childs[0].line, node.childs[0].column]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
     if (node.childs[0].type === "funlhs"){
       name = node.childs[0].childs[0].value;
       return new Decl(name, null,
         new Branch(getArgs(node.childs[0]), normalize(node.childs[1])),
-        [node.childs[0].line, node.childs[0].column]);
+        "func", [node.childs[0].line, node.childs[0].column]);
       
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
       name = node.childs[0].value;
       return new Decl(name, null, normalize(node.childs[1]),
+        "var", [node.childs[0].line, node.childs[0].column]);
+    }
+  } else if (node.type === "topdecl"){ // We know it's an ADT declaration
+    if (node.childs[0].value === "data"){
+      let named = normalizeSimpleType(node.childs[1]);
+      let types = normalizeConstrs(node.childs[3]);
+      verifyOccurence(named, types);
+      return new Decl(named[0], types, null, "ADT", 
         [node.childs[0].line, node.childs[0].column]);
+    } else {
+      throw new Error(node.childs[0].value + " was given when expected data");
     }
   } else {
-    throw new Error(node.type + " was given when expected gendecl or decl.");
+    throw new Error(node.type + " was given when expected topdecl, gendecl " + 
+      "or decl.");
   }
+}
+
+function normalizeSimpleType(node){
+  // TODO
+  throw new Error("TODO");
+}
+
+function normalizeConstrs(node){
+  // TODO
+  throw new Error("TODO");
+}
+
+function verify(named, types){
+  // TODO
+  throw new Error("TODO");
 }
 
 /**
@@ -165,11 +192,13 @@ function normalizeDecl(node){
  */
 function normaliseTypeAnnotation(node){
     switch (node.type){
+
     case 'Qtycon' :
       if (node.value === "String"){ // desugariser String to [Char]
         return new T.TApp(new T.TBuiltin("List"), new T.TBuiltin("Char"));
       }
       return new T.TBuiltin(node.value);
+
     case 'type' :
       if (node.childs[1].value === '->' ){
         return new T.TArrow(
@@ -179,6 +208,7 @@ function normaliseTypeAnnotation(node){
       } else {
         throw new Error("Unhandeled case of type annotation with type node");
       }
+
     case 'atype' :
      if (node.childs[0].value === '['){
        if (node.childs.length !== 3){
@@ -202,6 +232,7 @@ function normaliseTypeAnnotation(node){
       } else {
         throw new Error("Mismanaged case of atype node");
       }
+
     case 'btype' :
       if (node.childs.length === 2){
           return new T.TApp(
@@ -211,6 +242,7 @@ function normaliseTypeAnnotation(node){
       } else {
         throw new Error("unhandeled case of btype annotation : " + node);
       }
+
     case 'Special' :
       if (node.value === '()'){
         return new T.TUnit();
@@ -258,11 +290,13 @@ function addDecl(declList, decl){
 
     if (declList[i].name === decl.name){ // If declaration already exists
 
-      if (declList[i].typeAnnotation !== null && decl.typeAnnotation !== null){
+      if (declList[i].typeAnnotations !== null && 
+          decl.typeAnnotations !== null){
         throw new Error("Type for "+  declList[i].name + " is already defined");
       }
 
-      if (declList[i].typeAnnotation === null && decl.typeAnnotation !== null){
+      if (declList[i].typeAnnotations === null && 
+          decl.typeAnnotations !== null){
         throw new Error("Type annotation should come before " + 
                     "definition" + decl);
       }
