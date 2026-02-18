@@ -304,6 +304,10 @@ function checkPatterns(patterns, patternsTypes, context){
  * Returns true if the name given is a function that can be called in a pattern
  * in Haskell code
  * #HELP are there other functions ?
+ * FIXME: Yes, many many more.  Why do you need to treat them specially?
+ * I suspect for patterns you're better off not relying on "currying",
+ * define a "pattern application node" as having a constructor name as the left side
+ * (rather than an arbitrary sub-pattern) and a list of pattern arguments.
  * @param {String} name 
  * @returns {Boolean}
  */
@@ -564,3 +568,4 @@ function isMainAppIoUnit(mainType){
   }
   return false;
 }
+// FIXME: You had forgotten a newline to terminate your text file.
