@@ -156,8 +156,12 @@ function normalizeDecl(node){
   } else if (node.type === "topdecl"){ // We know it's an ADT declaration
     if (node.childs[0].value === "data"){
       let named = normalizeSimpleType(node.childs[1]);
-      let types = normalizeConstrs(node.childs[3]);
-      verifyOccurence(named, types);
+      let dicoNames = {}
+      let types = normalizeConstrs(node.childs[3], dicoNames);
+      
+      // slice to remove the name of type
+      verifyOccurence(named.slice(1), dicoNames); 
+      
       return new Decl(named[0], types, null, "ADT", 
         [node.childs[0].line, node.childs[0].column]);
     } else {
@@ -187,14 +191,53 @@ function normalizeSimpleType(node){
   return names;
 }
 
-function normalizeConstrs(node){
-  // TODO
-  throw new Error("TODO");
+function normalizeConstrs(node, dicoNames){
+  if (node.type === 'Conid'){ return [new T.TBuiltin(node.value)] ; }
+  let types = [];
+  for (let child of node.childs){
+    if (child.value !== '|'){
+      if (child.type === 'Conid'){
+        types.push(new T.TBuiltin(child.value));
+      } else if (child.type === 'constr'){
+        types.push(normalizeConstr(child, dicoNames));
+      } else {
+        throw new Error("Unhandeled case in Constrs");
+      }
+    }
+  }
+  return types;
+  
 }
 
-function verify(named, types){
-  // TODO
-  throw new Error("TODO");
+function normalizeConstr(node, dicoNames){
+  let nVar = T.freshVar();
+  dicoNames[node.childs[1].value] = nVar;
+  let names = [nVar.name];
+  let body = new T.TApp(
+    new T.TBuiltin(node.childs[0].value), nVar);
+  for (let i = 2; i < node.childs.length; i ++){
+    let nnVar = dicoNames[node.childs[i].value];
+    if (nnVar === undefined){
+      nnVar = T.freshVar();
+      dicoNames[node.childs[i].value] = nnVar ;
+      names.push(nnVar.name);
+    }
+    body = new T.TApp(body, new T.TBuiltin(node.childs[0].value), nnVar);
+  }
+  return new T.TForall(names, body);
+}
+
+function verifyOccurence(named, dicoNames){
+  let keys = Object.keys(dicoNames);
+  if (named.length === keys.length){
+    for (let i = 0; i < keys.length; i ++){
+      if (!named.includes(keys[i])){
+        throw new Error("Error in variables of ADT");
+      }
+    }
+  } else {
+    throw new Error("Error in variables of ADT");
+  }
 }
 
 /**
