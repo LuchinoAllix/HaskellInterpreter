@@ -24,6 +24,101 @@
           "column": null,
           "childs": [
             {
+              "type": "topdecl",
+              "value": null,
+              "line": null,
+              "column": null,
+              "childs": [
+                {
+                  "type": "reservdid",
+                  "value": "data",
+                  "line": 1,
+                  "column": 1,
+                  "childs": null
+                },
+                {
+                  "type": "simpletype",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Tycon",
+                      "value": "Perhaps",
+                      "line": 1,
+                      "column": 6,
+                      "childs": null
+                    },
+                    {
+                      "type": "Tyvar",
+                      "value": "a",
+                      "line": 1,
+                      "column": 14,
+                      "childs": null
+                    }
+                  ]
+                },
+                {
+                  "type": "reservdop",
+                  "value": "=",
+                  "line": 1,
+                  "column": 16,
+                  "childs": null
+                },
+                {
+                  "type": "constrs",
+                  "value": null,
+                  "line": null,
+                  "column": null,
+                  "childs": [
+                    {
+                      "type": "Conid",
+                      "value": "Nothing",
+                      "line": 1,
+                      "column": 18,
+                      "childs": null
+                    },
+                    {
+                      "type": "reservdop",
+                      "value": "|",
+                      "line": 1,
+                      "column": 26,
+                      "childs": null
+                    },
+                    {
+                      "type": "constr",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "Conid",
+                          "value": "Just",
+                          "line": 1,
+                          "column": 28,
+                          "childs": null
+                        },
+                        {
+                          "type": "Qtycon",
+                          "value": "a",
+                          "line": 1,
+                          "column": 33,
+                          "childs": null
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "layout  f",
+              "value": ";",
+              "line": -1,
+              "column": -1,
+              "childs": null
+            },
+            {
               "type": "decl",
               "value": null,
               "line": null,
@@ -37,16 +132,23 @@
                   "childs": [
                     {
                       "type": "Qvarid",
-                      "value": "id",
-                      "line": 1,
+                      "value": "divv",
+                      "line": 2,
                       "column": 1,
                       "childs": null
                     },
                     {
                       "type": "Qvarid",
-                      "value": "x",
-                      "line": 1,
-                      "column": 4,
+                      "value": "a",
+                      "line": 2,
+                      "column": 6,
+                      "childs": null
+                    },
+                    {
+                      "type": "Qvarid",
+                      "value": "b",
+                      "line": 2,
+                      "column": 8,
                       "childs": null
                     }
                   ]
@@ -60,16 +162,140 @@
                     {
                       "type": "reservdop",
                       "value": "=",
-                      "line": 1,
-                      "column": 6,
+                      "line": 2,
+                      "column": 10,
                       "childs": null
                     },
                     {
-                      "type": "Qvarid",
-                      "value": "x",
-                      "line": 1,
-                      "column": 8,
-                      "childs": null
+                      "type": "lexp",
+                      "value": null,
+                      "line": null,
+                      "column": null,
+                      "childs": [
+                        {
+                          "type": "reservdid",
+                          "value": "if",
+                          "line": 2,
+                          "column": 12,
+                          "childs": null
+                        },
+                        {
+                          "type": "infixexp",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Qvarid",
+                              "value": "b",
+                              "line": 2,
+                              "column": 15,
+                              "childs": null
+                            },
+                            {
+                              "type": "Qvarsym",
+                              "value": "==",
+                              "line": 2,
+                              "column": 17,
+                              "childs": null
+                            },
+                            {
+                              "type": "Integer",
+                              "value": "0",
+                              "line": 2,
+                              "column": 20,
+                              "childs": null
+                            }
+                          ]
+                        },
+                        {
+                          "type": "reservdid",
+                          "value": "then",
+                          "line": 3,
+                          "column": 11,
+                          "childs": null
+                        },
+                        {
+                          "type": "Qconid",
+                          "value": "Nothing",
+                          "line": 3,
+                          "column": 16,
+                          "childs": null
+                        },
+                        {
+                          "type": "reservdid",
+                          "value": "else",
+                          "line": 4,
+                          "column": 11,
+                          "childs": null
+                        },
+                        {
+                          "type": "fexp",
+                          "value": null,
+                          "line": null,
+                          "column": null,
+                          "childs": [
+                            {
+                              "type": "Qconid",
+                              "value": "Just",
+                              "line": 4,
+                              "column": 16,
+                              "childs": null
+                            },
+                            {
+                              "type": "aexp_",
+                              "value": null,
+                              "line": null,
+                              "column": null,
+                              "childs": [
+                                {
+                                  "type": "Special",
+                                  "value": "(",
+                                  "line": 4,
+                                  "column": 21,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "infixexp",
+                                  "value": null,
+                                  "line": null,
+                                  "column": null,
+                                  "childs": [
+                                    {
+                                      "type": "Qvarid",
+                                      "value": "a",
+                                      "line": 4,
+                                      "column": 22,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "Qvarsym",
+                                      "value": "/",
+                                      "line": 4,
+                                      "column": 23,
+                                      "childs": null
+                                    },
+                                    {
+                                      "type": "Qvarid",
+                                      "value": "b",
+                                      "line": 4,
+                                      "column": 24,
+                                      "childs": null
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Special",
+                                  "value": ")",
+                                  "line": 4,
+                                  "column": 25,
+                                  "childs": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -91,7 +317,7 @@
                 {
                   "type": "Qvarid",
                   "value": "main",
-                  "line": 2,
+                  "line": 6,
                   "column": 1,
                   "childs": null
                 },
@@ -104,7 +330,7 @@
                     {
                       "type": "reservdop",
                       "value": "=",
-                      "line": 2,
+                      "line": 6,
                       "column": 6,
                       "childs": null
                     },
@@ -117,7 +343,7 @@
                         {
                           "type": "Qvarid",
                           "value": "print",
-                          "line": 2,
+                          "line": 6,
                           "column": 8,
                           "childs": null
                         },
@@ -130,7 +356,7 @@
                             {
                               "type": "Special",
                               "value": "(",
-                              "line": 2,
+                              "line": 6,
                               "column": 14,
                               "childs": null
                             },
@@ -142,16 +368,23 @@
                               "childs": [
                                 {
                                   "type": "Qvarid",
-                                  "value": "id",
-                                  "line": 2,
+                                  "value": "divv",
+                                  "line": 6,
                                   "column": 15,
                                   "childs": null
                                 },
                                 {
-                                  "type": "integer",
+                                  "type": "Integer",
                                   "value": "5",
-                                  "line": 2,
-                                  "column": 18,
+                                  "line": 6,
+                                  "column": 20,
+                                  "childs": null
+                                },
+                                {
+                                  "type": "Integer",
+                                  "value": "0",
+                                  "line": 6,
+                                  "column": 22,
                                   "childs": null
                                 }
                               ]
@@ -159,8 +392,8 @@
                             {
                               "type": "Special",
                               "value": ")",
-                              "line": 2,
-                              "column": 19,
+                              "line": 6,
+                              "column": 23,
                               "childs": null
                             }
                           ]

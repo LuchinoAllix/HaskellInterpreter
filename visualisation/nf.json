@@ -1,8 +1,47 @@
 [
   {
     "metatype": "DECL",
-    "name": "id",
-    "typeAnnotation": null,
+    "name": "Perhaps",
+    "type": "ADT",
+    "typeAnnotations": [
+      {
+        "metatype": "TYPEO",
+        "type": "Builtin",
+        "blt": "Nothing"
+      },
+      {
+        "metatype": "TYPEO",
+        "type": "Forall",
+        "names": [
+          "t27"
+        ],
+        "body": {
+          "metatype": "TYPEO",
+          "type": "App",
+          "func": {
+            "metatype": "TYPEO",
+            "type": "Builtin",
+            "blt": "Just"
+          },
+          "arg": {
+            "metatype": "TYPEO",
+            "type": "TVar",
+            "name": "t27"
+          }
+        }
+      }
+    ],
+    "info": [
+      1,
+      1
+    ],
+    "body": null
+  },
+  {
+    "metatype": "DECL",
+    "name": "divv",
+    "type": "func",
+    "typeAnnotations": null,
     "info": [
       null,
       null
@@ -19,51 +58,206 @@
       },
       "body": {
         "metatype": "EXP",
-        "type": "case",
-        "exps": [
-          {
-            "metatype": "EXP",
-            "type": "var",
-            "name": "\\arg0",
-            "info": null
-          }
-        ],
-        "branches": [
-          {
-            "metatype": "BRANCHTERM",
-            "type": "branch",
-            "args": [
-              {
-                "metatype": "PATTERN",
-                "type": "var",
-                "name": "x",
-                "info": [
-                  1,
-                  4
-                ]
-              }
-            ],
-            "branchBody": {
+        "type": "LambdaExp",
+        "info": null,
+        "namedArg": {
+          "metatype": "EXP",
+          "type": "var",
+          "name": "\\arg1",
+          "info": null
+        },
+        "body": {
+          "metatype": "EXP",
+          "type": "case",
+          "exps": [
+            {
               "metatype": "EXP",
               "type": "var",
-              "name": "x",
-              "info": [
-                1,
-                8
-              ]
+              "name": "\\arg0",
+              "info": null
+            },
+            {
+              "metatype": "EXP",
+              "type": "var",
+              "name": "\\arg1",
+              "info": null
             }
-          }
-        ],
-        "info": null
+          ],
+          "branches": [
+            {
+              "metatype": "BRANCHTERM",
+              "type": "branch",
+              "args": [
+                {
+                  "metatype": "PATTERN",
+                  "type": "var",
+                  "name": "a",
+                  "info": [
+                    2,
+                    6
+                  ]
+                },
+                {
+                  "metatype": "PATTERN",
+                  "type": "var",
+                  "name": "b",
+                  "info": [
+                    2,
+                    8
+                  ]
+                }
+              ],
+              "branchBody": {
+                "metatype": "EXP",
+                "type": "case",
+                "exps": [
+                  {
+                    "metatype": "EXP",
+                    "type": "functionApp",
+                    "func": {
+                      "metatype": "EXP",
+                      "type": "functionApp",
+                      "func": {
+                        "metatype": "EXP",
+                        "type": "var",
+                        "name": "==",
+                        "info": [
+                          2,
+                          17
+                        ]
+                      },
+                      "arg": {
+                        "metatype": "EXP",
+                        "type": "var",
+                        "name": "b",
+                        "info": [
+                          2,
+                          15
+                        ]
+                      },
+                      "info": null
+                    },
+                    "arg": {
+                      "metatype": "EXP",
+                      "type": "immediate",
+                      "value": 0,
+                      "valueType": "Integer",
+                      "info": [
+                        2,
+                        20
+                      ]
+                    },
+                    "info": null
+                  }
+                ],
+                "branches": [
+                  {
+                    "metatype": "BRANCHTERM",
+                    "type": "branch",
+                    "args": [
+                      {
+                        "metatype": "EXP",
+                        "type": "immediate",
+                        "value": true,
+                        "valueType": "Boolean",
+                        "info": null
+                      }
+                    ],
+                    "branchBody": {
+                      "metatype": "EXP",
+                      "type": "immediate",
+                      "value": "Nothing",
+                      "valueType": "Nothing",
+                      "info": [
+                        3,
+                        16
+                      ]
+                    }
+                  },
+                  {
+                    "metatype": "BRANCHTERM",
+                    "type": "branch",
+                    "args": [
+                      {
+                        "metatype": "EXP",
+                        "type": "immediate",
+                        "value": false,
+                        "valueType": "Boolean",
+                        "info": null
+                      }
+                    ],
+                    "branchBody": {
+                      "metatype": "EXP",
+                      "type": "functionApp",
+                      "func": {
+                        "metatype": "EXP",
+                        "type": "var",
+                        "name": "Just",
+                        "info": [
+                          4,
+                          16
+                        ]
+                      },
+                      "arg": {
+                        "metatype": "EXP",
+                        "type": "functionApp",
+                        "func": {
+                          "metatype": "EXP",
+                          "type": "functionApp",
+                          "func": {
+                            "metatype": "EXP",
+                            "type": "var",
+                            "name": "/",
+                            "info": [
+                              4,
+                              23
+                            ]
+                          },
+                          "arg": {
+                            "metatype": "EXP",
+                            "type": "var",
+                            "name": "a",
+                            "info": [
+                              4,
+                              22
+                            ]
+                          },
+                          "info": null
+                        },
+                        "arg": {
+                          "metatype": "EXP",
+                          "type": "var",
+                          "name": "b",
+                          "info": [
+                            4,
+                            24
+                          ]
+                        },
+                        "info": null
+                      },
+                      "info": null
+                    }
+                  }
+                ],
+                "info": [
+                  null,
+                  null
+                ]
+              }
+            }
+          ],
+          "info": null
+        }
       }
     }
   },
   {
     "metatype": "DECL",
     "name": "main",
-    "typeAnnotation": null,
+    "type": "var",
+    "typeAnnotations": null,
     "info": [
-      2,
+      6,
       1
     ],
     "body": {
@@ -74,7 +268,7 @@
         "type": "var",
         "name": "print",
         "info": [
-          2,
+          6,
           8
         ]
       },
@@ -83,21 +277,36 @@
         "type": "functionApp",
         "func": {
           "metatype": "EXP",
-          "type": "var",
-          "name": "id",
-          "info": [
-            2,
-            15
-          ]
+          "type": "functionApp",
+          "func": {
+            "metatype": "EXP",
+            "type": "var",
+            "name": "divv",
+            "info": [
+              6,
+              15
+            ]
+          },
+          "arg": {
+            "metatype": "EXP",
+            "type": "immediate",
+            "value": 5,
+            "valueType": "Integer",
+            "info": [
+              6,
+              20
+            ]
+          },
+          "info": null
         },
         "arg": {
           "metatype": "EXP",
           "type": "immediate",
-          "value": 5,
-          "valueType": "integer",
+          "value": 0,
+          "valueType": "Integer",
           "info": [
-            2,
-            18
+            6,
+            22
           ]
         },
         "info": null

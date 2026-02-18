@@ -191,6 +191,12 @@ function normalizeSimpleType(node){
   return names;
 }
 
+/**
+ * Transforms the constrs node into a 
+ * @param {Node} node 
+ * @param {String -> T.Typo} dicoNames 
+ * @returns {[T.TypeO]}
+ */
 function normalizeConstrs(node, dicoNames){
   if (node.type === 'Conid'){ return [new T.TBuiltin(node.value)] ; }
   let types = [];
@@ -206,7 +212,6 @@ function normalizeConstrs(node, dicoNames){
     }
   }
   return types;
-  
 }
 
 function normalizeConstr(node, dicoNames){
