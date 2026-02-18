@@ -169,9 +169,22 @@ function normalizeDecl(node){
   }
 }
 
+/**
+ * Turns a simpleType (or tycon) node into the list of names of variables that
+ * constitute it
+ * maybe -> [maybe]
+ * maybe a b -> [maybe, a, b]
+ * 
+ * @param {Node} node 
+ * @returns {[String]}
+ */
 function normalizeSimpleType(node){
-  // TODO
-  throw new Error("TODO");
+  if (node.type === "Tycon"){ return [node.value] ; }
+  let names = [];
+  for (let child of node.childs){
+    names.push(child.value);
+  }
+  return names;
 }
 
 function normalizeConstrs(node){
