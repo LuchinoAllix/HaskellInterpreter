@@ -1,5 +1,4 @@
-import { CaseExp, Exp, LambdaExp, VarExp } from "./Exp.js";
-import { Node } from "../objects/Node.js";
+import { CaseExp, LambdaExp, VarExp } from "./Exp.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
 import { TypeO } from "../typeCheck/TypeO.js";
@@ -7,8 +6,7 @@ import { TypeO } from "../typeCheck/TypeO.js";
 
 //--                 File containing "type" Decl for normalize              --//
 
-
-let count = 0;
+let count = 0; // for generating new variables names 
 
 /**
  * Creates a variable expression with a new name (using the \ to know the 
@@ -28,18 +26,22 @@ export function makeNewName(){
  */
 export class Decl extends Term {
 
-
   /**
    * Constructor for Decl
+   * type attribute doesn't use real purpose appart from telling it's an ADT 
+   * rather than a func or var decl
+   * 
    * @param {String} name 
-   * @param {TypeO} typeAnnotation 
+   * @param {String} type 
+   * @param {[TypeO]} typeAnnotations (list is for ADT)
    * @param {Term} term A branch or an exp
-   * @param {[Int]} info 
+   * @param {[Integer]} info 
    */
-  constructor(name, typeAnnotation, term, info = null){
+  constructor(name, typeAnnotations, term, type, info = null){
     super("DECL");
     this.name = name;
-    this.typeAnnotation = typeAnnotation;
+    this.type = type;
+    this.typeAnnotations = typeAnnotations;
     this.info = info;
     if (term !== null){
       if (term.type === "branch"){
@@ -56,10 +58,10 @@ export class Decl extends Term {
    * @returns {Boolean}
    */
   isAnnotated(){
-    return this.typeAnnotation !== null;
+    return this.typeAnnotations !== null;
   }
 
-    /**
+  /**
    * Makes the body of a function declaration into a lambda and a case based on 
    * the branch it receives
    * @param {Branch} branch 
