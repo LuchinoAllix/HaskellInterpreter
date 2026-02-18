@@ -99,10 +99,13 @@ window.addEventListener("DOMContentLoaded", () => {
           } else if (d.data.namedArg !== undefined && typeof d.data.namedArg !== 
             "object"){
             label += d.data.namedArg;
-          } else if (d.data.exp !== undefined && typeof d.data.exp !== "object"){
+          } else if (d.data.exp !== undefined && 
+                    typeof d.data.exp !== "object"){
             label += d.data.exp;
           }  else if (d.data.name) {
             label += d.data.name;
+          } else if (d.data.blt) {
+            label += d.data.blt;
           }
 
           return label;
