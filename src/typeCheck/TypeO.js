@@ -219,4 +219,18 @@ export function freshMetavar(){
   return new TMetavar("mt", countMetavar);
 }
 
-// how should we manage the type of expressions like '_' ?
+/**
+ * Type for ADT (constructors)
+ */
+export class TConstr extends TypeO {
+
+  /**
+   * @param {String} str
+   */
+  constructor(str){
+    super();
+    this.type = "TConstr";
+    this.name = str;
+  }
+}
+
