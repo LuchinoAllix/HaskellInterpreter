@@ -28,20 +28,4 @@ export class Term {
   isDecl(){
     return this.metatype === "DECL";
   }
-
-  /**
-   * Determines if a term is a primitive function
-   * @returns {Boolean}
-   */
-  isPrim(){
-    return this,this.metatype === "PRIM";
-  }
-
-  /**
-   * Determines if a term is a primitive IO function
-   * @returns {Boolean}
-   */
-  isPrimIO(){
-    return this,this.metatype === "PRIMIO";
-  }
 }
