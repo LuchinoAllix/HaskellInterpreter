@@ -1,46 +1,52 @@
 [
   {
-    "metatype": "DECL",
+    "metatype": "CONSTR",
     "name": "Perhaps",
-    "type": "ADT",
-    "typeAnnotations": [
+    "params": [
+      "a"
+    ],
+    "options": [
       {
-        "metatype": "TYPEO",
-        "type": "Builtin",
-        "blt": "Nothing"
+        "metatype": "EXP",
+        "type": "var",
+        "name": "Nothing",
+        "info": [
+          1,
+          18
+        ]
       },
       {
-        "metatype": "TYPEO",
-        "type": "Forall",
-        "names": [
-          "t27"
-        ],
-        "body": {
-          "metatype": "TYPEO",
-          "type": "App",
-          "func": {
-            "metatype": "TYPEO",
-            "type": "Builtin",
-            "blt": "Just"
-          },
-          "arg": {
-            "metatype": "TYPEO",
-            "type": "TVar",
-            "name": "t27"
-          }
-        }
+        "metatype": "EXP",
+        "type": "functionApp",
+        "func": {
+          "metatype": "EXP",
+          "type": "var",
+          "name": "Just",
+          "info": [
+            1,
+            28
+          ]
+        },
+        "arg": {
+          "metatype": "EXP",
+          "type": "var",
+          "name": "a",
+          "info": [
+            1,
+            33
+          ]
+        },
+        "info": null
       }
     ],
     "info": [
       1,
       1
-    ],
-    "body": null
+    ]
   },
   {
     "metatype": "DECL",
     "name": "divv",
-    "type": "func",
     "typeAnnotations": null,
     "info": [
       null,
@@ -254,7 +260,6 @@
   {
     "metatype": "DECL",
     "name": "main",
-    "type": "var",
     "typeAnnotations": null,
     "info": [
       6,
