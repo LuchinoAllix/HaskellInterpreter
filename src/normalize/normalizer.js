@@ -8,6 +8,7 @@ import * as T from '../typeCheck/TypeO.js';
 import { Term } from "./Term.js";
 import { addNcommasToGlobalEnv } from "../eval/eval.js";
 import { addNcommasToGlobalContext } from "../typeCheck/TypeCheck.js";
+import { Constr } from "./Constr.js";
 
 //--     File containing functions for intermediary form transformation     --//
 
@@ -134,35 +135,35 @@ function normalizeDecl(node){
   if (node.type === "gendecl"){ // We know it's a type declaration
     name = node.childs[0].value;
     if (isGendeclFunc(node)){ // We know it's a function declaration
-      return new Decl(name, [normaliseTypeAnnotation(node.childs[2])], null, 
-      "func", [node.childs[0].line, node.childs[0].column]);
+      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
+        [node.childs[0].line, node.childs[0].column]);
     } else { // We know it's a variable declaration
-      return new Decl(name, [normaliseTypeAnnotation(node.childs[2])], null, 
-        "var", [node.childs[0].line, node.childs[0].column]);
+      return new Decl(name, normaliseTypeAnnotation(node.childs[2]), null, 
+        [node.childs[0].line, node.childs[0].column]);
     } 
   } else if (node.type === "decl"){ // We know it's a branch declaration
     if (node.childs[0].type === "funlhs"){
       name = node.childs[0].childs[0].value;
       return new Decl(name, null,
         new Branch(getArgs(node.childs[0]), normalize(node.childs[1])),
-        "func", [node.childs[0].line, node.childs[0].column]);
+        [node.childs[0].line, node.childs[0].column]);
       
     } else if (node.childs[0].childs === null){ 
       // We know it's a variable declaration
       name = node.childs[0].value;
       return new Decl(name, null, normalize(node.childs[1]),
-        "var", [node.childs[0].line, node.childs[0].column]);
+        [node.childs[0].line, node.childs[0].column]);
     }
   } else if (node.type === "topdecl"){ // We know it's an ADT declaration
     if (node.childs[0].value === "data"){
       let named = normalizeSimpleType(node.childs[1]);
-      let dicoNames = {}
-      let types = normalizeConstrs(node.childs[3], dicoNames);
+      let params = [];
+      let exps = normalizeConstrs(node.childs[3], params);
       
       // slice to remove the name of type
-      verifyOccurence(named.slice(1), dicoNames); 
+      verifyOccurence(named.slice(1), params);
       
-      return new Decl(named[0], types, null, "ADT", 
+      return new Constr(named[0], exps, params,
         [node.childs[0].line, node.childs[0].column]);
     } else {
       throw new Error(node.childs[0].value + " was given when expected data");
@@ -194,18 +195,20 @@ function normalizeSimpleType(node){
 /**
  * Transforms the constrs node into a 
  * @param {Node} node 
- * @param {String -> T.Typo} dicoNames 
- * @returns {[T.TypeO]}
+ * @param {[String]} params 
+ * @returns {[Exp]}
  */
-function normalizeConstrs(node, dicoNames){
-  if (node.type === 'Conid'){ return [new T.TBuiltin(node.value)] ; }
+function normalizeConstrs(node, params){
+  if (node.type === 'Conid'){ 
+    return [new VarExp(child.value, [child.line, child.column])];
+  }
   let types = [];
   for (let child of node.childs){
     if (child.value !== '|'){
       if (child.type === 'Conid'){
-        types.push(new T.TBuiltin(child.value));
+        types.push(new VarExp(child.value, [child.line, child.column]));
       } else if (child.type === 'constr'){
-        types.push(normalizeConstr(child, dicoNames));
+        types.push(normalizeConstr(child, params));
       } else {
         throw new Error("Unhandeled case in Constrs");
       }
@@ -214,29 +217,35 @@ function normalizeConstrs(node, dicoNames){
   return types;
 }
 
-function normalizeConstr(node, dicoNames){
-  let nVar = T.freshVar();
-  dicoNames[node.childs[1].value] = nVar;
-  let names = [nVar.name];
-  let body = new T.TApp(
-    new T.TBuiltin(node.childs[0].value), nVar);
+/**
+ * 
+ * @param {Node} node 
+ * @param {[String]} params 
+ * @returns {FunctionApp}
+ */
+function normalizeConstr(node, params){
+  params.push(node.childs[1].value);
+  let app = new FunctionApp(
+    new VarExp(node.childs[0].value, 
+      [node.childs[0].line, node.childs[0].column]), 
+    new VarExp(node.childs[1].value, 
+      [node.childs[1].line, node.childs[1].column]));
   for (let i = 2; i < node.childs.length; i ++){
-    let nnVar = dicoNames[node.childs[i].value];
-    if (nnVar === undefined){
-      nnVar = T.freshVar();
-      dicoNames[node.childs[i].value] = nnVar ;
-      names.push(nnVar.name);
-    }
-    body = new T.TApp(body, new T.TBuiltin(node.childs[0].value), nnVar);
+    app = new FunctionApp(body, new VarExp(node.childs[2].value, 
+      [node.childs[i].line, node.childs[i].column]));
   }
-  return new T.TForall(names, body);
+  return app;
 }
 
-function verifyOccurence(named, dicoNames){
-  let keys = Object.keys(dicoNames);
-  if (named.length === keys.length){
-    for (let i = 0; i < keys.length; i ++){
-      if (!named.includes(keys[i])){
+/**
+ * 
+ * @param {[String]} named 
+ * @param {[String]} params 
+ */
+function verifyOccurence(named, params){
+  if (named.length === params.length){
+    for (let i = 0; i < params.length; i ++){
+      if (!named.includes(params[i])){
         throw new Error("Error in variables of ADT");
       }
     }
@@ -351,13 +360,13 @@ function addDecl(declList, decl){
 
     if (declList[i].name === decl.name){ // If declaration already exists
 
-      if (declList[i].typeAnnotations !== null && 
-          decl.typeAnnotations !== null){
+      if (declList[i].typeAnnotation !== null && 
+          decl.typeAnnotation !== null){
         throw new Error("Type for "+  declList[i].name + " is already defined");
       }
 
-      if (declList[i].typeAnnotations === null && 
-          decl.typeAnnotations !== null){
+      if (declList[i].typeAnnotation === null && 
+          decl.typeAnnotation !== null){
         throw new Error("Type annotation should come before " + 
                     "definition" + decl);
       }
