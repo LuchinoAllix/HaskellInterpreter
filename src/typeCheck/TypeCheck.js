@@ -23,7 +23,7 @@ export function typeCheck(program){
   for (let decl of program.normalizedForm){
     if (decl.name === "main"){
       main = decl;
-    } else if (decl.type === "ADT"){
+    } else if (decl.isConstr()){
       throw new Error("TODO");
     } else {
       let declType = T.freshMetavar();
@@ -33,7 +33,7 @@ export function typeCheck(program){
         let genDeclType = generalize(declType)
         
         // verify the type annotation
-        unify(instantiate(genDeclType), decl.typeAnnotations[0]); 
+        unify(instantiate(genDeclType), decl.typeAnnotation);
 
         global_context.add(decl.name, genDeclType, true);
       } else {
@@ -47,7 +47,7 @@ export function typeCheck(program){
   
   // verify the type annotation of main
   if (main.isAnnotated()){ 
-    unify(mainType, main.typeAnnotations[0]);
+    unify(mainType, main.typeAnnotations);
   }
   
   if (isMainAppIoUnit(mainType)){
