@@ -3,6 +3,7 @@ import { Exp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
+import { Constr } from "../normalize/Constr.js";
 
 //--        File containing functions to type check the program             --//
 
@@ -570,21 +571,32 @@ function isMainAppIoUnit(mainType){
 
 function manageConstr(constr){
   updateTables(constr);
-  let type = getTypeOfConstr(constr)
+  let type = getTypeOfConstr(constr);
   for(let option of constr.options){
     if (option.type === 'var'){
-      global_context.add(option.name, )
+      global_context.add(option.name, type);
     }
   }
 }
 
 
+/**
+ * Returns the type of a constr node
+ * eg : Maybe a b c becomes forall(a,b,c (app(app(app constr(maybe) a) b) c)) 
+ * @param {Constr} constr 
+ * @returns {T.TypeO}
+ */
 function getTypeOfConstr(constr){
   if (constr.params.length === 0){
     return new T.TConstr(constr.name);
   } else {
-    let nVar = T.freshVar();
-    let names = [nVar.names];
-    let body = new T.TApp(T.TConstr(constr.name), nVar);
+    let body = new T.TConstr(constr.name);
+    let names = [];
+    for (let i = 0; i < constr.params.length - 1; i++){
+      let nVar = T.freshVar();
+      names.push(nVar.names);
+      body = new T.TApp(body, nVar);
+    }
+    return new T.TForall(names, body);
   }
 }
