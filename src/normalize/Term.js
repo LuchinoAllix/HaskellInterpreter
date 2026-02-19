@@ -1,7 +1,7 @@
 //--                 File containing "type" Decl for normalize              --//
 
 /**
- * A term is the parent class of Exp and Decl
+ * A term is the parent class of Exp, Decl and Constr
  */
 export class Term {
   
@@ -27,5 +27,13 @@ export class Term {
    */
   isDecl(){
     return this.metatype === "DECL";
+  }
+
+  /**
+   * Determines if a term is a constructor
+   * @returns {Boolean}
+   */
+  isConstr(){
+    return this.metatype === "CONSTR";
   }
 }
