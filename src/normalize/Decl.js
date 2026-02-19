@@ -28,19 +28,15 @@ export class Decl extends Term {
 
   /**
    * Constructor for Decl
-   * type attribute doesn't use real purpose appart from telling it's an ADT 
-   * rather than a func or var decl
    * 
    * @param {String} name 
-   * @param {String} type 
-   * @param {[TypeO]} typeAnnotations (list is for ADT)
+   * @param {TypeO} typeAnnotation
    * @param {Term} term A branch or an exp
    * @param {[Integer]} info 
    */
-  constructor(name, typeAnnotations, term, type, info = null){
+  constructor(name, typeAnnotations, term, info = null){
     super("DECL");
     this.name = name;
-    this.type = type;
     this.typeAnnotations = typeAnnotations;
     this.info = info;
     if (term !== null){
