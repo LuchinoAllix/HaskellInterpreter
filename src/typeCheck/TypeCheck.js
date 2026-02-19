@@ -24,6 +24,7 @@ export function typeCheck(program){
     if (decl.name === "main"){
       main = decl;
     } else if (decl.isConstr()){
+      manageConstr(decl);
       throw new Error("TODO");
     } else {
       let declType = T.freshMetavar();
@@ -565,4 +566,25 @@ function isMainAppIoUnit(mainType){
     }
   }
   return false;
+}
+
+function manageConstr(constr){
+  updateTables(constr);
+  let type = getTypeOfConstr(constr)
+  for(let option of constr.options){
+    if (option.type === 'var'){
+      global_context.add(option.name, )
+    }
+  }
+}
+
+
+function getTypeOfConstr(constr){
+  if (constr.params.length === 0){
+    return new T.TConstr(constr.name);
+  } else {
+    let nVar = T.freshVar();
+    let names = [nVar.names];
+    let body = new T.TApp(T.TConstr(constr.name), nVar);
+  }
 }
