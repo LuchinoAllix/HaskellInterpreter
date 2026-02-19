@@ -46,8 +46,9 @@ export class Decl extends Term {
     if (term !== null){
       if (term.type === "branch"){
         this.makeBody(term);
-      } else 
+      } else {
         this.body = term;
+      }
     } else {
       this.body = null;
     }
