@@ -113,6 +113,22 @@ export class TBuiltin extends TypeO {
   }
 }
 
+// 1) Is this a good alternative to the manually defined function ?
+// 2) Not ideal because the type name need to be written twice
+// 3) Is this efficient ? because the blt type should only be called once 
+//    since it will always return the same object
+let blts = {
+  "Integer" : () => new TBuiltin("Integer"), 
+  "Boolean" : () => new TBuiltin("Boolean"),
+  "Char" : () => new TBuiltin("Char"),
+  "Unit" : () => new TBuiltin("Unit"),
+  "List" : () => new TBuiltin("List"),
+  "Tuple" : () => new TBuiltin("Tuple"),
+  "IO" : () => new TBuiltin("IO"),
+  "Just" : () => new TBuiltin("Just"),
+  "Maybe" : () => new TBuiltin("Maybe")
+} 
+
 /**
  * Functions to generate builtin types
  */
