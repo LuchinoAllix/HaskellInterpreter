@@ -1,4 +1,4 @@
-//--                 File containing "type" Decl for normalize              --//
+//--                 File containing "type" Term for normalize              --//
 
 /**
  * A term is the parent class of Exp, Decl and Constr
