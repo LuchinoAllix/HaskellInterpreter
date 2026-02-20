@@ -239,11 +239,12 @@ export function freshMetavar(){
 }
 
 /**
- * Type for ADT (constructors)
+ * Type for GADT (constructors)
  */
 export class TConstr extends TypeO {
 
   /**
+   * Like builtins but for user specified
    * @param {String} str
    */
   constructor(str){
