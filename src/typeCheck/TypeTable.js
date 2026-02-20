@@ -1,10 +1,10 @@
 import { Constr } from "../normalize/Constr.js";
-import { TInt, TypeO } from "./TypeO.js";
+import * as T from "./TypeO.js";
 
 //--                 File containing Type option for type check             --//
 
 /**
- * Type options is a mapping between types and their definition (constr)
+ * Type options is a mapping between types (names) and their definition (constr)
  */
 export class TypeTable {
 
@@ -13,6 +13,7 @@ export class TypeTable {
    */
   constructor(){
     this.decls = {};
+    this.init();
   }
 
   /**
@@ -27,30 +28,31 @@ export class TypeTable {
   /**
    * Adds an element to the type option table
    * Throws an error if the type def already exists, unless overide is true
-   * @param {TypeO} type
+   * @param {String} name
    * @param {Constr} cons
    * @param {Boolean} overide
    */
-  add(type, cons, overide = false){
-    if (this.decls[type.name] !== undefined){
+  add(name, cons, overide = false){
+    if (this.decls[name] !== undefined){
       if (!overide){
         throw new Error("This type def already exists in the table : " 
-          + type.name);
+          + name);
       }
     }
-    this.decls[type.name] = cons;
+    this.decls[name] = cons;
   }
 
-  initGlobal(){
-    this.add(TInt(), new Constr("Integer", [], []));
-    this.add(TBool(), new Constr("Boolean", [], []));
-    this.add(TChar(), new Constr("Char", [], []));
-    this.add(TUnit(), new Constr("Unit", [], []));
-    this.add(TList(), new Constr("List", [], []));
-    this.add(TTuple(), new Constr("Tuple", [], []));
-    this.add(TIO(), new Constr("IO", [], []));
-    this.add(TJust(), new Constr("Just", [], []));
-    this.add(TMaybe(), new Constr("Maybe", [], []));
+  init(){
+    this.add("Integer", new Constr("Integer", [], []));
+    this.add("Boolean", new Constr("Boolean", [], []));
+    this.add("Char", new Constr("Char", [], []));
+    this.add("Unit", new Constr("Unit", [], []));
+    this.add("List", new Constr("List", [], ["a"]));
+    this.add("Tuple", new Constr("Tuple", [], ["a"]));
+    this.add("IO", new Constr("IO", [], [])); //FIXME
+    this.add("Just", new Constr("Just", [], [])); //FIXME
+    this.add("Maybe", new Constr("Maybe", [], [])); //FIXME
   }
   // this should not be manually done FIXME
+
 }
