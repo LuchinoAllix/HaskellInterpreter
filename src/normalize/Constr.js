@@ -1,7 +1,7 @@
 import { Exp } from "./Exp.js";
 import { Term } from "./Term.js";
 
-//--             File containing "type" Constr for ADT in normalizing       --//
+//--            File containing "type" Constr for GADT in normalizing       --//
 
 
 export class Constr extends Term {
