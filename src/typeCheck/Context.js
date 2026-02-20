@@ -1,5 +1,6 @@
 import * as T from "./TypeO.js";
 
+//--              containing context definition for type checking           --//
 
 // tmetavar variables for primitives 
 const print = T.freshVar();
@@ -36,8 +37,8 @@ const maybe = T.freshVar();
 export class Context {
 
   /**
-   * Constructor for env, always empty.
-   * decls is a dictionnary String (name) -> Term
+   * Constructor for context, always empty.
+   * decls is a dictionnary String (name) -> Type
    */
   constructor(){
     this.decls = {};
@@ -46,7 +47,7 @@ export class Context {
   /**
    * Determines if a declaration exists in a context
    * @param {String} name 
-   * @returns {T.TypeO} - Type or undefined if declaration doesn't exists
+   * @returns { T.TypeO | undefined } - undefined if declaration doesn't exists
    */
   lookup(name){
     return this.decls[name];
@@ -57,7 +58,7 @@ export class Context {
    * Adds an element to a context
    * Throws an error if the declaration already exists, unless overide is true
    * @param {String} name 
-   * @param {Value} val
+   * @param {T.TypeO} val
    * @param {Boolean} overide
    */
   add(name, val, overide = false){
@@ -116,10 +117,6 @@ export class Context {
 
     this.add("snd", new T.TForall([snd1.name, snd2.name],
       new T.TArrow(new T.TApp(new T.TApp(T.TTuple(), snd1), snd2), snd2)));
-
-    // Where do we add the verification that fst and snd can only be called on
-    // tuples of size two ? Or does this yield from the fact that we only have 
-    // two TApps ?
 
     this.add("++", new T.TForall([concat.name],
       new T.TArrow(new T.TApp(T.TList(), concat), 
