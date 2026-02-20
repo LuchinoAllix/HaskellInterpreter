@@ -593,7 +593,10 @@ function updateTable(constr){
 
 /**
  * Returns the type of a constr node
- * eg : Maybe a b c becomes forall(a,b,c (app(app(app constr(maybe) a) b) c)) 
+ * eg : 
+ *      Maybe a b c = ... 
+ * becomes 
+ *      forall([a, b, c], app(app(app(constr(maybe), a), b), c)) 
  * @param {Constr} constr 
  * @returns {T.TypeO}
  */
