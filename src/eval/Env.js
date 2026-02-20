@@ -13,6 +13,8 @@ export function resetOutputs(){
 
 /**
  * Environment object definition, used in evaluation
+ * An environement is a mapping of names of primitives to their actual Prim
+ * definitions 
  */
 export class Env {
 
