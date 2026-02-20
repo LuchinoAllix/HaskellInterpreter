@@ -31,6 +31,7 @@ const maybe = T.freshVar();
 
 /**
  * Context object definition, used in type inference
+ * A context is a mapping of names of primitives to their corresponding types
  */
 export class Context {
 
