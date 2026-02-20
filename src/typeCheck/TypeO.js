@@ -126,6 +126,9 @@ export function TIO() { return new TBuiltin("IO"); }
 export function TJust() { return new TBuiltin("Just"); }
 export function TMaybe() { return new TBuiltin("Maybe"); }
 
+// there should be a verification of some sort that all these types appear in
+// the type option table
+
 /**
  * Type of application of type
  */
