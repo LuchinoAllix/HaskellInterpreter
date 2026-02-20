@@ -34,10 +34,10 @@ export class Decl extends Term {
    * @param {Term} term A branch or an exp
    * @param {[Integer]} info 
    */
-  constructor(name, typeAnnotations, term, info = null){
+  constructor(name, typeAnnotation, term, info = null){
     super("DECL");
     this.name = name;
-    this.typeAnnotations = typeAnnotations;
+    this.typeAnnotation = typeAnnotation;
     this.info = info;
     if (term !== null){
       if (term.type === "branch"){
@@ -55,7 +55,7 @@ export class Decl extends Term {
    * @returns {Boolean}
    */
   isAnnotated(){
-    return this.typeAnnotations !== null;
+    return this.typeAnnotation !== null;
   }
 
   /**
