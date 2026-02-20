@@ -29,7 +29,7 @@ export class Env {
   /**
    * Determines if a declaration exists in an environment
    * @param {String} name 
-   * @returns {Value} Value or undefined if declaration doesn't exists
+   * @returns { Value | undefined } undefined if declaration doesn't exists
    */
   lookup(name){
     return this.decls[name];
