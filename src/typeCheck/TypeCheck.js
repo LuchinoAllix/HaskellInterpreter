@@ -569,8 +569,12 @@ function isMainAppIoUnit(mainType){
   return false;
 }
 
+/**
+ * 
+ * @param {*} constr 
+ */
 function manageConstr(constr){
-  updateTables(constr);
+  updateTable(constr);
   let type = getTypeOfConstr(constr);
   for(let option of constr.options){
     if (option.type === 'var'){
@@ -579,6 +583,13 @@ function manageConstr(constr){
   }
 }
 
+/**
+ * todo
+ * @param {Constr} constr 
+ */
+function updateTable(constr){
+  throw new Error("TODO");
+}
 
 /**
  * Returns the type of a constr node
@@ -594,7 +605,7 @@ function getTypeOfConstr(constr){
     let names = [];
     for (let i = 0; i < constr.params.length - 1; i++){
       let nVar = T.freshVar();
-      names.push(nVar.names);
+      names.push(nVar.name);
       body = new T.TApp(body, nVar);
     }
     return new T.TForall(names, body);
