@@ -4,12 +4,14 @@ import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
 import { Constr } from "../normalize/Constr.js";
+import { TypeTable } from "./TypeTable.js";
 
 //--        File containing functions to type check the program             --//
 
 // Init global context
 let global_context = new Context();
 global_context.initGlobal();
+let typeTable = new TypeTable();
 
 /**
  * Verifies that a given program type checks
@@ -570,25 +572,17 @@ function isMainAppIoUnit(mainType){
 }
 
 /**
- * 
- * @param {*} constr 
+ * todo
+ * @param {Constr} constr 
  */
 function manageConstr(constr){
-  updateTable(constr);
   let type = getTypeOfConstr(constr);
+  typeTable.add(constr.name, constr);
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
     }
   }
-}
-
-/**
- * todo
- * @param {Constr} constr 
- */
-function updateTable(constr){
-  throw new Error("TODO");
 }
 
 /**
