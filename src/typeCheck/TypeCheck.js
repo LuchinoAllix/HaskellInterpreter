@@ -28,7 +28,6 @@ export function typeCheck(program){
       main = decl;
     } else if (decl.isConstr()){
       manageConstr(decl);
-      throw new Error("TODO");
     } else {
       let declType = T.freshMetavar();
       global_context.add(decl.name, declType);
@@ -578,6 +577,7 @@ function isMainAppIoUnit(mainType){
 function manageConstr(constr){
   let type = getTypeOfConstr(constr);
   typeTable.add(constr.name, constr);
+  global_context.add(constr.name, new T.TConstr(constr.name));
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
@@ -600,7 +600,7 @@ function getTypeOfConstr(constr){
   } else {
     let body = new T.TConstr(constr.name);
     let names = [];
-    for (let i = 0; i < constr.params.length - 1; i++){
+    for (let i = 0; i < constr.params.length; i++){
       let nVar = T.freshVar();
       names.push(nVar.name);
       body = new T.TApp(body, nVar);
