@@ -40,6 +40,14 @@ export class TypeO {
     return this.type === "Builtin";
   }
 
+    /**
+   * 
+   * @returns {Boolean}
+   */
+  isConstr(){
+    return this.type === "TConstr";
+  }
+
   /**
    * 
    * @returns {Boolean}
@@ -254,4 +262,4 @@ export class TConstr extends TypeO {
 
 export function TJust() { return new TConstr("Just"); }
 export function TMaybe() { return new TConstr("Maybe"); }
-export function TMaybe() { return new TConstr("Nothing"); }
+export function TNothing() { return new TConstr("Nothing"); }
