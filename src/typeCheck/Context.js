@@ -28,7 +28,7 @@ const varThen2 = T.freshVar();
 const varBind1 = T.freshVar();
 const varBind2 = T.freshVar();
 const just = T.freshVar();
-const maybe = T.freshVar();
+const nothing = T.freshVar();
 
 /**
  * Context object definition, used in type inference
@@ -166,10 +166,12 @@ export class Context {
         just, 
         new T.TApp(T.TMaybe(), just))));
 
-    this.add("Maybe", new T.TForall([maybe.name],
+    this.add("Nothing", new T.TForall([nothing.name],
       new T.TArrow(
-        maybe, 
-        new T.TApp(T.TMaybe(), maybe))));
+        nothing, 
+        new T.TApp(T.TMaybe(), nothing))));
+
+    this.add("Maybe", T.TMaybe());
 
     //this.add("getChar", ); // TODO
   }
