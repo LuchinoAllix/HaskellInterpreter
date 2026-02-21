@@ -175,7 +175,9 @@ function unify(t1, t2){
   } else if (tmpt2.isMetavar()){
     occursCheck(tmpt2, tmpt1);
     tmpt2.setVal(tmpt1);
-  } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin && tmpt1.blt === tmpt2.blt){
+  } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin() && tmpt1.blt === tmpt2.blt){
+    // do nothing
+  } else if (tmpt1.isConstr() && tmpt2.isConstr() && tmpt1.name === tmpt2.name){
     // do nothing
   } else if (t1.isForAll() || tmpt2.isForAll()){
     throw new Error(`Forall in unification should not happen`);
@@ -363,6 +365,8 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
  * @returns {T.TypeO}
  */
 function inferFunctionApp(exp, context){
+  // TODO FIXME : typetable has to be used to verify arity of type applications
+  // like list tuples or constrs (maybe)
   let tfun = infer(exp.func, context);
 
   if (tfun.isArrow()){

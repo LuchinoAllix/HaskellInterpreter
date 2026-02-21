@@ -170,7 +170,7 @@ export class Context {
       new T.TArrow(
         nothing, 
         new T.TApp(T.TMaybe(), nothing))));
-
+    
     this.add("Maybe", T.TMaybe());
 
     //this.add("getChar", ); // TODO
