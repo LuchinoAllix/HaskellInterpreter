@@ -139,8 +139,6 @@ export function TUnit() { return new TBuiltin("Unit"); }
 export function TList() { return new TBuiltin("List"); }
 export function TTuple() { return new TBuiltin("Tuple"); }
 export function TIO() { return new TBuiltin("IO"); }
-export function TJust() { return new TBuiltin("Just"); }
-export function TMaybe() { return new TBuiltin("Maybe"); }
 
 // there should be a verification of some sort that all these types appear in
 // the type option table
@@ -254,3 +252,6 @@ export class TConstr extends TypeO {
   }
 }
 
+export function TJust() { return new TConstr("Just"); }
+export function TMaybe() { return new TConstr("Maybe"); }
+export function TMaybe() { return new TConstr("Nothing"); }
