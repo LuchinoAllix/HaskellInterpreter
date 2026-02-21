@@ -51,7 +51,7 @@ export function typeCheck(program){
   
   // verify the type annotation of main
   if (main.isAnnotated()){ 
-    unify(mainType, main.typeAnnotations);
+    unify(mainType, main.typeAnnotation);
   }
   
   if (isMainAppIoUnit(mainType)){
