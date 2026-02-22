@@ -576,7 +576,7 @@ function isMainAppIoUnit(mainType){
 
 /**
  * todo
- * @param {Constr} constr 
+ * @param {Constr} constr
  */
 function manageConstr(constr){
   let type = getTypeOfConstr(constr);
@@ -585,6 +585,8 @@ function manageConstr(constr){
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
+    } else if(option.type === "functionApp"){
+      throw new Error("TODO");
     }
   }
 }
