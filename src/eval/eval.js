@@ -3,6 +3,7 @@ import { Decl } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
+import { Constr } from "../normalize/Constr.js";
 
 
 //--               File for functions needed to evaluate a term             --//
@@ -92,6 +93,8 @@ export function initEvalInter(program, env){
 function evaluateDecl(decl){
   if (decl.name === "main"){
     main = evaluateExp(decl.body, new Env());
+  } else if (decl.isConstr()){
+    evaluateConstr(decl);
   } else {
     global_env.add(decl.name, evaluateExp(decl.body, new Env()));
   }
@@ -421,7 +424,7 @@ function resetGlobalEnv(){
       tmp_env.add(key, value);
     }
   }
-  global_env = tmp_env;;
+  global_env = tmp_env;
   global_env.initGlobal();
 }
 
@@ -446,4 +449,12 @@ export function isNcommas(str){
  */
 export function addNcommasToGlobalEnv(str){
   global_env.addNcommas(str);
+}
+
+/**
+ * todo
+ * @param {Constr} constr 
+ */
+function evaluateConstr(constr){
+  throw new Error("TODO");
 }
