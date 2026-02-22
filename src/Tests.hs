@@ -964,16 +964,27 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
--- Test 99         : Algebraic data type
--- Expected result : Nothing
+-- Test 99         : Algebraic data type definition
+-- Expected result : None
 
 --/
 data Perhaps a = None | Some a
 divv a b = if b == 0
-          then Nothing
-          else Just (a/b)
+          then None
+          else Some (a/b)
 
 main = print (divv 5 0)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 100        : Algebraic data type in pattern matching
+-- Expected result : 5
+
+--/
+a = Just 5
+main = print(case a of 
+                Nothing -> 0
+                Just a -> a)
 --/
 
 --------------------------------------------------------------------------------
