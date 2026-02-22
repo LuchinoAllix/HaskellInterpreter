@@ -44,4 +44,12 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
+-- Test 4         : incorrect type in constructor pattern matching
+-- Expected crash : 4
 
+--/
+a = Just 5
+main = print(case a of 
+                Nothing -> 0
+                Just "5" -> 1)
+--/
