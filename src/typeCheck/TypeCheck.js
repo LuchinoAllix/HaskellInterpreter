@@ -575,7 +575,10 @@ function isMainAppIoUnit(mainType){
 }
 
 /**
- * todo
+ * Manages the type of a constr object, which include :
+ *  - adding the constr to the typeTable
+ *  - adding the constr type in the global context
+ *  - for each of the options of the constr, adding them to the global context
  * @param {Constr} constr
  */
 function manageConstr(constr){
@@ -586,7 +589,12 @@ function manageConstr(constr){
     if (option.type === 'var'){
       global_context.add(option.name, type);
     } else if(option.type === "functionApp"){
-      throw new Error("TODO");
+      let func = option.func;
+      while (func.type === "functionApp"){ func = func.func ; }
+      if (func.type !== 'var'){
+        throw new Error("TODO");
+      }
+      global_context.add(func.name, type);
     }
   }
 }
