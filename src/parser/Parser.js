@@ -109,7 +109,7 @@ function branchLoop(branch, program, currNode){
   let func;
   for (let i = 0; i < branch.childs.length; i++){
     let elem = branch.childs[i];
-    if (elem[0].type === "rule"){ 
+    if (elem[0].type === "rule"){
       // doesn't appear in branches but needed for root rule that is passed 
       // at the begining (module)
       func = ruleLoop;
