@@ -127,37 +127,37 @@ export class Rules {
      *       | '{' interactive '}' // added rule to be ghci-like 
      * ------------------------- */
     this.rules.body.childs = [
-      branch([
-        [data("{"), 1],
-        [ref("impdecls"), 1],
-        [data(";"), 1],
-        [ref("topdecls"), 1],
-        [data("}"), 1]
-      ]),
-      branch([
-        [data("{"), 1], 
-        [ref("impdecls"), 1], 
-        [data("}"), 1]
-      ]),
+      //branch([
+      //  [data("{"), 1],
+      //  [ref("impdecls"), 1],
+      //  [data(";"), 1],
+      //  [ref("topdecls"), 1],
+      //  [data("}"), 1]
+      //]),
+      //branch([
+      //  [data("{"), 1], 
+      //  [ref("impdecls"), 1], 
+      //  [data("}"), 1]
+      //]),
       branch([
         [data("{"), 1], 
         [ref("topdecls"), 1], 
         [data("}"), 1]
       ]),
-      branch([
-        [data("{"), 1], 
-        [ref("interactive"), 2],
-        [data("}"), 1]
-      ])
+      //branch([
+      //  [data("{"), 1], 
+      //  [ref("interactive"), 2],
+      //  [data("}"), 1]
+      //])
     ];
 
     /** ------------------------- // added rule to be ghci-like
      * interactive -> exp | 'let' decls
      * ------------------------- */
-    this.rules.interactive.childs = [
-      branch([[ref("exp"),1]]),
-      branch([[data("let"), 1], [ref("decls"), 1]])
-    ];
+    //this.rules.interactive.childs = [
+    //  branch([[ref("exp"),1]]),
+    //  branch([[data("let"), 1], [ref("decls"), 1]])
+    //];
 
     /** -------------------------
      * impdecls -> impdecl1 ';' … ';' impdecln                           (n ≥ 1)
