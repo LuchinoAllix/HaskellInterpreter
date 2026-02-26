@@ -1219,17 +1219,17 @@ export class Rules {
         [ref("exp"), 1],
         [branch([
           [data("where"), 1],
-          [ref("ecls"), 1]
+          [ref("decls"), 1]
         ]), 0]
       ]),
       branch([
         [ref("pat"), 1], 
-        [ref("gdpat"), 1]
+        [ref("gdpat"), 1],
         [branch([
           [data("where"), 1],
-          [ref("ecls"), 1]
+          [ref("decls"), 1]
         ]), 0]
-      ]),
+      ])
       //branch([])
     ];
 
