@@ -367,13 +367,13 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
 function inferFunctionApp(exp, context){
   // TODO FIXME : typetable has to be used to verify arity of type applications
   // like list tuples or constrs (maybe)
-  let tfun = infer(exp.func, context);
+  let tfun = infer(exp.func, context).resolve();
 
   if (tfun.isArrow()){
     check(exp.arg, tfun.from, context);
     return tfun.to;
   }
-  
+
   let targ = infer(exp.arg, context);
   let res = T.freshMetavar();
 
