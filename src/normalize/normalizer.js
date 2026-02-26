@@ -231,7 +231,7 @@ function normalizeConstr(node, params){
     new VarExp(node.childs[1].value, 
       [node.childs[1].line, node.childs[1].column]));
   for (let i = 2; i < node.childs.length; i ++){
-    app = new FunctionApp(body, new VarExp(node.childs[2].value, 
+    app = new FunctionApp(app, new VarExp(node.childs[2].value, 
       [node.childs[i].line, node.childs[i].column]));
   }
   return app;
