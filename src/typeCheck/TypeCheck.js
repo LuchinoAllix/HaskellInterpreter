@@ -183,7 +183,7 @@ function unify(t1, t2){
     throw new Error(`Forall in unification should not happen`);
   } else {
     throw new Error(`Unification failed on types : 
-      ${JSON.stringify(tmpt1, null, 2)} \n\nand 
+      ${JSON.stringify(tmpt1, null, 2)} \nand 
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
 }
@@ -582,19 +582,25 @@ function isMainAppIoUnit(mainType){
  * @param {Constr} constr
  */
 function manageConstr(constr){
-  let type = getTypeOfConstr(constr);
+  let nameDict = {};
+  let type = getTypeOfConstr(constr, nameDict);
   typeTable.add(constr.name, constr);
   global_context.add(constr.name, new T.TConstr(constr.name));
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
     } else if(option.type === "functionApp"){
+      // we know type is forall
       let func = option.func;
-      while (func.type === "functionApp"){ func = func.func ; }
+      let arr = new T.TArrow(nameDict[option.arg.name], type.body);
+      while (func.type === "functionApp"){
+        func = func.func;
+        arr = new T.TArrow(nameDict[func.arg.name], arr);
+      }
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
-      global_context.add(func.name, type);
+      global_context.add(func.name, new T.TForall(type.names, arr));
     }
   }
 }
@@ -605,10 +611,15 @@ function manageConstr(constr){
  *      Maybe a b c = ... 
  * becomes 
  *      forall([a, b, c], app(app(app(constr(maybe), a), b), c)) 
+ * 
+ * and updates the nameDict with all the names of the variables with
+ * their corresponding type var
+ * 
  * @param {Constr} constr 
- * @returns {T.TypeO}
+ * @param {String -> T.TVar} nameDict
+ * @returns {T.TConstr | T.TForall}
  */
-function getTypeOfConstr(constr){
+function getTypeOfConstr(constr, nameDict){
   if (constr.params.length === 0){
     return new T.TConstr(constr.name);
   } else {
@@ -616,6 +627,7 @@ function getTypeOfConstr(constr){
     let names = [];
     for (let i = 0; i < constr.params.length; i++){
       let nVar = T.freshVar();
+      nameDict[constr.params[i]] = nVar;
       names.push(nVar.name);
       body = new T.TApp(body, nVar);
     }
