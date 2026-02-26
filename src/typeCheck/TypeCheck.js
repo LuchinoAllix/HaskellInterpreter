@@ -372,6 +372,8 @@ function inferFunctionApp(exp, context){
   if (tfun.isArrow()){
     check(exp.arg, tfun.from, context);
     return tfun.to;
+  } else if (tfun.isApp()){
+    console.log("a");
   }
 
   let targ = infer(exp.arg, context);
@@ -460,14 +462,12 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
-  if (exp.valueType === 'EmptyList'){
-    const nvar = T.freshVar();
-    return new T.TForall([nvar.name], new T.TApp(T.TList(), nvar));
-  } else if (exp.valueType === 'Nothing'){
-    const nvar = T.freshVar();
-    return new T.TForall([nvar.name], new T.TApp(T.TMaybe(), nvar));
+  let lookup = global_context.lookup(exp.valueType);
+  if (lookup !== undefined){ // for constructors
+    return lookup;
   }
   return new T.TBuiltin(exp.valueType);
+  // HELP should there be a verification on the accepted builtin types ?
 }
 
 /**
