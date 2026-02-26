@@ -110,13 +110,14 @@ export class Rules {
      *         | body
      * ------------------------- */
     this.rules.module.childs = [
-      branch([
-        [data("module"), 1],
-        [tokentype("Modid"), 1],
-        [ref("exports"), 0],
-        [data("where"), 1],
-        [ref("body"), 1]
-      ]),
+      // commented out to speed thing up since we're not using these now
+      //branch([
+      //  [data("module"), 1],
+      //  [tokentype("Modid"), 1],
+      //  [ref("exports"), 0],
+      //  [data("where"), 1],
+      //  [ref("body"), 1]
+      //]),
       branch([[ref("body"), 1]])
     ];
 
@@ -127,6 +128,7 @@ export class Rules {
      *       | '{' interactive '}' // added rule to be ghci-like 
      * ------------------------- */
     this.rules.body.childs = [
+      // commented out to speed thing up since we're not using these now
       //branch([
       //  [data("{"), 1],
       //  [ref("impdecls"), 1],
