@@ -1,4 +1,5 @@
 import { Constr } from "../normalize/Constr.js";
+import { FunctionApp, VarExp } from "../normalize/Exp.js";
 import * as T from "./TypeO.js";
 
 //--                 File containing Type option for type check             --//
@@ -51,7 +52,10 @@ export class TypeTable {
     this.add("Tuple", new Constr("Tuple", [], ["a"]));
     this.add("IO", new Constr("IO", [], [])); //FIXME
     this.add("Just", new Constr("Just", [], [])); //FIXME
-    this.add("Maybe", new Constr("Maybe", [], [])); //FIXME
+    this.add("Maybe", new Constr("Maybe", [
+      new FunctionApp(new VarExp("Just"), new VarExp("a")), 
+      new VarExp("Nothing")
+    ], ["a"])); //FIXME
   }
   // this should not be manually done FIXME
 
