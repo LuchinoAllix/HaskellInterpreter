@@ -1282,13 +1282,11 @@ export class Rules {
     /** -------------------------
      * pat -> lpat qconop pat                                (infix constructor) 
      *      | lpat 
-     * 
-     * FIXME / TODO : The pat ref has been made optional to allow pattern
-     * matching of constructors but it is not how it's supposed to work
+     * FIXME Error with pattern matching with constructor
      * 
      * ------------------------- */
     this.rules.pat.childs = [
-      branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 0]]),
+      branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 1]]),
       branch([[ref("lpat"), 1]])
     ];
 
