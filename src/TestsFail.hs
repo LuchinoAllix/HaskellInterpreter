@@ -53,3 +53,6 @@ main = print(case a of
                 Nothing -> 0
                 Just "5" -> 1)
 --/
+--------------------------------------------------------------------------------
+-- TODO add a test where occurs check should fail
+-- TODO add a test where pattern matching on constructors should fail
