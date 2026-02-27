@@ -984,7 +984,7 @@ main = print (divv 5 0)
 a = Just 5
 main = print(case a of 
                 Nothing -> 0
-                Just a -> a)
+                Just b -> b)
 --/
 
 --------------------------------------------------------------------------------
