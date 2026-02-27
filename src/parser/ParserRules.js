@@ -182,10 +182,10 @@ export class Rules {
         [data("("), 1],
         [ref("export"), 0],
         [branch([
-          [ref("export"),1]
+          [ref("export"),1],
           [data(","), 1]
-        ]), 3]
-        [data(","), 0]
+        ]), 3],
+        [data(","), 0],
         [data(")"), 1]
       ])
     ];
@@ -1206,7 +1206,7 @@ export class Rules {
           [data(";"), 1], 
           [ref("alt"), 1]
         ], 3), 3]
-      ]),
+      ])
     ];
 
     /** -------------------------
@@ -1251,7 +1251,7 @@ export class Rules {
      * stmts -> stmt1 … stmtn exp [';']                                  (n ≥ 0) 
      * ------------------------- */
     this.rules.stmts.childs = [
-      branch([[ref("stmt"), 3], [ref("exp"), 1], [data(";"), 0]]),
+      branch([[ref("stmt"), 3], [ref("exp"), 1], [data(";"), 0]])
     ];
 
     /** -------------------------
@@ -1269,7 +1269,7 @@ export class Rules {
         [data(";"), 1]
       ]),
       branch([[data("let"), 1], [ref("decls"), 1], [data(";"), 1]]),
-      branch([[data(";"), 1]]),
+      branch([[data(";"), 1]])
     ];
 
     /** -------------------------
@@ -1279,12 +1279,15 @@ export class Rules {
       branch([[ref("qvar"), 1], [data("="), 1], [ref("exp"), 1]])
     ];
 
-     /** -------------------------
+    /** -------------------------
      * pat -> lpat qconop pat                                (infix constructor) 
      *      | lpat 
+     * 
+     * 
+     * 
      * ------------------------- */
     this.rules.pat.childs = [
-      branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 1]]),
+      branch([[ref("lpat"), 1], [ref("qconop"), 1], [ref("pat"), 0]]),
       branch([[ref("lpat"), 1]])
     ];
 
