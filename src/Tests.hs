@@ -988,3 +988,5 @@ main = print(case a of
 --/
 
 --------------------------------------------------------------------------------
+-- TODO add more complexe tests with constructor in pattern matching
+-- TODO add more complexe tests with custom GADTs (more than one param)
