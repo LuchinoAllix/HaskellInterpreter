@@ -77,7 +77,7 @@ export class Vio extends Value {
   }
 
   /**
-   * todo
+   * Runs the function in the func attribute and returns it's result
    * @returns 
    */
   exec(){
