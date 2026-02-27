@@ -296,7 +296,7 @@ function verifyAmbi(elem, token){
   // list of elements that could be something else
   
   let alternatives = ["Tycls", "Qtycls", "Qtycon", "Qtyvar", "Tycon", "Conid",
-    , "Tyvar"]; 
+    , "Tyvar", "Qconsym"]; 
   // list of elements that could replace rules that are not called in the lexer
 
   if (problematic.includes(token.type) && alternatives.includes(elem.value)){
