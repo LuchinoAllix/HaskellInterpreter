@@ -158,8 +158,7 @@ function evaluateVar(exp, env){
   } else if (variable.metatype === "EXP"){
     return evaluateExp(variable, env);
   } else if (variable.metatype === "VALUE"){
-    if (variable.type === "func" && 
-      (variable.subtype === "prim" || variable.subtype === 'primio')){
+    if (variable.type === "func" && variable.subtype === "prim"){
       variable.closure = env;
     }
     return variable;
