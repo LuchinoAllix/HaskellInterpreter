@@ -11,7 +11,7 @@ import { TypeTable } from "./TypeTable.js";
 // Init global context
 let global_context = new Context();
 global_context.initGlobal();
-let typeTable = new TypeTable();
+export let typeTable = new TypeTable();
 
 /**
  * Verifies that a given program type checks
@@ -373,7 +373,7 @@ function inferFunctionApp(exp, context){
     check(exp.arg, tfun.from, context);
     return tfun.to;
   } else if (tfun.isApp()){
-    console.log("a");
+    console.log("a"); //todo
   }
 
   let targ = infer(exp.arg, context);
@@ -589,6 +589,7 @@ function manageConstr(constr){
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
+      typeTable.add(option.name, new Constr(option.name, [], []));
     } else if(option.type === "functionApp"){
       // we know type is forall
       let func = option.func;
@@ -600,6 +601,8 @@ function manageConstr(constr){
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
+      typeTable.add(func.name, new Constr(func.name, [], []));
+      // FIXME the last param of constr is not valid
       global_context.add(func.name, new T.TForall(type.names, arr));
     }
   }
