@@ -51,7 +51,8 @@ export class TypeTable {
     this.add("List", new Constr("List", [], ["a"]));
     this.add("Tuple", new Constr("Tuple", [], ["a"]));
     this.add("IO", new Constr("IO", [], [])); //FIXME
-    this.add("Just", new Constr("Just", [], [])); //FIXME
+    this.add("Just", new Constr("Just", [], ["a"])); //FIXME
+    this.add("Nothing", new Constr("Nothing", [], []));
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")
