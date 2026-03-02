@@ -123,34 +123,13 @@ export class VList extends Value {
   }
 }
 
-export class VMTList extends Value {
+export class VConstr extends Value {
 
   /**
    * constructor for the empty list
    */
-  constructor(){
-    super("mtlist");
-  }
-}
-
-export class VNothing extends Value {
-
-  /**
-   * constructor for the value nothing
-   */
-  constructor(){
-    super("Nothing");
-  }
-}
-
-export class VJust extends Value {
-
-  /**
-   * constructor for the value just
-   * @param {Value} value
-   */
-  constructor(value){
-    super("Just");
-    this.value = value;
+  constructor(type, value = []){
+    super(type);
+    this.value = value
   }
 }
