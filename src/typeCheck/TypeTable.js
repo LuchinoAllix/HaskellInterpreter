@@ -57,6 +57,7 @@ export class TypeTable {
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")
     ], ["a"])); //FIXME
+    this.add("EmptyList", new Constr("EmptyList", [], []));
   }
   // this should not be manually done FIXME
 
