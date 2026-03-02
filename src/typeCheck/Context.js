@@ -168,9 +168,7 @@ export class Context {
         new T.TApp(T.TMaybe(), just))));
 
     this.add("Nothing", new T.TForall([nothing.name],
-      new T.TArrow(
-        nothing, 
-        new T.TApp(T.TMaybe(), nothing))));
+        new T.TApp(T.TMaybe(), nothing)));
     
     this.add("Maybe", T.TMaybe());
 
