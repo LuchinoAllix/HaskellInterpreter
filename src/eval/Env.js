@@ -125,13 +125,13 @@ export class Env {
       }));
 
     this.add("++", new Prim( a => new Prim(b => {
-      if (a.type === "mtlist"){
+      if (a.type === "EmptyList"){
         return b;
-      } else if (b.type === "mtlist"){
+      } else if (b.type === "EmptyList"){
         return a; 
       }
       let elem = a;
-      while(elem.snd.type !== "mtlist"){
+      while(elem.snd.type !== "EmptyList"){
         elem = elem.snd;
       }
       elem.snd = b
@@ -210,9 +210,9 @@ function makeFunc(n, list){
 function makeStr(val){
   if (val.type === "unit"){
     return "()";
-  } else if (val.type === "mtlist"){
+  } else if (val.type === "EmptyList"){
     return "[]";
-  } else if (Array.isArray(val.value)){ // constr
+  } else if (val.type !== "tuple" && Array.isArray(val.value)){ // constr
     let res = '' + val.type;
 
     for (let a of val.value){res += ' ' + a;} 
@@ -240,7 +240,7 @@ function makeStr(val){
 
   if (bord !== null){
     let fst = makeStr(val.fst);
-    if (val.snd.type === "mtlist"){
+    if (val.snd.type === "EmptyList"){
       return bord[0] + fst + bord[1];
     }
     let snd = makeStr(val.snd);
@@ -258,7 +258,7 @@ function makeStr(val){
  */
 function charListToStr(val){
   let res = val.fst.value;
-  if (val.snd.type === 'mtlist'){ return res ; }
+  if (val.snd.type === 'EmptyList'){ return res ; }
   return res + charListToStr(val.snd);
 }
 
@@ -270,7 +270,7 @@ function charListToStr(val){
  * @returns {VList}
  */
 function map(f,l){
-  if (l.type === "mtlist"){ return l ; }
+  if (l.type === "EmptyList"){ return l ; }
   return new VList(applyFunc(f, l.fst), map(f, l.snd));
 }
 
