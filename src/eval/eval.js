@@ -4,6 +4,8 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
+import { typeTable } from "../typeCheck/TypeCheck.js"
+import { Prim } from "./Prim.js";
 
 
 //--               File for functions needed to evaluate a term             --//
@@ -183,15 +185,18 @@ function evaluateImmediate(exp){
 
     case "Char" :
       return new V.Vchar(exp.value);
-
-    case "EmptyList" :
-      return new V.VMTList();
-
-    case "Nothing" :
-      return new V.VNothing();
       
     default :
-      throw new Error("value type not yet managed in eval : " + exp.valueType);
+      let res = typeTable.lookup(exp.valueType); 
+      if (res !== undefined){
+        if (res.arity === 0){
+          return new V.VConstr(exp.valueType);
+        }
+        return new V.VConstr(exp.valueType, [exp.value]);
+      } else {
+        throw new Error("value type not yet managed in eval : " +
+          exp.valueType);
+      }
   }
 }
 
@@ -452,8 +457,28 @@ export function addNcommasToGlobalEnv(str){
 
 /**
  * todo
- * @param {Constr} constr 
+ * @param {Constr} constr
  */
 function evaluateConstr(constr){
-  throw new Error("TODO");
+  for (let option of constr.options){
+    if (option.type === 'var'){
+      global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
+    } else {
+      global_env.add(option.name, 
+        new Prim((a) => new V.VConstr(option.func.name, a.value)));
+
+      /* not working, todo generalise for any number of args
+      let func = option.func;
+      let args = [];
+      let constr;
+      let prim = new Prim(a => constr);
+      while (func.type === "functionApp"){
+        args.push(func.arg);
+        prim = new Prim (a => prim);
+        func = func.func;
+      }
+      constr = new V.VConstr(func.name, prim)
+      */
+    }
+  }
 }
