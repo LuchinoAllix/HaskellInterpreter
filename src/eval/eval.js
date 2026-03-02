@@ -359,7 +359,7 @@ function match(value, exp){
     case "immediate" :
       // Might not work on strings because of "\" stuff, #FIXME
       if (exp.value === value.value || 
-        (exp.valueType === 'EmptyList' && value.type === 'mtlist')){
+        (exp.valueType === 'EmptyList' && value.type === 'EmptyList')){
         return [[]];
       }
       return [-1];
@@ -397,7 +397,7 @@ function execute(main_decl){
 
 /**
  * Lookup but inside the global environment and a local one given
- * @param {Env} env 
+ * @param {Env} env
  * @param {String} name 
  * @returns {Term}
  */
