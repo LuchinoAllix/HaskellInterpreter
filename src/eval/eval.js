@@ -328,7 +328,7 @@ function match(value, exp){
           newValFunc = value.fst;
           newValArg = value.snd;
         } else {
-          throw new Error("unhandeled case in funcapp match")
+          throw new Error("unhandeled case in funcapp match");
         }
         
         let funcMatch, argMatch;
@@ -342,10 +342,13 @@ function match(value, exp){
         }
         return funcMatch.concat(argMatch);
       
-      } else if (isNcommas(exp.func.name)){ 
+      } else if (isNcommas(exp.func.name)){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
+      } else if (typeTable.lookup(exp.func.name)){ 
+        // will not work for constructor of arity >= 2
+        return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
       }
@@ -368,6 +371,41 @@ function match(value, exp){
       throw new Error("Exp not yet managed in pattern matching of eval : " + 
         exp.type);
   }
+}
+
+function matchConstr(value, exp){
+  let args = listIt(exp);
+  let func = args.pop(1);
+  if (args.length !== value.value.length || value.type !== func.name){
+    return [-1];
+  }
+  let res = []
+  for (let i = 0; i < args.length; i ++){
+    let a = match(value.value[i], args[i]); 
+    // will not work because value.value[i] is not of type Val 
+    if (a[0] === -1){
+      return a;
+    } else {
+      res.push(a)
+    }
+  }
+  return res;
+}
+
+/**
+ * 
+ * @param {*} exp 
+ * @returns {[Exp]}
+ */
+function listIt(exp){
+  let args = [exp.arg];
+  let pointer = exp.func;
+  while (pointer.type === 'functionApp'){
+    args.push(pointer.arg);
+    pointer = pointer.func;
+  }
+  args.push(pointer);
+  return args;
 }
 
 /**
