@@ -315,6 +315,8 @@ function checkPatterns(patterns, patternsTypes, context){
  * @returns {Boolean}
  */
 function isAppinCase(name){
+  let res = typeTable.lookup(name); 
+  if (res !== undefined && res.arity > 0){ return true; }
   return name === ":" 
       || name === ","
       || isNcommas(name);
@@ -331,7 +333,7 @@ function isAppinCase(name){
  * 
  * - (a,b) = ... will yield that the pattern is of type metavar where it's value
  *   is tuple metavar t42 , metavar t43 and the context will be updated where 
- *   a is of type t42 and b is of of type t43  
+ *   a is of type t42 and b is of of type t43
  * 
  * @param {Exp} pattern 
  * @param {T.TypeO} patternTypeR
@@ -343,7 +345,7 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
   checkPatterns([pattern.func], [func], context);
   if (func.value.isArrow()){
     checkPatterns([pattern.arg], [func.value.from], context);
-    if (patternType.isApp()) {
+    if (patternType.isApp()){
       unify(patternType, func.value.to);
     } else if (patternType.isMetavar() && patternType.value === null) {
       patternType.setVal(func.value.to);
