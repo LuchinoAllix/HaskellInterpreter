@@ -431,6 +431,7 @@ function normalizeExp(node){
 
     case "apat" :
     case "pat" :
+    case "lpat" :
       return normalisePattern(node);
 
     case "Qconid" :
@@ -559,7 +560,12 @@ function normalisePriority(node){
  * @returns {Exp}
  */
 function normalisePattern(node){
-  if (node.childs[2].value === ","){
+  if (node.type === 'lpat'){
+    return new makeFuncAppOfList(
+      new VarExp(node.childs[0].value, 
+        [node.childs[1].line, node.childs[1].column]),
+      node.childs.slice(1).map(x => normalizeExp(x)));
+  } else if (node.childs[2].value === ","){
     if (node.childs[0].value === "("){
       return normalizeTuple(node);
     } else if (node.childs[0].value === "["){
