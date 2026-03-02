@@ -1296,7 +1296,6 @@ export class Rules {
      *       | gcon apat1 … apatk                      (arity gcon  =  k, k ≥ 1) 
      * ------------------------- */
     this.rules.lpat.childs = [
-      branch([[ref("apat"), 1]]),
       branch([
         [data("-"), 1],
         [tokentype("Integer"), 1]
@@ -1306,9 +1305,10 @@ export class Rules {
         [tokentype("Float"), 1]
       ]),
       branch(
-        [[ref("gcon"), 1], 
+        [[ref("gcon"), 1],
         [ref("apat"), 2]
-      ])
+      ]),
+      branch([[ref("apat"), 1]])
     ];
 
     /** -------------------------
