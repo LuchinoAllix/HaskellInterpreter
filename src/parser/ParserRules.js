@@ -1282,7 +1282,6 @@ export class Rules {
     /** -------------------------
      * pat -> lpat qconop pat                                (infix constructor) 
      *      | lpat 
-     * FIXME Error with pattern matching with constructor
      * 
      * ------------------------- */
     this.rules.pat.childs = [
@@ -1293,7 +1292,10 @@ export class Rules {
     /** -------------------------
      * lpat -> apat
      *       | '-' (integer | float)                          (negative literal) 
-     *       | gcon apat1 … apatk                      (arity gcon  =  k, k ≥ 1) 
+     *       | gcon apat1 … apatk                      (arity gcon  =  k, k ≥ 1)
+     * 
+     * (Order of rules was changed because not working for pattern with 
+     * constructors, should look into why though TODO) 
      * ------------------------- */
     this.rules.lpat.childs = [
       branch([
