@@ -1,6 +1,6 @@
 import { Prim } from "./Prim.js";
 import { Vint, Vbool, VList, Vtuple, Vio, Unit, Vchar, Value,
-         Vfunc, VJust } from "./Value.js";
+         Vfunc, VConstr } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -156,7 +156,9 @@ export class Env {
       return lambda.exec();
     }))));
 
-    this.add("Just", new Prim(a => new VJust(a.value)));
+    this.add("Just", new Prim(a => new VConstr("Just", [a.value])));
+
+    this.add("Nothing", new Prim(() => new VConstr("Nothing")));
 
     //this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
   }
@@ -210,11 +212,13 @@ function makeStr(val){
     return "()";
   } else if (val.type === "mtlist"){
     return "[]";
-  } else if (val.type === 'Nothing'){
-    return val.type;
-  } else if (val.type === "Just"){
-    return 'Just ' + val.value; 
+  } else if (Array.isArray(val.value)){ // constr
+    let res = '' + val.type;
+
+    for (let a of val.value){res += ' ' + a;} 
+    return res;
   }
+
   let bord = null;
   if (val.type === "tuple"){
     bord = "()";
