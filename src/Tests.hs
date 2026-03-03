@@ -988,5 +988,33 @@ main = print(case a of
 --/
 
 --------------------------------------------------------------------------------
+-- Test 101        : Complex Algebraic data type
+-- Expected result : 0\n1
+
+--/
+data Either a b = Left a | Right b
+
+nul a = if a == 0
+        then Left a
+        else Right a
+main = do
+    print (nul 0)
+    print (nul 1)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 102        : Complex algebraic data type in pattern matching
+-- Expected result : 1
+
+--/
+data Either a b = Left a | Right b
+
+a = Right 0
+main = print(case a of 
+                Left a  -> 0
+                Right b -> 1)
+--/
+
+--------------------------------------------------------------------------------
 -- TODO add more complexe tests with constructor in pattern matching
 -- TODO add more complexe tests with custom GADTs (more than one param)
