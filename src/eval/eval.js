@@ -498,7 +498,7 @@ function evaluateConstr(constr){
     if (option.type === 'var'){
       global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
     } else {
-      global_env.add(option.name, 
+      global_env.add(option.func.name, 
         new Prim((a) => new V.VConstr(option.func.name, a.value)));
 
       /* not working, todo generalise for any number of args
