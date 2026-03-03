@@ -989,7 +989,7 @@ main = print(case a of
 
 --------------------------------------------------------------------------------
 -- Test 101        : Complex Algebraic data type
--- Expected result : 0\n1
+-- Expected result : Left 0\nRight 1
 
 --/
 data Either a b = Left a | Right b
