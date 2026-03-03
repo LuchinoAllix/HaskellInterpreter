@@ -343,7 +343,7 @@ function match(value, exp){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-      } else if (isAppOfConstr(exp.func.name)){ 
+      } else if (isAppOfConstr(exp.func.name)){
         return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
@@ -369,13 +369,19 @@ function match(value, exp){
   }
 }
 
+/**
+ * Matches a pattern on a constr (same idea as match)
+ * @param {V.Value} value 
+ * @param {E.Exp} exp 
+ * @returns {[[E.Exp]]}
+ */
 function matchConstr(value, exp){
   let args = listIt(exp);
   let func = args.pop(1);
   if (args.length !== value.value.length || value.type !== func.name){
     return [-1];
   }
-  let res = []
+  let res = [];
   for (let i = 0; i < args.length; i ++){
     let a = match(value.value[i], args[i]); 
     if (a[0] === -1){
@@ -388,8 +394,8 @@ function matchConstr(value, exp){
 }
 
 /**
-
- * @param {*} exp 
+ * Transforms a functionApp into a list of args and the func on top
+ * @param {Exp} exp 
  * @returns {[Exp]}
  */
 function listIt(exp){
