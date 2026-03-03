@@ -316,9 +316,6 @@ function match(value, exp){
     case "functionApp" :
 
       if (exp.func.type === "functionApp"){
-        // It's assumed value.value is a list because we can only have lists and
-        // tuples in a funcapp of an exp of a case (perhaps this will change 
-        // when we add constructor like Just)
 
         let newValFunc, newValArg;
         if (value.type === "tuple"){
@@ -382,11 +379,10 @@ function matchConstr(value, exp){
   let res = []
   for (let i = 0; i < args.length; i ++){
     let a = match(value.value[i], args[i]); 
-    // will not work because value.value[i] is not of type Val 
     if (a[0] === -1){
       return a;
     } else {
-      res.push(a)
+      res = res.concat(a);
     }
   }
   return res;
