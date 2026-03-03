@@ -156,7 +156,7 @@ export class Env {
       return lambda.exec();
     }))));
 
-    this.add("Just", new Prim(a => new VConstr("Just", [a.value])));
+    this.add("Just", new Prim(a => new VConstr("Just", [a])));
 
     this.add("Nothing", new Prim(() => new VConstr("Nothing")));
 
