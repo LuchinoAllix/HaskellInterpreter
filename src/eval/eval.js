@@ -343,8 +343,7 @@ function match(value, exp){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-      } else if (typeTable.lookup(exp.func.name)){ 
-        // will not work for constructor of arity >= 2
+      } else if (isAppOfConstr(exp.func.name)){ 
         return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
@@ -389,7 +388,7 @@ function matchConstr(value, exp){
 }
 
 /**
- * 
+
  * @param {*} exp 
  * @returns {[Exp]}
  */
@@ -402,6 +401,24 @@ function listIt(exp){
   }
   args.push(pointer);
   return args;
+}
+
+/**
+ * Determines if an expression is an application of a constr
+ * @param {Exp} exp 
+ * @returns {Boolean}
+ */
+function isAppOfConstr(exp){
+  let pointer;
+  if (exp.type !== 'functionApp'){
+    pointer = exp ; 
+  } else {
+    pointer = exp.func;
+    while (pointer.type === 'functionApp'){
+      pointer = pointer.func;
+    }
+  }
+  return typeTable.lookup(pointer) !== undefined;
 }
 
 /**
