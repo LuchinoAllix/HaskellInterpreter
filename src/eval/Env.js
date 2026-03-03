@@ -215,7 +215,7 @@ function makeStr(val){
   } else if (val.type !== "tuple" && Array.isArray(val.value)){ // constr
     let res = '' + val.type;
 
-    for (let a of val.value){res += ' ' + a;} 
+    for (let a of val.value){res += ' ' + makeStr(a);} 
     return res;
   }
 
