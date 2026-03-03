@@ -126,7 +126,7 @@ export class VList extends Value {
 export class VConstr extends Value {
 
   /**
-   * constructor for the empty list
+   * constructor for constructors
    */
   constructor(type, value = []){
     super(type);
