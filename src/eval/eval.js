@@ -513,7 +513,7 @@ export function addNcommasToGlobalEnv(str){
 }
 
 /**
- * todo
+ * evaluates a data declaration (constr) by updating the global env
  * @param {Constr} constr
  */
 function evaluateConstr(constr){
@@ -522,7 +522,7 @@ function evaluateConstr(constr){
       global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
     } else {
       global_env.add(option.func.name, 
-        new Prim((a) => new V.VConstr(option.func.name, a.value)));
+        new Prim((a) => new V.VConstr(option.func.name, [a])));
 
       /* not working, todo generalise for any number of args
       let func = option.func;
