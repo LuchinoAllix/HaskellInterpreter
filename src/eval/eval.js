@@ -369,6 +369,12 @@ function match(value, exp){
   }
 }
 
+/**
+ * Match a value with an expression (same logic of match but for constrs)
+ * @param {V.Value} value 
+ * @param {E.Exp} exp 
+ * @returns {[[E.Exp]]}
+ */
 function matchConstr(value, exp){
   let args = listIt(exp);
   let func = args.pop(1);
@@ -388,7 +394,7 @@ function matchConstr(value, exp){
 }
 
 /**
- * 
+ * Turns a function app into a list (arg1, arg2, ... , func) 
  * @param {E.FunctionApp} exp 
  * @returns {[E.Exp]}
  */
@@ -404,7 +410,7 @@ function listIt(exp){
 }
 
 /**
- * 
+ * Determines if the function app given as param is of a constr
  * @param {E.FunctionApp} exp 
  * @returns 
  */
