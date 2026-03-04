@@ -104,6 +104,17 @@ export class TArrow extends TypeO {
     this.from = from;
     this.to = to;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){ return this.type ; }
+    return this.type + "(from : " + this.from.toStr(short) + 
+                       ", to : " + this.to.toStr(short) + ")";
+  }
 }
 
 /**
@@ -118,6 +129,16 @@ export class TBuiltin extends TypeO {
     super();
     this.type = "Builtin";
     this.blt = blt;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short 
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + '(' + this.blt + ')' ; 
   }
 }
 
@@ -166,6 +187,17 @@ export class TApp extends TypeO {
     this.func = func;
     this.arg = arg;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){ return this.type ; }
+    return this.type + "(func : " + this.func.toStr(short) + 
+                       ", app : " + this.app.toStr(short) + ")";
+  }
 }
 
 /**
@@ -183,6 +215,17 @@ export class TForall extends TypeO {
     this.names = names;
     this.body = body;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){ return this.type ; }
+    return this.type + "(vars : " + this.names + 
+                       ", body : " + this.body.toStr(short) + ")";
+  }
 }
 
 /**
@@ -198,6 +241,16 @@ export class TVar extends TypeO {
     super();
     this.type = "TVar";
     this.name = str + num;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " " + this.name;
   }
 }
 
@@ -233,6 +286,21 @@ export class TMetavar extends TypeO {
   setVal(type){
     this.value = type;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    let val = this.value;
+    if (this.value === null){ 
+      val = "void" ; 
+    } else { 
+      val = this.value.toStr(short);
+    }
+    return this.type + " " + this.name + " " + val ;
+  }
 }
 
 /**
@@ -257,6 +325,16 @@ export class TConstr extends TypeO {
     super();
     this.type = "TConstr";
     this.name = str;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " " + this.name;
   }
 }
 
