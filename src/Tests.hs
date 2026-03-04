@@ -987,5 +987,16 @@ main = print(case a of
 --/
 
 --------------------------------------------------------------------------------
+-- Test 101        : User defined map
+-- Expected result : [4,5,6]
+
+--/
+myMap f [] = []
+myMap f (a:b) = [(f a)] ++ (myMap f b)
+
+main = print(myMap (\x -> x + 1) [3,4,5])
+--/
+
+--------------------------------------------------------------------------------
 -- TODO add more complexe tests with constructor in pattern matching
 -- TODO add more complexe tests with custom GADTs (more than one param)
