@@ -393,7 +393,7 @@ function matchConstr(value, exp){
 }
 
 /**
- * Turns a function app into a list (arg1, arg2, ... , func) 
+ * Turns a function app into a list (arg1, arg2, ... , func)
  * @param {E.FunctionApp} exp 
  * @returns {[E.Exp]}
  */
