@@ -16,7 +16,7 @@ import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
 import { initEvalComp, initGlobal } from './eval/eval.js';
 import { outputs, resetOutputs } from './eval/Env.js';
-import { typeCheck } from './typeCheck/TypeCheck.js';
+import { activatePrintTLog, typeCheck } from './typeCheck/TypeCheck.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -36,7 +36,8 @@ let derivative = false;
 let printNF = false;
 let verbose = false;
 let fail = false;
-let all = false
+let all = false;
+let log = false;
 
 /**
  * Main function to test Parser
@@ -113,6 +114,10 @@ async function main(){
         all = true;
         break;
 
+      case "--log" :
+      case "--Log" :
+        log = true;
+        break
 
       default :
         console.log("\nArgument specified unrecognised : ", arg);
@@ -425,7 +430,9 @@ function testAtest(testNb){
   }
 
   try{
-  
+    
+    if (log){ activatePrintTLog(); }
+    
     typeCheck(program);
     
     if (verbose){ console.log("✅ Type checking") ; }
