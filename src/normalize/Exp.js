@@ -35,6 +35,16 @@ export class VarExp extends Exp{
     this.name = name;
     this.info = info;
   }
+
+    /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " (" + this.name + ")";
+  }
 }
 
 /**
@@ -62,6 +72,16 @@ export class ImExp extends Exp {
     this.info = info;
   }
 
+    /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " (" + this.value + ")";
+  }
+
 }
 
 export function mkMTListExp(info){
@@ -87,6 +107,22 @@ export class FunctionApp extends Exp {
     this.func = func;
     this.arg = arg;
     this.info = info;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " " + this.getInnerFunc();
+  }
+
+  getInnerFunc(){
+    if (this.func.type === 'functionApp'){
+      return this.func.getInnerFunc();
+    } return this.func.toStr();
   }
 }
 
@@ -127,6 +163,16 @@ export class LetExp extends Exp {
     this.info = info;
   }
 
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type ;
+  }
+
 }
 
 /**
@@ -146,6 +192,16 @@ export class CaseExp extends Exp {
     this.exps = exps;
     this.branches = branches;
     this.info = info;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " (exps" + this.exps + ")";
   }
 }
 
@@ -184,6 +240,20 @@ export class LambdaExp extends Exp {
       }
     }
   }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){
+      return this.type + ' (namedArgs ' + this.namedArg.toStr() + ',body ' 
+      + this.body.toStr() + ')';
+    }
+    return this.type ;
+  }
 }
 
 /**
@@ -200,5 +270,15 @@ export class SpecialExp extends Exp {
     this.type = "SpecialExp";
     this.special = special;
     this.info = info;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " (" + this.special + ")";
   }
 }
