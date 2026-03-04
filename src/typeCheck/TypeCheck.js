@@ -15,10 +15,6 @@ global_context.initGlobal();
 // Init typetable
 export let typeTable = new TypeTable();
 
-// Init log
-let printTLog = false;
-let indent = 0;
-
 /**
  * Verifies that a given program type checks
  * This is the point of entry function for type checking
@@ -74,7 +70,7 @@ export function typeCheck(program){
  * @returns {TypeO}
  */
 function infer(exp, context){
-  tLog("▶️ Infer " + exp);
+  T.tLog("➡️ Infer " + exp.toStr());
   switch (exp.type){
 
     case 'functionApp' :
@@ -104,7 +100,7 @@ function infer(exp, context){
  * @param {Context} context 
  */
 function check(exp, type, context){
-  tLog("🔄 Check between " + exp + " and " + type.toStr(), 1);
+  T.tLog("🔽 Check between " + exp.toStr() + " and " + type.toStr(), 1);
   // todo make exp.tostr()
   switch (exp.type){
     case 'LambdaExp' :
@@ -147,7 +143,7 @@ function check(exp, type, context){
     default :
       unify(infer(exp, context), type);
 
-    tLog("✔️ Check between " + exp + " and " + type.toStr(), 1);
+    T.tLog("🔼 Check between " + exp.toStr() + " and " + type.toStr(), -1);
     
   }
 }
@@ -166,7 +162,7 @@ function check(exp, type, context){
  */
 function unify(t1, t2){
 
-  tLog("🔄 Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
+  T.tLog("🔽 Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
@@ -200,7 +196,7 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
 
-  tLog("✔️ Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
+  T.tLog("🔼 Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
 
 }
 
@@ -211,7 +207,7 @@ function unify(t1, t2){
  */
 function generalize(type){
 
-  tLog("▶️️ generalize " + type.toStr());
+  T.tLog("➡️ generalize " + type.toStr());
 
   let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
@@ -265,7 +261,7 @@ function generalizeRec(type, names){
  */
 function occursCheck(t1, t2){
   
-  tLog("🔄 Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
+  T.tLog("🔽 Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
 
   let tmpt2 = t2;
   if (tmpt2.isMetavar()){
@@ -284,7 +280,7 @@ function occursCheck(t1, t2){
     occursCheck(t1, tmpt2.arg);
   }
 
-  tLog("✔️ Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
+  T.tLog("🔼 Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
 }
 
 /**
@@ -606,7 +602,7 @@ function isMainAppIoUnit(mainType){
  * @param {Constr} constr
  */
 function manageConstr(constr){
-  tLog("▶️️ Processing the type of constr " + constr.name);
+  T.tLog("➡️ Processing the type of constr " + constr.name);
   let nameDict = {};
   let type = getTypeOfConstr(constr, nameDict);
   typeTable.add(constr.name, constr);
@@ -660,25 +656,5 @@ function getTypeOfConstr(constr, nameDict){
       body = new T.TApp(body, nVar);
     }
     return new T.TForall(names, body);
-  }
-}
-
-/**
- * Function to activate the log while type checking
- */
-export function activatePrintTLog(){
-  printTLog = true;
-}
-
-/**
- * Function to print the log if the global variable is set to true
- * @param {String} msg 
- * @param {Integer} i 
- */
-function tLog(msg, i = 0){
-  if(printTLog){
-    if (i > 0){ indent += i; }
-    console.log(" ".repeat(indent) + msg);
-    if (i < 0){ indent += i; }
   }
 }

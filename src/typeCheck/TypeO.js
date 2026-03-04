@@ -1,8 +1,12 @@
-
 //--              File containing "type" TypeO for type checking            --//
 
+// Init name var counters
 let countVar = 0;
 let countMetavar = 0;
+
+// Init log
+let printTLog = false;
+let indent = 0;
 
 /**
  * Represents the type of a term (Algebric Data Type)
@@ -111,7 +115,10 @@ export class TArrow extends TypeO {
    * @returns {String}
    */
   toStr(short = true){
-    if (short){ return this.type ; }
+    if (short){
+      return this.type + "(from : " + this.from.toStr(true) + 
+                       ", to : " + this.to.toStr(true) + ")";
+    }
     return this.type + "(from : " + this.from.toStr(short) + 
                        ", to : " + this.to.toStr(short) + ")";
   }
@@ -194,9 +201,18 @@ export class TApp extends TypeO {
    * @returns {String}
    */
   toStr(short = true){
-    if (short){ return this.type ; }
+    if (short){
+      return this.type + ' (' + this.getInnerFunc().toStr(short) + ')'; 
+    }
     return this.type + "(func : " + this.func.toStr(short) + 
                        ", app : " + this.app.toStr(short) + ")";
+  }
+
+  getInnerFunc(){
+    if (this.func.type === 'App'){
+      return this.func.getInnerFunc();
+    }
+    return this.func ;
   }
 }
 
@@ -284,6 +300,7 @@ export class TMetavar extends TypeO {
    * @param {TypeO} type 
    */
   setVal(type){
+    tLog("➡️ Setting val of " + this.name + " to " + type.toStr(true));
     this.value = type;
   }
 
@@ -294,12 +311,12 @@ export class TMetavar extends TypeO {
    */
   toStr(short = true){
     let val = this.value;
-    if (this.value === null){ 
+    if (this.value === null){
       val = "void" ; 
-    } else { 
-      val = this.value.toStr(short);
+    } else {
+      val = this.value.resolve().toStr(short);
     }
-    return this.type + " " + this.name + " " + val ;
+    return this.type + " " + this.name + " (" + val + ")" ;
   }
 }
 
@@ -341,3 +358,23 @@ export class TConstr extends TypeO {
 export function TJust() { return new TConstr("Just"); }
 export function TMaybe() { return new TConstr("Maybe"); }
 export function TNothing() { return new TConstr("Nothing"); }
+
+/**
+ * Function to activate the log while type checking
+ */
+export function activatePrintTLog(){
+  printTLog = true;
+}
+
+/**
+ * Function to print the log if the global variable is set to true
+ * @param {String} msg 
+ * @param {Integer} i 
+ */
+export function tLog(msg, i = 0){
+  if(printTLog){
+    if (i > 0){ indent += i; }
+    console.log(" ".repeat(indent * 2) + msg);
+    if (i < 0){ indent += i; }
+  }
+}
