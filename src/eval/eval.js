@@ -50,8 +50,8 @@ export function initEvalComp(program){
 
   evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
                            // other decl is added in the global env
-
-  return execute(main); 
+  
+  return main_decl.exec();
 
 }
 
@@ -77,7 +77,6 @@ export function initEvalInter(program, env){
       exp.exec()
     }
   }
-
 }
 
 /**
@@ -430,21 +429,6 @@ function isFuncAppOfConstr(exp){
  */
 export function isMTArray(array){
   return Array.isArray(array) && array.length === 0
-}
-
-/**
- * Function to actually run the program, with all IO functions
- * returns a list of what io functions return
- * @param {V.Vio} main_decl 
- */
-function execute(main_decl){
-
-  if (main_decl.type === "IO"){
-    return main_decl.exec();
-  }
-  
-  throw new Error("Only IO functions can be given to main");
-  
 }
 
 /**
