@@ -343,8 +343,7 @@ function match(value, exp){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-      } else if (typeTable.lookup(exp.func.name)){ 
-        // will not work for constructor of arity >= 2
+      } else if (isFuncAppOfConstr(exp)){ 
         return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
@@ -390,8 +389,8 @@ function matchConstr(value, exp){
 
 /**
  * 
- * @param {*} exp 
- * @returns {[Exp]}
+ * @param {E.FunctionApp} exp 
+ * @returns {[E.Exp]}
  */
 function listIt(exp){
   let args = [exp.arg];
@@ -402,6 +401,19 @@ function listIt(exp){
   }
   args.push(pointer);
   return args;
+}
+
+/**
+ * 
+ * @param {E.FunctionApp} exp 
+ * @returns 
+ */
+function isFuncAppOfConstr(exp){
+  let pointer = exp.func ;
+  while (pointer.type === 'functionApp'){
+    pointer = pointer.func ;
+  }
+  return typeTable.lookup(pointer.name) !== undefined;
 }
 
 /**
@@ -499,7 +511,7 @@ function evaluateConstr(constr){
       global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
     } else {
       global_env.add(option.name, 
-        new Prim((a) => new V.VConstr(option.func.name, a.value)));
+        new Prim((a) => new V.VConstr(option.func.name, [a])));
 
       /* not working, todo generalise for any number of args
       let func = option.func;
