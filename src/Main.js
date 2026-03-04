@@ -16,7 +16,8 @@ import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
 import { initEvalComp, initGlobal } from './eval/eval.js';
 import { outputs, resetOutputs } from './eval/Env.js';
-import { activatePrintTLog, typeCheck } from './typeCheck/TypeCheck.js';
+import { typeCheck } from './typeCheck/TypeCheck.js';
+import { activatePrintTLog } from './typeCheck/TypeO.js'
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
