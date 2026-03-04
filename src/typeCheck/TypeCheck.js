@@ -70,7 +70,6 @@ export function typeCheck(program){
  * @returns {TypeO}
  */
 function infer(exp, context){
-  T.tLog("➡️ Infer " + exp.toStr());
   switch (exp.type){
 
     case 'functionApp' :
@@ -387,6 +386,7 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
 function inferFunctionApp(exp, context){
   // TODO FIXME : typetable has to be used to verify arity of type applications
   // like list tuples or constrs (maybe)
+  T.tLog("➡️ Infer App " + exp.toStr());
   let tfun = infer(exp.func, context).resolve();
 
   if (tfun.isArrow()){
@@ -425,6 +425,7 @@ function miniUnify(exp, tfun, context){
  * @returns {T.TypeO}
  */
 function inferVar(exp, context){
+  T.tLog("➡️ Infer Var " + exp.toStr());
   return lookupGlobalLocalContext(context, exp.name);
 
 }
@@ -438,12 +439,14 @@ function inferVar(exp, context){
  */
 function instantiate(type, dict = {}){
 
+
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
   if (type.isForAll()){
+    T.tLog("➡️ Instantiate " + type.toStr());
     let copyDict = {...dict}; // creates a copy of dict
     for (let name of type.names){
-      copyDict[name] = new T.freshMetavar(); 
+      copyDict[name] = new T.freshMetavar();
     }
     return instantiate(type.body, copyDict);
   } 
@@ -482,6 +485,7 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
+  T.tLog("➡️ Infer Imm " + exp.toStr());
   let lookup = global_context.lookup(exp.valueType);
   if (lookup !== undefined){ // for constructors
     return lookup;
@@ -498,6 +502,7 @@ function inferImmediate(exp){
  * @returns {T.TypeO}
  */
 function inferLet(exp, context){
+  T.tLog("➡️ Infer Let" + exp.toStr());
   if (exp.body !== null){
     let clone = context.clone();
     for (let decl of exp.decls){
