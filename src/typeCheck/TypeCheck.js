@@ -12,6 +12,7 @@ import { TypeTable } from "./TypeTable.js";
 let global_context = new Context();
 global_context.initGlobal();
 export let typeTable = new TypeTable();
+let printTLog = false;
 
 /**
  * Verifies that a given program type checks
@@ -637,5 +638,22 @@ function getTypeOfConstr(constr, nameDict){
       body = new T.TApp(body, nVar);
     }
     return new T.TForall(names, body);
+  }
+}
+
+/**
+ * Function to activate the log while type checking
+ */
+export function activatePrintTLog(){
+  printTLog = true;
+}
+
+/**
+ * Function to print the log if the global variable is set to true
+ * @param {String} msg 
+ */
+function TLog(msg){
+  if(printTLog){
+    console.log(msg);
   }
 }
