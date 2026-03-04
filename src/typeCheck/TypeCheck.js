@@ -11,8 +11,13 @@ import { TypeTable } from "./TypeTable.js";
 // Init global context
 let global_context = new Context();
 global_context.initGlobal();
+
+// Init typetable
 export let typeTable = new TypeTable();
+
+// Init log
 let printTLog = false;
+let indent = 0;
 
 /**
  * Verifies that a given program type checks
@@ -50,15 +55,15 @@ export function typeCheck(program){
   let mainType = infer(main.body, new Context());
   
   // verify the type annotation of main
-  if (main.isAnnotated()){ 
+  if (main.isAnnotated()){
     unify(mainType, main.typeAnnotation);
   }
   
   if (isMainAppIoUnit(mainType)){
     return true; 
   }
-  console.log(mainType);
-  throw new Error("Main should have type IO, not " + mainType);
+
+  throw new Error("Main should have type App IO to Unit, not " + mainType);
 
 }
 
@@ -69,7 +74,7 @@ export function typeCheck(program){
  * @returns {TypeO}
  */
 function infer(exp, context){
-
+  tLog("▶️ Infer " + exp);
   switch (exp.type){
 
     case 'functionApp' :
@@ -99,6 +104,8 @@ function infer(exp, context){
  * @param {Context} context 
  */
 function check(exp, type, context){
+  tLog("🔄 Check between " + exp + " and " + type.toStr(), 1);
+  // todo make exp.tostr()
   switch (exp.type){
     case 'LambdaExp' :
 
@@ -139,6 +146,9 @@ function check(exp, type, context){
 
     default :
       unify(infer(exp, context), type);
+
+    tLog("✔️ Check between " + exp + " and " + type.toStr(), 1);
+    
   }
 }
 
@@ -155,6 +165,8 @@ function check(exp, type, context){
  * @param {T.TypeO} t2 
  */
 function unify(t1, t2){
+
+  tLog("🔄 Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
@@ -187,6 +199,9 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt1, null, 2)} \nand 
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
+
+  tLog("✔️ Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
+
 }
 
 /**
@@ -195,6 +210,9 @@ function unify(t1, t2){
  * @returns {T.TForall} 
  */
 function generalize(type){
+
+  tLog("▶️️ generalize " + type.toStr());
+
   let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
   if (Object.keys(names).length > 0 ){
@@ -246,6 +264,8 @@ function generalizeRec(type, names){
  * @param {T.TypeO} t2 
  */
 function occursCheck(t1, t2){
+  
+  tLog("🔄 Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
 
   let tmpt2 = t2;
   if (tmpt2.isMetavar()){
@@ -264,6 +284,7 @@ function occursCheck(t1, t2){
     occursCheck(t1, tmpt2.arg);
   }
 
+  tLog("✔️ Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
 }
 
 /**
@@ -585,6 +606,7 @@ function isMainAppIoUnit(mainType){
  * @param {Constr} constr
  */
 function manageConstr(constr){
+  tLog("▶️️ Processing the type of constr " + constr.name);
   let nameDict = {};
   let type = getTypeOfConstr(constr, nameDict);
   typeTable.add(constr.name, constr);
@@ -651,9 +673,12 @@ export function activatePrintTLog(){
 /**
  * Function to print the log if the global variable is set to true
  * @param {String} msg 
+ * @param {Integer} i 
  */
-function TLog(msg){
+function tLog(msg, i = 0){
   if(printTLog){
-    console.log(msg);
+    if (i > 0){ indent += i; }
+    console.log(" ".repeat(indent) + msg);
+    if (i < 0){ indent += i; }
   }
 }
