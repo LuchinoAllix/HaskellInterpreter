@@ -51,7 +51,7 @@ export function initEvalComp(program){
   evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
                            // other decl is added in the global env
   
-  return main_decl.exec();
+  return main.exec();
 
 }
 
