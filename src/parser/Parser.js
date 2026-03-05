@@ -1,5 +1,4 @@
 import { Program } from "../objects/Program.js";
-import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../objects/Node.js";
 import { Rules } from "./ParserRules.js";
 import { tokenToNode } from "../objects/Token.js";
