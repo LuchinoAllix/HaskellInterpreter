@@ -330,14 +330,14 @@ function checkPatterns(patterns, patternsTypes, context){
  * #HELP are there other functions ?
  * FIXME: Yes, many many more.  Why do you need to treat them specially?
  * I suspect for patterns you're better off not relying on "currying",
- * define a "pattern application node" as having a constructor name as the left side
- * (rather than an arbitrary sub-pattern) and a list of pattern arguments.
+ * define a "pattern application node" as having a constructor name as the left 
+ * side (rather than an arbitrary sub-pattern) and a list of pattern arguments.
  * @param {String} name 
  * @returns {Boolean}
  */
 function isAppinCase(name){
   let res = typeTable.lookup(name); 
-  if (res !== undefined && res.arity > 0){ return true; }
+  if (res !== undefined && res.arity > 0){ return true ; }
   return name === ":" 
       || name === ","
       || isNcommas(name);
