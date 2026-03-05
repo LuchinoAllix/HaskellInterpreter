@@ -218,7 +218,7 @@ function normalizeConstrs(node, params){
 }
 
 /**
- * 
+ * todo
  * @param {Node} node 
  * @param {[String]} params 
  * @returns {FunctionApp}
@@ -679,7 +679,7 @@ function getArgs(node){
 }
 
 /**
- * Transformes a Qconid node into a ImExp
+ * Transformes a Qconid node into the according exp
  * @param {Node} node 
  * @returns {ImExp}
  */
@@ -691,7 +691,7 @@ function normalizeQconid(node){
       return new ImExp(true, "Boolean", [node.line, node.column]);
     default :
       // Algebraic data types
-      return new ImExp(node.value, node.value, [node.line, node.column]);
+      return new VarExp(node.value, [node.line, node.column]);
   }
 }
 
@@ -709,7 +709,6 @@ function normalizeCase(node){
         // We suppose we only have alt nodes
         let branch = new Branch([normalizeExp(child.childs[0])], 
         normalizeExp(child.childs[2]));
-        //verifyNoRedef(branch, []);
         branches.push(branch);
       }
     }
@@ -717,7 +716,6 @@ function normalizeCase(node){
     let child = node.childs[4];
     let branch = new Branch([normalizeExp(child.childs[0])], 
                              normalizeExp(child.childs[2]));
-    //verifyNoRedef(branch, []);
     branches.push(branch);
   } else {
     throw new Error("Unhandeled node in case : " + node.childs[4].type);
