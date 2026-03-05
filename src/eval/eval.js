@@ -176,21 +176,16 @@ function evaluateVar(exp, env){
  */
 function evaluateImmediate(exp){
   switch (exp.valueType){
+
     case "Integer" :
-      return new V.Vint(exp.value);
-
     case "Boolean" :
-      return new V.Vbool(exp.value);
-
     case "Char" :
-      return new V.Vchar(exp.value);
+    case "EmptyList" :
+      return new V.VImm(exp.value, exp.valueType);
       
     default :
-      let res = typeTable.lookup(exp.valueType); 
+      let res = global_env.lookup(exp.value);
       if (res !== undefined){
-        if (res.arity === 0){
-          return new V.VConstr(exp.valueType);
-        }
         return new V.VConstr(exp.valueType, [exp.value]);
       } else {
         throw new Error("value type not yet managed in eval : " +
