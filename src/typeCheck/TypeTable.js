@@ -44,21 +44,10 @@ export class TypeTable {
   }
 
   init(){
-    this.add("Integer", new Constr("Integer", [], []));
-    this.add("Boolean", new Constr("Boolean", [], []));
-    this.add("Char", new Constr("Char", [], []));
-    this.add("Unit", new Constr("Unit", [], []));
-    this.add("List", new Constr("List", [], ["a"]));
-    this.add("Tuple", new Constr("Tuple", [], ["a"]));
-    this.add("IO", new Constr("IO", [], [])); //FIXME
-    this.add("Just", new Constr("Just", [], ["a"])); //FIXME
-    this.add("Nothing", new Constr("Nothing", [], []));
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")
-    ], ["a"])); //FIXME
-    this.add("EmptyList", new Constr("EmptyList", [], []));
+    ], ["a"]));
   }
-  // this should not be manually done FIXME
 
 }
