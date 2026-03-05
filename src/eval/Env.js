@@ -1,6 +1,6 @@
 import { Prim } from "./Prim.js";
-import { Vint, Vbool, VList, Vtuple, Vio, Unit, Vchar, Value,
-         Vfunc, VConstr } from "./Value.js";
+import { VList, Vtuple, Vio, Unit, Value, Vfunc, 
+         VConstr, Vint, Vchar, Vbool } from "./Value.js";
 import { applyFunc } from "./eval.js";
 
 //--                   File for environment object definition               --//
@@ -62,18 +62,17 @@ export class Env {
    * https://www.haskell.org/onlinereport/haskell2010/haskellch7.html
    */
   initGlobal(){
-    this.add('+', new Prim(a => new Prim(b => new Vint(a.value + b.value))));
+    this.add('+', new Prim(a => new Prim(b => Vint(a.value + b.value, "Integer"))));
 
-    this.add('*', new Prim(a => new Prim(b => new Vint(a.value * b.value))));
+    this.add('*', new Prim(a => new Prim(b => Vint(a.value * b.value))));
     
-    this.add('-', new Prim(a => new Prim(b => new Vint(a.value - b.value))));
+    this.add('-', new Prim(a => new Prim(b => Vint(a.value - b.value))));
 
-    this.add('neg', new Prim(a => new Vint(- a.value)));
+    this.add('neg', new Prim(a => Vint(- a.value)));
 
-    this.add('/', new Prim(a => new Prim(b => new Vint(a.value / b.value))));
+    this.add('/', new Prim(a => new Prim(b => Vint(a.value / b.value))));
 
     this.add("print", new Prim(a => new Vio( 
-      // should automatially convert list of chars to string ? #fixme
       function print(){
         let str = makeStr(a);
         console.log(str);
@@ -83,22 +82,22 @@ export class Env {
     )));
 
     this.add("==", 
-      new Prim(a => new Prim(b => new Vbool(a.value === b.value))));
+      new Prim(a => new Prim(b => Vbool(a.value === b.value))));
 
     this.add("!=", 
-      new Prim(a => new Prim(b => new Vbool(a.value !== b.value))));
+      new Prim(a => new Prim(b => Vbool(a.value !== b.value))));
     
-    this.add("&&", new Prim(a => new Prim(b => new Vbool(a.value && b.value))));
+    this.add("&&", new Prim(a => new Prim(b => Vbool(a.value && b.value))));
     
-    this.add("||", new Prim(a => new Prim(b => new Vbool(a.value || b.value))));
+    this.add("||", new Prim(a => new Prim(b => Vbool(a.value || b.value))));
 
-    this.add("<=", new Prim(a => new Prim(b => new Vbool(a.value <= b.value))));
+    this.add("<=", new Prim(a => new Prim(b => Vbool(a.value <= b.value))));
 
-    this.add(">=", new Prim(a => new Prim(b => new Vbool(a.value >= b.value))));
+    this.add(">=", new Prim(a => new Prim(b => Vbool(a.value >= b.value))));
     
-    this.add("<", new Prim(a => new Prim(b => new Vbool(a.value < b.value))));
+    this.add("<", new Prim(a => new Prim(b => Vbool(a.value < b.value))));
     
-    this.add(">", new Prim(a => new Prim(b => new Vbool(a.value > b.value))));
+    this.add(">", new Prim(a => new Prim(b => Vbool(a.value > b.value))));
 
     this.add("map", new Prim(f => new Prim(l => map(f,l))));
 
@@ -158,7 +157,7 @@ export class Env {
 
     this.add("Just", new Prim(a => new VConstr("Just", [a])));
 
-    this.add("Nothing", new Prim(() => new VConstr("Nothing")));
+    this.add("Nothing", new VConstr("Nothing"));
 
     //this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
   }
@@ -232,7 +231,7 @@ function makeStr(val){
     bord = "[]";
     if (val.fst === null){
       return bord;
-    } else if (val.fst.type === "char"){
+    } else if (val.fst.type === "Char"){
       // converting lists of char to strings
       return "\"" + charListToStr(val) +  "\"";
     }
