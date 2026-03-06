@@ -27,6 +27,14 @@ export class Node {
       this.childs.push(node);
     }
   }
+
+  /**
+   * get the line and column number of a node as a list
+   * @returns {[Integer]}
+   */
+  getInfo(){
+    return [this.line, this.column];
+  }
 }
 
 /**
