@@ -14,7 +14,6 @@ export class TypeTable {
    */
   constructor(){
     this.decls = {};
-    this.init();
   }
 
   /**
@@ -43,11 +42,19 @@ export class TypeTable {
     this.decls[name] = cons;
   }
 
-  init(){
+  initConstr(){
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")
     ], ["a"]));
   }
+
+  // temp idea, should be moved to another file / object type
+  // maps the option to it's arity
+  initOption(){
+    this.add("Just", 1);
+    this.add("Nothing", 0);
+  }
+
 
 }

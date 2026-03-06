@@ -13,8 +13,11 @@ let global_context = new Context();
 global_context.initGlobal();
 
 // Init typetable
-export let typeTable = new TypeTable();
+export let constrTable = new TypeTable();
+constrTable.initConstr();
 
+export let optionAppTable = new TypeTable();
+optionAppTable.initOption();
 /**
  * Verifies that a given program type checks
  * This is the point of entry function for type checking
@@ -336,13 +339,12 @@ function checkPatterns(patterns, patternsTypes, context){
  * @returns {Boolean}
  */
 function isAppinCase(name){
-  let res = typeTable.lookup(name); 
-  if (res !== undefined && res.arity > 0){ return true ; }
+  let res = optionAppTable.lookup(name); 
+  if (res !== undefined){ return true ; }
   return name === ":" 
       || name === ","
       || isNcommas(name);
 }
-
 
 /**
  * If possible, modifies the type expected of a pattern (patternTypeR), and 
@@ -614,12 +616,12 @@ function manageConstr(constr){
   T.tLog("➡️ Processing the type of constr " + constr.name);
   let nameDict = {};
   let type = getTypeOfConstr(constr, nameDict);
-  typeTable.add(constr.name, constr);
+  constrTable.add(constr.name, constr);
   global_context.add(constr.name, new T.TConstr(constr.name));
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
-      typeTable.add(option.name, new Constr(option.name, [], []));
+      optionAppTable.add(option.name, 0);
     } else if(option.type === "functionApp"){
       // we know type is forall
       let func = option.func;
@@ -631,7 +633,7 @@ function manageConstr(constr){
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
-      typeTable.add(func.name, new Constr(func.name, [], []));
+      optionAppTable.add(func.name, type.names.length);
       // FIXME the last param of constr is not valid
       global_context.add(func.name, new T.TForall(type.names, arr));
     }
