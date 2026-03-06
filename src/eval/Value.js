@@ -102,10 +102,11 @@ export class VList extends Value {
   }
 }
 
+// TODO should change the name, it's confusing
 export class VConstr extends Value {
 
   /**
-   * constructor for value of constructors
+   * constructor for values of constructors
    */
   constructor(type, values = []){
     super(type);
