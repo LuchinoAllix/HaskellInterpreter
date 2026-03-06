@@ -4,7 +4,7 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { typeTable } from "../typeCheck/TypeCheck.js"
+import { optionAppTable } from "../typeCheck/TypeCheck.js"
 import { Prim } from "./Prim.js";
 
 
@@ -347,6 +347,13 @@ function match(value, exp){
       return [[]];
       
     case "var" :
+      if (optionAppTable.lookup(exp.name) !== undefined){
+        let lookup = global_env.lookup(exp.name);
+        if (lookup.value.length > 0 || value.type !== lookup.type){ 
+          return [-1] ; 
+        }
+        return [[]];
+      }
       return [[exp, value]];
 
     case "immediate" :
@@ -406,14 +413,14 @@ function listIt(exp){
 /**
  * Determines if the function app given as param is of a constr
  * @param {E.FunctionApp} exp 
- * @returns 
+ * @returns {Boolean}
  */
 function isFuncAppOfConstr(exp){
   let pointer = exp.func ;
   while (pointer.type === 'functionApp'){
     pointer = pointer.func ;
   }
-  return typeTable.lookup(pointer.name) !== undefined;
+  return optionAppTable.lookup(pointer.name) !== undefined;
 }
 
 /**
@@ -493,7 +500,7 @@ export function addNcommasToGlobalEnv(str){
 function evaluateConstr(constr){
   for (let option of constr.options){
     if (option.type === 'var'){
-      global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
+      global_env.add(option.name, new V.VConstr(option.name));
     } else {
       global_env.add(option.name, 
         new Prim((a) => new V.VConstr(option.func.name, [a])));
