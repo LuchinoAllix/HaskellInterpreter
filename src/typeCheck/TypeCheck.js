@@ -661,7 +661,6 @@ function manageConstr(constr){
         throw new Error("TODO");
       }
       optionAppTable.add(func.name, type.names.length);
-      // FIXME the last param of constr is not valid
       global_context.add(func.name, new T.TForall(type.names, arr));
     }
   }
@@ -696,5 +695,3 @@ function getTypeOfConstr(constr, nameDict){
     return new T.TForall(names, body);
   }
 }
-
-// FIXME: You had forgotten a newline to terminate your text file.
