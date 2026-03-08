@@ -132,6 +132,12 @@ function check(exp, type, context){
       }
 
       for (let branch of exp.branches){
+        // FIXME: I thought `context` was a table indexed by variable names,
+        // but here you add things that don't have names.
+        // I get the impression that you're "abusing" `context` here and that
+        // you should instead use a separate array on which you push your
+        // expression's types (so you can also check the array's length
+        //  against the length of each branch's list of patterns).
         let branchCtx = context.clone();
         checkPatterns(branch.args, argsType, branchCtx);
         check(branch.branchBody, type, branchCtx);
@@ -362,8 +368,29 @@ function isAppinCase(name){
  * @param {T.TypeO} patternTypeR
  * @param {Context} context 
  */
+// FIXME: I think the problem here is the one I already mentioned
+// which is that you should *not* use the same AST for patterns as for
+// expressions.  More specifically, rather than
+// 'functionaApp' nodes with a single arg that rely on currying,
+// patterns should use a datatype along the lines of:
+//
+//     data Pattern =
+//        | Var String
+//        | Wildcard
+//        | Constructor (List Pattern)
+//
+// Then in `checkPatterns` things will be much simpler and clearer.
 function checkFuncAppPattern(pattern, patternTypeR, context){
   let patternType = patternTypeR.resolve();
+  // If you do `x = freshmetavar;  check* (EXP, x, ..)` it means you're doing
+  // it wrong: e.g. maybe you should use `infer*` instead.  Tho here,
+  // what it really means is that you first need to find the "head"
+  // of the application (which *has* to be a constructor, whose type we
+  // already know), then unify its return type with `patternTypeR` (after
+  // instantiating, if it's polymorphic),
+  // then *check* the type of all the subpatterns (notice that the
+  // recursion uses `check` rather than `infer`, so you'll never actually
+  // need any `inferPattern`).
   let func = T.freshMetavar();
   checkPatterns([pattern.func], [func], context);
   if (func.value.isArrow()){
