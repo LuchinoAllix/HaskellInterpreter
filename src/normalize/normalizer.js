@@ -281,7 +281,7 @@ function normaliseTypeAnnotation(node){
         return new T.TBuiltin(node.value);
       }
       // We suppose the constr exists, if not type inference will yield an error
-      return new T.TConstr(node.value); 
+      return new T.TConstrType(node.value); 
 
     case 'type' :
       if (node.childs[1].value === '->' ){
