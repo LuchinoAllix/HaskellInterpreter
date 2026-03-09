@@ -54,5 +54,21 @@ main = print(case a of
                 Just "5" -> 1)
 --/
 --------------------------------------------------------------------------------
+-- Test 5         : Incorrect type in type annotation of constructor
+-- Expected crash : 4
+
+--/
+data Either a b = Left a | Right b
+
+listofIntAndChar :: [Either Integer]
+listofIntAndChar = [Left 1, Left 2, Right 'a']
+
+main = case listofIntAndChar of
+  [] -> print "[]" ;
+  Left a : rest -> print a  
+  Right b : rest -> print b 
+--/
+
+--------------------------------------------------------------------------------
 -- TODO add a test where occurs check should fail
 -- TODO add a test where pattern matching on constructors should fail
