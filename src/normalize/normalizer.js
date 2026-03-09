@@ -315,7 +315,7 @@ function normaliseTypeAnnotation(node){
     case 'btype' :
       let func = normaliseTypeAnnotation(node.childs[0]);
       let args = node.childs.slice(1).map(x => normaliseTypeAnnotation(x));
-      return makeFuncAppOfList(func, args);
+      return T.makeTAppOfList(func, args);
 
     case 'Special' :
       if (node.value === '()'){

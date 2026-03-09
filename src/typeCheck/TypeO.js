@@ -225,6 +225,26 @@ export class TApp extends TypeO {
 }
 
 /**
+ * Function to make a TApp object but receiving a list of args, transforms it
+ * in recursive calls of TApp to ensure that each one only take one 
+ * argument as a parameter
+ * @param {Term} func 
+ * @param {[Exp]} args 
+ * @returns {TApp}
+ */
+export function makeTAppOfList(func, args){
+  if (args.length === 0){
+    throw new Error("Error in making a TApp, at least one arg should be "
+      + "given");
+  } else if (args.length === 1){
+    return new TApp(func, args[0]);
+  } else {
+    let lastElem = args.pop();
+    return new TApp(makeTAppOfList(func, args), lastElem);
+  }
+}
+
+/**
  * Type for polymorphism
  */
 export class TForall extends TypeO {
