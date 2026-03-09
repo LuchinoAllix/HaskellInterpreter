@@ -132,12 +132,6 @@ function check(exp, type, context){
       }
 
       for (let branch of exp.branches){
-        // FIXME: I thought `context` was a table indexed by variable names,
-        // but here you add things that don't have names.
-        // I get the impression that you're "abusing" `context` here and that
-        // you should instead use a separate array on which you push your
-        // expression's types (so you can also check the array's length
-        //  against the length of each branch's list of patterns).
         let branchCtx = context.clone();
         checkPatterns(branch.args, argsType, branchCtx);
         check(branch.branchBody, type, branchCtx);
