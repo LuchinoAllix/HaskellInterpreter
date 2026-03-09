@@ -278,9 +278,9 @@ function normaliseTypeAnnotation(node){
         return new T.TApp(new T.TBuiltin("List"), new T.TBuiltin("Char"));
       } else if (T.isABuiltin(node.value)){
         return new T.TBuiltin(node.value);
-      } 
+      }
+      // We suppose the constr exists, if not type inference will yield an error
       return new T.TConstr(node.value); 
-      // TODO : should we add verification that the constrs exists ?
 
     case 'type' :
       if (node.childs[1].value === '->' ){
