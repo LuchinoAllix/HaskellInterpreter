@@ -223,20 +223,20 @@ function normalizeConstrs(node, params){
  * todo
  * @param {Node} node 
  * @param {[String]} params 
- * @returns {FunctionApp}
+ * @returns {Exp}
  */
 function normalizeConstr(node, params){
   // we know we have a least more than one child
   // and first child must be Conid (name of constr) or 'special btype special'
-  if (node.childs[0].value === "("){ 
+  if (node.type === 'Qtycon' || node.type === 'Conid'){
+    return new VarExp(node.value, node.getInfo()); 
+  } else if (node.childs[0].value === "("){
     return normalizeConstr(node.childs[1], params);
   }
-  let app = new VarExp(node.childs[0].value, node.childs[0].getInfo());
+  let app = normalizeConstr(node.childs[0], params);
   for (let i = 1; i < node.childs.length; i ++){
     let arg;
     if (node.childs[i].type === 'Qtycon'){
-      //let param = node.childs[i].value;
-      
       params.push(node.childs[i].value);
       arg = new VarExp(node.childs[i].value, node.childs[i].getInfo());
     } else {
