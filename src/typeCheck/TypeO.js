@@ -153,6 +153,7 @@ export class TBuiltin extends TypeO {
 // 2) Not ideal because the type name need to be written twice
 // 3) Is this efficient ? because the blt type should only be called once 
 //    since it will always return the same object
+// 4) what about constrs ?
 let blts = {
   "Integer" : () => new TBuiltin("Integer"), 
   "Boolean" : () => new TBuiltin("Boolean"),
@@ -161,9 +162,16 @@ let blts = {
   "List" : () => new TBuiltin("List"),
   "Tuple" : () => new TBuiltin("Tuple"),
   "IO" : () => new TBuiltin("IO"),
-  "Just" : () => new TBuiltin("Just"),
-  "Maybe" : () => new TBuiltin("Maybe")
-} 
+}
+
+/**
+ * to determine if a string corresponds to a builtin type or not
+ * @param {String} type 
+ * @returns 
+ */
+export function isABuiltin(type){
+  return blts[type] !== undefined;
+}
 
 /**
  * Functions to generate builtin types
