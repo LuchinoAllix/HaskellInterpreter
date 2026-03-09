@@ -276,8 +276,11 @@ function normaliseTypeAnnotation(node){
     case 'Qtycon' :
       if (node.value === "String"){ // desugariser String to [Char]
         return new T.TApp(new T.TBuiltin("List"), new T.TBuiltin("Char"));
-      }
-      return new T.TBuiltin(node.value);
+      } else if (T.isABuiltin(node.value)){
+        return new T.TBuiltin(node.value);
+      } 
+      return new T.TConstr(node.value); 
+      // TODO : should we add verification that the constrs exists ?
 
     case 'type' :
       if (node.childs[1].value === '->' ){
@@ -295,16 +298,12 @@ function normaliseTypeAnnotation(node){
         throw new Error("Mismanaged case of atype node (length !== 3");
         } else {
           return new T.TApp(
-            new T.TBuiltin("List"), 
-            normaliseTypeAnnotation(node.childs[1])
-          );
+            new T.TBuiltin("List"), normaliseTypeAnnotation(node.childs[1]));
         }
      } else if (node.childs[0].value === '('){
         if (node.childs.length === 3){
           return new T.TApp(
-            new T.TBuiltin("Tuple"), 
-            normaliseTypeAnnotation(node.childs[1])
-          );
+            new T.TBuiltin("Tuple"), normaliseTypeAnnotation(node.childs[1]));
         } 
         let to = normaliseTypeAnnotation(node.childs[node.childs.length - 2]);
         node.childs.splice(node.childs.length - 3, 2);
@@ -314,14 +313,9 @@ function normaliseTypeAnnotation(node){
       }
 
     case 'btype' :
-      if (node.childs.length === 2){
-          return new T.TApp(
-            normaliseTypeAnnotation(node.childs[0]),
-            normaliseTypeAnnotation(node.childs[1])
-          );
-      } else {
-        throw new Error("unhandeled case of btype annotation : " + node);
-      }
+      let func = normaliseTypeAnnotation(node.childs[0]);
+      let args = node.childs.slice(1).map(x => normaliseTypeAnnotation(x));
+      return makeFuncAppOfList(func, args);
 
     case 'Special' :
       if (node.value === '()'){
