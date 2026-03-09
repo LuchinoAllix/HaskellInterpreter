@@ -44,12 +44,20 @@ export class TypeO {
     return this.type === "Builtin";
   }
 
-    /**
+  /**
    * 
    * @returns {Boolean}
    */
-  isConstr(){
-    return this.type === "TConstr";
+  isConstrVal(){
+    return this.type === "TConstrVal";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isConstrType(){
+    return this.type === "TConstrType";
   }
 
   /**
@@ -358,9 +366,10 @@ export function freshMetavar(){
 }
 
 /**
- * Type for GADT (constructors)
+ * Abstract class
+ * Type for Algebraic data types
  */
-export class TConstr extends TypeO {
+class TConstr extends TypeO {
 
   /**
    * Like builtins but for user specified
@@ -383,9 +392,26 @@ export class TConstr extends TypeO {
   }
 }
 
-export function TJust() { return new TConstr("Just"); }
-export function TMaybe() { return new TConstr("Maybe"); }
-export function TNothing() { return new TConstr("Nothing"); }
+export class TConstrType extends TConstr {
+
+  constructor(str){
+    super(str);
+    this.type = "TConstrType";
+  }
+}
+
+export class TConstrVal extends TConstr {
+
+  constructor(str){
+    super(str);
+    this.type = "TConstrVal";
+  }
+}
+
+export function TMaybe() { return new TConstrType("Maybe"); }
+
+export function TJust() { return new TConstrVal("Just"); }
+export function TNothing() { return new TConstrVal("Nothing"); }
 
 /**
  * Function to activate the log while type checking
