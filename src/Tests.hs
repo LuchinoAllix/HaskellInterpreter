@@ -1020,10 +1020,10 @@ main = case integers of
 data Either a b = Left a | Right b
 
 listofIntAndChar :: [Either Integer Char]
-listofIntAndChar = [Left 1, Left 2, Right 'a']
+listofIntAndChar = [Left 1, Left 2, Right "a"]
 
 main = case listofIntAndChar of
-  [] -> print "[]" ;
+  [] -> print "[]"
   Left a : rest -> print a
   Right b : rest -> print b
 --/
@@ -1038,7 +1038,7 @@ data Tree a = Nil | Node a (Tree a) (Tree a)
 tree = Node 5 (Node 3 (Node 1 Nil Nil) Nil) (Node 9 Nil (Nil))
 
 main = case tree of
-  Nil -> print "_" ;
+  Nil -> print "Nil"
   Node a b c -> print a 
 --/
 
