@@ -643,14 +643,18 @@ function manageConstr(constr){
   T.tLog("➡️ Processing the type of constr " + constr.name);
   let nameDict = {};
   let type = getTypeOfConstr(constr, nameDict);
+
+  // update constrtable and context
   constrTable.add(constr.name, constr);
   global_context.add(constr.name, new T.TConstr(constr.name));
+
+  // determine the type of each option
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
       optionAppTable.add(option.name, 0);
     } else if(option.type === "functionApp"){
-      // we know type is forall
+      // we know type is forall (what about constrs with no variable ? FIXME)
       let func = option.func;
       let arr = new T.TArrow(nameDict[option.arg.name], type.body);
       while (func.type === "functionApp"){
@@ -664,6 +668,18 @@ function manageConstr(constr){
       global_context.add(func.name, new T.TForall(type.names, arr));
     }
   }
+}
+
+function toTArrow(type, params, nameDict){
+  // We assume that the type is either functionapp or var
+  if (type.type === 'var'){
+    if (params.includes(type.name)){
+      return nameDict[type.name];
+    }
+    return type;
+  }
+  return new T.TArrow(toTArrow(type.func, params, nameDict), 
+                      toTArrow(type.arg, params, nameDict));
 }
 
 /**
