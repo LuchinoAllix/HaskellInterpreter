@@ -14,10 +14,8 @@ global_context.initGlobal();
 
 // Init typetable
 export let constrTable = new TypeTable();
-constrTable.initConstr();
-
 export let optionAppTable = new TypeTable();
-optionAppTable.initOption();
+
 /**
  * Verifies that a given program type checks
  * This is the point of entry function for type checking
@@ -27,6 +25,13 @@ optionAppTable.initOption();
  */
 export function typeCheck(program){
   resetGlobalContext();
+
+  optionAppTable.reset();
+  optionAppTable.initOption();
+
+  constrTable.reset();
+  constrTable.initConstr();
+  
   let main; 
   for (let decl of program.normalizedForm){
     if (decl.name === "main"){

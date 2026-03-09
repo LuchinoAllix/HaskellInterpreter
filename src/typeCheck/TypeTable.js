@@ -42,6 +42,9 @@ export class TypeTable {
     this.decls[name] = cons;
   }
 
+  /**
+   * todo
+   */
   initConstr(){
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
@@ -51,9 +54,20 @@ export class TypeTable {
 
   // temp idea, should be moved to another file / object type
   // maps the option to it's arity
+
+  /**
+   * todo
+   */
   initOption(){
     this.add("Just", 1);
     this.add("Nothing", 0);
+  }
+
+  /**
+   * Reset the table (needed inbetween tests) 
+   */
+  reset(){
+    this.decls = {};
   }
 
 
