@@ -1024,8 +1024,8 @@ listofIntAndChar = [Left 1, Left 2, Right 'a']
 
 main = case listofIntAndChar of
   [] -> print "[]" ;
-  Left a : rest -> print a ; 
-  Right b : rest -> print b ;
+  Left a : rest -> print a
+  Right b : rest -> print b
 --/
 
 --------------------------------------------------------------------------------
@@ -1039,7 +1039,7 @@ tree = Node 5 (Node 3 (Node 1 Nil Nil) Nil) (Node 9 Nil (Nil))
 
 main = case tree of
   Nil -> print "_" ;
-  Node a b c -> print a ; 
+  Node a b c -> print a 
 --/
 
 --------------------------------------------------------------------------------
