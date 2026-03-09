@@ -160,6 +160,8 @@ function normalizeDecl(node){
       let params = [];
       let exps = normalizeConstrs(node.childs[3], params);
       
+      params = [...new Set(params)]; // to remove duplicates
+      
       // slice to remove the name of type
       verifyOccurence(named.slice(1), params);
       
@@ -193,7 +195,7 @@ function normalizeSimpleType(node){
 }
 
 /**
- * Transforms the constrs node into a 
+ * Transforms the constrs node into a constr exp
  * @param {Node} node 
  * @param {[String]} params 
  * @returns {[Exp]}
@@ -224,19 +226,29 @@ function normalizeConstrs(node, params){
  * @returns {FunctionApp}
  */
 function normalizeConstr(node, params){
-  params.push(node.childs[1].value);
-  let app = new FunctionApp(
-    new VarExp(node.childs[0].value, node.childs[0].getInfo()), 
-    new VarExp(node.childs[1].value, node.childs[1].getInfo()));
-  for (let i = 2; i < node.childs.length; i ++){
-    app = new FunctionApp(app, new VarExp(node.childs[2].value, 
-      node.childs[i].getInfo()));
+  // we know we have a least more than one child
+  // and first child must be Conid (name of constr) or 'special btype special'
+  if (node.childs[0].value === "("){ 
+    return normalizeConstr(node.childs[1], params);
+  }
+  let app = new VarExp(node.childs[0].value, node.childs[0].getInfo());
+  for (let i = 1; i < node.childs.length; i ++){
+    let arg;
+    if (node.childs[i].type === 'Qtycon'){
+      //let param = node.childs[i].value;
+      
+      params.push(node.childs[i].value);
+      arg = new VarExp(node.childs[i].value, node.childs[i].getInfo());
+    } else {
+      arg = normalizeConstr(node.childs[i], params);
+    }
+    app = new FunctionApp(app, arg);
   }
   return app;
 }
 
 /**
- * 
+ * todo
  * @param {[String]} named 
  * @param {[String]} params 
  */
