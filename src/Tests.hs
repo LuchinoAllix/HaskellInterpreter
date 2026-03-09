@@ -1002,9 +1002,9 @@ main = print(myMap (\x -> x + 1) [3,4,5])
 -- Expected result : 12
 
 --/
-data List a = Nil | Cons a (List a)
+data MyList a = Nil | Cons a (MyList a)
 
-integers :: List Integer
+integers :: MyList Integer
 integers = Cons 12 (Cons 107 Nil)
 
 main = case integers of 
@@ -1019,8 +1019,8 @@ main = case integers of
 --/
 data Either a b = Left a | Right b
 
-listofIntAndChar :: [Either Integer Char]
-listofIntAndChar = [Left 1, Left 2, Right "a"]
+listofIntAndChar :: [Either Integer Boolean]
+listofIntAndChar = [Left 1, Left 2, Right False]
 
 main = case listofIntAndChar of
   [] -> print "[]"
