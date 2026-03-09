@@ -193,7 +193,11 @@ function unify(t1, t2){
     tmpt2.setVal(tmpt1);
   } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin() && tmpt1.blt === tmpt2.blt){
     // do nothing
-  } else if (tmpt1.isConstr() && tmpt2.isConstr() && tmpt1.name === tmpt2.name){
+  } else if (tmpt1.isConstrVal() && tmpt2.isConstrVal() && 
+             tmpt1.name === tmpt2.name){
+    // do nothing
+  } else if (tmpt1.isConstrType() && tmpt2.isConstrType() && 
+             tmpt1.name === tmpt2.name){
     // do nothing
   } else if (t1.isForAll() || tmpt2.isForAll()){
     throw new Error(`Forall in unification should not happen`);
@@ -645,7 +649,7 @@ function manageConstr(constr){
 
   // update constrtable and context
   constrTable.add(constr.name, constr);
-  global_context.add(constr.name, new T.TConstr(constr.name));
+  global_context.add(constr.name, new T.TConstrType(constr.name));
 
   // determine the type of each option
   for(let option of constr.options){
@@ -655,10 +659,12 @@ function manageConstr(constr){
     } else if(option.type === "functionApp"){
       // we know type is forall (what about constrs with no variable ? FIXME)
       let func = option.func;
-      let arr = new T.TArrow(nameDict[option.arg.name], type.body);
+      let arr = new T.TArrow(funcAppToTApp(option.arg, nameDict, constr.params), 
+                             type.body);
       while (func.type === "functionApp"){
+        arr = new T.TArrow(funcAppToTApp(func.arg, nameDict, constr.params), 
+                           arr);
         func = func.func;
-        arr = new T.TArrow(nameDict[func.arg.name], arr);
       }
       if (func.type !== 'var'){
         throw new Error("TODO");
@@ -669,16 +675,24 @@ function manageConstr(constr){
   }
 }
 
-function toTArrow(type, params, nameDict){
-  // We assume that the type is either functionapp or var
-  if (type.type === 'var'){
-    if (params.includes(type.name)){
-      return nameDict[type.name];
+/**
+ * 
+ * @param {Exp} exp 
+ * @param {String -> T.TypeO} nameDict 
+ * @param {[String]} params 
+ * @returns {T.TypeO}
+ */
+function funcAppToTApp(exp, nameDict, params){
+  if (exp.type === 'var'){
+    if (params.includes(exp.name)){
+      return nameDict[exp.name];
+    } else if (constrTable.lookup(exp.name) !== undefined){
+      return new T.TConstrType(exp.name); 
     }
-    return type;
+    return new T.TConstrVal(exp.name);
   }
-  return new T.TArrow(toTArrow(type.func, params, nameDict), 
-                      toTArrow(type.arg, params, nameDict));
+  return new T.TApp(funcAppToTApp(exp.func, nameDict, params), 
+                    funcAppToTApp(exp.arg, nameDict, params));
 }
 
 /**
@@ -693,13 +707,13 @@ function toTArrow(type, params, nameDict){
  * 
  * @param {Constr} constr 
  * @param {String -> T.TVar} nameDict
- * @returns {T.TConstr | T.TForall}
+ * @returns {T.TConstrType | T.TForall}
  */
 function getTypeOfConstr(constr, nameDict){
   if (constr.params.length === 0){
-    return new T.TConstr(constr.name);
+    return new T.TConstrType(constr.name);
   } else {
-    let body = new T.TConstr(constr.name);
+    let body = new T.TConstrType(constr.name);
     let names = [];
     for (let i = 0; i < constr.params.length; i++){
       let nVar = T.freshVar();
