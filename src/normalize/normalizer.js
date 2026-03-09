@@ -220,7 +220,8 @@ function normalizeConstrs(node, params){
 }
 
 /**
- * todo
+ * normalises a constr node (child of constrs) which is usually a combination 
+ * of Conid, Qtycon, atype and '(' btype ')'
  * @param {Node} node 
  * @param {[String]} params 
  * @returns {Exp}
