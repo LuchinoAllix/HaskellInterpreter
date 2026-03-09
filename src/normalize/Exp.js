@@ -132,7 +132,7 @@ export class FunctionApp extends Exp {
  * argument as a parameter
  * @param {Term} func 
  * @param {[Exp]} args 
- * @returns 
+ * @returns {FunctionApp}
  */
 export function makeFuncAppOfList(func, args){
   if (args.length === 0){
