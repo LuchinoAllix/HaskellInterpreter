@@ -998,5 +998,50 @@ main = print(myMap (\x -> x + 1) [3,4,5])
 --/
 
 --------------------------------------------------------------------------------
+-- Test 102        : more complex algebraic data type (list)
+-- Expected result : 12
+
+--/
+data List a = Nil | Cons a (List a)
+
+integers :: List Integer
+integers = Cons 12 (Cons 107 Nil)
+
+main = case integers of 
+    Nil -> print "[]" 
+    Cons a b -> print(a)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 103        : more algebraic data type (either)
+-- Expected result : 1
+
+--/
+data Either a b = Left a | Right b
+
+listofIntAndChar :: [Either Integer Char]
+listofIntAndChar = [Left 1, Left 2, Right 'a']
+
+main = case listofIntAndChar of
+  [] -> print "[]" ;
+  Left a : rest -> print a ; 
+  Right b : rest -> print b ;
+--/
+
+--------------------------------------------------------------------------------
+-- Test 104        : more algebraic data type (tree)
+-- Expected result : 5
+
+--/
+data Tree a = Nil | Node a (Tree a) (Tree a)
+
+tree = Node 5 (Node 3 (Node 1 Nil Nil) Nil) (Node 9 Nil (Nil))
+
+main = case tree of
+  Nil -> print "_" ;
+  Node a b c -> print a ; 
+--/
+
+--------------------------------------------------------------------------------
 -- TODO add more complexe tests with constructor in pattern matching
 -- TODO add more complexe tests with custom GADTs (more than one param)
