@@ -1,1 +1,3 @@
 - tokenisation fails when ; at the end of cases
+- tokenisation fails when '' for char
+- tokenisation fails when "_"
