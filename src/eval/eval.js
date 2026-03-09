@@ -498,6 +498,7 @@ export function addNcommasToGlobalEnv(str){
  * @param {Constr} constr
  */
 function evaluateConstr(constr){
+  console.log(JSON.stringify(constr, null, 2))
   for (let option of constr.options){
     if (option.type === 'var'){
       global_env.add(option.name, new V.VConstr(option.name));
@@ -519,4 +520,12 @@ function evaluateConstr(constr){
       */
     }
   }
+}
+
+function makePrimOfOption(option, args){
+  if (option.type === 'var'){
+    return new V.VConstr(option.name, args);
+  }
+  // we suppose we have a funcapp
+  return new Prim((a) => makePrimOfOption(option.func, args.concat([a])));
 }
