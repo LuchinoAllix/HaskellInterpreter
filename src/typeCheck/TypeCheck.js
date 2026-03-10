@@ -132,8 +132,8 @@ function check(exp, type, context){
 
       let argsType = [];
 
-      for (let i = 0; i < exp.exps.length; i ++){
-        argsType.push(infer(exp.exps[i], context)); 
+      for (let i = 0; i < exp.patterns.length; i ++){
+        argsType.push(infer(exp.patterns[i], context)); 
       }
 
       for (let branch of exp.branches){
