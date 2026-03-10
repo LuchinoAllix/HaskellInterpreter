@@ -4,7 +4,7 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { optionAppTable } from "../typeCheck/TypeCheck.js"
+import { optionAppTable, global_context } from "../typeCheck/TypeCheck.js"
 import { Prim } from "./Prim.js";
 
 
@@ -498,28 +498,42 @@ export function addNcommasToGlobalEnv(str){
  * @param {Constr} constr
  */
 function evaluateConstr(constr){
-  console.log(JSON.stringify(constr, null, 2))
   for (let option of constr.options){
     if (option.type === 'var'){
       global_env.add(option.name, new V.VConstr(option.name));
     } else {
-      global_env.add(option.name, 
-        new Prim((a) => new V.VConstr(option.func.name, [a])));
-
-      /* not working, todo generalise for any number of args
-      let func = option.func;
-      let args = [];
-      let constr;
-      let prim = new Prim(a => constr);
-      while (func.type === "functionApp"){
-        args.push(func.arg);
-        prim = new Prim (a => prim);
-        func = func.func;
-      }
-      constr = new V.VConstr(func.name, prim)
-      */
+      let name = getOptionName(option);
+      let type = global_context.lookup(name);
+      if (type.isForAll()){ type = type.body ; }
+      let prim = getPrimFromType(type);
+      global_env.add(name, prim);
     }
   }
+}
+
+// we need to ignore the last arrow.to (return type) because it is not what we 
+// need
+// we have to return a vconstr at some point
+// not sure this is the best idea
+// should we refactor the way types are desugarized ?
+function getPrimFromType(type, values){
+  if (type.isArrow()){
+    getPrimFromType(type.from, values);
+    return new Prim(a => getPrimFromType(type.to, values));
+  } else if (type.isApp()){
+    let nValues = [];
+    getPrimFromType(type.arg);
+    values.push(new V.VConstr(getPrimFromType(type.func, nValues), nValues));
+  } else if (type.isVar()){
+    values.push()
+  } // todo unfinished
+}
+
+function getOptionName(option){
+  if (option.type === 'var'){
+    return option.name;
+  }
+  return getOptionName(option.func);
 }
 
 function makePrimOfOption(option, args){
