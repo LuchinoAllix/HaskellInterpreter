@@ -183,13 +183,14 @@ export class CaseExp extends Exp {
   /**
    * Creates a case expression object
    * exps normally is one element, excepts for function PM
-   * @param {[Exp]} exps 
+   * @param {[Term]} patterns exps or constrPattern 
    * @param {[Branch]} branches  
+   * @param {[Integer]} info
    */
-  constructor(exps, branches, info = null){
+  constructor(patterns, branches, info = null){
     super();
     this.type = "case";
-    this.exps = exps;
+    this.patterns = patterns;
     this.branches = branches;
     this.info = info;
   }
