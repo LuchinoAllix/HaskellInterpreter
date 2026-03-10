@@ -4,7 +4,7 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { optionAppTable, global_context } from "../typeCheck/TypeCheck.js"
+import { optionAppTable, global_context, constrTable } from "../typeCheck/TypeCheck.js"
 import { Prim } from "./Prim.js";
 
 
@@ -502,44 +502,35 @@ function evaluateConstr(constr){
     if (option.type === 'var'){
       global_env.add(option.name, new V.VConstr(option.name));
     } else {
-      let name = getOptionName(option);
-      let type = global_context.lookup(name);
-      if (type.isForAll()){ type = type.body ; }
-      let prim = getPrimFromType(type);
-      global_env.add(name, prim);
+      let prim = expToPrim(option, []);
+      global_env.add(getName(option), prim);
     }
   }
 }
 
-// we need to ignore the last arrow.to (return type) because it is not what we 
-// need
-// we have to return a vconstr at some point
 // not sure this is the best idea
 // should we refactor the way types are desugarized ?
-function getPrimFromType(type, values){
-  if (type.isArrow()){
-    getPrimFromType(type.from, values);
-    return new Prim(a => getPrimFromType(type.to, values));
-  } else if (type.isApp()){
-    let nValues = [];
-    getPrimFromType(type.arg);
-    values.push(new V.VConstr(getPrimFromType(type.func, nValues), nValues));
-  } else if (type.isVar()){
-    values.push()
-  } // todo unfinished
+// kinda working
+
+function expToPrim(exp, values){
+  if (exp.type === 'functionApp'){
+    values.push(expToPrim(exp.arg, []));
+    return new Prim(a => expToPrim(exp.func, values.concat(a)));
+  } else if (exp.type === 'var'){
+    if (isConstrOrOption(exp.name)){
+      return new V.VConstr(exp.name, values);
+    }
+  }
 }
 
-function getOptionName(option){
-  if (option.type === 'var'){
-    return option.name;
-  }
-  return getOptionName(option.func);
+function isConstrOrOption(name){
+  return optionAppTable.lookup(name) !== undefined || 
+         constrTable.lookup(name) !== undefined ;
 }
 
-function makePrimOfOption(option, args){
-  if (option.type === 'var'){
-    return new V.VConstr(option.name, args);
+function getName(exp){
+  if(exp.type === 'functionApp'){
+    return getName(exp.func);
   }
-  // we suppose we have a funcapp
-  return new Prim((a) => makePrimOfOption(option.func, args.concat([a])));
+  return exp.name;
 }
