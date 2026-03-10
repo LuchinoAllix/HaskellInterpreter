@@ -36,4 +36,12 @@ export class Term {
   isConstr(){
     return this.metatype === "CONSTR";
   }
+
+  /**
+   * Determines if a term is a constructor
+   * @returns {Boolean}
+   */
+  isPattern(){
+    return this.metatype === "PATTERN";
+  }
 }
