@@ -9,7 +9,7 @@ import { TypeTable } from "./TypeTable.js";
 //--        File containing functions to type check the program             --//
 
 // Init global context
-let global_context = new Context();
+export let global_context = new Context();
 global_context.initGlobal();
 
 // Init typetable
