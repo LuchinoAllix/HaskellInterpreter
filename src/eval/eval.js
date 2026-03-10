@@ -255,7 +255,7 @@ function evaluateLet(exp, env){
  * @returns {V.Value}
  */
 function evaluateCase(exp, env){
-  let vals = exp.exps.map(x => evaluateExp(x, env));
+  let vals = exp.patterns.map(x => evaluateExp(x, env));
   for (let branch of exp.branches){
     let matches = matchAll(vals, branch.args); 
     if (matches.length >= 1 && matches[0] !== -1){
@@ -268,7 +268,9 @@ function evaluateCase(exp, env){
       return evaluateExp(branch.branchBody, closure);
     }
   }
-  throw new Error("No pattern was found to match in case with " + exp.exps);
+  console.log(exp.patterns);
+  console.log(vals);
+  throw new Error("No pattern was found to match in case with " + exp.patterns);
 }
 
 /** 
@@ -309,8 +311,9 @@ function match(value, exp){
 
     case "functionApp" :
 
-      if (exp.func.type === "functionApp"){
-
+      if (isFuncAppOfConstr(exp)){ 
+        return matchConstr(value, exp);
+      } else if (exp.func.type === "functionApp"){
         let newValFunc, newValArg;
         if (value.type === "tuple"){
           newValFunc = new V.Vtuple(value.value.slice(0, -1));
@@ -337,8 +340,6 @@ function match(value, exp){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-      } else if (isFuncAppOfConstr(exp)){ 
-        return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
       }
@@ -509,13 +510,13 @@ function evaluateConstr(constr){
 }
 
 // not sure this is the best idea
-// should we refactor the way types are desugarized ?
 // kinda working
 
 function expToPrim(exp, values){
   if (exp.type === 'functionApp'){
-    values.push(expToPrim(exp.arg, []));
-    return new Prim(a => expToPrim(exp.func, values.concat(a)));
+    let res = expToPrim(exp.arg, []);
+    if(res !== undefined){ values.push() ; }
+    return new Prim(a => expToPrim(exp.func, [a].concat(values)));
   } else if (exp.type === 'var'){
     if (isConstrOrOption(exp.name)){
       return new V.VConstr(exp.name, values);
