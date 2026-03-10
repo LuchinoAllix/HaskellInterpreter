@@ -12,30 +12,21 @@ export class Value {
 
 export const Unit = new Value("unit");
 
-export class Vint extends Value {
+export class VImm extends Value {
 
   /**
-   * Integer return type
-   * @param {Integer} value 
+   * Immediate return type
+   * @param {?} value 
    */
-  constructor(value){
-    super("int");
+  constructor(value, type){
+    super(type);
     this.value = value;
   }
 }
 
-export class Vchar extends Value {
-
-  /**
-   * char return type
-   * @param {String} value 
-   */
-  constructor(value){
-    super("char");
-    this.value = value;
-
-  }
-}
+export function Vint(value){  return new VImm(value, "Integer") ; }
+export function Vchar(value){ return new VImm(value, "Char")    ; }
+export function Vbool(value){ return new VImm(value, "Boolean") ; }
 
 export class Vfunc extends Value {
 
@@ -85,18 +76,6 @@ export class Vio extends Value {
   }
 }
 
-export class Vbool extends Value {
-
-  /**
-   * Boolean return type
-   * @param {Boolean} value 
-   */
-  constructor(value){
-    super("bool");
-    this.value = value;
-  }
-}
-
 export class Vtuple extends Value {
   
   /**
@@ -123,13 +102,14 @@ export class VList extends Value {
   }
 }
 
+// TODO should change the name, it's confusing
 export class VConstr extends Value {
 
   /**
-   * constructor for constructors
+   * constructor for values of constructors
    */
-  constructor(type, value = []){
+  constructor(type, values = []){
     super(type);
-    this.value = value
+    this.value = values
   }
 }

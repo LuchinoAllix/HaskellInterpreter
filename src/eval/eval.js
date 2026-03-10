@@ -4,7 +4,7 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { typeTable } from "../typeCheck/TypeCheck.js"
+import { optionAppTable, global_context } from "../typeCheck/TypeCheck.js"
 import { Prim } from "./Prim.js";
 
 
@@ -50,8 +50,8 @@ export function initEvalComp(program){
 
   evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
                            // other decl is added in the global env
-
-  return execute(main); 
+  
+  return main.exec();
 
 }
 
@@ -77,7 +77,6 @@ export function initEvalInter(program, env){
       exp.exec()
     }
   }
-
 }
 
 /**
@@ -177,21 +176,16 @@ function evaluateVar(exp, env){
  */
 function evaluateImmediate(exp){
   switch (exp.valueType){
+
     case "Integer" :
-      return new V.Vint(exp.value);
-
     case "Boolean" :
-      return new V.Vbool(exp.value);
-
     case "Char" :
-      return new V.Vchar(exp.value);
+    case "EmptyList" :
+      return new V.VImm(exp.value, exp.valueType);
       
     default :
-      let res = typeTable.lookup(exp.valueType); 
+      let res = global_env.lookup(exp.value);
       if (res !== undefined){
-        if (res.arity === 0){
-          return new V.VConstr(exp.valueType);
-        }
         return new V.VConstr(exp.valueType, [exp.value]);
       } else {
         throw new Error("value type not yet managed in eval : " +
@@ -343,7 +337,7 @@ function match(value, exp){
         return match(value.value[0], exp.arg);
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
-      } else if (isAppOfConstr(exp.func.name)){
+      } else if (isFuncAppOfConstr(exp)){ 
         return matchConstr(value, exp);
       } else {
         throw new Error("unhandeled case in match func app");
@@ -353,6 +347,13 @@ function match(value, exp){
       return [[]];
       
     case "var" :
+      if (optionAppTable.lookup(exp.name) !== undefined){
+        let lookup = global_env.lookup(exp.name);
+        if (lookup.value.length > 0 || value.type !== lookup.type){ 
+          return [-1] ; 
+        }
+        return [[]];
+      }
       return [[exp, value]];
 
     case "immediate" :
@@ -370,7 +371,7 @@ function match(value, exp){
 }
 
 /**
- * Matches a pattern on a constr (same idea as match)
+ * Match a value with an expression (same logic of match but for constrs)
  * @param {V.Value} value 
  * @param {E.Exp} exp 
  * @returns {[[E.Exp]]}
@@ -394,9 +395,9 @@ function matchConstr(value, exp){
 }
 
 /**
- * Transforms a functionApp into a list of args and the func on top
- * @param {Exp} exp 
- * @returns {[Exp]}
+ * Turns a function app into a list (arg1, arg2, ... , func)
+ * @param {E.FunctionApp} exp 
+ * @returns {[E.Exp]}
  */
 function listIt(exp){
   let args = [exp.arg];
@@ -410,21 +411,16 @@ function listIt(exp){
 }
 
 /**
- * Determines if an expression is an application of a constr
- * @param {Exp} exp 
+ * Determines if the function app given as param is of a constr
+ * @param {E.FunctionApp} exp 
  * @returns {Boolean}
  */
-function isAppOfConstr(exp){
-  let pointer;
-  if (exp.type !== 'functionApp'){
-    pointer = exp ; 
-  } else {
-    pointer = exp.func;
-    while (pointer.type === 'functionApp'){
-      pointer = pointer.func;
-    }
+function isFuncAppOfConstr(exp){
+  let pointer = exp.func ;
+  while (pointer.type === 'functionApp'){
+    pointer = pointer.func ;
   }
-  return typeTable.lookup(pointer) !== undefined;
+  return optionAppTable.lookup(pointer.name) !== undefined;
 }
 
 /**
@@ -435,21 +431,6 @@ function isAppOfConstr(exp){
  */
 export function isMTArray(array){
   return Array.isArray(array) && array.length === 0
-}
-
-/**
- * Function to actually run the program, with all IO functions
- * returns a list of what io functions return
- * @param {V.Vio} main_decl 
- */
-function execute(main_decl){
-
-  if (main_decl.type === "IO"){
-    return main_decl.exec();
-  }
-  
-  throw new Error("Only IO functions can be given to main");
-  
 }
 
 /**
@@ -519,23 +500,46 @@ export function addNcommasToGlobalEnv(str){
 function evaluateConstr(constr){
   for (let option of constr.options){
     if (option.type === 'var'){
-      global_env.add(option.name, new Prim(() => new V.VConstr(option.name)));
+      global_env.add(option.name, new V.VConstr(option.name));
     } else {
-      global_env.add(option.func.name, 
-        new Prim((a) => new V.VConstr(option.func.name, [a])));
-
-      /* not working, todo generalise for any number of args
-      let func = option.func;
-      let args = [];
-      let constr;
-      let prim = new Prim(a => constr);
-      while (func.type === "functionApp"){
-        args.push(func.arg);
-        prim = new Prim (a => prim);
-        func = func.func;
-      }
-      constr = new V.VConstr(func.name, prim)
-      */
+      let name = getOptionName(option);
+      let type = global_context.lookup(name);
+      if (type.isForAll()){ type = type.body ; }
+      let prim = getPrimFromType(type);
+      global_env.add(name, prim);
     }
   }
+}
+
+// we need to ignore the last arrow.to (return type) because it is not what we 
+// need
+// we have to return a vconstr at some point
+// not sure this is the best idea
+// should we refactor the way types are desugarized ?
+function getPrimFromType(type, values){
+  if (type.isArrow()){
+    getPrimFromType(type.from, values);
+    return new Prim(a => getPrimFromType(type.to, values));
+  } else if (type.isApp()){
+    let nValues = [];
+    getPrimFromType(type.arg);
+    values.push(new V.VConstr(getPrimFromType(type.func, nValues), nValues));
+  } else if (type.isVar()){
+    values.push()
+  } // todo unfinished
+}
+
+function getOptionName(option){
+  if (option.type === 'var'){
+    return option.name;
+  }
+  return getOptionName(option.func);
+}
+
+function makePrimOfOption(option, args){
+  if (option.type === 'var'){
+    return new V.VConstr(option.name, args);
+  }
+  // we suppose we have a funcapp
+  return new Prim((a) => makePrimOfOption(option.func, args.concat([a])));
 }

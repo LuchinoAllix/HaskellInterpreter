@@ -16,8 +16,7 @@
 -- Expected result : 42
 
 --/
-a = 42
-main = print a
+main = print 42
 --/
 
 --------------------------------------------------------------------------------
@@ -988,31 +987,59 @@ main = print(case a of
 --/
 
 --------------------------------------------------------------------------------
--- Test 101        : Complex Algebraic data type
--- Expected result : Left 0\nRight 1
+-- Test 101        : User defined map
+-- Expected result : [4,5,6]
 
 --/
-data Either a b = Left a | Right b
+myMap f [] = []
+myMap f (a:b) = [(f a)] ++ (myMap f b)
 
-nul a = if a == 0
-        then Left a
-        else Right a
-main = do
-    print (nul 0)
-    print (nul 1)
+main = print(myMap (\x -> x + 1) [3,4,5])
 --/
 
 --------------------------------------------------------------------------------
--- Test 102        : Complex algebraic data type in pattern matching
+-- Test 102        : more complex algebraic data type (list)
+-- Expected result : 12
+
+--/
+data MyList a = Nil | Cons a (MyList a)
+
+integers :: MyList Integer
+integers = Cons 12 (Cons 107 Nil)
+
+main = case integers of 
+    Nil -> print "[]" 
+    Cons a b -> print(a)
+--/
+
+--------------------------------------------------------------------------------
+-- Test 103        : more algebraic data type (either)
 -- Expected result : 1
 
 --/
 data Either a b = Left a | Right b
 
-a = Right 0
-main = print(case a of 
-                Left a  -> 0
-                Right b -> 1)
+listofIntAndChar :: [Either Integer Boolean]
+listofIntAndChar = [Left 1, Left 2, Right False]
+
+main = case listofIntAndChar of
+  [] -> print "[]"
+  Left a : rest -> print a
+  Right b : rest -> print b
+--/
+
+--------------------------------------------------------------------------------
+-- Test 104        : more algebraic data type (tree)
+-- Expected result : 5
+
+--/
+data Tree a = Nil | Node a (Tree a) (Tree a)
+
+tree = Node 5 (Node 3 (Node 1 Nil Nil) Nil) (Node 9 Nil (Nil))
+
+main = case tree of
+  Nil -> print "Nil"
+  Node a b c -> print a 
 --/
 
 --------------------------------------------------------------------------------

@@ -1,8 +1,12 @@
-
 //--              File containing "type" TypeO for type checking            --//
 
+// Init name var counters
 let countVar = 0;
 let countMetavar = 0;
+
+// Init log
+let printTLog = false;
+let indent = 0;
 
 /**
  * Represents the type of a term (Algebric Data Type)
@@ -40,12 +44,20 @@ export class TypeO {
     return this.type === "Builtin";
   }
 
-    /**
+  /**
    * 
    * @returns {Boolean}
    */
-  isConstr(){
-    return this.type === "TConstr";
+  isConstrVal(){
+    return this.type === "TConstrVal";
+  }
+
+  /**
+   * 
+   * @returns {Boolean}
+   */
+  isConstrType(){
+    return this.type === "TConstrType";
   }
 
   /**
@@ -104,6 +116,20 @@ export class TArrow extends TypeO {
     this.from = from;
     this.to = to;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){
+      return this.type + "(from : " + this.from.toStr(true) + 
+                       ", to : " + this.to.toStr(true) + ")";
+    }
+    return this.type + "(from : " + this.from.toStr(short) + 
+                       ", to : " + this.to.toStr(short) + ")";
+  }
 }
 
 /**
@@ -119,12 +145,23 @@ export class TBuiltin extends TypeO {
     this.type = "Builtin";
     this.blt = blt;
   }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short 
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + '(' + this.blt + ')' ; 
+  }
 }
 
 // 1) Is this a good alternative to the manually defined function ?
 // 2) Not ideal because the type name need to be written twice
 // 3) Is this efficient ? because the blt type should only be called once 
 //    since it will always return the same object
+// 4) what about constrs ?
 let blts = {
   "Integer" : () => new TBuiltin("Integer"), 
   "Boolean" : () => new TBuiltin("Boolean"),
@@ -133,9 +170,16 @@ let blts = {
   "List" : () => new TBuiltin("List"),
   "Tuple" : () => new TBuiltin("Tuple"),
   "IO" : () => new TBuiltin("IO"),
-  "Just" : () => new TBuiltin("Just"),
-  "Maybe" : () => new TBuiltin("Maybe")
-} 
+}
+
+/**
+ * to determine if a string corresponds to a builtin type or not
+ * @param {String} type 
+ * @returns 
+ */
+export function isABuiltin(type){
+  return blts[type] !== undefined;
+}
 
 /**
  * Functions to generate builtin types
@@ -166,6 +210,46 @@ export class TApp extends TypeO {
     this.func = func;
     this.arg = arg;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){
+      return this.type + ' (' + this.getInnerFunc().toStr(short) + ')'; 
+    }
+    return this.type + "(func : " + this.func.toStr(short) + 
+                       ", app : " + this.app.toStr(short) + ")";
+  }
+
+  getInnerFunc(){
+    if (this.func.type === 'App'){
+      return this.func.getInnerFunc();
+    }
+    return this.func ;
+  }
+}
+
+/**
+ * Function to make a TApp object but receiving a list of args, transforms it
+ * in recursive calls of TApp to ensure that each one only take one 
+ * argument as a parameter
+ * @param {Term} func 
+ * @param {[Exp]} args 
+ * @returns {TApp}
+ */
+export function makeTAppOfList(func, args){
+  if (args.length === 0){
+    throw new Error("Error in making a TApp, at least one arg should be "
+      + "given");
+  } else if (args.length === 1){
+    return new TApp(func, args[0]);
+  } else {
+    let lastElem = args.pop();
+    return new TApp(makeTAppOfList(func, args), lastElem);
+  }
 }
 
 /**
@@ -183,6 +267,17 @@ export class TForall extends TypeO {
     this.names = names;
     this.body = body;
   }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    if (short){ return this.type ; }
+    return this.type + "(vars : " + this.names + 
+                       ", body : " + this.body.toStr(short) + ")";
+  }
 }
 
 /**
@@ -198,6 +293,16 @@ export class TVar extends TypeO {
     super();
     this.type = "TVar";
     this.name = str + num;
+  }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " " + this.name;
   }
 }
 
@@ -231,7 +336,23 @@ export class TMetavar extends TypeO {
    * @param {TypeO} type 
    */
   setVal(type){
+    tLog("➡️ Setting val of " + this.name + " to " + type.toStr(true));
     this.value = type;
+  }
+
+  /**
+   * Return the type as a string for log 
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    let val = this.value;
+    if (this.value === null){
+      val = "void" ; 
+    } else {
+      val = this.value.resolve().toStr(short);
+    }
+    return this.type + " " + this.name + " (" + val + ")" ;
   }
 }
 
@@ -245,9 +366,10 @@ export function freshMetavar(){
 }
 
 /**
- * Type for GADT (constructors)
+ * Abstract class
+ * Type for Algebraic data types
  */
-export class TConstr extends TypeO {
+class TConstr extends TypeO {
 
   /**
    * Like builtins but for user specified
@@ -258,8 +380,55 @@ export class TConstr extends TypeO {
     this.type = "TConstr";
     this.name = str;
   }
+
+  /**
+   * Return the type as a string for log (short not used but kept because other
+   * toStr call might give it)
+   * @param {Boolean} short if there is all the info or only the essential part
+   * @returns {String}
+   */
+  toStr(short = true){
+    return this.type + " " + this.name;
+  }
 }
 
-export function TJust() { return new TConstr("Just"); }
-export function TMaybe() { return new TConstr("Maybe"); }
-export function TNothing() { return new TConstr("Nothing"); }
+export class TConstrType extends TConstr {
+
+  constructor(str){
+    super(str);
+    this.type = "TConstrType";
+  }
+}
+
+export class TConstrVal extends TConstr {
+
+  constructor(str){
+    super(str);
+    this.type = "TConstrVal";
+  }
+}
+
+export function TMaybe() { return new TConstrType("Maybe"); }
+
+export function TJust() { return new TConstrVal("Just"); }
+export function TNothing() { return new TConstrVal("Nothing"); }
+
+/**
+ * Function to activate the log while type checking
+ */
+export function activatePrintTLog(){
+  printTLog = true;
+}
+
+/**
+ * Function to print the log if the global variable is set to true
+ * @param {String} msg 
+ * @param {Integer} i 
+ */
+export function tLog(msg, i = 0){
+  if(printTLog){
+    if (i > 0){ indent += i; }
+    console.log(" ".repeat(indent * 2) + msg);
+    if (i < 0){ indent += i; }
+  }
+}

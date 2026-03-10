@@ -9,9 +9,12 @@ import { TypeTable } from "./TypeTable.js";
 //--        File containing functions to type check the program             --//
 
 // Init global context
-let global_context = new Context();
+export let global_context = new Context();
 global_context.initGlobal();
-export let typeTable = new TypeTable();
+
+// Init typetable
+export let constrTable = new TypeTable();
+export let optionAppTable = new TypeTable();
 
 /**
  * Verifies that a given program type checks
@@ -22,6 +25,13 @@ export let typeTable = new TypeTable();
  */
 export function typeCheck(program){
   resetGlobalContext();
+
+  optionAppTable.reset();
+  optionAppTable.initOption();
+
+  constrTable.reset();
+  constrTable.initConstr();
+  
   let main; 
   for (let decl of program.normalizedForm){
     if (decl.name === "main"){
@@ -49,15 +59,15 @@ export function typeCheck(program){
   let mainType = infer(main.body, new Context());
   
   // verify the type annotation of main
-  if (main.isAnnotated()){ 
+  if (main.isAnnotated()){
     unify(mainType, main.typeAnnotation);
   }
   
   if (isMainAppIoUnit(mainType)){
     return true; 
   }
-  console.log(mainType);
-  throw new Error("Main should have type IO, not " + mainType);
+
+  throw new Error("Main should have type App IO to Unit, not " + mainType);
 
 }
 
@@ -68,7 +78,6 @@ export function typeCheck(program){
  * @returns {TypeO}
  */
 function infer(exp, context){
-
   switch (exp.type){
 
     case 'functionApp' :
@@ -98,6 +107,8 @@ function infer(exp, context){
  * @param {Context} context 
  */
 function check(exp, type, context){
+  T.tLog("🔽 Check between " + exp.toStr() + " and " + type.toStr(), 1);
+  // todo make exp.tostr()
   switch (exp.type){
     case 'LambdaExp' :
 
@@ -138,6 +149,9 @@ function check(exp, type, context){
 
     default :
       unify(infer(exp, context), type);
+
+    T.tLog("🔼 Check between " + exp.toStr() + " and " + type.toStr(), -1);
+    
   }
 }
 
@@ -154,6 +168,8 @@ function check(exp, type, context){
  * @param {T.TypeO} t2 
  */
 function unify(t1, t2){
+
+  T.tLog("🔽 Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
@@ -177,7 +193,11 @@ function unify(t1, t2){
     tmpt2.setVal(tmpt1);
   } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin() && tmpt1.blt === tmpt2.blt){
     // do nothing
-  } else if (tmpt1.isConstr() && tmpt2.isConstr() && tmpt1.name === tmpt2.name){
+  } else if (tmpt1.isConstrVal() && tmpt2.isConstrVal() && 
+             tmpt1.name === tmpt2.name){
+    // do nothing
+  } else if (tmpt1.isConstrType() && tmpt2.isConstrType() && 
+             tmpt1.name === tmpt2.name){
     // do nothing
   } else if (t1.isForAll() || tmpt2.isForAll()){
     throw new Error(`Forall in unification should not happen`);
@@ -186,6 +206,9 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt1, null, 2)} \nand 
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
+
+  T.tLog("🔼 Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
+
 }
 
 /**
@@ -194,6 +217,9 @@ function unify(t1, t2){
  * @returns {T.TForall} 
  */
 function generalize(type){
+
+  T.tLog("➡️ generalize " + type.toStr());
+
   let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
   if (Object.keys(names).length > 0 ){
@@ -245,6 +271,8 @@ function generalizeRec(type, names){
  * @param {T.TypeO} t2 
  */
 function occursCheck(t1, t2){
+  
+  T.tLog("🔽 Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
 
   let tmpt2 = t2;
   if (tmpt2.isMetavar()){
@@ -263,6 +291,7 @@ function occursCheck(t1, t2){
     occursCheck(t1, tmpt2.arg);
   }
 
+  T.tLog("🔼 Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
 }
 
 /**
@@ -311,17 +340,20 @@ function checkPatterns(patterns, patternsTypes, context){
  * Returns true if the name given is a function that can be called in a pattern
  * in Haskell code
  * #HELP are there other functions ?
+ * FIXME: Yes, many many more.  Why do you need to treat them specially?
+ * I suspect for patterns you're better off not relying on "currying",
+ * define a "pattern application node" as having a constructor name as the left 
+ * side (rather than an arbitrary sub-pattern) and a list of pattern arguments.
  * @param {String} name 
  * @returns {Boolean}
  */
 function isAppinCase(name){
-  let res = typeTable.lookup(name); 
-  if (res !== undefined && res.arity > 0){ return true; }
+  let res = optionAppTable.lookup(name); 
+  if (res !== undefined){ return true ; }
   return name === ":" 
       || name === ","
       || isNcommas(name);
 }
-
 
 /**
  * If possible, modifies the type expected of a pattern (patternTypeR), and 
@@ -339,8 +371,29 @@ function isAppinCase(name){
  * @param {T.TypeO} patternTypeR
  * @param {Context} context 
  */
+// FIXME: I think the problem here is the one I already mentioned
+// which is that you should *not* use the same AST for patterns as for
+// expressions.  More specifically, rather than
+// 'functionaApp' nodes with a single arg that rely on currying,
+// patterns should use a datatype along the lines of:
+//
+//     data Pattern =
+//        | Var String
+//        | Wildcard
+//        | Constructor (List Pattern)
+//
+// Then in `checkPatterns` things will be much simpler and clearer.
 function checkFuncAppPattern(pattern, patternTypeR, context){
   let patternType = patternTypeR.resolve();
+  // If you do `x = freshmetavar;  check* (EXP, x, ..)` it means you're doing
+  // it wrong: e.g. maybe you should use `infer*` instead.  Tho here,
+  // what it really means is that you first need to find the "head"
+  // of the application (which *has* to be a constructor, whose type we
+  // already know), then unify its return type with `patternTypeR` (after
+  // instantiating, if it's polymorphic),
+  // then *check* the type of all the subpatterns (notice that the
+  // recursion uses `check` rather than `infer`, so you'll never actually
+  // need any `inferPattern`).
   let func = T.freshMetavar();
   checkPatterns([pattern.func], [func], context);
   if (func.value.isArrow()){
@@ -369,6 +422,7 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
 function inferFunctionApp(exp, context){
   // TODO FIXME : typetable has to be used to verify arity of type applications
   // like list tuples or constrs (maybe)
+  T.tLog("➡️ Infer App " + exp.toStr());
   let tfun = infer(exp.func, context).resolve();
 
   if (tfun.isArrow()){
@@ -407,6 +461,7 @@ function miniUnify(exp, tfun, context){
  * @returns {T.TypeO}
  */
 function inferVar(exp, context){
+  T.tLog("➡️ Infer Var " + exp.toStr());
   return lookupGlobalLocalContext(context, exp.name);
 
 }
@@ -420,12 +475,14 @@ function inferVar(exp, context){
  */
 function instantiate(type, dict = {}){
 
+
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
   if (type.isForAll()){
+    T.tLog("➡️ Instantiate " + type.toStr());
     let copyDict = {...dict}; // creates a copy of dict
     for (let name of type.names){
-      copyDict[name] = new T.freshMetavar(); 
+      copyDict[name] = new T.freshMetavar();
     }
     return instantiate(type.body, copyDict);
   } 
@@ -464,6 +521,7 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
+  T.tLog("➡️ Infer Imm " + exp.toStr());
   let lookup = global_context.lookup(exp.valueType);
   if (lookup !== undefined){ // for constructors
     return lookup;
@@ -480,6 +538,7 @@ function inferImmediate(exp){
  * @returns {T.TypeO}
  */
 function inferLet(exp, context){
+  T.tLog("➡️ Infer Let" + exp.toStr());
   if (exp.body !== null){
     let clone = context.clone();
     for (let decl of exp.decls){
@@ -584,30 +643,56 @@ function isMainAppIoUnit(mainType){
  * @param {Constr} constr
  */
 function manageConstr(constr){
+  T.tLog("➡️ Processing the type of constr " + constr.name);
   let nameDict = {};
   let type = getTypeOfConstr(constr, nameDict);
-  typeTable.add(constr.name, constr);
-  global_context.add(constr.name, new T.TConstr(constr.name));
+
+  // update constrtable and context
+  constrTable.add(constr.name, constr);
+  global_context.add(constr.name, new T.TConstrType(constr.name));
+
+  // determine the type of each option
   for(let option of constr.options){
     if (option.type === 'var'){
       global_context.add(option.name, type);
-      typeTable.add(option.name, new Constr(option.name, [], []));
+      optionAppTable.add(option.name, 0);
     } else if(option.type === "functionApp"){
-      // we know type is forall
+      // we know type is forall (what about constrs with no variable ? FIXME)
       let func = option.func;
-      let arr = new T.TArrow(nameDict[option.arg.name], type.body);
+      let arr = new T.TArrow(funcAppToTApp(option.arg, nameDict, constr.params), 
+                             type.body);
       while (func.type === "functionApp"){
+        arr = new T.TArrow(funcAppToTApp(func.arg, nameDict, constr.params), 
+                           arr);
         func = func.func;
-        arr = new T.TArrow(nameDict[func.arg.name], arr);
       }
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
-      typeTable.add(func.name, new Constr(func.name, [], []));
-      // FIXME the last param of constr is not valid
+      optionAppTable.add(func.name, type.names.length);
       global_context.add(func.name, new T.TForall(type.names, arr));
     }
   }
+}
+
+/**
+ * 
+ * @param {Exp} exp 
+ * @param {String -> T.TypeO} nameDict 
+ * @param {[String]} params 
+ * @returns {T.TypeO}
+ */
+function funcAppToTApp(exp, nameDict, params){
+  if (exp.type === 'var'){
+    if (params.includes(exp.name)){
+      return nameDict[exp.name];
+    } else if (constrTable.lookup(exp.name) !== undefined){
+      return new T.TConstrType(exp.name); 
+    }
+    return new T.TConstrVal(exp.name);
+  }
+  return new T.TApp(funcAppToTApp(exp.func, nameDict, params), 
+                    funcAppToTApp(exp.arg, nameDict, params));
 }
 
 /**
@@ -622,13 +707,13 @@ function manageConstr(constr){
  * 
  * @param {Constr} constr 
  * @param {String -> T.TVar} nameDict
- * @returns {T.TConstr | T.TForall}
+ * @returns {T.TConstrType | T.TForall}
  */
 function getTypeOfConstr(constr, nameDict){
   if (constr.params.length === 0){
-    return new T.TConstr(constr.name);
+    return new T.TConstrType(constr.name);
   } else {
-    let body = new T.TConstr(constr.name);
+    let body = new T.TConstrType(constr.name);
     let names = [];
     for (let i = 0; i < constr.params.length; i++){
       let nVar = T.freshVar();

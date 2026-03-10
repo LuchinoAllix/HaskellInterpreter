@@ -1,5 +1,4 @@
 import { Program } from "../objects/Program.js";
-import { tokenize } from "../lexer/Lexer.js";
 import { mtNode } from "../objects/Node.js";
 import { Rules } from "./ParserRules.js";
 import { tokenToNode } from "../objects/Token.js";
@@ -29,7 +28,7 @@ let rulesObject = new Rules(); // Haskell parsing rules
 let fails = {}; // optimisation dictionnary to not try a rule we know failed
                 // at a certain index in the program
 
-let printDebug = false; // for debug, edited in activateDebug
+let printDebug = false; // for debug, edited in activateDebugParse
 let space = 0;          // indentation used in debug print
 
 /**

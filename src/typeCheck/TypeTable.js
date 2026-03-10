@@ -14,7 +14,6 @@ export class TypeTable {
    */
   constructor(){
     this.decls = {};
-    this.init();
   }
 
   /**
@@ -43,22 +42,33 @@ export class TypeTable {
     this.decls[name] = cons;
   }
 
-  init(){
-    this.add("Integer", new Constr("Integer", [], []));
-    this.add("Boolean", new Constr("Boolean", [], []));
-    this.add("Char", new Constr("Char", [], []));
-    this.add("Unit", new Constr("Unit", [], []));
-    this.add("List", new Constr("List", [], ["a"]));
-    this.add("Tuple", new Constr("Tuple", [], ["a"]));
-    this.add("IO", new Constr("IO", [], [])); //FIXME
-    this.add("Just", new Constr("Just", [], ["a"])); //FIXME
-    this.add("Nothing", new Constr("Nothing", [], []));
+  /**
+   * todo
+   */
+  initConstr(){
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")
-    ], ["a"])); //FIXME
-    this.add("EmptyList", new Constr("EmptyList", [], []));
+    ], ["a"]));
   }
-  // this should not be manually done FIXME
+
+  // temp idea, should be moved to another file / object type
+  // maps the option to it's arity
+
+  /**
+   * todo
+   */
+  initOption(){
+    this.add("Just", 1);
+    this.add("Nothing", 0);
+  }
+
+  /**
+   * Reset the table (needed inbetween tests) 
+   */
+  reset(){
+    this.decls = {};
+  }
+
 
 }
