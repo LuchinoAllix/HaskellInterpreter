@@ -1056,5 +1056,24 @@ main = case tree of
 --/
 
 --------------------------------------------------------------------------------
+-- Test 106        : pattern matching constructor in func not case
+-- Expected result : "5"\n"Nil"
+
+--/
+data Tree a = Nil | Node a (Tree a) (Tree a)
+
+first (Nil) = "Nil"
+first (Node a b c) = a
+
+tree1 = Node "5" (Node "3" (Node "1" Nil Nil) Nil) (Node "9" Nil (Nil))
+tree2 = Nil
+
+main = do 
+    print (first tree1)
+    print (first tree2)
+--/
+
+--------------------------------------------------------------------------------
+
 -- TODO add more complexe tests with constructor in pattern matching
 -- TODO add more complexe tests with custom GADTs (more than one param)
