@@ -1007,13 +1007,26 @@ data MyList a = Nil | Cons a (MyList a)
 integers :: MyList Integer
 integers = Cons 12 (Cons 107 Nil)
 
+main = print( 12  )
+--/
+
+--------------------------------------------------------------------------------
+-- Test 103        : more complex algebraic data type (list)
+-- Expected result : 12
+
+--/
+data MyList a = Nil | Cons a (MyList a)
+
+integers :: MyList Integer
+integers = Cons 12 (Cons 107 Nil)
+
 main = case integers of 
     Nil -> print "[]" 
     Cons a b -> print(a)
 --/
 
 --------------------------------------------------------------------------------
--- Test 103        : more algebraic data type (either)
+-- Test 104        : more algebraic data type (either)
 -- Expected result : 1
 
 --/
@@ -1029,7 +1042,7 @@ main = case listofIntAndChar of
 --/
 
 --------------------------------------------------------------------------------
--- Test 104        : more algebraic data type (tree)
+-- Test 105        : more algebraic data type (tree)
 -- Expected result : 5
 
 --/
