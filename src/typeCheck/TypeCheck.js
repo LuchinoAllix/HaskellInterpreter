@@ -423,8 +423,6 @@ function inferFunctionApp(exp, context){
   if (tfun.isArrow()){
     check(exp.arg, tfun.from, context);
     return tfun.to;
-  } else if (tfun.isApp()){
-    console.log("a"); //todo
   }
 
   let targ = infer(exp.arg, context);
@@ -436,6 +434,7 @@ function inferFunctionApp(exp, context){
 
 /**
  * todo
+ * NOT YET USED
  * @param {Exp} exp 
  * @param {T.TypeO} tfun 
  * @param {Context} context 

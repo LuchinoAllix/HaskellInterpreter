@@ -1,6 +1,5 @@
 import { Constr } from "../normalize/Constr.js";
 import { FunctionApp, VarExp } from "../normalize/Exp.js";
-import * as T from "./TypeO.js";
 
 //--                 File containing Type option for type check             --//
 
@@ -10,7 +9,7 @@ import * as T from "./TypeO.js";
 export class TypeTable {
 
   /**
-   * todo
+   * constructor for typetable class
    */
   constructor(){
     this.decls = {};
@@ -43,7 +42,7 @@ export class TypeTable {
   }
 
   /**
-   * todo
+   * initialises the constr table
    */
   initConstr(){
     this.add("Maybe", new Constr("Maybe", [
@@ -52,11 +51,8 @@ export class TypeTable {
     ], ["a"]));
   }
 
-  // temp idea, should be moved to another file / object type
-  // maps the option to it's arity
-
   /**
-   * todo
+   * Initialises the option table
    */
   initOption(){
     this.add("Just", 1);
