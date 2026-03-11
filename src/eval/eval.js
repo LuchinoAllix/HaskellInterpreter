@@ -141,6 +141,12 @@ function evaluateExp(exp, env){
   }
 }
 
+/**
+ * Evaluates a lambda exp by returning a Vfunc
+ * @param {E.LambdaExp} exp 
+ * @param {Env} env 
+ * @returns {V.Vfunc}
+ */
 function evaluateLambda(exp, env){
   return new V.Vfunc(exp.body, exp.namedArg, env);
 }
@@ -209,7 +215,7 @@ function evaluateFuncApp(exp, env){
 }
 
 /**
- * todo
+ * executes a func by giving it it's argument
  * @param {Vfunc} func a decl, exp or prim
  * @param {Value} arg 
  * @returns 
@@ -495,7 +501,7 @@ export function addNcommasToGlobalEnv(str){
 }
 
 /**
- * evaluates a data declaration (constr) by updating the global env
+ * Evaluates a data declaration (constr) by updating the global env
  * @param {Constr} constr
  */
 function evaluateConstr(constr){
@@ -503,15 +509,18 @@ function evaluateConstr(constr){
     if (option.type === 'var'){
       global_env.add(option.name, new V.VConstr(option.name));
     } else {
-      let prim = expToPrim(option, []);
-      global_env.add(getName(option), prim);
+      global_env.add(getName(option), expToPrim(option, []));
     }
   }
 }
 
-// not sure this is the best idea
-// kinda working
-
+/**
+ * Returns the primitive form (function) of a functionApp
+ * Used to process constr definition to update the global env
+ * @param {Exp} exp 
+ * @param {[V.Value]} values 
+ * @returns {V.Value}
+ */
 function expToPrim(exp, values){
   if (exp.type === 'functionApp'){
     let res = expToPrim(exp.arg, []);
@@ -524,11 +533,21 @@ function expToPrim(exp, values){
   }
 }
 
+/**
+ * Determines if a given name is of a constr or an option in an app
+ * @param {String} name 
+ * @returns {Boolean}
+ */
 function isConstrOrOption(name){
   return optionAppTable.lookup(name) !== undefined || 
          constrTable.lookup(name) !== undefined ;
 }
 
+/**
+ * Goes through all the func to return it's left most app's name
+ * @param {Exp} exp 
+ * @returns {String}
+ */
 function getName(exp){
   if(exp.type === 'functionApp'){
     return getName(exp.func);
