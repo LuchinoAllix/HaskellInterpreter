@@ -4,7 +4,7 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { optionAppTable, global_context, constrTable } from "../typeCheck/TypeCheck.js"
+import { optionAppTable, constrTable } from "../typeCheck/TypeCheck.js";
 import { Prim } from "./Prim.js";
 
 
