@@ -174,7 +174,6 @@ export class Context {
 
     this.add("EmptyList", new T.TForall([mtList.name], 
       new T.TApp(T.TList(), mtList)));
-    //this.add("getChar", ); // TODO
   }
 
   // TODO : add function to verify that global env and gloabl context have the 

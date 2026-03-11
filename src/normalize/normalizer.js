@@ -227,7 +227,7 @@ function normalizeConstrs(node, params){
  * @returns {Exp}
  */
 function normalizeConstr(node, params){
-  // we know we have a least more than one child
+  // we know we have at least more than one child
   // and first child must be Conid (name of constr) or 'special btype special'
   if (node.type === 'Qtycon' || node.type === 'Conid'){
     return new VarExp(node.value, node.getInfo()); 
@@ -249,7 +249,8 @@ function normalizeConstr(node, params){
 }
 
 /**
- * todo
+ * Verifies that all the params given appear in the constr by comparing the
+ * list of the two
  * @param {[String]} named 
  * @param {[String]} params 
  */
