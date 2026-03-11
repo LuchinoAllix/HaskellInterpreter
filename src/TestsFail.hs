@@ -60,15 +60,39 @@ main = print(case a of
 --/
 data Either a b = Left a | Right b
 
-listofIntAndChar :: [Either Integer]
-listofIntAndChar = [Left 1, Left 2, Right 'a']
+listofIntAndBool :: [Either Integer]
+listofIntAndBool = [Left 1, Left 2, Right False]
 
-main = case listofIntAndChar of
-  [] -> print "[]" ;
+main = case listofIntAndBool of
+  [] -> print "[]"
   Left a : rest -> print a  
   Right b : rest -> print b 
 --/
 
 --------------------------------------------------------------------------------
--- TODO add a test where occurs check should fail
--- TODO add a test where pattern matching on constructors should fail
+-- Test 6         : Incorrect type in type annotation of constructor
+-- Expected crash : 4
+
+--/
+data Either a b = Left a | Right b
+
+listofIntAndBool :: [Either Integer Boolean]
+listofIntAndBool = [Left 1, Left 2, Right False]
+
+main = case listofIntAndBool of
+  [] -> print "[]"
+  Left a : rest -> print a  
+  Right : rest -> print b 
+--/
+
+--------------------------------------------------------------------------------
+-- Test 7         : Occurs check failure
+-- Expected crash : 4
+
+--/
+f x = x : x
+
+main = print(f 1)
+--/
+
+--------------------------------------------------------------------------------
