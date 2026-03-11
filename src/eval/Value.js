@@ -31,7 +31,7 @@ export function Vbool(value){ return new VImm(value, "Boolean") ; }
 export class Vfunc extends Value {
 
   /**
-   * todo
+   * Function return type
    * @param {function} body 
    * @param {Env} closure
    */
