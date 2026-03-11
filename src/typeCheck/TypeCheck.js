@@ -108,7 +108,7 @@ function infer(exp, context){
  */
 function check(exp, type, context){
   T.tLog("🔽 Check between " + exp.toStr() + " and " + type.toStr(), 1);
-  // todo make exp.tostr()
+
   switch (exp.type){
     case 'LambdaExp' :
 
@@ -339,11 +339,6 @@ function checkPatterns(patterns, patternsTypes, context){
 /**
  * Returns true if the name given is a function that can be called in a pattern
  * in Haskell code
- * #HELP are there other functions ?
- * FIXME: Yes, many many more.  Why do you need to treat them specially?
- * I suspect for patterns you're better off not relying on "currying",
- * define a "pattern application node" as having a constructor name as the left 
- * side (rather than an arbitrary sub-pattern) and a list of pattern arguments.
  * @param {String} name 
  * @returns {Boolean}
  */
@@ -474,7 +469,6 @@ function inferVar(exp, context){
  * @returns {T.TypeO}
  */
 function instantiate(type, dict = {}){
-
 
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
@@ -644,7 +638,7 @@ function isMainAppIoUnit(mainType){
  */
 function manageConstr(constr){
   T.tLog("➡️ Processing the type of constr " + constr.name);
-  let nameDict = {};
+  let nameDict = {}; // name of a var -> Tvar associated with var
   let type = getTypeOfConstr(constr, nameDict);
 
   // update constrtable and context
@@ -676,10 +670,13 @@ function manageConstr(constr){
 }
 
 /**
- * 
+ * Takes a funcapp exp and returns it's corresponding app type
+ * nameDict is used if the var already has a corresponding tvar
+ * params is used to know which var is called from the constr and which is a 
+ * constr (we assume nameDict and params have the same entries)
  * @param {Exp} exp 
- * @param {String -> T.TypeO} nameDict 
- * @param {[String]} params 
+ * @param {String -> T.TVar} nameDict name of a var -> Tvar associated with var
+ * @param {[String]} params list of the names of param of the constr node
  * @returns {T.TypeO}
  */
 function funcAppToTApp(exp, nameDict, params){
@@ -706,7 +703,7 @@ function funcAppToTApp(exp, nameDict, params){
  * their corresponding type var
  * 
  * @param {Constr} constr 
- * @param {String -> T.TVar} nameDict
+ * @param {String -> T.TVar} nameDict name of a var -> Tvar associated with var
  * @returns {T.TConstrType | T.TForall}
  */
 function getTypeOfConstr(constr, nameDict){
