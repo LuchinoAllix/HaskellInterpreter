@@ -1032,10 +1032,10 @@ main = case integers of
 --/
 data Either a b = Left a | Right b
 
-listofIntAndChar :: [Either Integer Boolean]
-listofIntAndChar = [Left 1, Left 2, Right False]
+listofIntAndBool :: [Either Integer Boolean]
+listofIntAndBool = [Left 1, Left 2, Right False]
 
-main = case listofIntAndChar of
+main = case listofIntAndBool of
   [] -> print "[]"
   Left a : rest -> print a
   Right b : rest -> print b
@@ -1074,6 +1074,3 @@ main = do
 --/
 
 --------------------------------------------------------------------------------
-
--- TODO add more complexe tests with constructor in pattern matching
--- TODO add more complexe tests with custom GADTs (more than one param)
