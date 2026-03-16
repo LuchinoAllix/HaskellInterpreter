@@ -3,7 +3,7 @@
 --# Each test must follow the same pattern :
 --# 2 dashes and a \  before and after the input and nowhere else.
 --# 'Test x : blabla' blabla will be the info of the test, must be on one line.
---# 'Espected result : ?'  ? will be what the output will be compared to, 
+--# 'Expected result : ?'  ? will be what the output will be compared to, 
 --#                        must be on one line. for results with multiple
 --#                        answers (like in a do stmt) the expected results need
 --#                        to be seperated by \n.
