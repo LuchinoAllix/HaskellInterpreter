@@ -39,12 +39,16 @@ export function typeCheck(program){
     } else if (decl.isConstr()){
       manageConstr(decl);
     } else {
-      T.tLog("➡️ Infer Decl : " + decl.name);
-      let declType = T.freshMetavar();
+      T.tLog("Infer Decl : " + decl.name, 1);
+      
+      // metavar used in case of recursive definition
+      let declType = T.freshMetavar(); 
+      
       global_context.add(decl.name, declType);
       check(decl.body, declType, new Context());
+      
       if (decl.isAnnotated()){
-        let genDeclType = generalize(declType)
+        let genDeclType = generalize(declType);
         
         // verify the type annotation
         unify(instantiate(genDeclType), decl.typeAnnotation);
@@ -53,11 +57,12 @@ export function typeCheck(program){
       } else {
         global_context.add(decl.name, generalize(declType), true);
       }
+      T.tLog("Infered decl " + decl.name + " : " + declType.toStr(), -1);
     }
   }
   
   // To ensure that main is the last decl to be type checked
-  T.tLog("➡️ Infer Main ");
+  T.tLog("Infer Main ", 1);
   let mainType = infer(main.body, new Context());
   
   // verify the type annotation of main
@@ -109,7 +114,7 @@ function infer(exp, context){
  * @param {Context} context 
  */
 function check(exp, type, context){
-  T.tLog("🔽 Check between " + exp.toStr() + " and " + type.toStr(), 1);
+  T.tLog("Check between " + exp.toStr() + " and " + type.toStr(), 1);
 
   switch (exp.type){
     case 'LambdaExp' :
@@ -152,7 +157,7 @@ function check(exp, type, context){
     default :
       unify(infer(exp, context), type);
 
-    T.tLog("🔼 Check between " + exp.toStr() + " and " + type.toStr(), -1);
+    T.tLog("Check between " + exp.toStr() + " and " + type.toStr(), -1);
     
   }
 }
@@ -171,7 +176,7 @@ function check(exp, type, context){
  */
 function unify(t1, t2){
 
-  T.tLog("🔽 Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
+  T.tLog("Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
@@ -209,7 +214,7 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
 
-  T.tLog("🔼 Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
+  T.tLog("Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
 
 }
 
@@ -220,7 +225,7 @@ function unify(t1, t2){
  */
 function generalize(type){
 
-  T.tLog("➡️ generalize " + type.toStr());
+  T.tLog("generalize " + type.toStr());
 
   let names = {}; // will get modified by the call to generalizeRec
   let nType = generalizeRec(type, names);
@@ -274,7 +279,7 @@ function generalizeRec(type, names){
  */
 function occursCheck(t1, t2){
   
-  T.tLog("🔽 Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
+  T.tLog("Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
 
   let tmpt2 = t2;
   if (tmpt2.isMetavar()){
@@ -293,7 +298,7 @@ function occursCheck(t1, t2){
     occursCheck(t1, tmpt2.arg);
   }
 
-  T.tLog("🔼 Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
+  T.tLog("Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
 }
 
 /**
@@ -306,7 +311,7 @@ function occursCheck(t1, t2){
  * @param {Context} context 
  */
 function checkPatterns(patterns, patternsTypes, context){
-  T.tLog("➡️ checkPatterns " + patterns);
+  T.tLog("checkPatterns " + patterns);
   for (let i = 0; i < patterns.length; i ++){
     switch (patterns[i].type){
       case "var" :
@@ -382,7 +387,7 @@ function isAppinCase(name){
 //
 // Then in `checkPatterns` things will be much simpler and clearer.
 function checkFuncAppPattern(pattern, patternTypeR, context){
-  T.tLog("➡️ checkFuncAppPattern " + pattern.toStr());
+  T.tLog("checkFuncAppPattern " + pattern.toStr());
   let patternType = patternTypeR.resolve();
   // If you do `x = freshmetavar;  check* (EXP, x, ..)` it means you're doing
   // it wrong: e.g. maybe you should use `infer*` instead.  Tho here,
@@ -421,7 +426,7 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
 function inferFunctionApp(exp, context){
   // TODO FIXME : typetable has to be used to verify arity of type applications
   // like list tuples or constrs (maybe)
-  T.tLog("➡️ Infer App " + exp.toStr());
+  T.tLog("Infer App " + exp.toStr());
   let tfun = infer(exp.func, context).resolve();
 
   if (tfun.isArrow()){
@@ -459,8 +464,9 @@ function miniUnify(exp, tfun, context){
  * @returns {T.TypeO}
  */
 function inferVar(exp, context){
-  T.tLog("➡️ Infer Var " + exp.toStr());
-  return lookupGlobalLocalContext(context, exp.name);
+  let res = lookupGlobalLocalContext(context, exp.name);
+  T.tLog("lookup " + exp.toStr() + " : " + res.toStr());
+  return res;
 }
 
 /**
@@ -475,7 +481,7 @@ function instantiate(type, dict = {}){
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
   if (type.isForAll()){
-    T.tLog("➡️ Instantiate " + type.toStr());
+    T.tLog("Instantiate " + type.toStr());
     let copyDict = {...dict}; // creates a copy of dict
     for (let name of type.names){
       copyDict[name] = new T.freshMetavar();
@@ -517,7 +523,7 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
-  T.tLog("➡️ Infer Imm " + exp.toStr());
+  T.tLog("Infer Imm " + exp.toStr());
   let lookup = global_context.lookup(exp.valueType);
   if (lookup !== undefined){ // for constructors
     return lookup;
@@ -534,7 +540,7 @@ function inferImmediate(exp){
  * @returns {T.TypeO}
  */
 function inferLet(exp, context){
-  T.tLog("➡️ Infer Let" + exp.toStr());
+  T.tLog("Infer Let" + exp.toStr());
   if (exp.body !== null){
     let clone = context.clone();
     for (let decl of exp.decls){
@@ -559,16 +565,17 @@ function inferLet(exp, context){
  * @returns {Term}
  */
 function lookupGlobalLocalContext(context, name){
-  T.tLog("➡️ lookup " + name);
   let res = context.lookup(name);
-  if (res !== undefined){
-    return res;
+
+  if (res === undefined){
+    res = global_context.lookup(name);  
+    if (res === undefined){ 
+      throw new Error(name + " is undefined.") ; 
+    }
   }
-  res = global_context.lookup(name);  
-  if (res !== undefined){
-    return res;
-  }
-  throw new Error(name + " is undefined.");
+
+  return res;
+  
 }
 
 /**
@@ -605,7 +612,7 @@ export function addNcommasToGlobalContext(str){
  * @returns {Boolean}
  */
 function isMainAppIoUnit(mainType){
-  T.tLog("➡️ Verifying that main is IO");
+  T.tLog("Verifying that main is IO");
   
   if (mainType.isMetavar()){
     return isMainAppIoUnit(mainType.value);
@@ -641,7 +648,7 @@ function isMainAppIoUnit(mainType){
  * @param {Constr} constr
  */
 function manageConstr(constr){
-  T.tLog("➡️ Processing the type of constr " + constr.name);
+  T.tLog("Processing the type of constr " + constr.name);
   let nameDict = {}; // name of a var -> Tvar associated with var
   let type = getTypeOfConstr(constr, nameDict);
 
