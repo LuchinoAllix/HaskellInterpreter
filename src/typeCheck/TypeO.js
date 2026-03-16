@@ -119,16 +119,10 @@ export class TArrow extends TypeO {
 
   /**
    * Return the type as a string for log 
-   * @param {Boolean} short if there is all the info or only the essential part
    * @returns {String}
    */
-  toStr(short = true){
-    if (short){
-      return this.type + "(from : " + this.from.toStr(true) + 
-                       ", to : " + this.to.toStr(true) + ")";
-    }
-    return this.type + "(from : " + this.from.toStr(short) + 
-                       ", to : " + this.to.toStr(short) + ")";
+  toStr(){
+    return "(" + this.from.toStr() + " -> " + this.to.toStr() + ")";
   }
 }
 
@@ -147,13 +141,11 @@ export class TBuiltin extends TypeO {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short 
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
-    return this.type + '(' + this.blt + ')' ; 
+  toStr(){
+    return this.blt + " " ;
   }
 }
 
@@ -213,22 +205,10 @@ export class TApp extends TypeO {
 
   /**
    * Return the type as a string for log 
-   * @param {Boolean} short if there is all the info or only the essential part
    * @returns {String}
    */
-  toStr(short = true){
-    if (short){
-      return this.type + ' (' + this.getInnerFunc().toStr(short) + ')'; 
-    }
-    return this.type + "(func : " + this.func.toStr(short) + 
-                       ", app : " + this.arg.toStr(short) + ")";
-  }
-
-  getInnerFunc(){
-    if (this.func.type === 'App'){
-      return this.func.getInnerFunc();
-    }
-    return this.func ;
+  toStr(){
+    return "App(" + this.func.toStr() + ", " + this.arg.toStr() + ")";
   }
 }
 
@@ -270,13 +250,10 @@ export class TForall extends TypeO {
 
   /**
    * Return the type as a string for log 
-   * @param {Boolean} short if there is all the info or only the essential part
    * @returns {String}
    */
-  toStr(short = true){
-    if (short){ return this.type ; }
-    return this.type + "(vars : " + this.names + 
-                       ", body : " + this.body.toStr(short) + ")";
+  toStr(){
+    return  "∀" + this.names + ", " + this.body.toStr();
   }
 }
 
@@ -296,13 +273,11 @@ export class TVar extends TypeO {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
-    return this.type + " " + this.name;
+  toStr(){
+    return "" + this.name;
   }
 }
 
@@ -336,23 +311,22 @@ export class TMetavar extends TypeO {
    * @param {TypeO} type 
    */
   setVal(type){
-    tLog("➡️ Setting val of " + this.name + " to " + type.toStr(true));
+    tLog("Setting val of " + this.name + " to " + type.toStr());
     this.value = type;
   }
 
   /**
    * Return the type as a string for log 
-   * @param {Boolean} short if there is all the info or only the essential part
    * @returns {String}
    */
-  toStr(short = true){
+  toStr(){
     let val = this.value;
     if (this.value === null){
       val = "void" ; 
     } else {
-      val = this.value.resolve().toStr(short);
+      val = this.value.resolve().toStr();
     }
-    return this.type + " " + this.name + " (" + val + ")" ;
+    return this.name + " (" + val + ")" ;
   }
 }
 
@@ -382,13 +356,11 @@ class TConstr extends TypeO {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+   * Return the type as a string for log 
    * @returns {String}
    */
-  toStr(short = true){
-    return this.type + " " + this.name;
+  toStr(){
+    return this.name;
   }
 }
 
@@ -427,8 +399,14 @@ export function activatePrintTLog(){
  */
 export function tLog(msg, i = 0){
   if(printTLog){
-    if (i > 0){ indent += i; }
-    console.log(" ".repeat(indent * 2) + msg);
-    if (i < 0){ indent += i; }
+    if (i === 0){
+      console.log(" ".repeat(indent * 2) + "➡️  " + msg);
+    } else if (i > 0){
+      indent += i; 
+      console.log(" ".repeat(indent * 2) + "🔽 " + msg);
+    } else if (i < 0){
+      console.log(" ".repeat(indent * 2) + "🔼 " + msg);
+      indent += i;
+    }
   }
 }
