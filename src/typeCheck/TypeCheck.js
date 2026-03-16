@@ -39,6 +39,7 @@ export function typeCheck(program){
     } else if (decl.isConstr()){
       manageConstr(decl);
     } else {
+      T.tLog("➡️ Infer Decl : " + decl.name);
       let declType = T.freshMetavar();
       global_context.add(decl.name, declType);
       check(decl.body, declType, new Context());
@@ -56,6 +57,7 @@ export function typeCheck(program){
   }
   
   // To ensure that main is the last decl to be type checked
+  T.tLog("➡️ Infer Main ");
   let mainType = infer(main.body, new Context());
   
   // verify the type annotation of main
@@ -304,6 +306,7 @@ function occursCheck(t1, t2){
  * @param {Context} context 
  */
 function checkPatterns(patterns, patternsTypes, context){
+  T.tLog("➡️ checkPatterns " + patterns);
   for (let i = 0; i < patterns.length; i ++){
     switch (patterns[i].type){
       case "var" :
@@ -379,6 +382,7 @@ function isAppinCase(name){
 //
 // Then in `checkPatterns` things will be much simpler and clearer.
 function checkFuncAppPattern(pattern, patternTypeR, context){
+  T.tLog("➡️ checkFuncAppPattern " + pattern.toStr());
   let patternType = patternTypeR.resolve();
   // If you do `x = freshmetavar;  check* (EXP, x, ..)` it means you're doing
   // it wrong: e.g. maybe you should use `infer*` instead.  Tho here,
@@ -457,7 +461,6 @@ function miniUnify(exp, tfun, context){
 function inferVar(exp, context){
   T.tLog("➡️ Infer Var " + exp.toStr());
   return lookupGlobalLocalContext(context, exp.name);
-
 }
 
 /**
@@ -556,6 +559,7 @@ function inferLet(exp, context){
  * @returns {Term}
  */
 function lookupGlobalLocalContext(context, name){
+  T.tLog("➡️ lookup " + name);
   let res = context.lookup(name);
   if (res !== undefined){
     return res;
@@ -601,6 +605,7 @@ export function addNcommasToGlobalContext(str){
  * @returns {Boolean}
  */
 function isMainAppIoUnit(mainType){
+  T.tLog("➡️ Verifying that main is IO");
   
   if (mainType.isMetavar()){
     return isMainAppIoUnit(mainType.value);
