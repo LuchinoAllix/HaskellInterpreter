@@ -221,7 +221,7 @@ export class TApp extends TypeO {
       return this.type + ' (' + this.getInnerFunc().toStr(short) + ')'; 
     }
     return this.type + "(func : " + this.func.toStr(short) + 
-                       ", app : " + this.app.toStr(short) + ")";
+                       ", app : " + this.arg.toStr(short) + ")";
   }
 
   getInnerFunc(){
