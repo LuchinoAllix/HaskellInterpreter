@@ -191,7 +191,7 @@ export class CaseExp extends Exp {
    * @returns {String}
    */
   toStr(){
-    return this.type + " (exps" + this.exps + ")";
+    return this.type + " (exps " + this.patterns + ")";
   }
 }
 
