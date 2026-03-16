@@ -36,13 +36,11 @@ export class VarExp extends Exp{
     this.info = info;
   }
 
-    /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+  /**
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
+  toStr(){
     return this.name ;
   }
 }
@@ -72,14 +70,12 @@ export class ImExp extends Exp {
     this.info = info;
   }
 
-    /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+  /**
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
-    return this.type + " (" + this.value + ")";
+  toStr(){
+    return this.value + "" ;
   }
 
 }
@@ -110,12 +106,9 @@ export class FunctionApp extends Exp {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
-   * @returns {String}
+   * Return the type as a string for log 
    */
-  toStr(short = true){
+  toStr(){
     return this.type + " " + this.getInnerFunc();
   }
 
@@ -164,12 +157,10 @@ export class LetExp extends Exp {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
+  toStr(){
     return this.type ;
   }
 
@@ -196,12 +187,10 @@ export class CaseExp extends Exp {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+   * Return the type as a string for log 
    * @returns {String}
    */
-  toStr(short = true){
+  toStr(){
     return this.type + " (exps" + this.exps + ")";
   }
 }
@@ -243,17 +232,13 @@ export class LambdaExp extends Exp {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
+   * Return the type as a string for log
    * @returns {String}
    */
-  toStr(short = true){
-    if (short){
-      return this.type + ' (namedArgs ' + this.namedArg.toStr() + ',body ' 
+  toStr(){
+    return this.type + ' (namedArgs ' + this.namedArg.toStr() + ',body ' 
       + this.body.toStr() + ')';
-    }
-    return this.type ;
+
   }
 }
 
@@ -274,12 +259,9 @@ export class SpecialExp extends Exp {
   }
 
   /**
-   * Return the type as a string for log (short not used but kept because other
-   * toStr call might give it)
-   * @param {Boolean} short if there is all the info or only the essential part
-   * @returns {String}
+   * Return the type as a string for
    */
-  toStr(short = true){
-    return this.type + " (" + this.special + ")";
+  toStr(){
+    return this.special ;
   }
 }
