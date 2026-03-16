@@ -43,7 +43,7 @@ export class VarExp extends Exp{
    * @returns {String}
    */
   toStr(short = true){
-    return this.type + " (" + this.name + ")";
+    return this.name ;
   }
 }
 
