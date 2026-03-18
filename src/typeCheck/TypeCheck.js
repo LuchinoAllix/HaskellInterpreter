@@ -39,14 +39,14 @@ export function typeCheck(program){
     } else if (decl.isConstr()){
       manageConstr(decl);
     } else {
-      T.tLog("Infer Decl : " + decl.name, 1);
       
       // metavar used in case of recursive definition
       let declType = T.freshMetavar(); 
+      T.tLog("Infer Decl : " + decl.name + " to " + declType.name, 1);
       
       global_context.add(decl.name, declType);
       check(decl.body, declType, new Context());
-      
+
       if (decl.isAnnotated()){
         let genDeclType = generalize(declType);
         
@@ -100,6 +100,7 @@ function infer(exp, context){
       return inferLet(exp, context);
           
     default :
+      T.tLog("new metavar for ? #6 #TODO");
       let res = T.freshMetavar();
       check(exp, res, context);
       return res;
@@ -118,6 +119,10 @@ function check(exp, type, context){
 
   switch (exp.type){
     case 'LambdaExp' :
+
+      T.tLog("new metavar for ? #7 #TODO");
+      T.tLog("new metavar for ? #8 #TODO");
+
 
       let from = T.freshMetavar();
       let to = T.freshMetavar();
@@ -333,6 +338,7 @@ function checkPatterns(patterns, patternsTypes, context){
       
       case "SpecialExp" :
         if (patterns[i].special === "_"){
+        T.tLog("new metavar for ? #10 #TODO");
           unify(patternsTypes[i], T.freshMetavar());
           break;
         } else {
@@ -398,6 +404,9 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
   // then *check* the type of all the subpatterns (notice that the
   // recursion uses `check` rather than `infer`, so you'll never actually
   // need any `inferPattern`).
+
+  T.tLog("new metavar for ? #11 #TODO");
+
   let func = T.freshMetavar();
   checkPatterns([pattern.func], [func], context);
   if (func.value.isArrow()){
@@ -435,6 +444,7 @@ function inferFunctionApp(exp, context){
   }
 
   let targ = infer(exp.arg, context);
+  T.tLog("new metavar for ? #1 #TODO");
   let res = T.freshMetavar();
 
   unify(tfun, new T.TArrow(targ, res));
@@ -481,13 +491,16 @@ function instantiate(type, dict = {}){
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
   if (type.isForAll()){
-    T.tLog("Instantiate " + type.toStr());
     let copyDict = {...dict}; // creates a copy of dict
+    let metavars = [] // for logs
     for (let name of type.names){
-      copyDict[name] = new T.freshMetavar();
+      let metavar = new T.freshMetavar();
+      copyDict[name] = metavar;
+      metavars.push(metavar.name);
     }
+    T.tLog("Instantiate " + type.names + " to " + metavars);
     return instantiate(type.body, copyDict);
-  } 
+  }
   
   // If we have no swapping to do we can dirrectly return the type 
   if (Object.keys(dict).length > 0){
@@ -505,9 +518,11 @@ function instantiate(type, dict = {}){
                         instantiate(type.arg, dict));
     } else if (type.isMetavar()){
       if (type.value === null){
+      T.tLog("new metavar for ? #3 #TODO");
         return T.freshMetavar();
       } else {
         let val = instantiate(type.value, dict);
+      T.tLog("new metavar for ? #4 #TODO");
         let mtvar = T.freshMetavar();
         mtvar.value = val;
         return mtvar;
@@ -724,6 +739,7 @@ function getTypeOfConstr(constr, nameDict){
     let body = new T.TConstrType(constr.name);
     let names = [];
     for (let i = 0; i < constr.params.length; i++){
+      T.tLog("new metavar for ? #5 #TODO");
       let nVar = T.freshVar();
       nameDict[constr.params[i]] = nVar;
       names.push(nVar.name);
