@@ -109,7 +109,7 @@ export class FunctionApp extends Exp {
    * Return the type as a string for log 
    */
   toStr(){
-    return this.type + " " + this.getInnerFunc();
+    return this.getInnerFunc();
   }
 
   getInnerFunc(){
