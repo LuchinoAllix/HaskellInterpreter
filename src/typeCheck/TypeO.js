@@ -253,7 +253,7 @@ export class TForall extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return  "∀" + this.names + ", " + this.body.toStr();
+    return  "∀ " + this.names + ", " + this.body.toStr();
   }
 }
 
