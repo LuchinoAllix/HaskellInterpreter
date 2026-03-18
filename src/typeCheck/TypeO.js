@@ -287,7 +287,7 @@ export class TVar extends TypeO {
  */
 export function freshVar(){
   countVar ++;
-  return new TVar("t", countVar);
+  return new TVar("var", countVar);
 }
 
 /**
@@ -336,7 +336,7 @@ export class TMetavar extends TypeO {
  */
 export function freshMetavar(){
   countMetavar ++;
-  return new TMetavar("mt", countMetavar);
+  return new TMetavar("metavar", countMetavar);
 }
 
 /**
