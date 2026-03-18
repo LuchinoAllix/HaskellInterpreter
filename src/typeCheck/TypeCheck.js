@@ -518,11 +518,11 @@ function instantiate(type, dict = {}){
                         instantiate(type.arg, dict));
     } else if (type.isMetavar()){
       if (type.value === null){
-      T.tLog("new metavar for ? #3 #TODO");
+        T.tLog("new metavar for ? #3 #TODO");
         return T.freshMetavar();
       } else {
         let val = instantiate(type.value, dict);
-      T.tLog("new metavar for ? #4 #TODO");
+        T.tLog("new metavar for ? #4 #TODO");
         let mtvar = T.freshMetavar();
         mtvar.value = val;
         return mtvar;
@@ -538,12 +538,12 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
-  T.tLog("Infer Imm " + exp.toStr());
   let lookup = global_context.lookup(exp.valueType);
-  if (lookup !== undefined){ // for constructors
-    return lookup;
-  }
-  return new T.TBuiltin(exp.valueType);
+  if (lookup === undefined){
+    lookup = new T.TBuiltin(exp.valueType);
+  } 
+  T.tLog("Infer Imm " + exp.toStr() + " is " + lookup.toStr());
+  return lookup ;
   // HELP should there be a verification on the accepted builtin types ?
 }
 
