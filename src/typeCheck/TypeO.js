@@ -145,7 +145,7 @@ export class TBuiltin extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return this.blt + " " ;
+    return this.blt + "" ;
   }
 }
 
@@ -402,11 +402,11 @@ export function tLog(msg, i = 0){
     if (i === 0){
       console.log(" ".repeat(indent * 2) + "➡️  " + msg);
     } else if (i > 0){
-      indent += i; 
       console.log(" ".repeat(indent * 2) + "🔽 " + msg);
+      indent += i; 
     } else if (i < 0){
-      console.log(" ".repeat(indent * 2) + "🔼 " + msg);
       indent += i;
+      console.log(" ".repeat(indent * 2) + "🔼 " + msg);
     }
   }
 }
