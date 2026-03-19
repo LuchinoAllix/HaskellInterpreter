@@ -14,10 +14,11 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEvalComp, initGlobal } from './eval/eval.js';
+import { initEvalComp } from './eval/eval.js';
 import { outputs, resetOutputs } from './eval/Env.js';
 import { typeCheck } from './typeCheck/TypeCheck.js';
 import { activatePrintTLog } from './typeCheck/TypeO.js';
+import { makeGlobalRTE } from './objects/RunTimeEnv.js';
 
 import { readFile } from 'fs/promises';
 import { writeFileSync } from 'fs';
@@ -350,7 +351,8 @@ function testAtest(testNb){
 
     parse(program);
     
-    if (!derivative){ compressTree(program.AST) ; }
+    if (!derivative){ compressTree(program.AST) ; } 
+    
     
     let printAstMsg = "" ;
     
@@ -363,6 +365,10 @@ function testAtest(testNb){
     if (verbose){ console.log("✅ Parsing" + printAstMsg) ; }
 
     if (printAST){ showAST(program.AST) ; }
+
+    // stop here since exec normalisation will not work with an uncompressed 
+    // tree
+    if (derivative) { return true ; } 
 
   } catch (error) {
 
@@ -388,10 +394,11 @@ function testAtest(testNb){
     return false;
   }
 
+  let global_rte = makeGlobalRTE();
+
   try{
-    
-    initGlobal();
-    normalizeStart(program)
+        
+    normalizeStart(program, global_rte);
 
     let printNorMsg = "";
     
@@ -434,7 +441,7 @@ function testAtest(testNb){
     
     if (log){ activatePrintTLog(); }
     
-    typeCheck(program);
+    typeCheck(program, global_rte);
     
     if (verbose){ console.log("✅ Type checking") ; }
 
@@ -462,7 +469,7 @@ function testAtest(testNb){
   try{
 
     resetOutputs();
-    initEvalComp(program);
+    initEvalComp(program, global_rte);
 
     if (isGoodResult(program.expected, outputs)){
       if (verbose){ console.log("✅ Evaluation") ; } 

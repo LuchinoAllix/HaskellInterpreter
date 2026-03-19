@@ -6,8 +6,6 @@ import { Branch } from "./Branch.js";
 import { Node } from "../objects/Node.js";
 import * as T from '../typeCheck/TypeO.js';
 import { Term } from "./Term.js";
-import { addNcommasToGlobalEnv } from "../eval/eval.js";
-import { addNcommasToGlobalContext } from "../typeCheck/TypeCheck.js";
 import { Constr } from "./Constr.js";
 
 //--     File containing functions for intermediary form transformation     --//
@@ -40,13 +38,16 @@ const op_priority = {
   "-" : 2 
 }
 
+let global_rte;
+
 /**
  * Start function to make the ast of a program into an intermediary form
  * for evaluation
  * @param {Program} program 
  * @returns {Boolean}
  */
-export function normalizeStart(program){
+export function normalizeStart(program, rte){
+  global_rte = rte;
   program.normalizedForm = normalizeRoot(program.AST);
   return true;
 }
@@ -890,8 +891,8 @@ function normalizeTuple(node){
   }
   let func_name = ",".repeat(args.length-1);
   if (args.length > 2){ // Update the global env
-    addNcommasToGlobalEnv(func_name);
-    addNcommasToGlobalContext(func_name);
+    global_rte.ctx.addNcommas(func_name);
+    global_rte.env.addNcommas(func_name);
   }
   return makeFuncAppOfList(new VarExp(func_name, 
     node.getInfo()), args);

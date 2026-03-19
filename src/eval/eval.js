@@ -4,29 +4,23 @@ import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { optionAppTable, constrTable } from "../typeCheck/TypeCheck.js";
 import { Prim } from "./Prim.js";
 
 
 //--               File for functions needed to evaluate a term             --//
 
 // Init global env
-let global_env;
+let global_rte;
 let main;
-
-export function initGlobal(){
-  global_env = new Env();
-  global_env.initGlobal();
-}
 
 /**
  * Entry point of evaluation for "compiled" programs
  * @param {Program} program
  * @returns {Boolean}
  */
-export function initEvalComp(program){
+export function initEvalComp(program, rte){
   
-  resetGlobalEnv();
+  global_rte = rte;
   main = null; // reseting main
   
   let terms = program.normalizedForm;
@@ -71,7 +65,7 @@ export function initEvalInter(program, env){
   } else {
     let exp = evaluateExp(terms[0], env);
     if (exp.type !== 'IO'){ // might not be best verification
-      const print = global_env.lookup('print');
+      const print = global_rte.env.lookup('print');
       print.body(exp).exec();
     } else {
       exp.exec()
@@ -97,7 +91,7 @@ function evaluateDecl(decl){
   } else if (decl.isConstr()){
     evaluateConstr(decl);
   } else {
-    global_env.add(decl.name, evaluateExp(decl.body, new Env()));
+    global_rte.env.add(decl.name, evaluateExp(decl.body, new Env()));
   }
 }
 
@@ -190,7 +184,7 @@ function evaluateImmediate(exp){
       return new V.VImm(exp.value, exp.valueType);
       
     default :
-      let res = global_env.lookup(exp.value);
+      let res = global_rte.env.lookup(exp.value);
       if (res !== undefined){
         return new V.VConstr(exp.valueType, [exp.value]);
       } else {
@@ -354,8 +348,8 @@ function match(value, exp){
       return [[]];
       
     case "var" :
-      if (optionAppTable.lookup(exp.name) !== undefined){
-        let lookup = global_env.lookup(exp.name);
+      if (global_rte.optionAppTable.lookup(exp.name) !== undefined){
+        let lookup = global_rte.env.lookup(exp.name);
         if (lookup.value.length > 0 || value.type !== lookup.type){ 
           return [-1] ; 
         }
@@ -427,7 +421,7 @@ function isFuncAppOfConstr(exp){
   while (pointer.type === 'functionApp'){
     pointer = pointer.func ;
   }
-  return optionAppTable.lookup(pointer.name) !== undefined;
+  return global_rte.optionAppTable.lookup(pointer.name) !== undefined;
 }
 
 /**
@@ -451,30 +445,11 @@ function lookupGlobalLocalEnv(env, name){
   if (res !== undefined){
     return res;
   }
-  res = global_env.lookup(name);  
+  res = global_rte.env.lookup(name);  
   if (res !== undefined){
     return res;
   }
   throw new Error(name + " is undefined.");
-}
-
-/**
- * Allows to reset the global environment
- * Remembers the commas function (tuples) because the env is reset at the start
- * of each test, but the commas functions are added in normalisation (before 
- * reset)
- * HELP : is this a good idea ? or should the env be reset after each test ?
- */
-function resetGlobalEnv(){
-  let tmp_env = new Env();
-  // going through each value in the env and keeping only ncommas functions
-  for (let [key, value] of Object.entries(global_env.decls)){
-    if (isNcommas(key) && key.length > 1){
-      tmp_env.add(key, value);
-    }
-  }
-  global_env = tmp_env;
-  global_env.initGlobal();
 }
 
 /**
@@ -492,24 +467,15 @@ export function isNcommas(str){
 }
 
 /**
- * Allows to add to the global env from other files (used in normalisation) when
- * working on tuples to add the ncommas function before evaluation
- * @param {String} str 
- */
-export function addNcommasToGlobalEnv(str){
-  global_env.addNcommas(str);
-}
-
-/**
  * Evaluates a data declaration (constr) by updating the global env
  * @param {Constr} constr
  */
 function evaluateConstr(constr){
   for (let option of constr.options){
     if (option.type === 'var'){
-      global_env.add(option.name, new V.VConstr(option.name));
+      global_rte.env.add(option.name, new V.VConstr(option.name));
     } else {
-      global_env.add(getName(option), expToPrim(option, []));
+      global_rte.env.add(getName(option), expToPrim(option, []));
     }
   }
 }
@@ -539,8 +505,8 @@ function expToPrim(exp, values){
  * @returns {Boolean}
  */
 function isConstrOrOption(name){
-  return optionAppTable.lookup(name) !== undefined || 
-         constrTable.lookup(name) !== undefined ;
+  return global_rte.optionAppTable.lookup(name) !== undefined || 
+         global_rte.constrTable.lookup(name) !== undefined ;
 }
 
 /**

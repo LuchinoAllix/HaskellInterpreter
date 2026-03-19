@@ -4,17 +4,11 @@ import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
 import { Constr } from "../normalize/Constr.js";
-import { TypeTable } from "./TypeTable.js";
 
 //--        File containing functions to type check the program             --//
 
-// Init global context
-export let global_context = new Context();
-global_context.initGlobal();
 
-// Init typetable
-export let constrTable = new TypeTable();
-export let optionAppTable = new TypeTable();
+let global_rte ;
 
 /**
  * Verifies that a given program type checks
@@ -23,14 +17,9 @@ export let optionAppTable = new TypeTable();
  * @param {Program} program
  * @returns {Boolean}
  */
-export function typeCheck(program){
-  resetGlobalContext();
+export function typeCheck(program, rte){
 
-  optionAppTable.reset();
-  optionAppTable.initOption();
-
-  constrTable.reset();
-  constrTable.initConstr();
+  global_rte = rte;
   
   let main; 
   for (let decl of program.normalizedForm){
@@ -44,7 +33,7 @@ export function typeCheck(program){
       let declType = T.freshMetavar(); 
       T.tLog("Infer Decl : " + decl.name + " to " + declType.name, 1);
       
-      global_context.add(decl.name, declType);
+      global_rte.ctx.add(decl.name, declType);
       check(decl.body, declType, new Context());
 
       if (decl.isAnnotated()){
@@ -53,9 +42,9 @@ export function typeCheck(program){
         // verify the type annotation
         unify(instantiate(genDeclType), decl.typeAnnotation);
 
-        global_context.add(decl.name, genDeclType, true);
+        global_rte.ctx.add(decl.name, genDeclType, true);
       } else {
-        global_context.add(decl.name, generalize(declType), true);
+        global_rte.ctx.add(decl.name, generalize(declType), true);
       }
       T.tLog("Infered decl " + decl.name + " : " + declType.toStr(), -1);
     }
@@ -318,7 +307,7 @@ function checkPatterns(patterns, patternsTypes, context){
       case "var" :
         if (isAppinCase(patterns[i].name)){
           unify(patternsTypes[i], 
-            instantiate(global_context.lookup(patterns[i].name)));
+            instantiate(global_rte.ctx.lookup(patterns[i].name)));
         } else {
           context.add(patterns[i].name, patternsTypes[i]);
         }
@@ -353,7 +342,7 @@ function checkPatterns(patterns, patternsTypes, context){
  * @returns {Boolean}
  */
 function isAppinCase(name){
-  let res = optionAppTable.lookup(name); 
+  let res = global_rte.optionAppTable.lookup(name); 
   if (res !== undefined){ return true ; }
   return name === ":" 
       || name === ","
@@ -534,7 +523,7 @@ function instantiate(type, dict = {}){
  * @returns {T.TBuiltin | T.TForall}
  */
 function inferImmediate(exp){
-  let lookup = global_context.lookup(exp.valueType);
+  let lookup = global_rte.ctx.lookup(exp.valueType);
   if (lookup === undefined){
     lookup = new T.TBuiltin(exp.valueType);
   } 
@@ -561,7 +550,7 @@ function inferLet(exp, context){
 
   } else {
     for (let decl of exp.decls){
-      global_context.add(decl.name, infer(decl.body, context), true);
+      global_rte.ctx.add(decl.name, infer(decl.body, context), true);
     }
     return new T.TApp(T.TIO(), T.TUnit()); 
     // #HELP I'm using IO here because we say all monads are just IO, 
@@ -579,7 +568,7 @@ function lookupGlobalLocalContext(context, name){
   let res = context.lookup(name);
 
   if (res === undefined){
-    res = global_context.lookup(name);  
+    res = global_rte.ctx.lookup(name);  
     if (res === undefined){ 
       throw new Error(name + " is undefined.") ; 
     }
@@ -587,34 +576,6 @@ function lookupGlobalLocalContext(context, name){
 
   return res;
   
-}
-
-/**
- * Allows to reset the global context
- * Remembers the commas function (tuples) because the context is reset at the 
- * start of each test, but the commas functions are added in normalisation 
- * ( before reset )
- * HELP : is this a good idea ? or should the context be reset after each test ?
- */
-function resetGlobalContext(){
-  let tmp_context = new Context();
-  // going through each value in the env and keeping only ncommas functions
-  for (let [key, value] of Object.entries(global_context.decls)){
-    if (isNcommas(key) && key.length > 1){
-      tmp_context.add(key, value);
-    }
-  }
-  global_context = tmp_context;
-  global_context.initGlobal();
-}
-
-/**
- * Allows to add to the global env from other files (used in normalisation) when
- * working on tuples to add the ncommas function before evaluation
- * @param {String} str 
- */
-export function addNcommasToGlobalContext(str){
-  global_context.addNcommas(str);
 }
 
 /**
@@ -664,14 +625,14 @@ function manageConstr(constr){
   let type = getTypeOfConstr(constr, nameDict);
 
   // update constrtable and context
-  constrTable.add(constr.name, constr);
-  global_context.add(constr.name, new T.TConstrType(constr.name));
+  global_rte.constrTable.add(constr.name, constr);
+  global_rte.ctx.add(constr.name, new T.TConstrType(constr.name));
 
   // determine the type of each option
   for(let option of constr.options){
     if (option.type === 'var'){
-      global_context.add(option.name, type);
-      optionAppTable.add(option.name, 0);
+      global_rte.ctx.add(option.name, type);
+      global_rte.optionAppTable.add(option.name, 0);
     } else if(option.type === "functionApp"){
       // we know type is forall (what about constrs with no variable ? FIXME)
       let func = option.func;
@@ -685,8 +646,8 @@ function manageConstr(constr){
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
-      optionAppTable.add(func.name, type.names.length);
-      global_context.add(func.name, new T.TForall(type.names, arr));
+      global_rte.optionAppTable.add(func.name, type.names.length);
+      global_rte.ctx.add(func.name, new T.TForall(type.names, arr));
     }
   }
 }
@@ -705,7 +666,7 @@ function funcAppToTApp(exp, nameDict, params){
   if (exp.type === 'var'){
     if (params.includes(exp.name)){
       return nameDict[exp.name];
-    } else if (constrTable.lookup(exp.name) !== undefined){
+    } else if (global_rte.constrTable.lookup(exp.name) !== undefined){
       return new T.TConstrType(exp.name); 
     }
     return new T.TConstrVal(exp.name);
