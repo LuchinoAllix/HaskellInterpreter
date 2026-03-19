@@ -284,8 +284,6 @@ function generalizeRec(type, names){
  */
 function occursCheck(t1, t2){
   
-  T.tLog("Occurs check between " + t1.toStr() + " and " + t2.toStr(), 1);
-
   let tmpt2 = t2;
   if (tmpt2.isMetavar()){
     tmpt2 = t2.resolve();
@@ -302,8 +300,6 @@ function occursCheck(t1, t2){
     occursCheck(t1, tmpt2.func);
     occursCheck(t1, tmpt2.arg);
   }
-
-  T.tLog("Occurs check between " + t1.toStr() + " and " + t2.toStr(), -1);
 }
 
 /**
