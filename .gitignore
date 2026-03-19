@@ -1,0 +1,6 @@
+visualisation/ast.json
+visualisation/nf.json
+HaskellTesting/*
+src/package-lock.json
+src/package.json
+src/node_modules/*
