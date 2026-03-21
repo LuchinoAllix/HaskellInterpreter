@@ -1,16 +1,17 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/parserBundle.js',
+  entry: './src/inputBundle.js',
   output: {
-    filename: 'bundle.js',
+    filename: 'outputBundle.js',
     path: path.resolve(__dirname, 'dist'),
     library: {
-      name: 'HaskellParser', // Nom de la variable globale si utilisé en script
-      type: 'umd', // Format universel (compatible require, import, et script global)
-      export: 'default', // Exporte par défaut
+      name: 'HaskellParser', // Le nom de la variable globale
+      type: 'umd',           // Supporte CommonJS, AMD et global
+      export: 'default'      // Exporte l'export par défaut
     },
-    globalObject: 'this', // Pour la compatibilité Node.js et navigateur
+    // Si vous visez uniquement le navigateur (ES5), vous pouvez aussi ajouter:
+    // globalObject: 'this' 
   },
-  mode: 'production',
+  mode: 'production'
 };
