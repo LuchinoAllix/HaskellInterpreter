@@ -3,16 +3,14 @@ const path = require('path');
 module.exports = {
   entry: './src/inputBundle.js',
   output: {
-    filename: 'outputBundle.cjs',
+    filename: 'outputBundle.js',
     path: path.resolve(__dirname, 'dist'),
     library: {
       name: 'HaskellParser',
-      type: 'commonjs2',
+      type: 'var', // Changez de 'umd' à 'var' pour une variable globale simple
       export: 'default'
     },
-    // Ajoutez cette ligne pour forcer l'usage de 'this' (window dans le navigateur)
-    // au lieu de 'self' qui n'existe pas en Node.js
-    globalObject: 'this' 
+    // Pas besoin de globalObject ici car 'var' crée une variable globale directement
   },
   mode: 'production'
 };
