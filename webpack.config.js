@@ -3,15 +3,16 @@ const path = require('path');
 module.exports = {
   entry: './src/inputBundle.js',
   output: {
-    filename: 'outputBundle.js',
+    filename: 'outputBundle.cjs',
     path: path.resolve(__dirname, 'dist'),
     library: {
-      name: 'HaskellParser', // Le nom de la variable globale
-      type: 'umd',           // Supporte CommonJS, AMD et global
-      export: 'default'      // Exporte l'export par défaut
+      name: 'HaskellParser',
+      type: 'commonjs2',
+      export: 'default'
     },
-    // Si vous visez uniquement le navigateur (ES5), vous pouvez aussi ajouter:
-    // globalObject: 'this' 
+    // Ajoutez cette ligne pour forcer l'usage de 'this' (window dans le navigateur)
+    // au lieu de 'self' qui n'existe pas en Node.js
+    globalObject: 'this' 
   },
   mode: 'production'
 };
