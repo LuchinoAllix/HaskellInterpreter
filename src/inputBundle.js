@@ -7,8 +7,9 @@ import { Program } from "./objects/Program.js";
 import { makeGlobalRTE, RunTimeEnv } from "./objects/RunTimeEnv.js";
 
 /**
- * TODO
+ * Bundled version of main for integration with codeboot
  * @param {String} input 
+ * @param {funcs} external_content {syntaxError : ... , compilationError : ...}
  * @returns {[Node, RunTimeEnv]} 
  */
 export default function parseHaskell(input, external_content){
@@ -55,7 +56,7 @@ export default function parseHaskell(input, external_content){
                                  "Normalisation Error", 
                                  e);
   }
-  
+
   return [program.normalizedForm, global_rte];
 }
 
