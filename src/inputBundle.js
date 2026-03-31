@@ -22,7 +22,8 @@ export default function parseHaskell(input, external_content){
                                  program.index + 1,  // while lexing
                                  program.lineCount,  // 
                                  "Tokenization Error", 
-                                 e);
+                                 e.toString().split('\n')[0]); // fixme
+    return ;
   } try {
     addIndentation(program);
   } catch(e){ 
@@ -30,8 +31,9 @@ export default function parseHaskell(input, external_content){
                                  program.lineCount,  // position of error
                                  program.index + 1,  // while indenting
                                  program.lineCount,  // 
-                                 "Indenting Error", 
-                                 e);
+                                 "Indenting Error\n", 
+                                 e.toString().split('\n')[0]); // fixme
+    return ;
   } try {
     parse(program);
   } catch(e){ 
@@ -40,7 +42,8 @@ export default function parseHaskell(input, external_content){
                                  program.index + 1,  // while parsing
                                  program.lineCount,  // 
                                  "Parse Error", 
-                                 e);
+                                 e.toString().split('\n')[0]); // fixme
+    return ;
   }
 
   compressTree(program.AST);
@@ -54,11 +57,13 @@ export default function parseHaskell(input, external_content){
                                  program.index + 1,  // while normalising
                                  program.lineCount,  // 
                                  "Normalisation Error", 
-                                 e);
+                                 e.toString().split('\n')[0]); // fixme
+    return ;
   }
 
   return [program.normalizedForm, global_rte];
 }
 
 // test
-//console.log(parseHaskell("main = print (1 + 2)"));
+//parseHaskell("main = print (1 + 2", 
+//  {syntaxError:(a,b,c,d,e,f)=>console.log(a,b,c,d,e,f)});
