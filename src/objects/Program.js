@@ -29,6 +29,11 @@ export class Program {
     
     // Normalizer stuff :
     this.expected = null;        // Expected value of evaluation
+
+    this.tokensCopy = [];        // copy of the tokens to locate errors
+    this.tokenCount = 0;         // position of the token that generates an
+                                 // error while indenting
+    this.tokenSize = 0;          // size of the token that generated the error
   }
 
   //                      ~ Lexer related methods ~                           //

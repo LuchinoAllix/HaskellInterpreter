@@ -15,13 +15,14 @@ const r1_vars = ["let","where","do","of"]; // reserved names that can introduce
  * @returns {Boolean}
  */
 export function addIndentation(program){
+  program.tokensCopy = [...program.tokens];
   ApplyRule2(program);
   for (let i=0; i < program.tokens.length; i++){
 
     i += ApplyRule3(program,i);
     i += ApplyRule1(program,i);
   }
-  program.tokens = bigL(program.tokens, [], []);
+  program.tokens = bigL(program.tokens, [], [], program);
   return true;
 }
 
@@ -115,11 +116,13 @@ function ApplyRule3(program, index){
  * Covers note 5 problem, there could be a way to manage it with the stack
  * but it works
  * 
- * @param {Program} program 
+ * @param {[Token]} tokens 
+ * @param {[Integer, Token]} stack 
  * @param {[Integer]} nbOpen counts the number of '('closed per '{'
+ * @param {Program} program to update error info
  * @returns {Boolean}
  */
-function bigL(tokens, stack, nbOpen){
+function bigL(tokens, stack, nbOpen, program){
 
   updateStack(tokens, stack);
 
@@ -128,7 +131,7 @@ function bigL(tokens, stack, nbOpen){
   if (tokens.length > 0 && 
       tokens[0].type === "layout R3" && 
       stack.length > 0){
-    return bigLR3(tokens, stack, nbOpen);
+    return bigLR3(tokens, stack, nbOpen, program);
   } 
   
   // | L ({n} : ts) (m : ms)
@@ -137,7 +140,7 @@ function bigL(tokens, stack, nbOpen){
   else if (tokens.length > 0 && 
            (tokens[0].type === "layout R2" || 
             tokens[0].type === "layout R1")){
-    return bigLR2(tokens, stack, nbOpen);           
+    return bigLR2(tokens, stack, nbOpen, program);           
   }
   
   // | L (} : ts) (0 : ms)	= }  :  (L ts ms) (Note 3)
@@ -145,11 +148,13 @@ function bigL(tokens, stack, nbOpen){
   else if (tokens.length > 0 && tokens[0].value === "}" && stack.length > 0){
     if (stack[0][0] === 0){
       if (nbOpen.pop() !== 0) {
+        updateErrorInfo(program, tokens);
         throw new Error("Cannot close '}' because '(' still open");
       }
       return [newLayoutToken("}","1")].concat(bigL(tokens.slice(1), 
-                                               stack.slice(1), nbOpen));
+                                               stack.slice(1), nbOpen, program));
     } else {
+      updateErrorInfo(program, tokens);
       throw new Error("Parse error bigL (note 3)");
     }
   } 
@@ -159,7 +164,7 @@ function bigL(tokens, stack, nbOpen){
     nbOpen.push(0);
     return [newLayoutToken("{","2")].concat(bigL(tokens.slice(1),
                                              [[0, tokens[0]]].concat(stack), 
-                                             nbOpen));
+                                             nbOpen, program));
   }
   
   // | L (t : ts) (m : ms) = }  :  (L (t : ts) ms) if m∕ = 0 and parse-error(t)
@@ -181,6 +186,7 @@ function bigL(tokens, stack, nbOpen){
     } 
     if (isPrefixInvalid(tokens, nbOpen)) {
       if (nbOpen.pop() !== 0) {
+        updateErrorInfo(program, tokens);
         throw new Error("Cannot close '}' because '(' still open");
       }
       if (tokens[0].value === ")"){
@@ -188,14 +194,14 @@ function bigL(tokens, stack, nbOpen){
       }
       return [newLayoutToken("}", "5"), tokens[0]].concat(bigL(tokens.slice(1),
                                                                stack.slice(1), 
-                                                               nbOpen));
+                                                               nbOpen, program));
     }
     if (tokens[0].value === ")"){
       nbOpen[nbOpen.length-1] --;
     }
 
     // Sinon, on continue normalement avec le token actuel
-    return [tokens[0]].concat(bigL(tokens.slice(1), stack, nbOpen));
+    return [tokens[0]].concat(bigL(tokens.slice(1), stack, nbOpen, program));
   }
   
   // |  L [] [] = [] 
@@ -209,9 +215,10 @@ function bigL(tokens, stack, nbOpen){
       stack = [];
     }
     if (nbOpen.pop() !== 0) {
+      updateErrorInfo(program, tokens);
       throw new Error("Cannot close '}' because '(' still open");
     }
-    return [newLayoutToken("}","4")].concat(bigL([], stack.slice(1), nbOpen));
+    return [newLayoutToken("}","4")].concat(bigL([], stack.slice(1), nbOpen, program));
   }
   
   else {
@@ -239,6 +246,7 @@ function bigLR3(tokens, stack, nbOpen){
                                                    nbOpen));
   } else if (n < m){
     if (nbOpen.pop() !== 0) {
+      updateErrorInfo(program, tokens);
       throw new Error("Cannot close '}' because '(' still open");
     }
     return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1), 
@@ -259,9 +267,10 @@ function bigLR3(tokens, stack, nbOpen){
  * @param {[Integer]} nbOpen
  * @returns {[Token]}
  */
-function bigLR2(tokens, stack, nbOpen){ 
+function bigLR2(tokens, stack, nbOpen, program){ 
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   if (n === NaN){
+    updateErrorInfo(program, tokens);
     throw new Error("Something other than an int ended up in layout token : ", 
                 tokens[0]);
   }
@@ -271,17 +280,18 @@ function bigLR2(tokens, stack, nbOpen){
       stack  = [[n, tokens[0]]].concat(stack);
       nbOpen.push(0);
       return [newLayoutToken("{", "8")].concat(bigL(tokens.slice(1), stack,
-                                                    nbOpen));
+                                                    nbOpen, program));
     } else {
       return [newLayoutToken("{","6"), newLayoutToken("}","6")].concat(
         bigL([newLayoutToken("<" + n + ">", "R3")].concat(tokens.slice(1)),
-                                                          stack, nbOpen));
+                                                          stack, nbOpen, program));
     }
   } else if (n > 0){
     nbOpen.push(0);
     return [newLayoutToken("{","7")].concat(bigL(tokens.slice(1), 
-                                                 [[n, tokens[0]]], nbOpen));
+                                                 [[n, tokens[0]]], nbOpen, program));
   } else {
+    updateErrorInfo(program, tokens);
     throw new Error("Pattern matching not exhaustive in bigLR2, stack : " +  
       stack);
   }
@@ -334,4 +344,20 @@ function updateStack(tokens, stack){
       stack = [[0, tokens[0]]].concat(stack);
     }
   }
+}
+
+
+function updateErrorInfo(program, tokens){
+  let start = 0;
+  for(let i=0; i < program.tokensCopy.length - tokens.length - 1; i ++){
+    start += program.tokensCopy[i].value.length ;
+    if (i === program.tokensCopy.length - tokens.length - 1){
+      // todo not finished
+    }
+  }
+  let end = start + ;
+  console.log(program) ;
+  program.tokenCount = program.tokensCopy.length - tokens.length ;
+  console.log(tokens) ;
+  program.tokenSize = tokens[0].value.length ;
 }

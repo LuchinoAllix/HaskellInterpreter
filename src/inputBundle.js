@@ -27,12 +27,14 @@ export default function parseHaskell(input, external_content){
   } try {
     addIndentation(program);
   } catch(e){ 
+    console.log(program.tokenCount)
+    console.log(program.tokenSize)
     external_content.syntaxError(program.index,      // plain wrong, FIXME, get  
                                  program.lineCount,  // position of error
                                  program.index + 1,  // while indenting
                                  program.lineCount,  // 
                                  "Indenting Error\n", 
-                                 e.toString().split('\n')[0]); // fixme
+                                 e); // fixme
     return ;
   } try {
     parse(program);
@@ -65,5 +67,5 @@ export default function parseHaskell(input, external_content){
 }
 
 // test
-//parseHaskell("main = print (1 + 2", 
-//  {syntaxError:(a,b,c,d,e,f)=>console.log(a,b,c,d,e,f)});
+parseHaskell("main = print (1 + 2", 
+  {syntaxError:(a,b,c,d,e,f)=>console.log(a,b,c,d,e,f)});
