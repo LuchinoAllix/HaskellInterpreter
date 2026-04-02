@@ -45,5 +45,7 @@ export function tokenToNode(token){
                   token.value,
                   token.startLine,
                   token.startCol,
-                  null);    
+                  null,
+                  token.endLine,
+                  token.endCol);    
 }

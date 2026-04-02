@@ -10,13 +10,15 @@ export class Node {
    * @param {Integer} column 
    * @param {[Node]} childs 
    */  
-  constructor(type, value, line, column, childs){
+  constructor(type, value, startLine, startCol, childs, endLine, endCol){
     this.type = type;
     this.value = value;
-    this.line = line;
-    this.column = column;
-    this.childs = childs
-  }
+    this.startLine = startLine;
+    this.startCol = startCol;
+    this.childs = childs;
+    this.endLine = endLine; 
+    this.endCol = endCol;
+}
 
   /**
    * Adds a child to the list of childs for the node
@@ -33,7 +35,27 @@ export class Node {
    * @returns {[Integer]}
    */
   getInfo(){
-    return [this.line, this.column];
+    return [this.startLine, this.startCol, this.endLine, this.endCol];
+  }
+
+  /**
+   * todo
+   * @returns 
+   */
+  getMinMaxLineCol(){
+    if (this.startCol !== null){ 
+      return [this.startLine, this.startCol, this.endLine, this.endCol] ;
+    }
+    if (this.childs === null){ throw new Error("Node without childs and info")}
+    let res = this.childs[0].getMinMaxLineCol()
+    for (let child of this.childs.slice(1)){
+      let n_res = child.getMinMaxLineCol();
+      if (res[0] < n_res[0]){ res[0] = n_res[0] ; }
+      if (res[1] < n_res[1]){ res[1] = n_res[1] ; }
+      if (res[2] > n_res[0]){ res[2] = n_res[3] ; }
+      if (res[3] > n_res[0]){ res[3] = n_res[2] ; }
+    }
+    return res;
   }
 }
 
@@ -43,7 +65,7 @@ export class Node {
  * @returns {Node}
  */
 export function mtNode(type){
-  return new Node(type, null, null, null, []);
+  return new Node(type, null, null, null, [], null, null);
 }
 
 /**

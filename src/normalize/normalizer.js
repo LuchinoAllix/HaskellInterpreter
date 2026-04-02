@@ -39,6 +39,7 @@ const op_priority = {
 }
 
 let global_rte;
+let prog;
 
 /**
  * Start function to make the ast of a program into an intermediary form
@@ -48,6 +49,7 @@ let global_rte;
  */
 export function normalizeStart(program, rte){
   global_rte = rte;
+  prog = program;
   program.normalizedForm = normalizeRoot(program.AST);
   return true;
 }
@@ -69,6 +71,7 @@ function normalizeRoot(astRoot){
           return normalizeRoot(node);
         }
       }
+      updateErrorInfo(astRoot);
       throw new Error("Malformed AST, body should have one non layout node.");
 
     //case "interactive" : 
@@ -83,6 +86,7 @@ function normalizeRoot(astRoot){
          || node.type === "topdecl"){
           addDecl(declList, normalizeDecl(node));
         } else if (!node.type.startsWith(("layout"))){
+          updateErrorInfo(node);
           throw new Error("Only declarations are allowed in program mode, not " 
             + node.type);
         }
@@ -121,6 +125,7 @@ function normalize(node){
     
     default :
       console.log(JSON.stringify(node, null, 2));
+      updateErrorInfo(node);
       throw new Error("This type of node is not yet managed by normalize : " 
         + node.type);
   }
@@ -163,15 +168,23 @@ function normalizeDecl(node){
       
       params = [...new Set(params)]; // to remove duplicates
       
-      // slice to remove the name of type
-      verifyOccurence(named.slice(1), params);
+
+      try {
+        // slice to remove the name of type
+        verifyOccurence(named.slice(1), params); 
+      } catch(e) {
+        updateErrorInfo(node);
+        throw new Error(e);
+      }
       
       return new Constr(named[0], exps, params,
         node.childs[0].getInfo());
     } else {
+      updateErrorInfo(node.childs[0]);
       throw new Error(node.childs[0].value + " was given when expected data");
     }
   } else {
+    updateErrorInfo(node);
     throw new Error(node.type + " was given when expected topdecl, gendecl " + 
       "or decl.");
   }
@@ -213,6 +226,7 @@ function normalizeConstrs(node, params){
       } else if (child.type === 'constr'){
         types.push(normalizeConstr(child, params));
       } else {
+        updateErrorInfo(child);
         throw new Error("Unhandeled case in Constrs");
       }
     }
@@ -292,12 +306,14 @@ function normaliseTypeAnnotation(node){
           normaliseTypeAnnotation(node.childs[2])
         );
       } else {
+        updateErrorInfo(node);
         throw new Error("Unhandeled case of type annotation with type node");
       }
 
     case 'atype' :
      if (node.childs[0].value === '['){
        if (node.childs.length !== 3){
+        updateErrorInfo(node);
         throw new Error("Mismanaged case of atype node (length !== 3");
         } else {
           return new T.TApp(
@@ -312,6 +328,7 @@ function normaliseTypeAnnotation(node){
         node.childs.splice(node.childs.length - 3, 2);
         return new T.TApp(normaliseTypeAnnotation(node), to);
       } else {
+        updateErrorInfo(node);
         throw new Error("Mismanaged case of atype node");
       }
 
@@ -324,11 +341,13 @@ function normaliseTypeAnnotation(node){
       if (node.value === '()'){
         return new T.TUnit();
       } else {
+        updateErrorInfo(node);
         throw new Error("unhandeled case of special type annotation : " 
           + node.value);
       }
 
     default :
+        updateErrorInfo(node);
         throw new Error("unhandeled case of type annotation : " + node.type);
   }
 }
@@ -347,6 +366,7 @@ function isGendeclFunc(node){
       return false;
     }
   }
+  updateErrorInfo(node);
   throw new Error("No type found in gendecl");
 }
 
@@ -369,17 +389,20 @@ function addDecl(declList, decl){
 
       if (declList[i].typeAnnotation !== null && 
           decl.typeAnnotation !== null){
+        updateErrorInfoExp(decl.info);
         throw new Error("Type for "+  declList[i].name + " is already defined");
       }
 
       if (declList[i].typeAnnotation === null && 
           decl.typeAnnotation !== null){
+        updateErrorInfoExp(decl.info);
         throw new Error("Type annotation should come before " + 
                     "definition" + decl);
       }
 
       if (i !== declList.length - 1){
         // We suppose that the declaration should be the last one
+        updateErrorInfoExp(decl.info);
         throw new Error("Declarations on multiple lines should follow one " + 
           "another");
       }
@@ -392,6 +415,7 @@ function addDecl(declList, decl){
           declList[i].body = decl.body;
           return ;
         } else {
+          updateErrorInfoExp(decl.info)
           throw new Error("Cannot redefine variable : " + decl.name);
         }
       }
@@ -432,6 +456,7 @@ function normalizeExp(node){
       if (node.value === "[]"){
         return mkMTListExp(node.getInfo());
       } else {
+        updateErrorInfo(node);
         throw new Error("This kind of reservdop is not yet supported :" +
           node.value);
       }
@@ -452,6 +477,7 @@ function normalizeExp(node){
         case "_" :
           return new SpecialExp("_", node.getInfo());
         default :
+          updateErrorInfo(node);
           throw new Error("This kind of reservdid is not yet supported :" +
             node.value);
       }
@@ -462,11 +488,13 @@ function normalizeExp(node){
       } else if (node.childs.length === 3 && node.childs[0].value === "let"){
         return normalizeLet(node);
       } else {
+        updateErrorInfo(node);
         throw new Error("stmt with this many childs is not yet supported : " +
          node.childs.length);
       }
 
     default :
+      updateErrorInfo(node);
       throw new Error("This expression type is not yet supported : " +
          node.type);
   }
@@ -497,9 +525,11 @@ function normaliseInfixexp(node){
         let op2 = op_priority[node.childs[2].childs[1].value];
         
         if (op1 === undefined){
+          updateErrorInfo(node.childs[1]);
           throw new Error("order of priority not defined for this op : " + 
             node.childs[1].value);
         } if (op2 === undefined){
+          updateErrorInfo(node.childs[2].childs[1]);
           throw new Error("order of priority not defined for this op : " + 
             node.childs[2].childs[1].value);
         }
@@ -532,6 +562,7 @@ function normaliseInfixexp(node){
       normalizeExp(node.childs[1]));
 
   } else {
+    updateErrorInfo(node);
     throw new Error("Unhandelded case of infixexp");
   }
 }
@@ -587,6 +618,7 @@ function normalisePattern(node){
   } else if (node.childs[0].value === "[" && node.childs.length === 3){
     return normalizeList(node);
   } else {
+    updateErrorInfo(node);
     throw new Error("unhandelded case in pat or apat : " + node);
   }
 }
@@ -604,7 +636,8 @@ function makeCharListOfString(node){
   let pos = 0;
   for (let char of charlist){
     expCharList.push(new ImExp(char, "Char", 
-      [node.line, node.column + pos]));
+      [node.startLine, node.startCol + pos, 
+       node.endLine, node.startCol + pos + 1]));
     pos ++;
   }
   return expCharList;
@@ -641,6 +674,7 @@ function normaliseAexp_(node){
   } else if (node.childs[0].value === "["){
     return normalizeList(node);
   } else {
+    updateErrorInfo(node.childs[0]);
     throw new Error("Unknow node starting in aexp_ childs : " + 
       node.childs[0].value);
   }
@@ -664,6 +698,7 @@ function normaliseLexp(node){
     case "do" :
       return normalizeDo(node);
     default :
+      updateErrorInfo(node);
       throw new Error("This kind of lexp is not yet supported :" +
         node.childs[0].value);
   }
@@ -796,11 +831,13 @@ function normalizeLambda(node){
         func = (normalizeExp(child));
       } else {
         console.log(node)
+        updateErrorInfo(node);
         throw new Error("Mismanagement of anonymous function");
       }
     }
     return new LambdaExp(args, func, node.getInfo());
   } else {
+    updateErrorInfo(node);
     throw new Error("Mismanagement of lexp node")
   }
 }
@@ -848,7 +885,8 @@ function normalizeDo(node){
       // we suppose the second child is layout ';'
       n1 = normalizeExp(stmts.childs[0].childs[0]);
     } else {
-      throw new Error("unhandelded case in do normalisation")
+      updateErrorInfo(node);
+      throw new Error("unhandelded case in do normalisation");
     }
     let app1 = new FunctionApp(new VarExp(">>", node.getInfo()), n1);
     node.childs[2].childs = node.childs[2].childs.slice(1);
@@ -951,4 +989,29 @@ function normalizeCurr(node){
 
   return makeFuncAppOfList(new VarExp(node.childs[plus].value,
     node.childs[plus].getInfo()), args);
+}
+
+/**
+ * Updates the program to tell where the indentation error occured
+ * @param {Node} node
+ */
+function updateErrorInfo(node){
+  if (node.startCol === null){
+    return updateErrorInfoExp(node.getMinMaxLineCol());
+  }
+  prog.startLine = node.startLine ;
+  prog.startCol = node.startCol ;
+  prog.endLine = node.endLine ;
+  prog.endCol = node.endCol ;
+}
+
+/**
+ * Updates the program to tell where the indentation error occured
+ * @param {[Integer]} infos
+ */
+export function updateErrorInfoExp(infos){
+  prog.startLine = infos[0] ;
+  prog.startCol = infos[1] ;
+  prog.endLine = infos[2] ;
+  prog.endCol = infos[4] ;
 }
