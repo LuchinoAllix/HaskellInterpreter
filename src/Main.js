@@ -563,7 +563,7 @@ function showLayoutProgram(tokens){
   let lstLine = 0;
   console.log("Tokens with layout: " );
   for (let token of tokens){
-    if (lstLine !== token.line || token.line === -1){
+    if (lstLine !== token.startLine || token.startLine === -1){
       prog += "\n" + "  ".repeat(n);
     }
     if (token.value === "{"){
@@ -572,7 +572,7 @@ function showLayoutProgram(tokens){
       n -= 1;
     } 
     prog += " " + token.value;
-    lstLine = token.line;
+    lstLine = token.startLine;
     
   }
   console.log(prog);

@@ -46,7 +46,7 @@ function ApplyRule1(program, index){
   if (r1_vars.includes(program.tokens[index].value)){
     if (index+1 < program.tokens.length){
       if (program.tokens[index+1].value !== "{"){
-        var indent = program.tokens[index+1].column;
+        var indent = program.tokens[index+1].startCol;
         program.tokens.splice(index+1, 0, newLayoutToken("{" + indent + "}", 
                                                          "R1"));
         return 1 // (larger offset to avoid collision between R1 and R3)
@@ -72,7 +72,7 @@ function ApplyRule2(program){
     if (program.tokens[0].value !== "module" && 
         program.tokens[0].value !== "{"){
       program.tokens.splice(0, 0, newLayoutToken( 
-        "{" + program.tokens[0].column + "}", "R2"));
+        "{" + program.tokens[0].startCol + "}", "R2"));
     }
   }
 }
@@ -93,11 +93,11 @@ function ApplyRule2(program){
  */
 function ApplyRule3(program, index){
   if (index > 1 && index < program.tokens.length-1 &&
-      program.tokens[index].line !== program.tokens[index-1].line &&
-      program.tokens[index].column > 0 &&
+      program.tokens[index].startLine !== program.tokens[index-1].startLine &&
+      program.tokens[index].startCol > 0 &&
       program.tokens[index-1].type !== "layout R1"){ 
         // no need to check for R2 since we start at index 1
-    var indent = program.tokens[index].column ;
+    var indent = program.tokens[index].startCol ;
     program.tokens.splice(index, 0, newLayoutToken("<" + indent + ">", "R3"));
     return 1;
   }
@@ -238,21 +238,21 @@ function bigL(tokens, stack, nbOpen, program){
  * @param {[Integer]} nbOpen
  * @returns {[Token]}
  */
-function bigLR3(tokens, stack, nbOpen){
+function bigLR3(tokens, stack, nbOpen, program){
   let n = parseInt(tokens[0].value.substring(1, tokens[0].value.length-1));
   let m = stack[0][0];
   if (m === n){ 
     return [newLayoutToken(";", " f")].concat(bigL(tokens.slice(1), stack, 
-                                                   nbOpen));
+                                                   nbOpen, program));
   } else if (n < m){
     if (nbOpen.pop() !== 0) {
       updateErrorInfo(program, tokens);
       throw new Error("Cannot close '}' because '(' still open");
     }
     return [newLayoutToken("}","5")].concat(bigL(tokens, stack.slice(1), 
-                                                 nbOpen));
+                                                 nbOpen, program));
   } else {
-    return bigL(tokens.slice(1), stack, nbOpen);
+    return bigL(tokens.slice(1), stack, nbOpen, program);
   } 
 }
 
@@ -337,7 +337,7 @@ function isPrefixInvalid(tokens, nbOpen) {
  */
 function updateStack(tokens, stack){
   if (tokens.length > 0 && r1_vars.includes(tokens[0].value)){
-    stack = [[stack[0][1].column ,tokens[0]]].concat(stack);
+    stack = [[stack[0][1].startCol ,tokens[0]]].concat(stack);
   } else if (tokens.length > 0 && tokens[0].value === '{'){
     if (stack[0][0] !== 0){ // FIXME : what to do if stack empty ?
                                       // (as in '{' was provided )
@@ -346,18 +346,17 @@ function updateStack(tokens, stack){
   }
 }
 
-
+/**
+ * Updates the program to tell where the indentation error occured
+ * @param {Program} program 
+ * @param {[Token]} tokens 
+ */
 function updateErrorInfo(program, tokens){
-  let start = 0;
-  for(let i=0; i < program.tokensCopy.length - tokens.length - 1; i ++){
-    start += program.tokensCopy[i].value.length ;
-    if (i === program.tokensCopy.length - tokens.length - 1){
-      // todo not finished
-    }
-  }
-  let end = start + ;
-  console.log(program) ;
-  program.tokenCount = program.tokensCopy.length - tokens.length ;
-  console.log(tokens) ;
-  program.tokenSize = tokens[0].value.length ;
+  let elemNumber = program.tokensCopy.length - tokens.length ;
+  let elem = program.tokensCopy[elemNumber - 1] ;
+
+  program.startLine = elem.startLine ;
+  program.startCol = elem.startCol ;
+  program.endLine = elem.endLine ;
+  program.endCol = elem.endCol ;
 }
