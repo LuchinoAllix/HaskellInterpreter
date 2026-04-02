@@ -398,7 +398,7 @@ function addDecl(declList, decl){
           decl.typeAnnotation !== null){
         updateErrorInfoExp(decl.info);
         throw new Error("Type annotation should come before " + 
-                    "definition" + decl);
+                    "definition : " + decl.name);
       }
 
       if (i !== declList.length - 1){
@@ -1014,7 +1014,7 @@ export function updateErrorInfoExp(infos){
   prog.startLine = infos[0] ;
   prog.startCol = infos[1] ;
   prog.endLine = infos[2] ;
-  prog.endCol = infos[4] ;
+  prog.endCol = infos[3] ;
 }
 
 /**

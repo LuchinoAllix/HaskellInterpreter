@@ -17,29 +17,31 @@ export default function parseHaskell(input, compilationError){
   try {
     tokenize(program);
   } catch(e){
-    compilationError(program.index,      // not ideal FIXME, get  
-                     program.lineCount,  // position of error
-                     program.index + 1,  // while lexing
-                     program.lineCount,  // 
-                     "Tokenization ",
-                      e.message);
+    compilationError(
+      program.lineCount,  // position of error
+      program.index - 1,  // not ideal FIXME, get  
+      program.lineCount,  // 
+      program.index,      // while lexing
+      "Tokenization error ",
+      e.message);
     return ;
   } try {
     addIndentation(program);
   } catch(e){ 
-    compilationError(program.startCol,   
-                     program.startLine, 
-                     program.endCol, 
-                     program.endLine, 
-                     "Indenting ",
-                     e); 
+    compilationError(
+      program.startLine, 
+      program.startCol -1,   
+      program.endLine, 
+      program.endCol -1, 
+      "Indenting error ",
+      e); 
     return ;
   } try {
     parse(program);
   } catch(e){ 
     // parsing errors come from not finding any rules so hard to pin point a
     // loc as to where is the error
-    compilationError(0, 0, 0, 0, "Parse ", e.message);
+    compilationError(0, 0, 0, 0, "Parse error", e.message);
     return ;
   }
 
@@ -49,18 +51,22 @@ export default function parseHaskell(input, compilationError){
   try {
     normalizeStart(program, global_rte);
   } catch(e){ 
-    compilationError(program.startCol,   
-                     program.startLine, 
-                     program.endCol, 
-                     program.endLine, 
-                     "Normalisation ",
-                    e.message);
+    compilationError(
+      program.startLine, 
+      program.startCol - 1,   
+      program.endLine, 
+      program.endCol -1, 
+      "Normalisation error",
+      e.message);
     return ;
   }
 
   return [program.normalizedForm, global_rte];
 }
 
+// - 1 on col number yields from the fact that haskell starts col at 1 where
+// codeboot starts at 0
+
 // test
-parseHaskell("a :: Int\n a = 1\n b = 2\nb ::Int", 
-  (a,b,c,d,e,f)=>console.log(a,b,c,d,e,f));
+//parseHaskell("a = 1 \nb = 2 \nb :: Integer \nc = 3", 
+  //(a,b,c,d,e,f)=>console.log(a,b,c,d,e,f));
