@@ -9,42 +9,40 @@ import { makeGlobalRTE, RunTimeEnv } from "./objects/RunTimeEnv.js";
 /**
  * Bundled version of main for integration with codeboot
  * @param {String} input 
- * @param {funcs} external_content {syntaxError : ... , compilationError : ...}
+ * @param {func} compilationError 
  * @returns {[Node, RunTimeEnv]} 
  */
-export default function parseHaskell(input, external_content){
+export default function parseHaskell(input, compilationError){
   let program = new Program(input);
   try {
     tokenize(program);
   } catch(e){
-    external_content.syntaxError(program.index,      // not ideal FIXME, get  
-                                 program.lineCount,  // position of error
-                                 program.index + 1,  // while lexing
-                                 program.lineCount,  // 
-                                 "Tokenization Error", 
-                                 e.toString().split('\n')[0]); // fixme
+    compilationError(program.index,      // not ideal FIXME, get  
+                     program.lineCount,  // position of error
+                     program.index + 1,  // while lexing
+                     program.lineCount,  // 
+                     "Tokenization error",
+                      e.message);
     return ;
   } try {
     addIndentation(program);
   } catch(e){ 
-    console.log(program.tokenCount)
-    console.log(program.tokenSize)
-    external_content.syntaxError(program.index,      // plain wrong, FIXME, get  
-                                 program.lineCount,  // position of error
-                                 program.index + 1,  // while indenting
-                                 program.lineCount,  // 
-                                 "Indenting Error\n", 
-                                 e); // fixme
+    compilationError(program.startCol,   //   
+                     program.startLine,  // 
+                     program.endCol,     // 
+                     program.endLine,    // 
+                     "Indenting error",
+                     e); 
     return ;
   } try {
     parse(program);
   } catch(e){ 
-    external_content.syntaxError(program.index,      // plain wrong, FIXME, get   
-                                 program.lineCount,  // position of error
-                                 program.index + 1,  // while parsing
-                                 program.lineCount,  // 
-                                 "Parse Error", 
-                                 e.toString().split('\n')[0]); // fixme
+    compilationError(program.index,      // plain wrong, FIXME, get   
+                     program.lineCount,  // position of error
+                     program.index + 1,  // while parsing
+                     program.lineCount,  // 
+                     "Parse error",
+                     e.message); // fixme
     return ;
   }
 
@@ -54,12 +52,12 @@ export default function parseHaskell(input, external_content){
   try {
     normalizeStart(program, global_rte);
   } catch(e){ 
-    external_content.syntaxError(program.index,      // plain wrong, FIXME, get  
-                                 program.lineCount,  // position of error
-                                 program.index + 1,  // while normalising
-                                 program.lineCount,  // 
-                                 "Normalisation Error", 
-                                 e.toString().split('\n')[0]); // fixme
+    compilationError(program.index,      // plain wrong, FIXME, get  
+                     program.lineCount,  // position of error
+                     program.index + 1,  // while normalising
+                     program.lineCount,  // 
+                     "Normalisation error",
+                    e.message);
     return ;
   }
 
@@ -67,5 +65,5 @@ export default function parseHaskell(input, external_content){
 }
 
 // test
-parseHaskell("main = print (1 + 2", 
-  {syntaxError:(a,b,c,d,e,f)=>console.log(a,b,c,d,e,f)});
+parseHaskell("main =\n    print(\"Hello world))\"\n", 
+  (a,b,c,d,e,f)=>console.log(a,b,c,d,e,f));

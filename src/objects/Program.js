@@ -31,9 +31,12 @@ export class Program {
     this.expected = null;        // Expected value of evaluation
 
     this.tokensCopy = [];        // copy of the tokens to locate errors
-    this.tokenCount = 0;         // position of the token that generates an
-                                 // error while indenting
-    this.tokenSize = 0;          // size of the token that generated the error
+
+    this.startLine = 0           // postition of indentation error
+    this.endLine = 0             //
+    this.startCol = 0            //
+    this.endCol = 0              //
+
   }
 
   //                      ~ Lexer related methods ~                           //
@@ -264,8 +267,8 @@ export class Program {
     }
     while (this.tokens[last].type !== "MERGE-START"){
       accumulator = this.tokens[last].value + accumulator;
-      line = this.tokens[last].line;
-      column = this.tokens[last].column;
+      line = this.tokens[last].startLine;
+      column = this.tokens[last].startCol;
       this.tokens.pop();
       last --;
       if (last < 0){
@@ -333,6 +336,19 @@ export class Program {
   getToken(){
     return this.tokens[this.cursor];
   }
+
+  /**
+   * Determines the endCol and endLine of each tokens
+   * This is extremely rudimentary, it will not work for tokens that span over
+   * multiple lines (FIXME)
+   */
+  getSizesOfTokens(){
+    for (let token of this.tokens){
+      token.endCol = token.startCol + token.value.length ;
+      token.endLine = token.startLine ;
+    }
+  }
+
 }
 
 
