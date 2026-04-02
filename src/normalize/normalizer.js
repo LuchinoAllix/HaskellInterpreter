@@ -51,6 +51,7 @@ export function normalizeStart(program, rte){
   global_rte = rte;
   prog = program;
   program.normalizedForm = normalizeRoot(program.AST);
+  verifyBodyDecls(program.normalizedForm);
   return true;
 }
 
@@ -1014,4 +1015,17 @@ export function updateErrorInfoExp(infos){
   prog.startCol = infos[1] ;
   prog.endLine = infos[2] ;
   prog.endCol = infos[4] ;
+}
+
+/**
+ * todo
+ * @param {*} normalizedForm 
+ */
+function verifyBodyDecls(normalizedForm){
+  for (let decl of normalizedForm){
+    if (decl.body === null){
+      updateErrorInfoExp(decl);
+      throw new Error("This declaration does not have a body : " + decl.name);
+    }
+  }
 }
