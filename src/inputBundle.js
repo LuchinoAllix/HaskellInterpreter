@@ -41,7 +41,7 @@ export default function parseHaskell(input, compilationError){
   } catch(e){ 
     // parsing errors come from not finding any rules so hard to pin point a
     // loc as to where is the error
-    compilationError(0, 0, 0, 0, "Parse error", e.message);
+    compilationError(0, 0, 0, 0, "Parse error ", e.message);
     return ;
   }
 
@@ -56,7 +56,7 @@ export default function parseHaskell(input, compilationError){
       program.startCol - 1,   
       program.endLine, 
       program.endCol -1, 
-      "Normalisation error",
+      "Normalisation error ",
       e.message);
     return ;
   }
