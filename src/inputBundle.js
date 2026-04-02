@@ -21,28 +21,25 @@ export default function parseHaskell(input, compilationError){
                      program.lineCount,  // position of error
                      program.index + 1,  // while lexing
                      program.lineCount,  // 
-                     "Tokenization error",
+                     "Tokenization ",
                       e.message);
     return ;
   } try {
     addIndentation(program);
   } catch(e){ 
-    compilationError(program.startCol,   //   
-                     program.startLine,  // 
-                     program.endCol,     // 
-                     program.endLine,    // 
-                     "Indenting error",
+    compilationError(program.startCol,   
+                     program.startLine, 
+                     program.endCol, 
+                     program.endLine, 
+                     "Indenting ",
                      e); 
     return ;
   } try {
     parse(program);
   } catch(e){ 
-    compilationError(program.index,      // plain wrong, FIXME, get   
-                     program.lineCount,  // position of error
-                     program.index + 1,  // while parsing
-                     program.lineCount,  // 
-                     "Parse error",
-                     e.message); // fixme
+    // parsing errors come from not finding any rules so hard to pin point a
+    // loc as to where is the error
+    compilationError(0, 0, 0, 0, "Parse ", e.message);
     return ;
   }
 
@@ -52,11 +49,11 @@ export default function parseHaskell(input, compilationError){
   try {
     normalizeStart(program, global_rte);
   } catch(e){ 
-    compilationError(program.index,      // plain wrong, FIXME, get  
-                     program.lineCount,  // position of error
-                     program.index + 1,  // while normalising
-                     program.lineCount,  // 
-                     "Normalisation error",
+    compilationError(program.startCol,   
+                     program.startLine, 
+                     program.endCol, 
+                     program.endLine, 
+                     "Normalisation ",
                     e.message);
     return ;
   }
@@ -65,5 +62,5 @@ export default function parseHaskell(input, compilationError){
 }
 
 // test
-parseHaskell("main =\n    print(\"Hello world))\"\n", 
+parseHaskell("a :: Int\n a = 1\n b = 2\nb ::Int", 
   (a,b,c,d,e,f)=>console.log(a,b,c,d,e,f));
