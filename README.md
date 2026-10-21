@@ -17,7 +17,7 @@ The final (codeBoot) tool is avaiable to try [here](https://luchinoallix.github.
 
 ## Usage
 
-This version cannot show you each step since for that you need codeBoot, but one can modify the code to print each step, with it's corresponding context. To take an input, you simply need to put it in `Test.hs`, following the syntax, specified at the top of the file. Then see run the command bellow :
+This version cannot show you each step since for that you need codeBoot, but one can modify the code to print each step, with it's corresponding context. To take an input, you simply need to put it in `Test.hs`, following the syntax, specified at the top of the file. Then to run, see the command bellow :
 
 Usage (in `src`):
   + `node Main.js Id_Of_Test [options]` (if no test id is given, all tests are run)
@@ -34,13 +34,12 @@ Options :<br>
   - `--NF` shows the normal form after normalizing
   - `--Verbose` shows error messages if all tests are run
 
+## Other
+
 [Spec syntax Haskell](https://www.haskell.org/onlinereport/haskell2010/haskellch10.html)
 
-`testData` : donnée sur les tests pour évaluation du mémoire
+`testData` : data on the tests, for the evaluation part of the thesis
 
-`testtypes` : donnée sur les tests pour évaluation du mémoire
+`testtypes` : type data on the tests, for the evaluation part of the thesis
 
-`viz.py` et `viz copy.py` : pour générer des graphes/données pour le mémoire
-
-
-#TODO #FIXME finish this
+`viz.py` and `viz copy.py` : were used to generate grahps for the thesis

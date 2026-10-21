@@ -19,8 +19,8 @@ import { initStateForEnv, outputs, resetOutputs } from './eval/Env.js';
 import { initTypeCheck } from './typeCheck/TypeCheck.js';
 import { initStateForCtx } from './typeCheck/Context.js';
 
-//import { readFile } from 'fs/promises';
-//import { writeFileSync } from 'fs';
+import { readFile } from 'fs/promises';
+import { writeFileSync } from 'fs';
 
 let tests = [];
 let testsFail = [];
