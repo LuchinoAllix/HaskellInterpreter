@@ -1,80 +1,64 @@
 import { Term } from "../normalize/Term.js";
-import { Decl } from "../normalize/Decl.js"
+import { Decl, resetCountLambdaVar } from "../normalize/Decl.js"
 import { Env } from "./Env.js";
 import * as E from "../normalize/Exp.js";
 import * as V from "../eval/Value.js";
 import { Constr } from "../normalize/Constr.js";
-import { optionAppTable, constrTable } from "../typeCheck/TypeCheck.js";
 import { Prim } from "./Prim.js";
-
+import { popVal } from "./State.js";
+import { resetCnt, resetGlobalDef } from "../typeCheck/TypeCheck.js";
+import { resetCount } from "../typeCheck/TypeO.js";
 
 //--               File for functions needed to evaluate a term             --//
 
-// Init global env
-let global_env;
-let main;
+// for decls that havn't been added to the global env yet, kinda add hoc but works
+var listOfTerms = []
 
-export function initGlobal(){
-  global_env = new Env();
-  global_env.initGlobal();
-}
+export var state;
 
 /**
  * Entry point of evaluation for "compiled" programs
- * @param {Program} program
- * @returns {Boolean}
+ * TODO params
  */
-export function initEvalComp(program){
-  
-  resetGlobalEnv();
-  main = null; // reseting main
-  
-  let terms = program.normalizedForm;
-  let main_decl;
-
-  for (let term of terms){
-    
-    if (term.metatype === "EXP"){
-      throw new Error("In succesion of terms at toplevel, only declarations " + 
-        "are allowed.");
-    } 
-    
-    else if (term.name === "main"){
-      main_decl = term;
-    } 
-
-    else {
-      evaluateDecl(term);
-    }
-  }
-
-  evaluateDecl(main_decl); // To ensure that main is evaluated only once every 
-                           // other decl is added in the global env
-  
-  return main.exec();
-
+export function initEvalComp(nState, terms){
+  state = nState;
+  resetCnt();   // reset count used in instances names
+  resetCount(); // reset count used in var and metavar names
+  resetCountLambdaVar(); // reset count used in anonymous lambda functions
+  resetGlobalDef();
+  evalTerms(terms);
+  listOfTerms = terms;
 }
 
 /**
- * Entry point of evaluation for "interactive" programs
- * @param {Program} program 
- * @param {Env} env
+ * todo
+ * @param {[Decl]} terms 
  */
-export function initEvalInter(program, env){
+function evalTerms(terms, skip = false){
+  if (terms.length === 0){
 
-  let terms = program.normalizedForm;
-  if (terms.length > 1){
-    throw new Error("Only one term allowed in repl mode")
-  }
-  if (terms[0].metatype === 'DECL'){
-    env.add(terms[0].name,evaluateExp(terms[0].body, env));
+    // base case, we have evaluated all terms, so move on to main
+    state.pushCall(evaluateDecl, [state.main]);
+
   } else {
-    let exp = evaluateExp(terms[0], env);
-    if (exp.type !== 'IO'){ // might not be best verification
-      const print = global_env.lookup('print');
-      print.body(exp).exec();
+
+    if (terms[0].metatype === "EXP"){
+      state.setError("In succesion of terms at toplevel, only declarations " + 
+        "are allowed.");
+    
+    } else if (terms[0].name === 'main'){
+
+      // if we find main, store it in main and continue evaluating terms
+      state.main = terms[0];
+      state.pushCall(evalTerms, [terms.slice(1)], true);
+
     } else {
-      exp.exec()
+
+      // if we have a decl that isn't main, store the call to do in callstack
+      // and evaluate the decl
+      state.pushCall(evalTerms, [terms.slice(1)], true);
+      state.pushCall(evaluateDecl, [terms[0]]);
+
     }
   }
 }
@@ -91,14 +75,35 @@ export function initEvalInter(program, env){
  *    'inless' let's but they are considered expressions.
  * @param {Decl} decl 
  */
-function evaluateDecl(decl){
-  if (decl.name === "main"){
-    main = evaluateExp(decl.body, new Env());
-  } else if (decl.isConstr()){
-    evaluateConstr(decl);
+function evaluateDecl(decl, skip = false){
+  state.makeMsg(skip, "Evaluating : " + decl.name + " (declaration)");
+  if (decl.isConstr()){
+    state.pushCall(evaluateConstr, [decl]);
+  } else if (decl.name === "main"){
+    state.pushCall(runMain, [popVal]);
+    state.pushCall(evaluateExp, [decl.body, new Env()]);
   } else {
-    global_env.add(decl.name, evaluateExp(decl.body, new Env()));
+    state.pushCall(addToStateEnvRte, [decl.name, popVal], true);
+    state.pushCall(evaluateExp, [decl.body, new Env()]);
   }
+}
+
+/**
+ * todo 
+ * @param {?} main 
+ */
+function runMain(main, skip = false){
+  state.makeMsg(skip, "run main");
+  main.exec();
+}
+
+/**
+ * todo
+ * @param {String} name 
+ * @param {Value} val 
+ */
+function addToStateEnvRte(name, val, skip = false){
+  state.rte.env.add(name, val);
 }
 
 /**
@@ -109,34 +114,39 @@ function evaluateDecl(decl){
  * @param {Env} env 
  * @returns {V.Value} or Prim in case of Curryfied function call
  */
-function evaluateExp(exp, env){
-
+function evaluateExp(exp, env, skip = false){
   switch (exp.type){
 
     case "functionApp" :
-      return evaluateFuncApp(exp, env);
+      evaluateFuncApp(exp, env);
+      break ;
+
+    case "str" : // fixed for str
+      evaluateExp(exp.value, env, skip);
+      break ;
 
     case "var" :
-      return evaluateVar(exp, env);
+      evaluateVar(exp, env);
+      break ;
     
     case "immediate" :
-      return evaluateImmediate(exp);
+      evaluateImmediate(exp);
+      break ;
     
     case "let" :
-      return evaluateLet(exp, env);
-
-    case "if" :
-      return evaluateIf(exp, env);
+      evaluateLet(exp, env);
+      break ;
 
     case "case" :
-      return evaluateCase(exp, env);
+      evaluateCase(exp, env);
+      break ;
     
     case "LambdaExp" :
-      return evaluateLambda(exp, env);
+      evaluateLambda(exp, env);
+      break ;
  
     default :
-      console.log(JSON.stringify(exp, null, 2))
-      throw new Error("exp not yet managed in eval : " + exp.type);
+      state.setError("exp not yet managed in eval : " + exp.type);
     
   }
 }
@@ -147,8 +157,9 @@ function evaluateExp(exp, env){
  * @param {Env} env 
  * @returns {V.Vfunc}
  */
-function evaluateLambda(exp, env){
-  return new V.Vfunc(exp.body, exp.namedArg, env);
+function evaluateLambda(exp, env, skip = false){
+  state.makeMsg(skip, "Evaluating lambda " + exp.toStr());
+  state.pushVal(new V.Vfunc(exp.body, exp.namedArg, env)) ;
 }
 
 /**
@@ -158,19 +169,24 @@ function evaluateLambda(exp, env){
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateVar(exp, env){
-  let variable = lookupGlobalLocalEnv(env, exp.name);
+function evaluateVar(exp, env, skip = false){
+  state.makeMsg(skip, "Evaluating variable " + exp.toStr());
+  let variable = lookupGlobalLocalEnv(env, exp.name, state.rte);
+
   if (variable.metatype === "DECL"){
-    return evaluateExp(variable.body, env);
+    state.pushCall(evaluateExp,[variable.body, env]);
   } else if (variable.metatype === "EXP"){
-    return evaluateExp(variable, env);
+    state.pushCall(evaluateExp,[variable, env]);
   } else if (variable.metatype === "VALUE"){
+
     if (variable.type === "func" && variable.subtype === "prim"){
       variable.closure = env;
     }
-    return variable;
+
+    state.pushVal(variable);
+
   } else {
-    throw new Error("variable " + exp.name + " of metatype " + 
+    state.setError("variable " + exp.name + " of metatype " + 
       variable.metatype + " is not handeled");
   }
 }
@@ -180,21 +196,23 @@ function evaluateVar(exp, env){
  * @param {E.ImExp} exp 
  * @returns {V.Value}
  */
-function evaluateImmediate(exp){
+function evaluateImmediate(exp, skip = false){
+  state.makeMsg(skip, "Evaluating immediate " + exp.toStr());
   switch (exp.valueType){
 
     case "Integer" :
     case "Boolean" :
     case "Char" :
     case "EmptyList" :
-      return new V.VImm(exp.value, exp.valueType);
+      state.pushVal(new V.VImm(exp.value, exp.valueType));
+      break ;
       
     default :
-      let res = global_env.lookup(exp.value);
+      let res = state.rte.env.lookup(exp.value);
       if (res !== undefined){
-        return new V.VConstr(exp.valueType, [exp.value]);
+        state.pushVal(new V.VConstr(exp.valueType, [exp.value])); 
       } else {
-        throw new Error("value type not yet managed in eval : " +
+        state.setError("value type not yet managed in eval : " +
           exp.valueType);
       }
   }
@@ -208,10 +226,11 @@ function evaluateImmediate(exp){
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateFuncApp(exp, env){
-  let func = evaluateExp(exp.func, env);
-  let arg = evaluateExp(exp.arg, env);
-  return applyFunc(func, arg);
+function evaluateFuncApp(exp, env, skip = false){
+  state.makeMsg(skip, "Eval func app " + exp.toStr());
+  state.pushCall(applyFunc, [popVal, popVal], true);
+  state.pushCall(evaluateExp, [exp.arg, env]);
+  state.pushCall(evaluateExp, [exp.func, env]);
 }
 
 /**
@@ -220,16 +239,20 @@ function evaluateFuncApp(exp, env){
  * @param {Value} arg 
  * @returns 
  */
-export function applyFunc(func, arg){
-  if (func.subtype === "prim"){
-    return func.body(arg);
-  }
+export function applyFunc(arg, func, skip = false){
+  state.makeMsg(skip, "Apply func");
 
-  if (func.param !== null){
-    func.addArg(func.param.name, arg);
+  if (func.subtype === "prim"){ // appel de la primitive
+    const res = func.body(arg);
+    // TODO : rajouter une etape pour montrer le résultat ?
+    if (res !== undefined){ state.pushVal(res); }
+  } else { 
+    if (func.param !== null){
+      func.addArg(func.param.name, arg);
+    }
+    
+    state.pushCall(evaluateExp, [func.body, func.closure]);
   }
-
-  return evaluateExp(func.body, func.closure);
 }
 
 /**
@@ -238,18 +261,32 @@ export function applyFunc(func, arg){
  * @param {Env} env 
  * @returns {V.Value}
  */
-function evaluateLet(exp, env){
+function evaluateLet(exp, env, skip = false){
   if (exp.body !== null){
     let clone = env.clone();
-    for (let decl of exp.decls){
-      clone.add(decl.name, evaluateExp(decl.body, env), true);
+    recEvaluateLet(exp.body, exp.decls, clone);
+  } else {
+    recEvaluateLet(null, exp.decls, env);
+  }
+}
+
+function recEvaluateLet(body, decls, env){
+  if (decls.length === 0){
+    if (body !== null){
+      state.pushCall(evaluateExp, [body, env]);
+    } else {
+      state.pushVal(new V.Vio(() => V.Unit));
     }
-    return evaluateExp(exp.body, clone);
-  }
-  for (let decl of exp.decls){
-    env.add(decl.name, evaluateExp(decl.body, env), true);
-  }
-  return new V.Vio(() => V.Unit);
+  } else {
+    state.pushCall(recEvaluateLet, [body, decls.slice(1), env]);
+    state.pushCall(addToLocalEnv, [decls[0].name, popVal, env], true);
+    state.pushCall(evaluateExp, [decls[0].body, env]);
+  } 
+}
+
+function addToLocalEnv(name, value, env, skip = false){
+  state.makeMsg(skip, "Adding to local env");
+  env.add(name, value, true);
 }
 
 /**
@@ -260,10 +297,20 @@ function evaluateLet(exp, env){
  * @param {Env} env
  * @returns {V.Value}
  */
-function evaluateCase(exp, env){
-  let vals = exp.patterns.map(x => evaluateExp(x, env));
-  for (let branch of exp.branches){
-    let matches = matchAll(vals, branch.args); 
+function evaluateCase(exp, env, skip = false){
+
+  state.pushCall(recEvaluateCase, [exp.branches, env])
+  state.pushVal([]); // to gather all the elems from recEvalPatterns
+  state.pushCall(recEvalPatterns, [exp.patterns, env]);
+  
+}
+
+function recEvaluateCase(branches, env, skip = false){
+  if (branches.length === 0){
+    state.setError("No pattern match in case with " + exp.patterns);
+  } else {
+    const vals = state.popVal();
+    let matches = matchAll(vals, branches[0].args);
     if (matches.length >= 1 && matches[0] !== -1){
       let closure = env.clone();
       for (let match of matches){
@@ -271,12 +318,27 @@ function evaluateCase(exp, env){
           closure.add(match[0].name, match[1], true);
         }
       }
-      return evaluateExp(branch.branchBody, closure);
+      state.pushCall(evaluateExp, [branches[0].branchBody, closure]);
+    } else {
+      state.pushVal(vals);
+      state.pushCall(recEvaluateCase, [branches.slice(1), env]);
     }
   }
-  console.log(exp.patterns);
-  console.log(vals);
-  throw new Error("No pattern was found to match in case with " + exp.patterns);
+}
+
+function recEvalPatterns(patterns, env, skip = false){
+  if (patterns.length !== 0){
+    state.pushCall(recEvalPatterns, [patterns.slice(1), env]);
+    state.pushCall(listPatternsRes, []);
+    state.pushCall(evaluateExp, [patterns[0], env]);
+  }
+}
+
+function listPatternsRes(){
+  const val = state.popVal();
+  const vals = state.popVal();
+  vals.push(val);
+  state.pushVal(vals);
 }
 
 /** 
@@ -285,21 +347,22 @@ function evaluateCase(exp, env){
  * @param {[E.Exp]} exps 
  * @returns {[[E.Exp]]} 
  */
-function matchAll(values, exps){
+function matchAll(values, exps, skip = false){
   if (values.length !== exps.length){
-    throw new Error("Match should be called on values and exps of same length");
-  }
-  let res = [];
-  for (let i = 0; i < values.length; i++){
-    let recursive = match(values[i], exps[i]);
-    for (let rec of recursive){
-      if (rec === -1){
-        return [-1];
+    state.setError("Match should be called on values and exps of same length");
+  } else {
+    let res = [];
+    for (let i = 0; i < values.length; i++){
+      let recursive = match(values[i], exps[i]);
+      for (let rec of recursive){
+        if (rec === -1){
+          return [-1];
+        }
+        res.push(rec);
       }
-      res.push(rec);
     }
+    return res;
   }
-  return res;
 }
 
 /**
@@ -312,8 +375,11 @@ function matchAll(values, exps){
  *                    # pairs don't exists in js, perhaps converting to a dict ?
  *                    # FIXME
  */
-function match(value, exp){
+function match(value, exp, skip = false){
   switch (exp.type){
+
+    case "str" : // fixed for str
+      return match(value, exp.value, skip)
 
     case "functionApp" :
 
@@ -328,7 +394,7 @@ function match(value, exp){
           newValFunc = value.fst;
           newValArg = value.snd;
         } else {
-          throw new Error("unhandeled case in funcapp match");
+          state.setError("unhandeled case in funcapp match");
         }
         
         let funcMatch, argMatch;
@@ -347,15 +413,15 @@ function match(value, exp){
       } else  if (exp.func.name === ':'){
         return match(value, exp.arg);
       } else {
-        throw new Error("unhandeled case in match func app");
+        state.setError("unhandeled case in match func app");
       }
 
     case "SpecialExp" :
       return [[]];
       
     case "var" :
-      if (optionAppTable.lookup(exp.name) !== undefined){
-        let lookup = global_env.lookup(exp.name);
+      if (state.rte.optionAppTable.lookup(exp.name) !== undefined){
+        let lookup = state.rte.env.lookup(exp.name);
         if (lookup.value.length > 0 || value.type !== lookup.type){ 
           return [-1] ; 
         }
@@ -372,7 +438,7 @@ function match(value, exp){
       return [-1];
       
     default :
-      throw new Error("Exp not yet managed in pattern matching of eval : " + 
+      state.setError("Exp not yet managed in pattern matching of eval : " + 
         exp.type);
   }
 }
@@ -383,7 +449,7 @@ function match(value, exp){
  * @param {E.Exp} exp 
  * @returns {[[E.Exp]]}
  */
-function matchConstr(value, exp){
+function matchConstr(value, exp, skip = false){
   let args = listIt(exp);
   let func = args.pop(1);
   if (args.length !== value.value.length || value.type !== func.name){
@@ -427,7 +493,7 @@ function isFuncAppOfConstr(exp){
   while (pointer.type === 'functionApp'){
     pointer = pointer.func ;
   }
-  return optionAppTable.lookup(pointer.name) !== undefined;
+  return state.rte.optionAppTable.lookup(pointer.name) !== undefined;
 }
 
 /**
@@ -446,35 +512,24 @@ export function isMTArray(array){
  * @param {String} name 
  * @returns {Term}
  */
-function lookupGlobalLocalEnv(env, name){
+function lookupGlobalLocalEnv(env, name, global_rte, skip = false){
   let res = env.lookup(name);
   if (res !== undefined){
     return res;
   }
-  res = global_env.lookup(name);  
+  res = global_rte.env.lookup(name);  
   if (res !== undefined){
     return res;
   }
-  throw new Error(name + " is undefined.");
-}
-
-/**
- * Allows to reset the global environment
- * Remembers the commas function (tuples) because the env is reset at the start
- * of each test, but the commas functions are added in normalisation (before 
- * reset)
- * HELP : is this a good idea ? or should the env be reset after each test ?
- */
-function resetGlobalEnv(){
-  let tmp_env = new Env();
-  // going through each value in the env and keeping only ncommas functions
-  for (let [key, value] of Object.entries(global_env.decls)){
-    if (isNcommas(key) && key.length > 1){
-      tmp_env.add(key, value);
-    }
+  
+  // when the decl hasn't been parsed yet
+  for (let term of listOfTerms){
+    if (term.name === name){
+      return term;
+    }  
   }
-  global_env = tmp_env;
-  global_env.initGlobal();
+
+  state.setError(name + " is undefined.");
 }
 
 /**
@@ -492,24 +547,15 @@ export function isNcommas(str){
 }
 
 /**
- * Allows to add to the global env from other files (used in normalisation) when
- * working on tuples to add the ncommas function before evaluation
- * @param {String} str 
- */
-export function addNcommasToGlobalEnv(str){
-  global_env.addNcommas(str);
-}
-
-/**
  * Evaluates a data declaration (constr) by updating the global env
  * @param {Constr} constr
  */
-function evaluateConstr(constr){
+function evaluateConstr(constr, skip = false){
   for (let option of constr.options){
     if (option.type === 'var'){
-      global_env.add(option.name, new V.VConstr(option.name));
+      state.rte.env.add(option.name, new V.VConstr(option.name));
     } else {
-      global_env.add(getName(option), expToPrim(option, []));
+      state.rte.env.add(getName(option), expToPrim(option, []));
     }
   }
 }
@@ -539,8 +585,8 @@ function expToPrim(exp, values){
  * @returns {Boolean}
  */
 function isConstrOrOption(name){
-  return optionAppTable.lookup(name) !== undefined || 
-         constrTable.lookup(name) !== undefined ;
+  return state.rte.optionAppTable.lookup(name) !== undefined || 
+         state.rte.constrTable.lookup(name) !== undefined ;
 }
 
 /**

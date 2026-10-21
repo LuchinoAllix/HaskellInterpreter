@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
           }
           // Objet enfant unique
-          else if (typeof value === "object" && value !== null) {
+          else if (typeof value === "object" && value !== null && key !== "pos") {
             children.push(value);
           }
         }

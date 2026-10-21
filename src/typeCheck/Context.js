@@ -31,6 +31,12 @@ const just = T.freshVar();
 const nothing = T.freshVar();
 const mtList =  T.freshVar();
 
+let state ;
+
+export function initStateForCtx(nState){
+  state = nState;
+}
+
 /**
  * Context object definition, used in type inference
  * A context is a mapping of names of primitives to their corresponding types
@@ -43,6 +49,7 @@ export class Context {
    */
   constructor(){
     this.decls = {};
+    this.isCtx = true;
   }
 
   /**
@@ -50,8 +57,17 @@ export class Context {
    * @param {String} name 
    * @returns { T.TypeO | undefined } - undefined if declaration doesn't exists
    */
-  lookup(name){
-    return this.decls[name];
+  lookup(name, add = true){
+    let res = this.decls[name];
+    if(res !== undefined 
+       && !state.rte.globalLocalCtxKeys.includes(name) // not ideal for efficency
+       && name !== undefined
+       && name[0] !== '\\'
+       && add){
+      state.rte.globalLocalCtxKeys.push(name);
+      state.rte.globalLocalCtx.push([name, res]);
+    }
+    return res;
   }
 
 
@@ -63,6 +79,22 @@ export class Context {
    * @param {Boolean} overide
    */
   add(name, val, overide = false){
+    // state != undefined allows to only add to global used ctx the one added after
+    // state is initialized, i.e. user entered
+    if(state !== undefined 
+       && name !== undefined
+       && name[0]!=='\\'){ 
+      for (let i = 0; i < state.rte.globalLocalCtxKeys.length; i++){
+        if (state.rte.globalLocalCtxKeys[i] === name){
+          state.rte.globalLocalCtxKeys.splice(i,1);
+          state.rte.globalLocalCtx.splice(i,1);
+          break;
+        }
+      }
+      state.rte.globalLocalCtxKeys.push(name);
+      state.rte.globalLocalCtx.push([name, val]);
+
+    }
     if (this.decls[name] !== undefined){
       if (!overide){
         throw new Error("This declaration already exists in the context : " 
@@ -80,6 +112,7 @@ export class Context {
     this.add('*', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('-', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('/', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
+    this.add('mod', new T.TArrow(T.TInt(), new T.TArrow(T.TInt(), T.TInt())));
     this.add('neg', new T.TArrow(T.TInt(), T.TInt()));
 
     this.add('print', new T.TForall([print.name], 

@@ -1493,7 +1493,7 @@ export class Rules {
       // TODO verify if capital letter or not
       branch([[tokentype("Integer"), 1]]),
       branch([[tokentype("float"), 1]]),
-      branch([[tokentype("char"), 1]]),
+      branch([[tokentype("Char"), 1]]),
       branch([[tokentype("String"), 1]])
     ];
   }

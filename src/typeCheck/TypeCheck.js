@@ -4,17 +4,45 @@ import * as T from "./TypeO.js";
 import { Context } from "./Context.js";
 import { isNcommas } from "../eval/eval.js"
 import { Constr } from "../normalize/Constr.js";
-import { TypeTable } from "./TypeTable.js";
+import { popVal } from "../eval/State.js";
 
 //--        File containing functions to type check the program             --//
 
-// Init global context
-export let global_context = new Context();
-global_context.initGlobal();
+export var state ;
 
-// Init typetable
-export let constrTable = new TypeTable();
-export let optionAppTable = new TypeTable();
+var globalDef = [];
+
+// to know when a global var is just not defined yet
+var allGlobalDefNames = [];
+// list of globla def initiated but not yet add to global ctx
+var globalDefInitiated = [];
+
+export function resetGlobalDef(){
+  globalDef = [];
+  allGlobalDefNames = []; 
+}
+
+// to clean the shown ctx (to show only global definitions)
+function sweep(){
+  for (let i = 0; i < state.rte.globalLocalCtxKeys.length; i ++){
+    if (!globalDef.includes(state.rte.globalLocalCtxKeys[i])){
+      state.rte.globalLocalCtxKeys.splice(i, 1);
+      state.rte.globalLocalCtx.splice(i, 1);
+      i-=1;
+    }
+  }
+}
+
+export function initTypeCheck(nState, terms){
+  state = nState;
+  state.pushCall(()=>state.eval = true, []); // move on to eval
+  for (let term of terms){
+    if (term.isDecl()){
+      allGlobalDefNames.push(term.name);
+    }
+  }
+  typeCheck(terms);
+}
 
 /**
  * Verifies that a given program type checks
@@ -23,59 +51,99 @@ export let optionAppTable = new TypeTable();
  * @param {Program} program
  * @returns {Boolean}
  */
-export function typeCheck(program){
-  resetGlobalContext();
-
-  optionAppTable.reset();
-  optionAppTable.initOption();
-
-  constrTable.reset();
-  constrTable.initConstr();
+function typeCheck(terms, skip = false){
   
-  let main; 
-  for (let decl of program.normalizedForm){
-    if (decl.name === "main"){
-      main = decl;
-    } else if (decl.isConstr()){
-      manageConstr(decl);
+  if (terms.length === 0){
+    state.pushCall(isMainAppIoUnit, [popVal], true);
+    
+    if (state.main.isAnnotated()){
+      state.pushCall(unify, [popVal, state.main.typeAnnotation], true);
     } else {
-      
-      // metavar used in case of recursive definition
-      let declType = T.freshMetavar(); 
-      T.tLog("Infer Decl : " + decl.name + " to " + declType.name, 1);
-      
-      global_context.add(decl.name, declType);
-      check(decl.body, declType, new Context());
+      state.pushCall(() => state.popVal(), [], true); // remove excess popval
+    }
 
-      if (decl.isAnnotated()){
-        let genDeclType = generalize(declType);
-        
-        // verify the type annotation
-        unify(instantiate(genDeclType), decl.typeAnnotation);
+    let mainMetaVar = T.freshMetavar();
+    mainMetaVar.pos = state.main.pos;
+    state.pushCall(reStack, [], true);
+    state.pushCall(()=>state.pushVal(mainMetaVar.value), [], true);
+    //state.pushCall(infer, [state.main.body, new Context()], true);
+    // push twice because val needed for unify and isMainAppIoUnit
 
-        global_context.add(decl.name, genDeclType, true);
+    state.pushCall(check, [state.main.body, mainMetaVar, new Context()], true);
+    state.pushCall(addToStateCtxRte, ["main", mainMetaVar, true], true);
+    state.pushCall(initMetaVarMsg, [mainMetaVar]);
+
+  } else {
+    state.makeMsg(skip, "Check " + terms[0].toStr());
+    globalDef.push(terms[0].name);
+
+    if (terms[0].name === "main"){
+      state.main = terms[0];
+      state.pushCall(typeCheck, [terms.slice(1)], true);
+    } else if (terms[0].isConstr()){
+      state.pushCall(typeCheck, [terms.slice(1)], true);
+      state.pushCall(sweep, [], true);
+      state.pushCall(manageConstr, [terms[0]]);
+    } else {
+      state.pushCall(typeCheck, [terms.slice(1)], true);
+      state.pushCall(sweep, [], true);
+      let declType ;
+      if (globalDefInitiated.includes(terms[0].name)){
+        declType = state.rte.ctx.lookup(terms[0].name);
       } else {
-        global_context.add(decl.name, generalize(declType), true);
+        declType = T.freshMetavar();
       }
-      T.tLog("Infered decl " + decl.name + " : " + declType.toStr(), -1);
+      declType.pos = terms[0].pos; // associating pos of metavar to pos of term
+      
+      if (terms[0].isAnnotated()){
+        state.pushCall(addToStateCtxRte, [terms[0].name, popVal, true], true)
+        state.pushCall(unify, [popVal, terms[0].typeAnnotation], true);
+        state.pushCall(switcheroo, [], true); // fait baisser le res de generalise 
+                                              // sur le stack pour que unify puisse
+                                              // utiliser le res de instantiate
+        state.pushCall(instantiateInitShouldSkip, [popVal, terms[0]], true);
+        state.pushCall(reStack, [], true);
+        state.pushCall(generalize, [terms[0].typeAnnotation], true);
+
+      } else {
+        state.pushCall(addToStateCtxRte, [terms[0].name, popVal, true], true);
+        state.pushCall(generalize, [declType], true);
+      }
+
+      state.pushCall(check, [terms[0].body, declType, new Context()], true);
+      state.pushCall(addToStateCtxRte, [terms[0].name, declType, true], true);
+      state.pushCall(initMetaVarMsg, [declType])
     }
   }
-  
-  // To ensure that main is the last decl to be type checked
-  T.tLog("Infer Main ", 1);
-  let mainType = infer(main.body, new Context());
-  
-  // verify the type annotation of main
-  if (main.isAnnotated()){
-    unify(mainType, main.typeAnnotation);
-  }
-  
-  if (isMainAppIoUnit(mainType)){
-    return true; 
-  }
+}
 
-  throw new Error("Main should have type App IO to Unit, not " + mainType);
+function initMetaVarMsg(a, skip = false){
+  state.makeMsg(skip, "Initialize " + a.toStr());
+}
 
+function reStack(){
+  let val = state.popVal();
+  state.pushVal(val);
+  state.pushVal(val);
+}
+
+/**
+ * todo
+ * @param {String} name 
+ * @param {Value} val 
+ */
+function addToStateCtxRte(name, val, overide){
+  state.rte.ctx.add(name, val, overide);
+}
+
+/**
+ * todo
+ */
+function switcheroo(){
+  let a = state.popVal();
+  let b = state.popVal();
+  state.pushVal(a);
+  state.pushVal(b);
 }
 
 /**
@@ -84,26 +152,48 @@ export function typeCheck(program){
  * @param {Context} context
  * @returns {TypeO}
  */
-function infer(exp, context){
+function infer(exp, context, skip = false){
+  //console.log(exp)
+  state.makeMsg(skip, "Infer " + exp.toStr());
+  
   switch (exp.type){
 
     case 'functionApp' :
-      return inferFunctionApp(exp, context);
+      inferFunctionApp(exp, context);
+      break ;
+
+    case 'str' : // fixed for str
+      state.pushVal(new T.TApp(T.TList(), T.TChar()))
+      break;
     
     case 'var' :
-      return instantiate(inferVar(exp, context));
+      state.pushCall(instantiateInitShouldSkip, [popVal, exp], true)
+
+      let f = () => {
+        let lookup = lookupGlobalLocalContext(context, exp.name, false);
+        return lookup.isMetavar() && lookup.value === null ; 
+      }
+
+      state.pushCall(inferVar, [exp, context], exp.name[0]==='\\' || f());
+      // we skip if it's an internal variable or an empty metavar
+
+      break ;
       
     case 'immediate' :
-      return instantiate(inferImmediate(exp));
+      state.pushCall(instantiateInit, [popVal, exp], true)
+      state.pushCall(inferImmediate, [exp]);
+      break ;
 
     case 'let' :
-      return inferLet(exp, context);
+      inferLet(exp, context);
+      break ;
           
     default :
-      T.tLog("new metavar for ? #6 #TODO");
-      let res = T.freshMetavar();
-      check(exp, res, context);
-      return res;
+      let res = T.freshMetavar(); // add message why new metavar ?
+      res.pos = exp.pos;
+      state.pushCall((val)=>state.pushVal(val), [res], true); // skip ?
+      state.pushCall(check, [exp, res, context], true);
+      state.pushCall(initMetaVarMsg, [res]);
   }
 }
 
@@ -114,28 +204,27 @@ function infer(exp, context){
  * @param {T.TypeO} type 
  * @param {Context} context 
  */
-function check(exp, type, context){
-  T.tLog("Check between " + exp.toStr() + " and " + type.toStr(), 1);
+function check(exp, type, context, skip = false){
+
+  state.makeMsg(skip, "Check " + exp.toStr() + "\nwith " + type.toStr());
 
   switch (exp.type){
     case 'LambdaExp' :
 
-      T.tLog("new metavar for ? #7 #TODO");
-      T.tLog("new metavar for ? #8 #TODO");
-
-
       let from = T.freshMetavar();
+      from.pos = exp.namedArg.pos;
       let to = T.freshMetavar();
+      to.pos = exp.body.pos;
       
       let clone = context.clone();
-      clone.add(exp.namedArg.name, from);
-      check(exp.body, to, clone);
-      unify(type, new T.TArrow(from, to));
-      
-      // FIXME: Clearly `setVal` is wrong because it throws away the previous
-      // information.  Instead, you should use the same "mini-unify" as in
-      // `inferFunctionApp`.
-      // ANS : ???
+
+      state.pushCall(unify, [type, new T.TArrow(from, to)], true);
+      state.pushCall(check, [exp.body, to, clone], true);
+      state.pushCall(initMetaVarMsg, [to], exp.namedArg.name[0]==='\\');
+      state.pushCall(()=>clone.add(exp.namedArg.name, from), [], true);
+      state.pushCall(initMetaVarMsg, [from], exp.namedArg.name[0]==='\\');
+      // we skip if it's for an internal variable 
+
       break;
 
     case 'case' :
@@ -143,27 +232,34 @@ function check(exp, type, context){
       // Args of the case (multiple for functions)
 
       let argsType = [];
-
-      for (let i = 0; i < exp.patterns.length; i ++){
-        argsType.push(infer(exp.patterns[i], context)); 
-      }
-
-      for (let branch of exp.branches){
-        let branchCtx = context.clone();
-        checkPatterns(branch.args, argsType, branchCtx);
-        check(branch.branchBody, type, branchCtx);
-      }
-
+      state.pushCall(checkRec, [exp.branches, context, type, argsType], true);
+      state.pushCall(inferArgs, [exp.patterns, context, argsType], true);
       break;
 
-    // FIXME: You may want to add a `checkLet` as well.
-    // It's not indispensible, but it can reduce the number of metavars.
-
     default :
-      unify(infer(exp, context), type);
-
-    T.tLog("Check between " + exp.toStr() + " and " + type.toStr(), -1);
+      state.pushCall(unify, [popVal, type], true);
+      state.pushCall(infer, [exp, context], true);
     
+  }
+}
+
+function inferArgs(patterns, context, argsType, skip = false){
+  if (patterns.length > 0){
+    state.pushCall(inferArgs, [patterns.slice(1), context, argsType], true);
+    state.pushCall(()=>{argsType.push(state.popVal()); return undefined;}, [], true);
+    state.pushCall(infer, [patterns[0], context], true);
+  }
+}
+
+function checkRec(branches, context, type, argsType, skip = false){
+  if (branches.length > 0){
+    state.makeMsg(skip, "Check " + branches[0] + "\nwith " + type.toStr());
+    let branchCtx = context.clone();
+    if (branches.length > 1){
+      state.pushCall(checkRec, [branches.slice(1), context, type, argsType], true);
+    }
+    state.pushCall(check, [branches[0].branchBody, type, branchCtx], true);
+    state.pushCall(checkPatterns, [branches[0].args, argsType, branchCtx], true);
   }
 }
 
@@ -179,18 +275,19 @@ function check(exp, type, context){
  * @param {T.TypeO} t1 
  * @param {T.TypeO} t2 
  */
-function unify(t1, t2){
+function unify(t1, t2, skip = false){
 
-  T.tLog("Unification between " + t1.toStr() + " and " + t2.toStr(), 1);
+  state.makeMsg(skip, "Unifying " + t1.toStr() + " and " + t2.toStr());
+
   let tmpt1 = t1.resolve();
   let tmpt2 = t2.resolve();
 
   if (tmpt1.isApp() && tmpt2.isApp()){
-    unify(tmpt1.func, tmpt2.func);
-    unify(tmpt1.arg, tmpt2.arg);
+    state.pushCall(unify, [tmpt1.arg, tmpt2.arg], true);
+    state.pushCall(unify, [tmpt1.func, tmpt2.func], true);
   } else if (tmpt1.isArrow() && tmpt2.isArrow()){
-    unify(tmpt1.from, tmpt2.from);
-    unify(tmpt1.to, tmpt2.to);
+    state.pushCall(unify, [tmpt1.to, tmpt2.to], true);
+    state.pushCall(unify, [tmpt1.from, tmpt2.from], true);
 
   } else if (tmpt1 === tmpt2){ // Comparing pointer wise is more efficent than 
     // do nothing              // name wise.
@@ -199,10 +296,10 @@ function unify(t1, t2){
                                // with itself
   } else if (tmpt1.isMetavar()){
     occursCheck(tmpt1, tmpt2);
-    tmpt1.setVal(tmpt2);
-  } else if (tmpt2.isMetavar()){
+    state.pushCall(fSetVal, [tmpt1, tmpt2], !isInShowCtx(tmpt1.name));
+  } else if (tmpt2.isMetavar()){ 
     occursCheck(tmpt2, tmpt1);
-    tmpt2.setVal(tmpt1);
+    state.pushCall(fSetVal, [tmpt2, tmpt1], !isInShowCtx(tmpt2.name));
   } else if (tmpt1.isBuiltin() && tmpt2.isBuiltin() && tmpt1.blt === tmpt2.blt){
     // do nothing
   } else if (tmpt1.isConstrVal() && tmpt2.isConstrVal() && 
@@ -218,9 +315,34 @@ function unify(t1, t2){
       ${JSON.stringify(tmpt1, null, 2)} \nand 
       ${JSON.stringify(tmpt2, null, 2)}`);
   }
+}
 
-  T.tLog("Unification between " + t1.toStr() + " and " + t2.toStr(), -1);
+function fSetVal(t1, t2, skip = false){
+  state.makeMsg(skip, t1.toStr() + " = " + t2.toStr());
+  t1.setVal(t2);
+}
 
+function isInShowCtx(name){
+  for (let i = 0; i < state.rte.globalLocalCtxKeys.length; i++){
+    let val = state.rte.globalLocalCtx[i][1] ;
+    if (isMyMT(name, val)){
+      return true ;
+    }
+  }
+  return false ;
+}
+
+function isMyMT(name, mt){
+  if (mt.isMetavar()){
+    return mt.name === name ;
+  } else if (mt.isApp()){
+    return isMyMT(name, mt.func) || isMyMT(name, mt.arg);
+  } else if (mt.isArrow()){
+    return isMyMT(name, mt.from) || isMyMT(name, mt.to);
+  } else if (mt.isForAll()){
+    return isMyMT(name, mt.body) ;
+  }
+  return false ;
 }
 
 /**
@@ -228,20 +350,27 @@ function unify(t1, t2){
  * @param {T.TypeO} type
  * @returns {T.TForall} 
  */
-function generalize(type){
+function generalize(type, skip = false){
 
-  T.tLog("generalize " + type.toStr());
+  state.makeMsg(skip, "Generalising " + type.toStr());
 
   let names = {}; // will get modified by the call to generalizeRec
-  let nType = generalizeRec(type, names);
+
+  state.pushCall(generalizeInter, [names, type, popVal], true);
+  state.pushCall(generalizeRec, [type, names], true);
+}
+
+function generalizeInter(names, type, nType, skip = false){
   if (Object.keys(names).length > 0 ){
-    let listNames = []
+    let listNames = [];
     for (let tvar of Object.values(names)){
       listNames.push(tvar.name);
     }
-    return new T.TForall(listNames, nType);
+    state.pushVal(new T.TForall(listNames, nType));
+  } else {
+    // no free metavars found
+    state.pushVal(type); 
   }
-  return type ; // no free metavars found
 }
 
 /**
@@ -253,27 +382,40 @@ function generalize(type){
  * @param {{String : T.Tvar}} names 
  * @returns {T.TypeO}
  */
-function generalizeRec(type, names){
+function generalizeRec(type, names, skip = false){
   if (type.isArrow()){
-    return new T.TArrow(generalizeRec(type.from, names),
-                        generalizeRec(type.to, names));
+
+    state.pushCall((a,b)=> new T.TArrow(a,b), [popVal, popVal], true);
+    state.pushCall(generalizeRec, [type.from, names], true);
+    state.pushCall(generalizeRec, [type.to, names], true);
+    
   } else if (type.isApp()){
-    return new T.TApp(generalizeRec(type.func, names), 
-                      generalizeRec(type.arg, names));
+
+    state.pushCall((a,b)=> new T.TApp(a,b), [popVal, popVal], true);
+    state.pushCall(generalizeRec, [type.func, names], true);
+    state.pushCall(generalizeRec, [type.arg, names], true);
+
   } else if (type.isMetavar()){
     if (type.value === null){
       let lookup = names[type.name];
       if (lookup === undefined){
         lookup = T.freshVar();
         names[type.name] = lookup;
+
+        state.pushCall(()=>state.pushVal(lookup), [], true);
+        state.pushCall(initMetaVarMsg, [lookup], true);
+      } else {
+        // add step ?
+        state.pushVal(lookup);
       }
-      return lookup;
+
     } else {
-      type.value = generalizeRec(type.value, names); 
-      return type;
+      state.pushCall((resGenRec)=>{type.value = resGenRec; state.pushVal(type);}, [popVal], true);
+      state.pushCall(generalizeRec, [type.value, names], true);
     }
+  } else {
+    state.pushVal(type);
   }
-  return type;
 }
 
 /**
@@ -311,39 +453,59 @@ function occursCheck(t1, t2){
  * @param {[Type]} patternsTypes 
  * @param {Context} context 
  */
-function checkPatterns(patterns, patternsTypes, context){
-  T.tLog("checkPatterns " + patterns);
-  for (let i = 0; i < patterns.length; i ++){
-    switch (patterns[i].type){
+function checkPatterns(patterns, patternsTypes, context, skip = false){
+  
+  if (patterns.length >= 1){
+    state.makeMsg(skip, "Check type of pattern " + patterns[0].toStr());
+    if (patterns.length > 1){
+      state.pushCall(checkPatterns, [patterns.slice(1), patternsTypes.slice(1), context], true);
+    }
+    switch (patterns[0].type){
       case "var" :
-        if (isAppinCase(patterns[i].name)){
-          unify(patternsTypes[i], 
-            instantiate(global_context.lookup(patterns[i].name)));
+        if (isAppinCase(patterns[0].name)){
+          state.pushCall(unify, [patternsTypes[0], popVal], true);
+          state.pushCall(
+            instantiateInitShouldSkip,
+            [state.rte.ctx.lookup(patterns[0].name), patterns[0]], 
+            true);
         } else {
-          context.add(patterns[i].name, patternsTypes[i]);
-        }
+          state.pushCall((a)=>{
+            context.add(patterns[0].name, patternsTypes[0])
+            state.makeMsg(false, a.name 
+                               + " is initialised as " 
+                               + patternsTypes[0].toStr()); 
+          }, [patterns[0]]);
+        }        
         break ;
 
       case "immediate" :
-        unify(patternsTypes[i], instantiate(inferImmediate(patterns[i])));
-        break; 
+        state.pushCall(unify, [patternsTypes[0], popVal], true);
+        state.pushCall(instantiateInit, [popVal, patterns[0]], true);
+        state.pushCall(inferImmediate, [patterns[0]]);
+        break ;
+      
+      case "str" : // fixed for str
+        state.pushCall(unify, [patternsTypes[0], new T.TApp(T.TList(), T.TChar())], true);
+        break ;
 
       case "functionApp" :
-        checkFuncAppPattern(patterns[i], patternsTypes[i], context);
-        break
-      
+        state.pushCall(checkFuncAppPattern, [patterns[0], patternsTypes[0], context], true);
+        break ;
+
       case "SpecialExp" :
-        if (patterns[i].special === "_"){
-        T.tLog("new metavar for ? #10 #TODO");
-          unify(patternsTypes[i], T.freshMetavar());
+        if (patterns[0].special === "_"){
+          let fmt = T.freshMetavar();
+          fmt.pos = patterns[0].pos;
+          state.pushCall(unify, [patternsTypes[0], fmt], true);
+          state.pushCall(initMetaVarMsg, [fmt]);
           break;
         } else {
-          throw new Error("Unhandeled SpecialExp " + patterns[i].special);
+          throw new Error("Unhandeled SpecialExp " + patterns[0].special);
         }
       default :
-        throw new Error("Unhandeled case in checkPatterns " + patterns[i].type);
+        throw new Error("Unhandeled case in checkPatterns " + patterns);
     }
-  }
+  } 
 }
 
 /**
@@ -352,8 +514,8 @@ function checkPatterns(patterns, patternsTypes, context){
  * @param {String} name 
  * @returns {Boolean}
  */
-function isAppinCase(name){
-  let res = optionAppTable.lookup(name); 
+function isAppinCase(name, skip = false){
+  let res = state.rte.optionAppTable.lookup(name); 
   if (res !== undefined){ return true ; }
   return name === ":" 
       || name === ","
@@ -376,47 +538,38 @@ function isAppinCase(name){
  * @param {T.TypeO} patternTypeR
  * @param {Context} context 
  */
-// FIXME: I think the problem here is the one I already mentioned
-// which is that you should *not* use the same AST for patterns as for
-// expressions.  More specifically, rather than
-// 'functionaApp' nodes with a single arg that rely on currying,
-// patterns should use a datatype along the lines of:
-//
-//     data Pattern =
-//        | Var String
-//        | Wildcard
-//        | Constructor (List Pattern)
-//
-// Then in `checkPatterns` things will be much simpler and clearer.
-function checkFuncAppPattern(pattern, patternTypeR, context){
-  T.tLog("checkFuncAppPattern " + pattern.toStr());
-  let patternType = patternTypeR.resolve();
-  // If you do `x = freshmetavar;  check* (EXP, x, ..)` it means you're doing
-  // it wrong: e.g. maybe you should use `infer*` instead.  Tho here,
-  // what it really means is that you first need to find the "head"
-  // of the application (which *has* to be a constructor, whose type we
-  // already know), then unify its return type with `patternTypeR` (after
-  // instantiating, if it's polymorphic),
-  // then *check* the type of all the subpatterns (notice that the
-  // recursion uses `check` rather than `infer`, so you'll never actually
-  // need any `inferPattern`).
+function checkFuncAppPattern(pattern, patternTypeR, context, skip = false){
+  state.makeMsg(skip, "Infer type of pattern " + pattern.toStr());
 
-  T.tLog("new metavar for ? #11 #TODO");
+  let patternType = patternTypeR.resolve();
 
   let func = T.freshMetavar();
-  checkPatterns([pattern.func], [func], context);
-  if (func.value.isArrow()){
-    checkPatterns([pattern.arg], [func.value.from], context);
-    if (patternType.isApp()){
-      unify(patternType, func.value.to);
-    } else if (patternType.isMetavar() && patternType.value === null) {
-      patternType.setVal(func.value.to);
-    } else {
-      throw new Error("TODO"); // #HELP
-    }
+  func.pos = pattern.func.pos;
+  
+  state.pushCall(checkFuncAppPatternCont, [patternType, func], true);
+  state.pushCall(checkPatterns, [[pattern.arg], popVal, context], true);
+  state.pushCall(()=> state.pushVal([state.popVal()]), [], true);
+  state.pushCall((func)=> state.pushVal(func.value.from), [popVal], true);
+  state.pushCall(()=>state.pushVal(func), []);
+  // removed verification that func.value.isArrow()
+  state.pushCall(checkPatterns, [[pattern.func], [func], context], true);
+}
+
+function checkFuncAppPatternCont(patternType, func, skip = false){
+  if (patternType.isApp()){
+    state.pushCall(unify, [patternType, func.value.to], true);
+  } else if (patternType.isMetavar() && patternType.value === null) {
+    patternType.setVal(func.value.to);
   } else {
-    throw new Error("TODO");
+    throw new Error("TODO"); // #HELP
   }
+  
+}
+
+// used to name instances
+let nameCount = {};
+export function resetCnt(){
+  nameCount = {};
 }
 
 /**
@@ -428,39 +581,54 @@ function checkFuncAppPattern(pattern, patternTypeR, context){
  * @param {Context} context 
  * @returns {T.TypeO}
  */
-function inferFunctionApp(exp, context){
+function inferFunctionApp(exp, context, skip = false){
+  state.makeMsg(skip, "Infer type of app " + exp.func.name + "(...)");
+  
+  if (nameCount[exp.func.name] === undefined){
+    nameCount[exp.func.name] = 1 ;
+  } else {
+    nameCount[exp.func.name] += 1 ;
+  }
+
+  let name = exp.func.name 
+           + "<sub>" 
+           + nameCount[exp.func.name]
+           + "</sub>" ;
+  
   // TODO FIXME : typetable has to be used to verify arity of type applications
   // like list tuples or constrs (maybe)
-  T.tLog("Infer App " + exp.toStr());
-  let tfun = infer(exp.func, context).resolve();
+  let isForAll = false ;
 
-  if (tfun.isArrow()){
-    check(exp.arg, tfun.from, context);
-    return tfun.to;
-  }
-
-  let targ = infer(exp.arg, context);
-  T.tLog("new metavar for ? #1 #TODO");
-  let res = T.freshMetavar();
-
-  unify(tfun, new T.TArrow(targ, res));
-  return res;
+  state.pushCall(inferFunctionAppCont, [exp, context, popVal], true);
+  state.pushCall((popedVal) => {
+    if (popedVal.hasInstanceMetaVar()){
+      isForAll = true;
+      if (exp.func.name !== undefined){
+        state.rte.globalLocalCtxKeys.push(name);
+        state.rte.globalLocalCtx.push([name, popedVal]);
+      }
+    }
+    state.pushVal(popedVal); 
+    }, [popVal], true);
+  state.pushCall(
+    (a)=>state.pushVal(a.resolve()), 
+    [popVal], true);
+  state.pushCall(infer, [exp.func, context], true);
 }
 
-/**
- * todo
- * NOT YET USED
- * @param {Exp} exp 
- * @param {T.TypeO} tfun 
- * @param {Context} context 
- * @returns {T.TypeO | null}
- */
-function miniUnify(exp, tfun, context){
+function inferFunctionAppCont(exp, context, tfun, skip = false){
   if (tfun.isArrow()){
-    check(exp.arg, tfun.from, context);
-    return tfun.to;
+    state.pushCall(()=>state.pushVal(tfun.to), [], true);
+    state.pushCall(check, [exp.arg, tfun.from, context], true);
+  } else {
+    let res = T.freshMetavar();
+    res.pos = exp.pos;
+    state.pushCall(()=> state.pushVal(res), [], true); // skip ?
+    state.pushCall(unify, [tfun, popVal], true);
+    state.pushCall((a) => state.pushVal(new T.TArrow(a, res)), [popVal], true);
+    state.pushCall(initMetaVarMsg, [res]);
+    state.pushCall(infer, [exp.arg, context], true);
   }
-  return null;
 }
 
 /**
@@ -469,32 +637,42 @@ function miniUnify(exp, tfun, context){
  * @param {Context} context 
  * @returns {T.TypeO}
  */
-function inferVar(exp, context){
+function inferVar(exp, context, skip = false){
   let res = lookupGlobalLocalContext(context, exp.name);
-  T.tLog("lookup " + exp.toStr() + " : " + res.toStr());
-  return res;
+  state.makeMsg(skip, "Type of " + exp.name + " is "+ res.toStr());
+  state.pushVal(res);
+}
+
+function instantiateInitShouldSkip(type, exp){
+  state.pushCall(instantiateInit, [type, exp], !type.isForAll());
+  // we skip if there is no need for instantiation
+  // we only verify the first type, which is not ideal
+}
+
+// not important to have a step by step of instantiate
+function instantiateInit(type, exp, dict = {}, skip = false){
+  const res = instantiate(type, dict);
+  state.makeMsg(skip, "Instantiating " + exp.name + " as " + res.toStr());
+  state.pushVal(res);
 }
 
 /**
  * Instantiate the type, if it's a forall return it's body where the metavar is 
- * swapped for a fresh var, otherwise the the the type returned as is.
+ * swapped for a fresh var, otherwise the type returned as is.
  * @param {T.TypeO} type 
  * @param {{String: T.TMetavar}} dict 
  * @returns {T.TypeO}
  */
 function instantiate(type, dict = {}){
-
   // If we have a forall, return the body where the metavar is swapped for a 
   // fresh one
   if (type.isForAll()){
     let copyDict = {...dict}; // creates a copy of dict
-    let metavars = [] // for logs
     for (let name of type.names){
-      let metavar = new T.freshMetavar();
+      let metavar = new T.freshMetavar(); // ici # fixme rajouter la pos associée
       copyDict[name] = metavar;
-      metavars.push(metavar.name);
     }
-    T.tLog("Instantiate " + type.names + " to " + metavars);
+
     return instantiate(type.body, copyDict);
   }
   
@@ -514,12 +692,10 @@ function instantiate(type, dict = {}){
                         instantiate(type.arg, dict));
     } else if (type.isMetavar()){
       if (type.value === null){
-        T.tLog("new metavar for ? #3 #TODO");
-        return T.freshMetavar();
+        return T.freshMetavar(); // ici # fixme rajouter la pos associée
       } else {
         let val = instantiate(type.value, dict);
-        T.tLog("new metavar for ? #4 #TODO");
-        let mtvar = T.freshMetavar();
+        let mtvar = T.freshMetavar(); // ici # fixme rajouter la pos associée
         mtvar.value = val;
         return mtvar;
       }
@@ -533,14 +709,13 @@ function instantiate(type, dict = {}){
  * @param {Exp} exp 
  * @returns {T.TBuiltin | T.TForall}
  */
-function inferImmediate(exp){
-  let lookup = global_context.lookup(exp.valueType);
+function inferImmediate(exp, skip = false){
+  let lookup = state.rte.ctx.lookup(exp.valueType);
   if (lookup === undefined){
     lookup = new T.TBuiltin(exp.valueType);
   } 
-  T.tLog("Infer Imm " + exp.toStr() + " is " + lookup.toStr());
-  return lookup ;
-  // HELP should there be a verification on the accepted builtin types ?
+  state.makeMsg(skip, exp.toStr() + " is " + lookup.toStr());
+  state.pushVal(lookup);
 }
 
 /**
@@ -550,22 +725,21 @@ function inferImmediate(exp){
  * @param {Context} context 
  * @returns {T.TypeO}
  */
-function inferLet(exp, context){
-  T.tLog("Infer Let" + exp.toStr());
+function inferLet(exp, context, skip = false){
+  state.makeMsg(skip, "infer let " + exp.toStr());
   if (exp.body !== null){
     let clone = context.clone();
+    state.pushCall(infer, [exp.body, clone], true);
     for (let decl of exp.decls){
-      clone.add(decl.name, infer(decl.body, context), true);
+      state.pushCall((a)=>clone.add(decl.name, a, true), [popVal], true);
+      state.pushCall(infer, [decl.body, context], true);
     }
-    return infer(exp.body, clone);
-
   } else {
+    state.pushVal(new T.TApp(T.TIO(), T.TUnit())); 
     for (let decl of exp.decls){
-      global_context.add(decl.name, infer(decl.body, context), true);
+      state.pushCall((a)=> state.rte.ctx.add(decl.name, a, true), [popVal], true);
+      state.pushCall(infer, [decl.body, context], true);
     }
-    return new T.TApp(T.TIO(), T.TUnit()); 
-    // #HELP I'm using IO here because we say all monads are just IO, 
-    // so it's fine ? (looks suspicious) 
   }
 }
 
@@ -575,13 +749,20 @@ function inferLet(exp, context){
  * @param {String} name 
  * @returns {Term}
  */
-function lookupGlobalLocalContext(context, name){
-  let res = context.lookup(name);
+function lookupGlobalLocalContext(context, name, add = true){
+  let res = context.lookup(name, add);
 
   if (res === undefined){
-    res = global_context.lookup(name);  
+    res = state.rte.ctx.lookup(name, add);
     if (res === undefined){ 
-      throw new Error(name + " is undefined.") ; 
+      if (allGlobalDefNames.includes(name)){
+        let tmp = T.freshMetavar()
+        addToStateCtxRte(name, tmp);
+        globalDefInitiated.push(name);
+        return tmp;
+      } else {
+        throw new Error(name + " is undefined.") ; 
+      }
     }
   }
 
@@ -590,40 +771,11 @@ function lookupGlobalLocalContext(context, name){
 }
 
 /**
- * Allows to reset the global context
- * Remembers the commas function (tuples) because the context is reset at the 
- * start of each test, but the commas functions are added in normalisation 
- * ( before reset )
- * HELP : is this a good idea ? or should the context be reset after each test ?
- */
-function resetGlobalContext(){
-  let tmp_context = new Context();
-  // going through each value in the env and keeping only ncommas functions
-  for (let [key, value] of Object.entries(global_context.decls)){
-    if (isNcommas(key) && key.length > 1){
-      tmp_context.add(key, value);
-    }
-  }
-  global_context = tmp_context;
-  global_context.initGlobal();
-}
-
-/**
- * Allows to add to the global env from other files (used in normalisation) when
- * working on tuples to add the ncommas function before evaluation
- * @param {String} str 
- */
-export function addNcommasToGlobalContext(str){
-  global_context.addNcommas(str);
-}
-
-/**
  * Function to verify that a type is App(IO, Unit)
  * @param {T.TypeO} mainType 
  * @returns {Boolean}
  */
-function isMainAppIoUnit(mainType){
-  T.tLog("Verifying that main is IO");
+function isMainAppIoUnit(mainType, skip = false){
   
   if (mainType.isMetavar()){
     return isMainAppIoUnit(mainType.value);
@@ -648,7 +800,8 @@ function isMainAppIoUnit(mainType){
       return arg.isBuiltin() && arg.blt === 'Unit' ;
     }
   }
-  return false;
+  
+  throw new Error("Main should have type App IO to Unit, not " + mainType);
 }
 
 /**
@@ -658,20 +811,20 @@ function isMainAppIoUnit(mainType){
  *  - for each of the options of the constr, adding them to the global context
  * @param {Constr} constr
  */
-function manageConstr(constr){
-  T.tLog("Processing the type of constr " + constr.name);
+function manageConstr(constr){ //TOCPS
+
   let nameDict = {}; // name of a var -> Tvar associated with var
   let type = getTypeOfConstr(constr, nameDict);
 
   // update constrtable and context
-  constrTable.add(constr.name, constr);
-  global_context.add(constr.name, new T.TConstrType(constr.name));
+  state.rte.constrTable.add(constr.name, constr);
+  state.rte.ctx.add(constr.name, new T.TConstrType(constr.name));
 
   // determine the type of each option
   for(let option of constr.options){
     if (option.type === 'var'){
-      global_context.add(option.name, type);
-      optionAppTable.add(option.name, 0);
+      state.rte.ctx.add(option.name, type,true);
+      state.rte.optionAppTable.add(option.name, 0,true);
     } else if(option.type === "functionApp"){
       // we know type is forall (what about constrs with no variable ? FIXME)
       let func = option.func;
@@ -685,8 +838,8 @@ function manageConstr(constr){
       if (func.type !== 'var'){
         throw new Error("TODO");
       }
-      optionAppTable.add(func.name, type.names.length);
-      global_context.add(func.name, new T.TForall(type.names, arr));
+      state.rte.optionAppTable.add(func.name, type.names.length);
+      state.rte.ctx.add(func.name, new T.TForall(type.names, arr));
     }
   }
 }
@@ -705,7 +858,7 @@ function funcAppToTApp(exp, nameDict, params){
   if (exp.type === 'var'){
     if (params.includes(exp.name)){
       return nameDict[exp.name];
-    } else if (constrTable.lookup(exp.name) !== undefined){
+    } else if (state.rte.constrTable.lookup(exp.name) !== undefined){
       return new T.TConstrType(exp.name); 
     }
     return new T.TConstrVal(exp.name);
@@ -735,7 +888,7 @@ function getTypeOfConstr(constr, nameDict){
     let body = new T.TConstrType(constr.name);
     let names = [];
     for (let i = 0; i < constr.params.length; i++){
-      T.tLog("new metavar for ? #5 #TODO");
+      // T.tLog("new metavar for ? #5 #TODO");
       let nVar = T.freshVar();
       nameDict[constr.params[i]] = nVar;
       names.push(nVar.name);

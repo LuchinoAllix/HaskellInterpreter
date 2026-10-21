@@ -1,8 +1,8 @@
-import { CaseExp, LambdaExp, VarExp } from "./Exp.js";
+import { CaseExp, LambdaExp, VarExp, getWidePos } from "./Exp.js";
 import { Term } from "./Term.js";
 import { Branch } from "./Branch.js";
 import { TypeO } from "../typeCheck/TypeO.js";
-
+import { Position } from "./Position.js";
 
 //--                 File containing "type" Decl for normalize              --//
 
@@ -14,10 +14,17 @@ let count = 0; // for generating new variables names
  * var names is not allowed in haskell)
  * @returns {VarExp}
  */
-export function makeNewName(){
+export function makeNewName(pos){
   let name = "\\arg" + count;
   count ++;
-  return new VarExp(name);
+  name = new VarExp(name);
+  name.pos = pos;
+  return name;
+}
+
+export function resetCountLambdaVar(){
+  count = 0;
+  //console.log("reset count");
 }
 
 /**
@@ -32,13 +39,13 @@ export class Decl extends Term {
    * @param {String} name 
    * @param {TypeO} typeAnnotation
    * @param {Term} term A branch or an exp
-   * @param {[Integer]} info 
+   * @param {Position} pos 
    */
-  constructor(name, typeAnnotation, term, info = null){
+  constructor(name, typeAnnotation, term, pos = null){
     super("DECL");
     this.name = name;
     this.typeAnnotation = typeAnnotation;
-    this.info = info;
+    this.pos = pos;
     if (term !== null){
       if (term.type === "branch"){
         this.makeBody(term);
@@ -48,6 +55,14 @@ export class Decl extends Term {
     } else {
       this.body = null;
     }
+  }
+
+  /**
+   * todo
+   * @returns {String} 
+   */
+  toStr(){
+    return this.name;
   }
 
   /**
@@ -66,9 +81,11 @@ export class Decl extends Term {
   makeBody(branch){
     let argsNames = []
     for (let i = 0; i < branch.args.length; i++){
-      argsNames.push(makeNewName());
+      argsNames.push(makeNewName(branch.args[i].pos));
     }
-    this.body = new LambdaExp(argsNames, new CaseExp(argsNames, [branch]));
+    let pos = getWidePos(branch.args[0], branch.branchBody);
+    this.body = new LambdaExp(argsNames, new CaseExp(argsNames, [branch], pos));
+    this.body.pos = pos;
   }
 
   /**

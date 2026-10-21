@@ -95,9 +95,9 @@ export function getLiteral(program){
  */
 export function getSmall(program){
   if (program.getChar() === "_"){
-    program.addToken("small");
-    program.incIndex();
-    return true ;
+    return program.addToken("small");
+    //program.incIndex();
+    //return true ;
   }
   return getAscSmall(program)
     || getUniSmall(program);
@@ -380,38 +380,18 @@ function getExponent(program){
 }
 
 /**
+ * #FIXME this rule is not followed, only 'simple' chars will be accepted
  * Rule : char → ' (graphic⟨' | \⟩ | space | escape⟨\&⟩) '
  * @param {Program} program 
  * @returns {Boolean}
  */
 function getChar(program){
-  program.startMerge();
-  if (program.getChar() !== "\'"){
-    program.endMerge("NULL");
-    return false;
-  }
-  program.addToken("start char");
-  while (true){
-    if (getGraphic(program)){
-      var lastToken = program.getLastToken().value; 
-      if (lastToken.includes("\'") || lastToken.includes("\\")){
-        if (getSpace(program) || 
-            (getEscape(program) 
-             && ! program.getLastToken().value.includes("\\&"))){}
-      }
-    } else if (getSpace(program)){
-    } else if (getEscape(program) 
-               && ! program.getLastToken().value.includes("\\&")){
-    } else {break;}
-  }
-  // FIXME : verify that the rule is correctly implemented (escape⟨\&⟩)
-  if (program.getChar() === "\'"){
-    program.addToken("end char");
-    program.endMerge("Char");
-    return true;
-  }
-  program.endMerge("NULL");
-  return false;
+  if (program.getChar() !== "\'"){ return false ; }
+  program.incIndex();
+  program.addToken("Char");
+  if (program.getChar() !== "\'"){ return false ; }
+  program.incIndex();
+  return true;
 }
 
 /**

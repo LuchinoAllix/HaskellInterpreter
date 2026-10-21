@@ -14,13 +14,13 @@ import { Token } from "./objects/Token.js";
 import { Node, compressTree } from './objects/Node.js';
 import { normalizeStart } from './normalize/normalizer.js';
 import { Term } from './normalize/Term.js';
-import { initEvalComp, initGlobal } from './eval/eval.js';
-import { outputs, resetOutputs } from './eval/Env.js';
-import { typeCheck } from './typeCheck/TypeCheck.js';
-import { activatePrintTLog } from './typeCheck/TypeO.js';
+import { initEvalComp } from './eval/eval.js';
+import { initStateForEnv, outputs, resetOutputs } from './eval/Env.js';
+import { initTypeCheck } from './typeCheck/TypeCheck.js';
+import { initStateForCtx } from './typeCheck/Context.js';
 
-import { readFile } from 'fs/promises';
-import { writeFileSync } from 'fs';
+//import { readFile } from 'fs/promises';
+//import { writeFileSync } from 'fs';
 
 let tests = [];
 let testsFail = [];
@@ -39,6 +39,9 @@ let verbose = false;
 let fail = false;
 let all = false;
 let log = false;
+
+
+export let allTestsInfo = [];
 
 /**
  * Main function to test Parser
@@ -213,7 +216,17 @@ async function runTests(testNum){
       }
     }
   }
+  //writeFileSync("../visualisation/testsData.txt", dataToStr(allTestsInfo));
   return cnt;
+}
+
+
+function dataToStr(data){
+  let res = "" ;
+  for (let row of data){
+    res += row + "\n"
+  }
+  return res ;
 }
 
 /**
@@ -267,6 +280,9 @@ function testAtest(testNb){
   }
   
   const program = new Program(test.input);
+  initStateForCtx(program.state);
+  initStateForEnv(program.state);
+
   program.expected = test.expected;
   console.log("\nTest " + testNb + " : testing " + test.info);
 
@@ -277,7 +293,7 @@ function testAtest(testNb){
     tokenize(program);
 
     if (verbose){ console.log("✅ Tokenization") ; }
-
+    program.state.sizeOfTest = program.tokens.length;
     if(printTokens){
       showTokens(program.tokens);
       showLayoutProgram(program.tokens);
@@ -350,19 +366,23 @@ function testAtest(testNb){
 
     parse(program);
     
-    if (!derivative){ compressTree(program.AST) ; }
+    if (!derivative){ compressTree(program.AST) ; } 
+    
     
     let printAstMsg = "" ;
     
     if (!nosave){
-      writeFileSync("../visualisation/ast.json", 
-                        JSON.stringify(program.AST, null, 2));
+      writeFileSync("../visualisation/ast.json", JSON.stringify(program.AST, null, 2));
       printAstMsg = " (AST saved to ast.json)";
     } 
     
     if (verbose){ console.log("✅ Parsing" + printAstMsg) ; }
 
     if (printAST){ showAST(program.AST) ; }
+
+    // stop here since exec normalisation will not work with an uncompressed 
+    // tree
+    if (derivative) { return true ; } 
 
   } catch (error) {
 
@@ -389,15 +409,13 @@ function testAtest(testNb){
   }
 
   try{
-    
-    initGlobal();
-    normalizeStart(program)
+        
+    normalizeStart(program);
 
     let printNorMsg = "";
     
     if (!nosave){
-      writeFileSync("../visualisation/nf.json", 
-                        JSON.stringify(program.normalizedForm, null, 2));
+      writeFileSync("../visualisation/nf.json", JSON.stringify(program.normalizedForm, null, 2));
       printNorMsg = " (NF saved to nf.json)";
     }
 
@@ -434,7 +452,19 @@ function testAtest(testNb){
     
     if (log){ activatePrintTLog(); }
     
-    typeCheck(program);
+    initTypeCheck(program.state, program.normalizedForm);
+
+    while (!program.state.isCallStackEmpty()){
+      program.state.call();
+    }
+
+    for (let i = 0; i < program.state.rte.globalLocalCtx.length; i++){
+      program.state.rte.globalLocalCtx[i][1] = 
+      program.state.rte.globalLocalCtx[i][1].toStr();
+    }
+
+    //console.log(program.state.rte.globalLocalCtx)
+
     
     if (verbose){ console.log("✅ Type checking") ; }
 
@@ -462,12 +492,15 @@ function testAtest(testNb){
   try{
 
     resetOutputs();
-    initEvalComp(program);
+    initEvalComp(program.state, program.normalizedForm);
+
+    while (!program.state.isCallStackEmpty()){
+      program.state.call();
+    }
 
     if (isGoodResult(program.expected, outputs)){
       if (verbose){ console.log("✅ Evaluation") ; } 
     } else {
-
       throw new Error("❌ Expected result is different than the one evaluated");
     }
 
@@ -486,7 +519,8 @@ function testAtest(testNb){
     }
 
     whereFail[5].push(testNb);
-    
+
+    console.log("failed after " + program.state.nb_steps + " steps");
     if (verbose){ console.log(error) ; }
 
     return false;
@@ -556,7 +590,7 @@ function showLayoutProgram(tokens){
   let lstLine = 0;
   console.log("Tokens with layout: " );
   for (let token of tokens){
-    if (lstLine !== token.line || token.line === -1){
+    if (lstLine !== token.startLine || token.startLine === -1){
       prog += "\n" + "  ".repeat(n);
     }
     if (token.value === "{"){
@@ -565,7 +599,7 @@ function showLayoutProgram(tokens){
       n -= 1;
     } 
     prog += " " + token.value;
-    lstLine = token.line;
+    lstLine = token.startLine;
     
   }
   console.log(prog);

@@ -1,11 +1,18 @@
 import { Prim } from "./Prim.js";
-import { VList, Vtuple, Vio, Unit, Value, Vfunc, 
-         VConstr, Vint, Vchar, Vbool } from "./Value.js";
+import { VList, Vtuple, Vio, Unit, Value, Vfunc, VConstr, Vint, 
+         Vbool } from "./Value.js";
 import { applyFunc } from "./eval.js";
+import { popVal } from "./State.js";
 
 //--                   File for environment object definition               --//
 
 export let outputs = [];
+
+let state ;
+
+export function initStateForEnv(nState){
+  state = nState;
+}
 
 export function resetOutputs(){
   outputs = [];
@@ -24,6 +31,7 @@ export class Env {
    */
   constructor(){
     this.decls = {};
+    this.isEnv = true;
   }
 
   /**
@@ -32,7 +40,12 @@ export class Env {
    * @returns { Value | undefined } undefined if declaration doesn't exists
    */
   lookup(name){
-    return this.decls[name];
+    let res = this.decls[name];
+    if(res !== undefined && !state.rte.globalLocalEnvKeys.includes(name)){ // not ideal for efficency
+      state.rte.globalLocalEnvKeys.push(name);
+      state.rte.globalLocalEnv.push([name, res]);
+    }
+    return res;
   }
 
 
@@ -44,6 +57,12 @@ export class Env {
    * @param {Boolean}
    */
   add(name, val, overide = false){
+    // state != undefined allows to only add to global used env the one added after
+    // state is initialized, i.e. user entered
+    if(state !== undefined && !state.rte.globalLocalEnvKeys.includes(name)){ // not ideal for efficency
+      state.rte.globalLocalEnvKeys.push(name);
+      state.rte.globalLocalEnv.push([name, val]);
+    }
     if (this.decls[name] !== undefined){
       if (!overide){
         throw new Error("This declaration already exists in the environment : " 
@@ -70,19 +89,23 @@ export class Env {
 
     this.add('neg', new Prim(a => Vint(- a.value)));
 
-    this.add('/', new Prim(a => new Prim(b => Vint(a.value / b.value))));
+    this.add('/', new Prim(a => new Prim(b => Vint(Math.round(a.value / b.value)))));
+    
+    this.add('mod', new Prim(a => new Prim(b => Vint(a.value % b.value))));
 
-    this.add("print", new Prim(a => new Vio( 
+    this.add("print", new Prim(a => {
+      var str= makeStr(a); 
+      console.log(str);    
+      outputs.push(str);    
+      state.result = str;  
+      return new Vio(
       function print(){
-        let str = makeStr(a);
-        console.log(str);
-        outputs.push(str);
         return Unit ;
       }
-    )));
+    )}));
 
     this.add("==", 
-      new Prim(a => new Prim(b => Vbool(a.value === b.value))));
+      new Prim(a => new Prim(b => Vbool(equal(a,b)))));
 
     this.add("!=", 
       new Prim(a => new Prim(b => Vbool(a.value !== b.value))));
@@ -145,20 +168,21 @@ export class Env {
     this.add('return', new Prim(() => new Vio(a => a)));
 
     this.add(">>", new Prim(a => new Prim(b => new Vio(() => {
-      a.exec();
-      return b.exec();
+      state.pushCall(b.func, []);
+      state.pushCall(a.func, []);
+      // not ideal, every print will be run at the end... FIXME
     }))));
 
-    this.add(">>=",  new Prim(a => new Prim(b => new Vio(() => {
-      let first  = a.exec();
-      let lambda = applyFunc(b, first);
-      return lambda.exec();
+    this.add(">>=", new Prim(a => new Prim(b => new Vio(() => {
+      state.pushCall((a) => a.func(), [popVal]);
+      state.pushCall(applyFunc, [popVal, b]);
+      state.pushCall(a.func, []);
     }))));
 
     this.add("Just", new Prim(a => new VConstr("Just", [a])));
 
     this.add("Nothing", new VConstr("Nothing"));
-
+    
     //this.add("getChar", new Prim (() => new Vio(() => new Vchar("a"))));
   }
 
@@ -207,6 +231,9 @@ function makeFunc(n, list){
  * @returns {String}
  */
 function makeStr(val){
+  if (val.type === "Char"){
+    return "\'" + val.value + "\'";
+  }
   if (val.type === "unit"){
     return "()";
   } else if (val.type === "EmptyList"){
@@ -269,8 +296,30 @@ function charListToStr(val){
  * @returns {VList}
  */
 function map(f,l){
-  if (l.type === "EmptyList"){ return l ; }
-  return new VList(applyFunc(f, l.fst), map(f, l.snd));
+  if (l.type === "EmptyList"){ state.pushVal(l); }
+  else {
+    state.pushCall((x,y) => state.pushVal(new VList(y,x)), [popVal, popVal]);
+    state.pushCall(map, [f, l.snd]);
+    state.pushCall(applyFunc, [l.fst, f]);
+  }
 }
 
+function equal(a,b){
+  if (a.type === 'list' && b.type ==='list'){
+    return equal(a.fst, b.fst) && equal(a.snd, b.snd);
+  } else if (a.type === 'tuple' && b.type === 'tuple'){
+    if (a.value.length !== b.value.length){
+      return false ;
+    }
+    for (let i = 0; i < a.value.length; i++){
+      if (! equal(a.value[i], b.value[b])){
+        return false ;
+      }
+    }
+    return true ;
+  } else if (a.type === "EmptyList" && b.type === "EmptyList"){
+    return true
+  } 
+  return a.value === b.value ;
+}
 

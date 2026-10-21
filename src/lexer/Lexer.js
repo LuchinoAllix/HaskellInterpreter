@@ -45,6 +45,7 @@ export function tokenize(program){
 function getProgram(program){
   while (getWhitespace(program) || getLexeme(program)){} 
   if (program.index === program.input.length){
+    program.getSizesOfTokens();
     return true;
   } else if (program.index < program.input.length){
     throw new Error("Not all input was parsed");

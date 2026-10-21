@@ -39,6 +39,12 @@ export function getLexeme(program){
 function getVarid(program){
   program.startMerge();
   if (getSmall(program)){
+    if (HS_reservdid.includes(program.tokens[program.tokens.length-1].value)
+    && (program.getNextChar() !== ':')){ // not ideal ...
+      program.removeLastToken();
+      program.endMerge("NULL");
+      return false;
+    }
     while(true){
 
       if (getSmall(program) || getLarge(program) || getDigit(program)){} 

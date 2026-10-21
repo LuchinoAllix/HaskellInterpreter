@@ -14,8 +14,10 @@ export class Token {
   constructor(type, value, line, column){
     this.type = type;
     this.value = value;
-    this.line = line;
-    this.column = column;
+    this.startLine = line;
+    this.startCol = column;
+    this.endLine;              // not given because calculated afterwards
+    this.endCol;               // ...
   }
 }
 
@@ -39,5 +41,11 @@ export function newLayoutToken(value, type){
  * @returns {Node}
  */
 export function tokenToNode(token){
-  return new Node(token.type,token.value,token.line,token.column,null);    
+  return new Node(token.type,
+                  token.value,
+                  token.startLine,
+                  token.startCol,
+                  null,
+                  token.endLine,
+                  token.endCol);    
 }

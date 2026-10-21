@@ -44,7 +44,7 @@ export class TypeTable {
   /**
    * initialises the constr table
    */
-  initConstr(){
+  initConstr(){ // should add pos ? #fixme
     this.add("Maybe", new Constr("Maybe", [
       new FunctionApp(new VarExp("Just"), new VarExp("a")), 
       new VarExp("Nothing")

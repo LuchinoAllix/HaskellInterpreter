@@ -1,0 +1,200 @@
+Int
+String, Variable
+Boolean, Variable
+Int, +
+Int, -
+Int, *
+Int, /
+Int, +
+Int, +, *
+Int, +, *
+Int, +, *
+Int, +, *, -, /
+Condition, Int, String, Variable, ==
+Condition, Boolean, String
+Char, Let
+Int, Let, +
+Char, Let, Variable
+Int, Let
+Char, Let, Variable
+Int, Let, +, Variable
+Int, Let, +, Lambda
+Char, Fonction
+Int, Fonction, +
+Int, Fonction, +
+Int, Fonction, *
+Int, Fonction, Récursivité, -, *
+Int, Fonction, Récursivité, -, +
+Int, Fonction, Récursivité, List, ++, Cons, Do
+Int, Fonction, Récursivité, +, List, Annotation
+String, Fonction, Récursivité, Annotation
+Int, Lambda, +
+Int, Lambda, +
+Int, Lambda, *, +
+Fonction, Annotation, Int, List
+Variable, Lambda, Int, +, Do
+Variable, Int, String, ==, +, Condition, &&, ||
+Variable, Annotation, Int, Lambda, Let
+Lambda, Let, Int
+Fonction, Int
+Fonction, Annotation, Int, Do, Variable
+Variable, Do, Int, +
+Int, +
+Variable, Lambda, +, Int, Do
+Variable, Lambda, +, Int, Do
+Variable, +, Int, Do
+Do, Lambda, Int, +
+Fonction, Do, Int, +
+Fonction, Do, +, Int
+Char, Tuple
+Char, Tuple
+Char, Tuple
+Char, Tuple, fst
+Char, Tuple
+Int, Tuple, Lambda, +
+Lambda, Int, +, Tuple, -
+List, Char
+List, Char
+List, Char
+List, Char
+List
+List, Char
+Variable, Filtrage, Int, String
+Variable, Filtrage, Int, String, Tuple
+Variable, Filtrage, Int, Tuple, *
+Variable, Filtrage, Int, Tuple, +
+Variable, Filtrage, Int, List, +
+Variable, Filtrage, Int, List, Cons
+Variable, Filtrage, Int, List, Cons
+Variable, Filtrage, Int, List, Cons
+Variable, Filtrage, Int, List, +
+Do, Int, List, Cons
+Fonction, Int, Variable
+Fonction, Int, Variable
+Fonction, Int, >=, Condition, -, String
+Fonction, Int, >=, Condition, -, String
+Int, >=, Condition, +, Lambda, Do
+Variable, Int, +
+Fonction, -, +, Condition, <, Int, Variable
+Do, Char
+Char, >>
+Char, <-, Do
+Do, Char, >>=, Lambda
+Do, Char, Let
+Do, let, Int, +
+Do, <-, Int
+-, Int
+-, *, +, /, Int
+Int, ==, +
+Fonction, Int, +
+Variable, Int, snd, Annotation, Tuple
+Int, String, Tuple
+Fonction, Variable, Int, Boolean
+Fonction, List, Int
+Fonction, List, Int, Cons
+String, Fonction, ++, Annotation
+List, Int, map, *
+Annotation, Int, Do
+Fonction, ==, /, Condition, Maybe, Do, Int
+Fonction, ==, ADT, /, Int
+Fonction, Filtrage, Variable, Maybe, Int
+Fonction, Récursivité, List, Int, Lambda, ++, Cons, +
+Variable, Annotation, ADT, Int
+Variable, Annotation, ADT, Int, Filtrage, String
+Variable, Annotation, ADT, Int, Filtrage, String
+Variable, Annotation, ADT, Int, Filtrage, String
+Variable, Annotation, ADT, Int, Do, Fonction, String
+Fonction, Récursivité, List, Int, Lambda, Cons, *
+Fonction, List, Int, Cons
+Int, Fonction, Récursivité, List, Cons, Condition, <=
+Int, Fonction, Récursivité, Filtrage, +, -, Do
+Fonction, Filtrage, String, Int, +, -, *, Do, Annotation
+Fonction, Récursivité, ADT, Int, +, Annotation
+Fonction, Condition, ==, Maybe, /, Do, Int, Annotation
+Fonction, Récursivité, List, Int, ++, Do, Condition, ==, Boolean, String
+Fonction, Récursivité, Int, *, -, Do, Annotation
+Fonction, Récursivité, List, Cons, Let, Condition, >, Int
+Fonction, Récursivité, List, Cons, Int, +, Condition, >, Do
+Fonction, Récursivité, List, Cons, Int, +
+Fonction, Récursivité, List, Cons, Let, Condition, ==, <, Int
+Fonction, Récursivité, List, Cons, Condition, >, Int
+Fonction, Récursivité, List, Cons, Filtrage, Tuple, Condition, <, Int
+Fonction, Récursivité, List, Cons, Condition, <, >=, ++, Int
+Fonction, Récursivité, List, Cons, Condition, <, Do, Int
+Fonction, Récursivité, List, Cons, Condition, ==, Do, Int
+Fonction, Récursivité, List, Cons, Condition, ==, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, Condition, ==, Maybe, +, Do, Int
+Fonction, Récursivité, List, Cons, Condition, <=, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, Let, Condition, >, <, Tuple, Int
+Fonction, Récursivité, List, Cons, Tuple, Do, Int, String
+Fonction, Récursivité, List, Cons, Condition, ==, +, Do, Int
+Fonction, Récursivité, Condition, ==, >, -, Do, Int, Annotation
+Fonction, Récursivité, Condition, ==, >, -, *, /, Do, Int, Annotation
+Fonction, Récursivité, Condition, ==, >, +, *, Boolean, Do, Int
+Fonction, Récursivité, Condition, ==, >, +, *, List, Cons, Int
+Fonction, Récursivité, *, +, -, Do, Int, Annotation
+Fonction, Récursivité, List, Cons, +, Do, Int
+Fonction, Récursivité, List, Cons, +, /, Do, Int
+Fonction, Récursivité, *, -, Do, Int
+Fonction, Récursivité, Condition, ==, -, mod, Cons, List, Int
+Fonction, +, -, *, Do, Int, Annotation
+Fonction, Récursivité, *, -, Do, Int
+Fonction, Récursivité, Condition, ==, >, *, +, Boolean, Do, Int
+Fonction, Condition, <, /, *, String, Do, Int
+Fonction, Récursivité, List, Cons, ++, Let, Condition, ==, +, -, Int
+Fonction, Récursivité, List, Cons, Condition, ==, +, Do, Int, Annotation
+Fonction, *, /, Do, Int
+Fonction, Récursivité, List, Cons, *, +, Do, Int
+Fonction, *, -, Do, Int
+Fonction, Récursivité, Filtrage, mod, /, *, +, Condition, ==, Int, Annotation
+Fonction, Récursivité, List, Cons, ==, &&, Boolean, Int
+Fonction, Récursivité, List, Cons, *, +, Do, Int
+Fonction, Récursivité, List, Cons, Condition, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, +, Do, Int
+Fonction, Récursivité, List, Cons, +, Do, Int
+Fonction, Tuple, Do, Int
+Fonction, Tuple, Do, Int
+Fonction, Récursivité, List, Cons, +, *, -, Do, Int
+Fonction, Récursivité, List, Cons, *, ==, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, Lambda, *, +, ==, Boolean, Do, Int
+Fonction, Tuple, Lambda, <=, >=, &&, Boolean, Do, Int
+Char, String, List, Cons, ++, Maybe, Do
+Fonction, Récursivité, List, Cons, Condition, ==, +, ++, String, Boolean, Do, Int
+Fonction, Récursivité, Condition, ==, ||, Char, String, +, Int
+Fonction, Condition, <, Do, Int
+Fonction, Condition, >=, &&, Do, Int
+Fonction, Récursivité, List, Cons, Condition, ==, mod, Boolean, Do, Int, Annotation
+Fonction, Récursivité, Condition, ==, -, +, Int
+Fonction, Récursivité, List, Cons, ++, Int
+Fonction, Récursivité, List, Cons, Condition, ==, mod, +, Int
+Fonction, *, /, +, -, Do, Int
+Fonction, ADT, Filtrage, *, /, Do, Int
+Fonction, Récursivité, Lambda, +, *, -, Do, Int
+Fonction, Récursivité, List, Cons, Tuple, Condition, ==, Maybe, String, Do, Int
+Fonction, List, Cons, Do, Let, Int
+Fonction, Récursivité, Condition, ==, mod, +, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, *, +, Do, Int
+Fonction, Do, *, Int
+Fonction, Tuple, *, -, +, Do, Int
+Fonction, Récursivité, ADT, Filtrage, +, Int
+Fonction, Récursivité, List, Cons, Condition, Boolean, Int
+Fonction, Récursivité, Condition, ==, mod, Do, Int
+Fonction, Cons, Condition, ==, Char, String, Boolean, Do, Annotation
+Fonction, Récursivité, List, Cons, Condition, ==, String, Boolean, Do, Annotation
+Fonction, Récursivité, List, Cons, Condition, &&, >=, <=, Char, String, Annotation
+Fonction, Récursivité, List, Cons, Condition, &&, >=, <=, Char, String, +, Do, Int, Annotation
+Fonction, Récursivité, List, Cons, ++, String
+Fonction, Récursivité, ++, -, String, Do, Int, Annotation
+Fonction, Récursivité, List, Cons, Condition, <=, ==, String, Boolean, Do, Annotation
+Fonction, Récursivité, List, Cons, String
+Fonction, Récursivité, Condition, ==, Boolean, Char, String, +, Do, Int
+Fonction, Tuple, Do, Int
+Fonction, Tuple, +, Int
+Fonction, Tuple, *, -, +, Int
+Fonction, Récursivité, List, Cons, Tuple, String, Int
+Fonction, Récursivité, List, Cons, Tuple, Let, Condition, >=, fst, snd, +, Int
+Fonction, Récursivité, List, Cons, Tuple, Condition, >, +, Int
+Fonction, Récursivité, List, Cons, Tuple, String, Int
+Fonction, Tuple, *, Int
+Fonction, Tuple, &&, >=, <=, Boolean, Do, Int
+Fonction, Récursivité, List, Cons, Tuple, Let, fst, snd, +, Int

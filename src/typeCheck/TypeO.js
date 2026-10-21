@@ -4,9 +4,10 @@
 let countVar = 0;
 let countMetavar = 0;
 
-// Init log
-let printTLog = false;
-let indent = 0;
+export function resetCount(){
+  countMetavar = 0;
+  countVar = 0;
+}
 
 /**
  * Represents the type of a term (Algebric Data Type)
@@ -99,6 +100,20 @@ export class TypeO {
     
     return this;
   }
+
+  /**
+   * Since we look at an instance, we assume there are no vars and forall
+   * @returns {Boolean}
+   */
+  hasInstanceMetaVar(){
+    if (this.isApp()){
+      return this.func.hasInstanceMetaVar() || this.arg.hasInstanceMetaVar();
+    } else if (this.isArrow()){
+      return this.from.hasInstanceMetaVar() || this.to.hasInstanceMetaVar();
+    } else {
+      return this.isMetavar() && this.value === null;
+    }
+  }
 }
 
 /**
@@ -122,7 +137,10 @@ export class TArrow extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return "(" + this.from.toStr() + " -> " + this.to.toStr() + ")";
+    if (this.from.isArrow()){
+      return "(" + this.from.toStr() + ") -> " + this.to.toStr() ;
+    }
+    return this.from.toStr() + " -> " + this.to.toStr();
   }
 }
 
@@ -145,6 +163,7 @@ export class TBuiltin extends TypeO {
    * @returns {String}
    */
   toStr(){
+    if (this.blt === "Integer"){ return "Int";}
     return this.blt + "" ;
   }
 }
@@ -208,7 +227,14 @@ export class TApp extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return "App(" + this.func.toStr() + ", " + this.arg.toStr() + ")";
+    let fun = this.func.toStr();
+    let arg = this.arg.toStr(); 
+    if ( fun === "List"){
+      return "[" + arg + "]";
+    } else if (fun === "IO" && arg === 'Unit'){
+      return fun ; 
+    }
+    return "App(" + fun + ", " + arg + ")";
   }
 }
 
@@ -253,7 +279,8 @@ export class TForall extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return  "∀ " + this.names + ", " + this.body.toStr();
+    return  "∀ " + this.names.map((name)=>"α" + name.slice(3)) 
+                 + ", " + this.body.toStr();
   }
 }
 
@@ -277,7 +304,7 @@ export class TVar extends TypeO {
    * @returns {String}
    */
   toStr(){
-    return "" + this.name;
+    return "α" + this.name.slice(3);
   }
 }
 
@@ -311,7 +338,6 @@ export class TMetavar extends TypeO {
    * @param {TypeO} type 
    */
   setVal(type){
-    tLog("Setting val of " + this.name + " to " + type.toStr());
     this.value = type;
   }
 
@@ -322,11 +348,14 @@ export class TMetavar extends TypeO {
   toStr(){
     let val = this.value;
     if (this.value === null){
-      val = "void" ; 
-    } else {
-      val = this.value.resolve().toStr();
+      return "type" + this.name.slice(7) ;
     }
-    return this.name + " (" + val + ")" ;
+    val = this.value.resolve();
+    if (val === null){
+      return "type" + this.name.slice(7) //+ " = " + this.value.toStr(); // todo
+    }
+    return val.toStr();
+    
   }
 }
 
@@ -385,28 +414,3 @@ export function TMaybe() { return new TConstrType("Maybe"); }
 export function TJust() { return new TConstrVal("Just"); }
 export function TNothing() { return new TConstrVal("Nothing"); }
 
-/**
- * Function to activate the log while type checking
- */
-export function activatePrintTLog(){
-  printTLog = true;
-}
-
-/**
- * Function to print the log if the global variable is set to true
- * @param {String} msg 
- * @param {Integer} i 
- */
-export function tLog(msg, i = 0){
-  if(printTLog){
-    if (i === 0){
-      console.log(" ".repeat(indent * 2) + "➡️  " + msg);
-    } else if (i > 0){
-      console.log(" ".repeat(indent * 2) + "🔽 " + msg);
-      indent += i; 
-    } else if (i < 0){
-      indent += i;
-      console.log(" ".repeat(indent * 2) + "🔼 " + msg);
-    }
-  }
-}
